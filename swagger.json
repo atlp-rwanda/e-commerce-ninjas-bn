@@ -1,0 +1,58 @@
+{
+    "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "E-commerce-ninjas",
+    "description": "APIs for the E-commmerce-ninjas  Project",
+    "license": {
+      "name": "ISC"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9090",
+      "description": "Local Development Server for Swagger"
+    }
+  ],
+  "tags": [
+    {
+      "name": "welcome",
+      "description": "Endpoints for welcome message."
+    }
+    
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+},
+"security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "basePath": "/api",
+  "schemes": ["http"],
+  "paths": {
+    
+    "/": {
+      "get": {
+        "summary": "welcome message",
+        "tags": ["welcome"],
+        
+        "responses": {
+          "200": {
+            "description": "welcome"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+}
+}
