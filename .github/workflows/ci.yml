@@ -30,6 +30,6 @@ jobs:
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         env:
-            PORT: ${{secrtes.PORT}}
-            COVERALLS_REPO_TOKEN : ${{secrtes.COVERALLS_REPO_TOKEN}}
-            CC_TEST_REPORTER_ID : ${{secrtes.CC_TEST_REPORTER_ID}}
+            PORT: ${{secrets.PORT}}
+            COVERALLS_REPO_TOKEN : ${{secrets.COVERALLS_REPO_TOKEN}}
+            CC_TEST_REPORTER_ID : ${{secrets.CC_TEST_REPORTER_ID}}
