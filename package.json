@@ -8,12 +8,17 @@
     "dev": "nodemon src/index.ts",
     "lint": "eslint . --ext .ts"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && lint-staged"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/sequelize": "^4.28.20",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/sequelize": "^4.28.20",
     "chai": "^4.4.1",
     "chai-http": "^4.4.0",
     "compression": "^1.7.4",
@@ -44,6 +49,7 @@
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "globals": "^15.2.0",
+    "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "typescript-eslint": "^7.9.0"
