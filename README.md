@@ -4,6 +4,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/maintainability)](https://codeclimate.com/github/atlp-rwanda/e-commerce-***REMOVED***-bn/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/test_coverage)](https://codeclimate.com/github/atlp-rwanda/e-commerce-***REMOVED***-bn/test_coverage)
 [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/e-commerce-***REMOVED***-bn/badge.svg)](https://coveralls.io/github/atlp-rwanda/e-commerce-***REMOVED***-bn)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-***REMOVED***-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-***REMOVED***-bn/tree/develop)
+[![codecov](https://codecov.io/gh/atlp-rwanda/e-commerce-***REMOVED***-bn/graph/badge.svg?token=6ZWudFPM1S)](https://codecov.io/gh/atlp-rwanda/e-commerce-***REMOVED***-bn)
 
 ## Description
 
