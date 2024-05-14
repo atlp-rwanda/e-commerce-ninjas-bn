@@ -4,15 +4,19 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/test_coverage)](https://codeclimate.com/github/atlp-rwanda/e-commerce-ninjas-bn/test_coverage)
 
 ## Description
+
 This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 ## Installation
+
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/atlp-rwanda/e-commerce-ninjas-bn.git
    ```
 
 2. Install dependencies:
+
    ```sh
    npm install
    ```
@@ -25,8 +29,10 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
    ```
 
 ## Folder Structure
+
 - `.env`: Secure environment variables.
 - `src/`: Source code directory.
+
   - `databases/`: Database related files.
     - `config/`: Database connectivity configuration.
     - `models/`: Sequelize models.
@@ -36,3 +42,31 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
   - `utilities/`: Utility functions.
   - `validation/`: Validation schemas.
   - `index.ts`: Startup file for all requests.
+
+## Sequelize ORM
+
+We used Sequelize ORM to connect to PostgreSQL database.
+
+### Sample Codes
+
+```javascript
+const user = await User.create({ field: "value" });
+```
+
+```javascript
+const users = await User.findAll();
+```
+
+### Run sample
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Run sample
+
+```bash
+npm start
+```
