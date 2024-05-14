@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 const sequelize = new Sequelize(
-  "***REMOVED***://code-***REMOVED***:test123@localhost:***REMOVED***/ecommerce"
+  `***REMOVED***://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@localhost:***REMOVED***/${process.env.DATABASE_NAME}`
 );
 
 export const connectToDatabase = async () => {
