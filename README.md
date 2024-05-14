@@ -47,7 +47,11 @@ We used Sequelize ORM to connect to PostgreSQL database.
 ### Sample Codes
 
 ```javascript
-const User = await user.create({ field: "value" });
+const user = await User.create({ field: "value" });
+```
+
+```javascript
+const users = await User.findAll();
 ```
 
 ### Run sample
