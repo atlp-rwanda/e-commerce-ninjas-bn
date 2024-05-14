@@ -28,4 +28,4 @@ jobs:
         uses: coverallsapp/github-action@v2
         env:
             PORT: ${{secrtes.PORT}}
-            COVERALLS_REPO_TOKEN : '${{secrtes.COVERALLS_REPO_TOKEN}}'
+            COVERALLS_REPO_TOKEN : ${{secrtes.COVERALLS_REPO_TOKEN}}
