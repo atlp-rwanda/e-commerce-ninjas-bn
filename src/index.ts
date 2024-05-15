@@ -8,7 +8,8 @@ import Document from "../swagger.json";
 
 dotenv.config();
 const app: Express = express();
-const PORT: number = Number(process.env.PORT);
+
+// const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV));
@@ -22,8 +23,8 @@ app.get("/", (req: Request, res: Response) => {
     .json({ status: true, message: "Welcome to E-Commerce-Ninja-BackEnd" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`Server is running on port ${process.env.PORT || 5000}`);
 });
 
 
