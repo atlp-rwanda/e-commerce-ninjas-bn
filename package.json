@@ -19,7 +19,8 @@
     ],
     "exclude": [
       "src/database/**/*.*",
-      "src/_tests_/**/*.*"
+      "src/modules/**/test/*.ts",
+      "src/modules/**/repository/*.ts"
     ],
     "reporter": [
       "html",
