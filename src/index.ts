@@ -9,7 +9,7 @@ import Document from "../swagger.json";
 dotenv.config();
 const app: Express = express();
 
-// const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV));
@@ -18,13 +18,14 @@ app.use(cors());
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 
 app.get("/", (req: Request, res: Response) => {
+  console.log("Index using PORT: ", PORT)
   res
     .status(200)
     .json({ status: true, message: "Welcome to E-Commerce-Ninja-BackEnd" });
 });
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server is running on port ${process.env.PORT || 5000}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 
