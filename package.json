@@ -11,7 +11,31 @@
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint && npm test"
-    }
+    },
+    "test": "nyc cross-env NODE_ENV=test mocha --require ts-node/register './src/**/*.spec.ts' --timeout 300000 --exit",
+    "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
+    "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit"
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "check-coverage": true,
+    "all": true,
+    "include": [
+      "src/**/!(*.test.*).[tj]s?(x)"
+    ],
+    "exclude": [
+      "src/index.spec.ts",
+      "src/databases/**/*.*",
+      "src/modules/**/test/*.spec.ts"
+    ],
+    "reporter": [
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "report-dir": "coverage",
+    "lines": 40
   },
   "keywords": [],
   "author": "",
@@ -29,6 +53,10 @@
     "express": "^4.19.2",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0",
+    "nyc": "^15.1.0",
+    "pg": "^8.11.5",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.2",
@@ -52,6 +80,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
-    "typescript-eslint": "^7.9.0"
+    "typescript-eslint": "^7.9.0",
+    "cross-env": "^7.0.3"
   }
 }

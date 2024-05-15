@@ -42,9 +42,15 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
     - `models/`: Sequelize models.
   - `middlewares/`: Middleware functions.
   - `modules/`: Modules like User, Products, etc.
+    - `user/`: user module.
+      - `controller/`: user controllers.
+      - `repository/`: user repositories.
+      - `test/`: user test cases.
+      - `validation/`: user validation schemas.
   - `routes/`: API routes.
   - `utilities/`: Utility functions.
   - `validation/`: Validation schemas.
+  - `services/`: Service functions like sendEmails.
   - `index.ts`: Startup file for all requests.
 
   ## ESLint Configuration
