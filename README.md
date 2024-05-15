@@ -7,6 +7,18 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop)
 [![codecov](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn/graph/badge.svg?token=6ZWudFPM1S)](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn)
 
+## HOSTED SERVER URL
+
+https://e-commerce-ninjas-bn.onrender.com
+
+## Hosted Swagger Documentation
+
+https://e-commerce-ninjas-bn.onrender.com/api/api-docs
+
+## Github Repository for E-commerce-Ninjas-Bn
+
+https://github.com/atlp-rwanda/e-commerce-ninjas-bn
+
 ## Description
 
 This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
