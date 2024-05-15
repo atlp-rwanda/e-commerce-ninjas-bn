@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
-app.use("/docs", SwaggerUi.serve, SwaggerUi.setup(Document));
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 
 app.get("/", (req: Request, res: Response) => {
   res

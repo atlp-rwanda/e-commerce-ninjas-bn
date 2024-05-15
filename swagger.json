@@ -1,58 +1,52 @@
 {
-    "openapi": "3.0.0",
+  "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
     "description": "APIs for the E-commmerce-ninjas  Project",
+    "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
+    "contact": {
+      "email": "e-commerce-ninjas@andela.com"
+    },
     "license": {
       "name": "ISC"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:9090",
-      "description": "Local Development Server for Swagger"
-    }
-  ],
+  "host-live": "localhost:5000",
+  "host": "https://e-commerce-ninjas-bn.onrender.com",
+  "basePath": "/api",
   "tags": [
     {
-      "name": "welcome",
-      "description": "Endpoints for welcome message."
-    }
-    
-  ],
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    }
-},
-"security": [
-    {
-      "bearerAuth": []
+      "name": "Initial Route",
+      "description": "Initial/Fake Endpoint | GET Route"
     }
   ],
-  "basePath": "/api",
-  "schemes": ["http"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json",
+    "none"
+  ],
+  "produces": [
+    "application/json",
+    "none"
+  ],
   "paths": {
-    
     "/": {
       "get": {
-        "summary": "welcome message",
-        "tags": ["welcome"],
-        
+        "tags": [
+          "Initial Route"
+        ],
+        "summary": "Handle Intial / Wrong GET Route)",
+        "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
-            "description": "welcome"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd)"
           }
         }
       }
     }
-}
+  }
 }
