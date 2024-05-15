@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import compression from "compression";
@@ -7,8 +7,8 @@ import SwaggerUi from "swagger-ui-express";
 import Document from "../swagger.json";
 
 dotenv.config();
-const app = express();
-const PORT = process.env.PORT;
+const app: Express = express();
+const PORT: number = Number(process.env.PORT);
 
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV));
