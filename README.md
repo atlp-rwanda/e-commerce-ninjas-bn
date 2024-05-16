@@ -50,7 +50,9 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
   - `routes/`: API routes.
   - `utilities/`: Utility functions.
   - `validation/`: Validation schemas.
-  - `services/`: Service functions like sendEmails.
+    <<<<<<< HEAD
+  - # `services/`: Service functions like sendEmails.
+    > > > > > > > cc8acdd (Configure ESLint and Git Pre commit hook to run tests and ESlint format)
   - `index.ts`: Startup file for all requests.
 
   ## ESLint Configuration
@@ -94,31 +96,3 @@ The pre-commit hook runs the following commands:
 - lint-staged: This runs lint-staged, a tool that runs ESLint (or other linters) on files staged for commit. This ensures that only staged files are checked by ESLint, making the process faster.
 
 If any issues are found during these checks, the commit is aborted, and you'll need to fix the issues before committing again.
-
-## Sequelize ORM
-
-We used Sequelize ORM to connect to PostgreSQL database.
-
-### Sample Codes
-
-```javascript
-const user = await User.create({ field: "value" });
-```
-
-```javascript
-const users = await User.findAll();
-```
-
-### Run sample
-
-1. Install dependencies
-
-```bash
-npm install
-```
-
-2. Run sample
-
-```bash
-npm start
-```
