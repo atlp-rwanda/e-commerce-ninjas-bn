@@ -18,7 +18,7 @@ app.use(cors());
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 
 app.get("/", (req: Request, res: Response) => {
-  console.log("Index using PORT: ", PORT)
+  console.log("Index using PORT: ", PORT);
   res
     .status(200)
     .json({ status: true, message: "Welcome To e-Commerce Ninja BackEnd." });
@@ -27,6 +27,5 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
 
 export default app;
