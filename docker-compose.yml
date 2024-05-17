@@ -1,0 +1,26 @@
+version: latest
+
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.nodejs
+    ports:
+      - "5000:5050"
+    env_file:
+      - .env
+    depends_on:
+      - database
+
+
+
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+      args:
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_NAME: ${DB_NAME}
+    ports:
+      - "3000:4000"
