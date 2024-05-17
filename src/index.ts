@@ -21,7 +21,7 @@ app.get("/", (req: Request, res: Response) => {
   console.log("Index using PORT: ", PORT)
   res
     .status(200)
-    .json({ status: true, message: "Welcome To e-Commerce Ninja BackEnd" });
+    .json({ status: true, message: "Welcome To e-Commerce Ninja BackEnd." });
 });
 
 app.listen(PORT, () => {
