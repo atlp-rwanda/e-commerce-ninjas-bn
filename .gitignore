@@ -20,6 +20,9 @@ bin-release/
 #node modules folder
 node_modules/
 
+#dist folder
+dist/
+
 #environment variables
 .env
 coverage
