@@ -3,12 +3,23 @@
   "version": "1.0.0",
   "description": "Backend repo for team projecct",
   "main": "index.js",
+  "lint-staged": {
+    "*.{js,ts,tsx}": "eslint --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
+  },
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "nyc cross-env NODE_ENV=test mocha --require ts-node/register './src/**/*.spec.ts' --timeout 300000 --exit",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
-    "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit"
+    "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit",
+    "lint": "eslint . --ext .ts",
+    "lint-staged": "lint-staged",
+    "prepare": "husky"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -64,6 +75,12 @@
     "@types/morgan": "^1.9.9",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
-    "cross-env": "^7.0.3"
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2"
   }
 }
