@@ -3,12 +3,23 @@
   "version": "1.0.0",
   "description": "Backend repo for team projecct",
   "main": "index.js",
+  "lint-staged": {
+    "*.{js,ts,tsx}": "eslint --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
+  },
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "nyc cross-env NODE_ENV=test mocha --require ts-node/register './src/**/*.spec.ts' --timeout 300000 --exit",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
-    "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit"
+    "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit",
+    "lint": "eslint . --ext .ts",
+    "lint-staged": "lint-staged",
+    "prepare": "husky"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -53,10 +64,10 @@
     "sequelize": "^6.37.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.3.0",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -64,6 +75,12 @@
     "@types/morgan": "^1.9.9",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.9.0"
   }
 }
