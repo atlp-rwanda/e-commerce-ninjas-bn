@@ -18,7 +18,8 @@
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
     "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit",
     "lint": "eslint . --ext .ts",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "prepare": "husky"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
