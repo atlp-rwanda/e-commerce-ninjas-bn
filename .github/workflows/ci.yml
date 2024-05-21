@@ -34,8 +34,8 @@ jobs:
         uses: coverallsapp/github-action@v2
         env:
             PORT: ${{secrets.PORT}}
-            COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
-            CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+            COVERALLS_REPO_TOKEN : ${{secrets.COVERALLS_REPO_TOKEN}}
+            CC_TEST_REPORTER_ID : ${{secrets.CC_TEST_REPORTER_ID}}
             DATABASE_PORT_TEST: ${{secrets.DATABASE_PORT_TEST}}
             DATABASE_HOST_TEST: ${{secrets.DATABASE_HOST_TEST}}
             DATABASE_NAME_TEST: ${{secrets.DATABASE_NAME_TEST}}
