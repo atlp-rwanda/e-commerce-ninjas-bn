@@ -13,7 +13,7 @@ describe("Initial configuration", () => {
             .end((err, res) => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.a("object");
-                expect(res.body).to.have.property("message", "Welcome to the e-Commerce Ninjas BackEnd");
+                expect(res.body).to.have.property("message", "Welcome to the e-Commerce Ninjas BackEnd.");
                 done(err);
             });
     });
