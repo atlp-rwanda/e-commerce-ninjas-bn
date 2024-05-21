@@ -1,11 +1,10 @@
 name: CI
 
 on:
-    pull_request:
-    push:
-      branches:
-        - develop
-
+  pull_request:
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -21,7 +20,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
       - run: npm install
       - run: npm ci
       - run: npm run build --if-present
@@ -34,6 +33,12 @@ jobs:
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         env:
-            PORT: ${{secrets.PORT}}
-            COVERALLS_REPO_TOKEN : ${{secrets.COVERALLS_REPO_TOKEN}}
-            CC_TEST_REPORTER_ID : ${{secrets.CC_TEST_REPORTER_ID}}
+          PORT: ${{secrets.PORT}}
+          COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+          DATABASE_PORT_TEST: ${{secrets.DATABASE_PORT_TEST}}
+          DATABASE_HOST_TEST: ${{secrets.DATABASE_HOST_TEST}}
+          DATABASE_NAME_TEST: ${{secrets.DATABASE_NAME_TEST}}
+          DATABASE_USERNAME_TEST: ${{secrets.DATABASE_USERNAME_TEST}}
+          DATABASE_PASSWORD_TEST: ${{secrets.DATABASE_PASSWORD_TEST}}
+          NODE_ENV: ${{secrets.NODE_ENV}}

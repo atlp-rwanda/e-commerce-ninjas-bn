@@ -6,6 +6,10 @@ interface UsersAttributes {
     lastName: string;
     email: string;
     password: string;
+    phone:number;
+    role: string;
+    isVerified: boolean;
+    status: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -16,6 +20,10 @@ module.exports = (sequelize: Sequelize) => {
         declare firstName: string;
         declare lastName: string;
         declare email: string;
+        declare phone:number;
+        declare role: string;
+        declare isVerified: boolean;
+        declare status: boolean;
         declare password: string;
         declare createdAt: Date;
         declare updatedAt: Date;
@@ -46,6 +54,24 @@ module.exports = (sequelize: Sequelize) => {
             password: {
                 type: new DataTypes.STRING(128),
                 allowNull: false,
+            },
+            phone: {
+                type: new DataTypes.BIGINT,
+                allowNull: false,
+            },
+            role: {
+                type: new DataTypes.STRING(128),
+                allowNull: false,
+            },
+            isVerified: {
+                type: new DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            status: {
+                type: new DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
             },
             createdAt: {
                 field: 'createdAt',
