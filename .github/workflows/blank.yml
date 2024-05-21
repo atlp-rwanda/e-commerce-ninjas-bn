@@ -2,11 +2,12 @@ name: Deploy to Render
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [closed]
 
 jobs:
   main:
     name: Deploy
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Deploy
