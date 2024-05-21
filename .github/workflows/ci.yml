@@ -7,6 +7,14 @@ on:
         - develop
 env:
   PORT: ${{ secrets.PORT }}
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  DATABASE_PORT_TEST: ${{ secrets.DATABASE_PORT_TEST }}
+  DATABASE_HOST_TEST: ${{ secrets.DATABASE_HOST_TEST }}
+  DATABASE_NAME_TEST: ${{ secrets.DATABASE_NAME_TEST }}
+  DATABASE_USERNAME_TEST: ${{ secrets.DATABASE_USERNAME_TEST }}
+  DATABASE_PASSWORD_TEST: ${{ secrets.DATABASE_PASSWORD_TEST }}
 
 jobs:
   build:
@@ -30,10 +38,6 @@ jobs:
       - run: npm run coverage --if-present
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          
