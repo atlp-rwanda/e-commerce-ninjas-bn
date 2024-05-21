@@ -18,14 +18,13 @@ app.use(cors());
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 
 app.get("/", (req: Request, res: Response) => {
-  console.log("Index using PORT: ", PORT)
   res
     .status(200)
-    .json({ status: true, message: "Welcome to the e-Commerce-Ninja BackEnd" });
+    .json({ status: true, message: "Welcome to the e-Commerce Ninjas BackEnd" });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on the port ${PORT}`);
 });
 
 
