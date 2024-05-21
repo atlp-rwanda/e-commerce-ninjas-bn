@@ -5,7 +5,8 @@ on:
     push:
       branches:
         - develop
-
+env:
+  PORT: ${{ secrets.PORT }}
 
 jobs:
   build:
@@ -27,13 +28,12 @@ jobs:
       - run: npm run build --if-present
       - run: npm test --if-present
       - run: npm run coverage --if-present
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         env:
-          PORT : ${{secrets.PORT}}
-          COVERALLS_REPO_TOKEN : ${{secrets.COVERALLS_REPO_TOKEN}}
-          CC_TEST_REPORTER_ID : ${{secrets.CC_TEST_REPORTER_ID}}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
