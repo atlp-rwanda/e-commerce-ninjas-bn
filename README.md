@@ -11,11 +11,11 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 ## HOSTED SERVER URL
 
-[https://e-commerce-ninjas-bn.onrender.com/](https://e-commerce-ninjas-bn.onrender.com/)
+[https://e-commerce-ninjas-backend.onrender.com/](https://e-commerce-ninjas-backend.onrender.com/)
 
 #### Hosted Swagger Documentation
 
-[https://e-commerce-ninjas-bn.onrender.com/api-docs](https://e-commerce-ninjas-bn.onrender.com/api-docs)
+[https://e-commerce-ninjas-backend.onrender.com/api-docs](https://e-commerce-ninjas-backend.onrender.com/api-docs)
 
 #### Github Repository For E-Commerce-Ninjas Backend
 
