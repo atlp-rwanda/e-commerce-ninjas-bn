@@ -20,7 +20,7 @@ app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 app.get("/", (req: Request, res: Response) => {
   res
     .status(200)
-    .json({ status: true, message: "Welcome to the e-Commerce Ninjas BackEnd" });
+    .json({ status: true, message: "Welcome to the e-Commerce Ninjas BackEnd." });
 });
 
 app.listen(PORT, () => {
