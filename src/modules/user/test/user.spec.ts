@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("User Test Cases", () => {
-    let token = "";
+    // let token = "";
     const realEmail = "testinguser@gmail.com";
     const realPassword = "P@ssword123";
 
@@ -15,7 +15,7 @@ describe("User Test Cases", () => {
         router()
             .post("/api/user/login")
             .send({
-                email: realEmail,
+                email: realEmail
             })
             .end((error, response) => {
                 expect(response).to.have.status(400);
@@ -61,7 +61,7 @@ describe("User Test Cases", () => {
             .post("/api/user/login")
             .send({
                 email: realEmail,
-                password: realPassword,
+                password: realPassword
             })
             .end((error, response) => {
                 expect(response).to.have.status(200);
@@ -69,7 +69,7 @@ describe("User Test Cases", () => {
                 expect(response.body).to.have.property("status", true);
                 expect(response.body).to.have.property("message").that.is.an("object");
                 expect(response.body.message).to.have.property("token");
-                token = response.body.message.token;
+                // token = response.body.message.token;
                 done(error);
             });
     });
