@@ -10,6 +10,7 @@ interface UsersAttributes {
     phone:number;
     role: string;
     isVerified: boolean;
+    is2FAEnabled: boolean;
     status: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -24,6 +25,7 @@ module.exports = (sequelize: Sequelize) => {
         declare phone:number;
         declare role: string;
         declare isVerified: boolean;
+        declare is2FAEnabled: boolean;
         declare status: boolean;
         declare password: string;
         declare createdAt: Date;
@@ -65,6 +67,11 @@ module.exports = (sequelize: Sequelize) => {
                 allowNull: false
             },
             isVerified: {
+                type: new DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
+            is2FAEnabled: {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false

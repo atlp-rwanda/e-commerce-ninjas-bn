@@ -1,38 +1,51 @@
-import { QueryInterface  } from "sequelize"
+import { QueryInterface } from "sequelize";
+import bcrypt from "bcrypt";
 
-const userOne = {
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  firstName:"hyassin509",
-  lastName: "assin509",
-  email:"hyassin509@gmail.com",
-  password:"$321!pass!123$",
-  phone:25089767899,
-  role: "buyer"
-}
-const userTwo = {
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  firstName:"aime509",
-  lastName:"aime209",
-  email:"aime509@gmail.com",
-  password:"$321!pass!123$",
-  phone:25089767899,
-  role: "buyer"
+const encryptPassword = async (password: string) =>{
+  return await bcrypt.hash(password, 10);
 }
 
-const userThree = {
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  firstName:"paccy509",
-  lastName:"paccy209",
-  email:"paccy509@gmail.com",
-  password:"$321!pass!123$",
-  phone:25089767899,
-  role: "buyer"
-}
+const users = [
+  {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    firstName: "testUser",
+    lastName: "DemoUser",
+    email: "testinguser@gmail.com",
+    password: "",
+    phone: 25089767899,
+    role: "buyer"
+  },
+  {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    firstName: "aime509",
+    lastName: "aime209",
+    email: "aime509@gmail.com",
+    password: "",
+    phone: 25089767899,
+    role: "buyer"
+  },
+  {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    firstName: "paccy509",
+    lastName: "paccy209",
+    email: "paccy509@gmail.com",
+    password: "",
+    phone: 25089767899,
+    role: "buyer"
+  }
+];
 
-const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree])
+const up = async (queryInterface: QueryInterface) => {
+  for (let user of users) {
+    user.password = await encryptPassword("P@ssword123");
+  }
+  return queryInterface.bulkInsert("users", users);
+};
 
-const down = (queryInterface: QueryInterface) => queryInterface.bulkDelete("users",[])
-export { up, down }
+const down = (queryInterface: QueryInterface) =>
+  queryInterface.bulkDelete("users", []);
+
+export { up, down };
