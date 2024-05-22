@@ -1,4 +1,4 @@
-import db  from '../../../databases/models'
+import db  from "../../../databases/models"
 
 const { Users } = db;
 

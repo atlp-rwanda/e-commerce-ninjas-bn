@@ -17,7 +17,7 @@ app.use(morgan(process.env.NODE_ENV));
 app.use(compression());
 app.use(cors());
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
-app.use('/api', router)
+app.use("/api", router)
 app.get("/", (req: Request, res: Response) => {
   res
     .status(200)

@@ -29,6 +29,9 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Integrate CircleCI, CodeClimate, Test coverage and HoundCI
 - Link PivotalTracker with Github
 - Setup unit testing
+- Setup database with PostgreSQL and Sequelize ORM
+- Deploy backend to render
+- Login user
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -36,6 +39,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | No | VERBS | ENDPOINTS | STATUS | ACCESS | DESCRIPTION         |
 |----|-------|-----------|--------|--------|-------------------- |
 | 1  | GET   | /         | 200 OK | public | Show welcome message|
+| 2  | POST  | /api/user/login  | 200 OK | public | Login with email & password |
 
 
 
