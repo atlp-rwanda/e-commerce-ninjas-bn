@@ -92,6 +92,11 @@ module.exports = (sequelize: Sequelize) => {
             tableName: "users",
             timestamps: true,
             modelName:"Users"
+            // hooks: {
+            //     beforeCreate: async (user) => {
+            //       user.password = await bcrypt.hash(user.password, 10);
+            //     }
+            //   }
         }
     );
 

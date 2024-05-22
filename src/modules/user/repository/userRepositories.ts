@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // user repositories
-import db from '../../../databases/models/index'
+import db from "../../../databases/models/index"
 const {Users} = db
 
 const registerUser = async (body:any) =>{
