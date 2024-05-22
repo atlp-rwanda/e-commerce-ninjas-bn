@@ -83,3 +83,40 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 
 
+
+## Initialize Sequelize CLI
+
+1. Initialize Sequelize CLI:
+    ```sh
+    npx sequelize-cli init
+    ```
+2. Generate Seeder:
+    ```sh
+    npx sequelize-cli seed:generate --name name-of-your-seeder
+    ```
+3. Generate Migrations:
+    ```sh
+    npx sequelize-cli migration:generate --name name-of-your-migration
+    ```
+4. Define Migration:
+    Edit the generated migration file to include the tables you want to create.
+5. Define Seeder Data:
+    Edit the generated seeder file to include the data you want to insert.
+6. Run the Seeder:
+    ```sh
+    npm run createAllSeeders
+    ```
+7. Run the Migration:
+    ```sh
+    npm run createAllTables
+    ```
+8. Delete the Seeder:
+    ```sh
+    npm run deleteAllSeeders
+    ```
+9. Delete the Migration:
+    ```sh
+    npm run deleteAllTables
+    ```
+
+

@@ -7,7 +7,7 @@ const router = () => chai.request(app)
 
 describe("Initial configuration", () => {
 
-    it("Should retutn `Welcome to the e-Commerce Ninjas BackEnd.` when GET on /", (done) => {
+    it("Should return `Welcome to the e-Commerce-Ninja BackEnd` when GET on /", (done) => {
         router()
             .get("/")
             .end((err, res) => {

@@ -43,7 +43,7 @@
         "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
-            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd)"
+            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
           }
         }
       }
