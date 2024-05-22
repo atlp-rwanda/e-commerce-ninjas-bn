@@ -2,18 +2,18 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "E-commerce-***REMOVED***",
-    "description": "APIs for the E-commmerce-***REMOVED***  Project",
-    "termsOfService": "https://github.com/atlp-rwanda/e-commerce-***REMOVED***-bn/blob/develop/README.md",
+    "title": "E-commerce-ninjas",
+    "description": "APIs for the E-commmerce-ninjas  Project",
+    "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
-      "email": "e-commerce-***REMOVED***@andela.com"
+      "email": "e-commerce-ninjas@andela.com"
     },
     "license": {
       "name": "ISC"
     }
   },
   "host-live": "localhost:5000",
-  "host": "https://e-commerce-***REMOVED***-bn.onrender.com",
+  "host": "https://e-commerce-ninjas-bn.onrender.com",
   "basePath": "/api",
   "tags": [
     {
@@ -43,7 +43,7 @@
         "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
-            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd)"
+            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
           }
         }
       }
