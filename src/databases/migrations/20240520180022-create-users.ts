@@ -37,6 +37,11 @@ export default {
         allowNull: false,
         defaultValue: false
       },
+      is2FAEnabled: {
+        type: new DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       status: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
