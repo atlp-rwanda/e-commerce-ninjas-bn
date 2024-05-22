@@ -1,5 +1,5 @@
 {
-  "name": "e-commerce-***REMOVED***-bn",
+  "name": "e-commerce-ninjas",
   "version": "1.0.0",
   "description": "Backend repo for team projecct",
   "main": "index.js",
@@ -16,8 +16,8 @@
     "createAllSeeders": "tsc && npx sequelize db:seed:all",
     "deleteAllTables": "tsc && npx sequelize db:migrate:undo:all",
     "deleteAllSeeders": "tsc && npx sequelize db:seed:undo:all",
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon src/index.ts",
+    "start": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc mocha --require ts-node/register './src/**/*.spec.ts' --timeout 300000 --exit",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
     "coverage": "nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 300000 --exit",
@@ -72,6 +72,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {

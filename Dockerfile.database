@@ -1,1 +1,1 @@
-FROM ***REMOVED***:latest
+FROM postgres:latest
