@@ -1,4 +1,5 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+/* eslint-disable require-jsdoc */
+import { Model, DataTypes, Sequelize } from "sequelize";
 
 interface UsersAttributes {
     id: number;
@@ -37,60 +38,60 @@ module.exports = (sequelize: Sequelize) => {
             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
-                primaryKey: true,
+                primaryKey: true
             },
             firstName: {
                 type: new DataTypes.STRING(128),
-                allowNull: false,
+                allowNull: false
             },
             lastName: {
                 type: new DataTypes.STRING(128),
-                allowNull: false,
+                allowNull: false
             },
             email: {
                 type: new DataTypes.STRING(128),
-                allowNull: false,
+                allowNull: false
             },
             password: {
                 type: new DataTypes.STRING(128),
-                allowNull: false,
+                allowNull: false
             },
             phone: {
                 type: new DataTypes.BIGINT,
-                allowNull: false,
+                allowNull: false
             },
             role: {
                 type: new DataTypes.STRING(128),
-                allowNull: false,
+                allowNull: false
             },
             isVerified: {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: false,
+                defaultValue: false
             },
             status: {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: false,
+                defaultValue: false
             },
             createdAt: {
-                field: 'createdAt',
+                field: "createdAt",
                 type: DataTypes.DATE,
                 allowNull: false,
-                defaultValue: DataTypes.NOW,
+                defaultValue: DataTypes.NOW
             },
             updatedAt: {
-                field: 'updatedAt',
+                field: "updatedAt",
                 type: DataTypes.DATE,
                 allowNull: false,
-                defaultValue: DataTypes.NOW,
+                defaultValue: DataTypes.NOW
             }
         },
         {
             sequelize,
-            tableName: 'users',
+            tableName: "users",
             timestamps: true,
-            modelName:'Users',
+            modelName:"Users"
         }
     );
 

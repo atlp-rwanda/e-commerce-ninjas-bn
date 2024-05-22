@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile.database
     ports:
-      - "***REMOVED***:***REMOVED***"
+      - "5432:5432"
     environment:
       DATABASE_USER: ${DOCKER_DATABASE_USER}
       DATABASE_NAME: ${DOCKER_DATABASE_NAME}
