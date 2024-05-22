@@ -6,41 +6,41 @@ export default {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true
       },
       firstName: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: false
       },
       lastName: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: false
       },
       email: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: false
       },
       password: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: false
       },
       phone: {
         type: new DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: false
       },
       role: {
         type: new DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: false
       },
       isVerified: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false,
+        defaultValue: false
       },
       status: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
@@ -51,11 +51,11 @@ export default {
         allowNull: false,
         type: DataTypes.DATE,
         defaultValue: DataTypes.DATE
-      },
+      }
     });
   },
 
   down: async (queryInterface: QueryInterface) => {
     await queryInterface.dropTable("users");
-  },
+  }
 };
