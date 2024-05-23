@@ -112,7 +112,7 @@ module.exports = (sequelize: Sequelize) => {
             status: {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: false
+                defaultValue: true
             },
             createdAt: {
                 field: "createdAt",
