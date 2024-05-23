@@ -1,4 +1,3 @@
-// user validations
 import Joi from "joi";
 
 interface User {
@@ -15,7 +14,7 @@ interface User {
     role: "buyer" | "seller" | "admin";
 }
 
-const userSchema = Joi.object<User>({
+const authSchema = Joi.object<User>({
     firstName: Joi.string().required().messages({
         "string.base": "First name should be a type of text",
         "string.empty": "First name cannot be an empty field",
@@ -74,4 +73,4 @@ const userSchema = Joi.object<User>({
     })
 });
 
-export {userSchema};
+export {authSchema};
