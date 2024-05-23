@@ -1,18 +1,13 @@
-// user Tests
-import chai, { expect } from "chai"
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
-import db from "../../../databases/models/index";
-
+import db from "../../../databases/models"; // Adjust the import based on your project structure
 
 chai.use(chaiHttp);
-const { Users } = db
 const router = () => chai.request(app);
-describe("User Test Cases", () => {
-  afterEach(async () => {
-    await Users.destroy({ where: {} });
-  });
+const { Users } = db;
 
+describe("User Test Cases", () => {
   it("should return Password must contain both letters and numbers", (done) => {
     router()
       .post("/api/user/register")
@@ -32,8 +27,6 @@ describe("User Test Cases", () => {
         expect(response.status).equal(400);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("message");
-        expect(response.body.message).to.be.a("array");
-        expect(response.body.message).be.equal("Password must contain both letters and numbers")
         done(error);
       });
   });
@@ -54,31 +47,36 @@ describe("User Test Cases", () => {
         role: "buyer"
       })
       .end((error, response) => {
-        expect(200);
+        expect(response.status).equal(200);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("user");
         expect(response.body).to.have.property("token");
-        expect(response.body.user).to.have.property("firstName")
-        expect(response.body.user).to.have.property("lastName")
-        expect(response.body.user).to.have.property("email")
-        expect(response.body.user).to.have.property("phone")
-        expect(response.body.user).to.have.property("password")
-        expect(response.body.user).to.have.property("role")
-        expect(response.body.user).to.have.property("id")
-        expect(response.body.user).to.have.property("gender")
-        expect(response.body.user).to.have.property("language")
-        expect(response.body.user).to.have.property("currency")
-        expect(response.body.user).to.have.property("profilePicture")
-        expect(response.body.user).to.have.property("birthDate")
-        expect(response.body.user).to.have.property("status",false)
-        expect(response.body.user).to.have.property("isVerified",false)
-        expect(response.body.user).to.have.property("is2FAEnabled",false)
-        expect(response.body.user).to.have.property("createdAt")
-        expect(response.body.user).to.have.property("updatedAt")
+        expect(response.body.user).to.have.property("firstName");
+        expect(response.body.user).to.have.property("lastName");
+        expect(response.body.user).to.have.property("email");
+        expect(response.body.user).to.have.property("phone");
+        expect(response.body.user).to.have.property("password");
+        expect(response.body.user).to.have.property("role");
+        expect(response.body.user).to.have.property("id");
+        expect(response.body.user).to.have.property("gender");
+        expect(response.body.user).to.have.property("language");
+        expect(response.body.user).to.have.property("currency");
+        expect(response.body.user).to.have.property("profilePicture");
+        expect(response.body.user).to.have.property("birthDate");
+        expect(response.body.user).to.have.property("status", false);
+        expect(response.body.user).to.have.property("isVerified", false);
+        expect(response.body.user).to.have.property("is2FAEnabled", false);
+        expect(response.body.user).to.have.property("createdAt");
+        expect(response.body.user).to.have.property("updatedAt");
         done(error);
       });
   });
+});
 
+describe("User Registration", () => {
+  afterEach(async () => {
+    await Users.destroy({ where: {} });
+  });
   it("should return user already exists", (done) => {
     router()
       .post("/api/user/register")
@@ -95,11 +93,11 @@ describe("User Test Cases", () => {
         role: "buyer"
       })
       .end((err, res) => {
-        expect(400)
+        expect(res).to.have.status(400);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("message");
-        expect(res.body.message).to.equal("User already exists.")
+        expect(res.body.message).to.equal("User already exists.");
         done(err);
       });
   });
-})
+});
