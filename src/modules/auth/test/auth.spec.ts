@@ -1,8 +1,12 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
+import sinon from "sinon";
+import httpStatus from "http-status";
 import app from "../../..";
-import db from "../../../databases/models"; // Adjust the import based on your project structure
-
+import db from "../../../databases/models";
+import { isAccountExist } from "../../../middlewares/validation";
+import authRepositories from "../repository/authRepositories";
+import { Request, Response } from "express";
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 const { Users } = db;
@@ -10,7 +14,7 @@ const { Users } = db;
 describe("User Test Cases", () => {
   it("should return Password must contain both letters and numbers", (done) => {
     router()
-      .post("/api/user/register")
+      .post("/api/auth/register")
       .send({
         firstName: "TestUser",
         lastName: "TestUser",
@@ -33,7 +37,7 @@ describe("User Test Cases", () => {
 
   it("Should be able to register new user", (done) => {
     router()
-      .post("/api/user/register")
+      .post("/api/auth/register")
       .send({
         firstName: "TestUser",
         lastName: "TestUser",
@@ -73,19 +77,75 @@ describe("User Test Cases", () => {
   });
 });
 
-describe("User Registration", () => {
+describe("isAccountExist Middleware", () => {
+
+  before(() => {
+    app.post("/auth/register", isAccountExist, (req: Request, res: Response) => {
+      res.status(200).json({ message: "success" });
+    });
+  });
+
   afterEach(async () => {
+    sinon.restore();
     await Users.destroy({ where: {} });
   });
+
   it("should return user already exists", (done) => {
+    const mockUser = { email: "usertesting@gmail.com" };
+    sinon.stub(authRepositories, "findUserByEmail").resolves(mockUser);
     router()
-      .post("/api/user/register")
+      .post("/auth/register")
+      .send({ email: "usertesting@gmail.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "User already exists.");
+        done(err);
+      });
+  });
+
+  it("should return internal server error", (done) => {
+    sinon.stub(authRepositories, "findUserByEmail").throws(new Error("Database error"));
+    router()
+      .post("/auth/register")
+      .send({ email: "usertesting@gmail.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message");
+        done(err);
+      });
+  });
+
+  it("should call next if user does not exist", (done) => {
+    sinon.stub(authRepositories, "findUserByEmail").resolves(null);
+
+    router()
+      .post("/auth/register")
+      .send({ email: "newuser@gmail.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "success");
+        done(err);
+      });
+  });
+});
+
+describe("Register User Error Handling", () => {
+  it("should return internal server error if userRepositories.registerUser throws an error", (done) => {
+    const registerUserStub = sinon.stub(authRepositories, "registerUser").throws(new Error("Test Error"));
+
+    chai.request(app)
+      .post("/api/auth/register")
       .send({
-        firstName: "TestUser",
-        lastName: "TestUser",
-        email: "usertesting@gmail.com",
+        firstName: "John",
+        lastName: "Doe",
+        email: "john.doe@example.com",
         phone: 123456789,
-        password: "TestUser123",
+        password: "Password123",
         gender: "male",
         language: "English",
         currency: "USD",
@@ -93,11 +153,14 @@ describe("User Registration", () => {
         role: "buyer"
       })
       .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message");
-        expect(res.body.message).to.equal("User already exists.");
-        done(err);
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.be.a("object");
+        expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("error");
+        expect(res.body.error).to.have.property("error", "Test Error");
+        registerUserStub.restore();
+
+        done();
       });
   });
 });
