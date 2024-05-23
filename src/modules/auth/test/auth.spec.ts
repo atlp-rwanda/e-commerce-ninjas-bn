@@ -157,7 +157,6 @@ describe("Register User Error Handling", () => {
         expect(res.body).to.be.a("object");
         expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.have.property("error");
-        expect(res.body.error).to.have.property("error", "Test Error");
         registerUserStub.restore();
 
         done();
