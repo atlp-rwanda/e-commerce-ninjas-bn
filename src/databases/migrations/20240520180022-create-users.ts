@@ -75,7 +75,7 @@ export default {
       status: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false
+        defaultValue: true
       },
       createdAt: {
         allowNull: false,
