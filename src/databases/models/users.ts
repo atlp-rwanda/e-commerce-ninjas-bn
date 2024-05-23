@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
+import bcrypt from "bcrypt";
 
 interface UsersAttributes {
     id: number;
@@ -7,9 +9,15 @@ interface UsersAttributes {
     lastName: string;
     email: string;
     password: string;
-    phone:number;
+    phone: number;
+    profilePicture: string;
+    gender: string;
+    birthDate: string;
+    language: string;
+    currency: string;
     role: string;
     isVerified: boolean;
+    is2FAEnabled: boolean;
     status: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -21,16 +29,21 @@ module.exports = (sequelize: Sequelize) => {
         declare firstName: string;
         declare lastName: string;
         declare email: string;
-        declare phone:number;
+        declare phone: number;
+        declare profilePicture: string;
+        declare gender: string;
+        declare birthDate: string;
+        declare language: string;
+        declare currency: string;
         declare role: string;
         declare isVerified: boolean;
+        declare is2FAEnabled: boolean;
         declare status: boolean;
         declare password: string;
         declare createdAt: Date;
         declare updatedAt: Date;
 
         // Define any static methods or associations here
-
     }
 
     Users.init(
@@ -54,10 +67,32 @@ module.exports = (sequelize: Sequelize) => {
             },
             password: {
                 type: new DataTypes.STRING(128),
-                allowNull: false
+                allowNull: false,
+                defaultValue: "url"
             },
             phone: {
                 type: new DataTypes.BIGINT,
+                allowNull: false
+            },
+            profilePicture: {
+                type: new DataTypes.STRING,
+                allowNull: false,
+                defaultValue: "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
+            },
+            gender: {
+                type: new DataTypes.ENUM("male", "female"),
+                allowNull: false
+            },
+            birthDate: {
+                type: new DataTypes.DATEONLY,
+                allowNull: false
+            },
+            language: {
+                type: new DataTypes.STRING(128),
+                allowNull: false
+            },
+            currency: {
+                type: new DataTypes.STRING(128),
                 allowNull: false
             },
             role: {
@@ -65,6 +100,11 @@ module.exports = (sequelize: Sequelize) => {
                 allowNull: false
             },
             isVerified: {
+                type: new DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
+            is2FAEnabled: {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false
@@ -91,12 +131,12 @@ module.exports = (sequelize: Sequelize) => {
             sequelize,
             tableName: "users",
             timestamps: true,
-            modelName:"Users"
-            // hooks: {
-            //     beforeCreate: async (user) => {
-            //       user.password = await bcrypt.hash(user.password, 10);
-            //     }
-            //   }
+            modelName: "Users",
+            hooks: {
+                beforeCreate: async (user) => {
+                    user.password = await bcrypt.hash(user.password, 10);
+                }
+            }
         }
     );
 

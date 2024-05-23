@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// user repositories
 import db from "../../../databases/models/index"
 const {Users} = db
 
 const registerUser = async (body:any) =>{
-    const user = await Users.create(body)
-    return user;
+    return await Users.create(body)
 }
 
-const getUserByEmail = async (email:string) =>{
-    const user = await Users.findOne({ where: { email: email} })
-    return user;
+const findUserByEmail = async (email:string) =>{
+    return await Users.findOne({ where: { email: email} })
 }
 
-export default {registerUser, getUserByEmail}
+
+export default {registerUser, findUserByEmail}
