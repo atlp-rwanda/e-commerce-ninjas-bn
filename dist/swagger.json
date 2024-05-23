@@ -1,0 +1,52 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "E-commerce-ninjas",
+        "description": "APIs for the E-commmerce-ninjas  Project",
+        "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
+        "contact": {
+            "email": "e-commerce-ninjas@andela.com"
+        },
+        "license": {
+            "name": "ISC"
+        }
+    },
+    "host-live": "localhost:5000",
+    "host": "https://e-commerce-ninjas-bn.onrender.com",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "Initial Route",
+            "description": "Initial/Fake Endpoint | GET Route"
+        }
+    ],
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "consumes": [
+        "application/json",
+        "none"
+    ],
+    "produces": [
+        "application/json",
+        "none"
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "Initial Route"
+                ],
+                "summary": "Handle Intial / Wrong GET Route)",
+                "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
+                "responses": {
+                    "200": {
+                        "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
+                    }
+                }
+            }
+        }
+    }
+}
