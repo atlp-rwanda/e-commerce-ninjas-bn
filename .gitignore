@@ -25,5 +25,4 @@ node_modules/
 coverage
 .nyc_output
 .vscode
-dist
 .cache_ggshield
