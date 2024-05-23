@@ -63,7 +63,7 @@ describe("User Test Cases", () => {
         expect(response.body.user).to.have.property("currency");
         expect(response.body.user).to.have.property("profilePicture");
         expect(response.body.user).to.have.property("birthDate");
-        expect(response.body.user).to.have.property("status", false);
+        expect(response.body.user).to.have.property("status", true);
         expect(response.body.user).to.have.property("isVerified", false);
         expect(response.body.user).to.have.property("is2FAEnabled", false);
         expect(response.body.user).to.have.property("createdAt");
