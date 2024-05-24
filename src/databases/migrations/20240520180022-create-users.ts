@@ -2,6 +2,7 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 export default {
   up: async (queryInterface: QueryInterface) => {
+    // Check if the enum type for gender exists and create it if not
     const [results] = await queryInterface.sequelize.query(
       "SELECT 1 FROM pg_type WHERE typname = 'enum_users_gender';"
     );
@@ -11,6 +12,7 @@ export default {
       );
     }
 
+    // Create the users table with the necessary fields
     await queryInterface.createTable("users", {
       id: {
         type: DataTypes.INTEGER,
@@ -76,6 +78,18 @@ export default {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
+      },
+      resetPasswordToken: {
+        type: new DataTypes.STRING,
+        allowNull: true
+      },
+      resetPasswordExpires: {
+        type: new DataTypes.DATE,
+        allowNull: true
+      },
+      lastPasswordChange: { // New field
+        type: new DataTypes.DATE,
+        allowNull: true // Change to false if necessary
       },
       createdAt: {
         allowNull: false,
