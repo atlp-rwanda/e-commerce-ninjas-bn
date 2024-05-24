@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 
 interface TokenAttributes {
@@ -26,42 +27,42 @@ module.exports = (sequelize: Sequelize) => {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true
       },
       userId: {
         type: new DataTypes.INTEGER(),
-        allowNull: false,
+        allowNull: false
       },
       device: {
         type: new DataTypes.STRING(280),
-        allowNull: false,
+        allowNull: false
       },
       accessToken: {
         type: new DataTypes.STRING(280),
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
         field: "createdAt",
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW
       },
       updatedAt: {
         field: "updatedAt",
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW
       },
       expiresAt: {
         type: DataTypes.DATE,
-        allowNull: false,
-      },
+        allowNull: false
+      }
     },
     {
       sequelize,
       tableName: "tokens",
       timestamps: true,
-      modelName: "Tokens",
+      modelName: "Tokens"
     }
   );
 
