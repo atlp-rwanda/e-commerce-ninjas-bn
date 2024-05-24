@@ -1,10 +1,10 @@
 import { Router } from "express";
 import validation from "../middlewares/validation";
-import userValidations from "../modules/user/validation/userValidations";
-import { loginUser } from "../modules/user/controller/userControllers";
+import { login } from "../modules/auth/validation/authValidations";
+import { loginUser } from "../modules/auth/controller/authControllers";
 
 const userRoutes = Router();
 
-userRoutes.post("/login", validation(userValidations.login), loginUser);
+userRoutes.post("/login", validation(login), loginUser);
 
 export default userRoutes;

@@ -5,11 +5,9 @@ import chai, { expect } from "chai";
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
-describe("User Test Cases", () => {
-    // let token = "";
+describe("Auth Test Cases", () => {
     const realEmail = "testinguser@gmail.com";
-    const realPassword = "P@ssword123";
-
+    const realPassword = "testingpassword";
 
     it("Should return validation error when no email or password given", (done) => {
         router()
@@ -29,8 +27,8 @@ describe("User Test Cases", () => {
         router()
             .post("/api/user/login")
             .send({
-                email: "fakeEmail@gmail.com",
-                password: "fakeP@ssword@123"
+                email: "fakeemail@gmail.com",
+                password: "fakepassword"
             })
             .end((error, response) => {
                 expect(response).to.have.status(400);
@@ -45,7 +43,7 @@ describe("User Test Cases", () => {
             .post("/api/user/login")
             .send({
                 email: realEmail,
-                password: "fakeP@ssword@123"
+                password: "fakepassword"
             })
             .end((error, response) => {
                 expect(response).to.have.status(400);
@@ -69,7 +67,6 @@ describe("User Test Cases", () => {
                 expect(response.body).to.have.property("status", true);
                 expect(response.body).to.have.property("message").that.is.an("object");
                 expect(response.body.message).to.have.property("token");
-                // token = response.body.message.token;
                 done(error);
             });
     });

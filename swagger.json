@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
-    "description": "APIs for the E-commmerce-ninjas  Project",
+    "description": "APIs for the E-commmerce-ninjas Project",
     "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
       "email": "e-commerce-ninjas@andela.com"
@@ -39,11 +39,51 @@
         "tags": [
           "Initial Route"
         ],
-        "summary": "Handle Intial / Wrong GET Route)",
+        "summary": "Handle Initial / Wrong GET Route",
         "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
             "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Login User",
+        "description": "Login a registered user by providing Email and Password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "yourpassword"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Invalid credentials / Bad request"
           }
         }
       }

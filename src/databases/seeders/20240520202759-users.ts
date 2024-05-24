@@ -40,7 +40,7 @@ const users = [
 
 const up = async (queryInterface: QueryInterface) => {
   for (const user of users) {
-    user.password = await encryptPassword("P@ssword123");
+    user.password = await encryptPassword("testingpassword");
   }
   return queryInterface.bulkInsert("users", users);
 };

@@ -1,17 +1,19 @@
+import { IToken } from "../../../../types";
 import db  from "../../../databases/models"
 
-const { Users } = db;
+const { Users, Tokens } = db;
 
 const findUserByEmail = async (email: string) => {
     return await Users.findAll({
         where: { email }
     });
 }
-const getAllUsers = async () => {
-    return await Users.findAll();
+
+const addToken = async (body: IToken) =>{
+    return await Tokens.create(body);
 }
 
 export {
     findUserByEmail,
-    getAllUsers
+    addToken
 }
