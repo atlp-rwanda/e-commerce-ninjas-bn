@@ -9,10 +9,9 @@ module.exports = {
         host: process.env.DATABASE_HOST_TEST,
         database: process.env.DATABASE_NAME_TEST,
         username: process.env.DATABASE_USERNAME_TEST,
-        password: process.env.DATABASE_PASSWORD_TEST,
+        password:  process.env.DATABASE_PASSWORD_TEST,
         dialectOptions: {
             ssl: {
-                require: true, 
                 rejectUnauthorized: true
             }
         }

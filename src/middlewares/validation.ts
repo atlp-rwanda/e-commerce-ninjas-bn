@@ -20,7 +20,7 @@ const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: R
 };
 
 
-const isAccountExist = async (req: Request, res: Response, next: NextFunction) => {
+const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const email:string = req.body.email
     const userExists:UsersAttributes = await authRepositories.findUserByEmail(email);
@@ -34,4 +34,4 @@ const isAccountExist = async (req: Request, res: Response, next: NextFunction) =
     
 }
 
-export {validation,isAccountExist};
+export {validation,isUserExist};

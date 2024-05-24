@@ -16,60 +16,60 @@ interface User {
 
 const authSchema = Joi.object<User>({
     firstName: Joi.string().required().messages({
-        "string.base": "First name should be a type of text",
-        "string.empty": "First name cannot be an empty field",
-        "any.required": "First name is required"
+        "string.base": "firstName should be a type of text",
+        "string.empty": "firstName cannot be an empty field",
+        "any.required": "firstName is required"
     }),
     lastName: Joi.string().required().messages({
-        "string.base": "Last name should be a type of text",
-        "string.empty": "Last name cannot be an empty field",
-        "any.required": "Last name is required"
+        "string.base": "lastName should be a type of text",
+        "string.empty": "lastName cannot be an empty field",
+        "any.required": "lastName is required"
     }),
     email: Joi.string().email().required().messages({
-        "string.base": "Email should be a type of text",
-        "string.email": "Email must be a valid email",
-        "string.empty": "Email cannot be an empty field",
-        "any.required": "Email is required"
+        "string.base": "email should be a type of text",
+        "string.email": "email must be a valid email",
+        "string.empty": "email cannot be an empty field",
+        "any.required": "email is required"
     }),
     password: Joi.string().min(8).pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required().messages({
-        "string.base": "Password should be a type of text",
-        "string.empty": "Password cannot be an empty field",
-        "string.min": "Password should have a minimum length of 8",
-        "string.pattern.base": "Password must contain both letters and numbers",
-        "any.required": "Password is required"
+        "string.base": "password should be a type of text",
+        "string.empty": "password cannot be an empty field",
+        "string.min": "password should have a minimum length of 8",
+        "string.pattern.base": "password must contain both letters and numbers",
+        "any.required": "password is required"
     }),
     phone: Joi.number().required().messages({
-        "number.base": "Phone number should be a type of number",
-        "any.required": "Phone number is required"
+        "number.base": "phone number should be a type of number",
+        "any.required": "phone number is required"
     }),
     profilePicture: Joi.string().uri().optional().messages({
-        "string.base": "Profile picture should be a type of text",
-        "string.uri": "Profile picture must be a valid URI"
+        "string.base": "profilePicture should be a type of text",
+        "string.uri": "profilePicture must be a valid URI"
     }),
     gender: Joi.string().valid("male", "female", "other").required().messages({
-        "string.base": "Gender should be a type of text",
-        "any.only": "Gender must be one of [male, female, other]",
-        "any.required": "Gender is required"
+        "string.base": "gender should be a type of text",
+        "any.only": "gender must be one of [male, female, other]",
+        "any.required": "gender is required"
     }),
     birthDate: Joi.date().iso().required().messages({
-        "date.base": "Birth date should be a valid date",
-        "date.iso": "Birth date must be in ISO format",
-        "any.required": "Birth date is required"
+        "date.base": "birthDate should be a valid date",
+        "date.iso": "birthDate must be in ISO format",
+        "any.required": "birthDate is required"
     }),
     language: Joi.string().required().messages({
-        "string.base": "Language should be a type of text",
-        "string.empty": "Language cannot be an empty field",
-        "any.required": "Language is required"
+        "string.base": "language should be a type of text",
+        "string.empty": "language cannot be an empty field",
+        "any.required": "language is required"
     }),
     currency: Joi.string().required().messages({
-        "string.base": "Currency should be a type of text",
-        "string.empty": "Currency cannot be an empty field",
-        "any.required": "Currency is required"
+        "string.base": "currency should be a type of text",
+        "string.empty": "currency cannot be an empty field",
+        "any.required": "currency is required"
     }),
     role: Joi.string().valid("buyer", "seller", "admin").required().messages({
-        "string.base": "Role should be a type of text",
-        "any.only": "Role must be one of [buyer, seller, admin]",
-        "any.required": "Role is required"
+        "string.base": "role should be a type of text",
+        "any.only": "role must be one of [buyer, seller, admin]",
+        "any.required": "role is required"
     })
 });
 
