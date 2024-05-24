@@ -75,7 +75,7 @@ module.exports = (sequelize: Sequelize) => {
                 allowNull: false
             },
             profilePicture: {
-                type: new DataTypes.STRING,
+                type: new DataTypes.STRING(128),
                 allowNull: false,
                 defaultValue: "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
             },

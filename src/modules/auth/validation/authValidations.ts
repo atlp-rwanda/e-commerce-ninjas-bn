@@ -31,21 +31,21 @@ const authSchema = Joi.object<User>({
         "string.empty": "email cannot be an empty field",
         "any.required": "email is required"
     }),
-    password: Joi.string().min(8).pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required().messages({
+    password: Joi.string().min(8).pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")).required().messages({
         "string.base": "password should be a type of text",
         "string.empty": "password cannot be an empty field",
         "string.min": "password should have a minimum length of 8",
-        "string.pattern.base": "password must contain both letters and numbers",
+        "string.pattern.base": "password must contain letters, numbers, and special characters",
         "any.required": "password is required"
     }),
     phone: Joi.number().required().messages({
         "number.base": "phone number should be a type of number",
         "any.required": "phone number is required"
     }),
-    profilePicture: Joi.string().uri().optional().messages({
-        "string.base": "profilePicture should be a type of text",
-        "string.uri": "profilePicture must be a valid URI"
-    }),
+    // profilePicture: Joi.string().uri().optional().messages({
+    //     "string.base": "profilePicture should be a type of text",
+    //     "string.uri": "profilePicture must be a valid URI"
+    // }),
     gender: Joi.string().valid("male", "female", "other").required().messages({
         "string.base": "gender should be a type of text",
         "any.only": "gender must be one of [male, female, other]",

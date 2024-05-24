@@ -63,43 +63,58 @@
           "description": "User registration details",
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "in":"formData"
                   },
                   "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "in":"formData"
                   },
                   "email": {
                     "type": "string",
-                    "format": "email"
+                    "format": "email",
+                    "in":"formData"
                   },
                   "password": {
                     "type": "string",
-                    "format": "password"
+                    "format": "password",
+                    "in":"formData"
                   },
                   "phone": {
-                    "type": "string"
+                    "type": "number",
+                    "in":"formData"
+                  },
+                  "profilePicture":{
+                    "type": "string",
+                    "format": "binary",
+                    "in":"formData"
                   },
                   "gender": {
                     "type": "string",
-                    "enum": ["male", "female"]
+                    "enum": ["male", "female"],
+                    "in":"formData"
                   },
                   "birthDate": {
                     "type": "string",
                     "format": "date"
+                    
                   },
                   "language": {
-                    "type": "string"
+                    "type": "string",
+                    "in":"formData"
                   },
                   "currency": {
-                    "type": "string"
+                    "type": "string",
+                    "in":"formData"
                   },
                   "role": {
-                    "type": "string"
+                    "type": "string",
+                    "in":"formData"
                   }
                 },
                 "required": ["firstName", "lastName", "email", "password", "phone", "gender", "birthDate", "language", "currency", "role"]
