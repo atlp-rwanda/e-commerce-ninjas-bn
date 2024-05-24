@@ -17,6 +17,7 @@ env:
   DATABASE_PASSWORD_TEST: ${{ secrets.DATABASE_PASSWORD_TEST }}
   DATABASE_URL_TEST : ${{ secrets.DATABASE_URL_TEST }}
   NODE_EN: ${{ secrets.NODE_EN }}
+  DATABASE_URL_PRO: ${{ secrets.DATABASE_URL_PRO }}
 
 jobs:
   build:
