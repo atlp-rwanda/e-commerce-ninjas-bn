@@ -39,7 +39,7 @@ export default {
         allowNull: false
       },
       profilePicture: {
-        type: new DataTypes.STRING,
+        type: new DataTypes.STRING(128),
         allowNull: false
       },
       gender: {
