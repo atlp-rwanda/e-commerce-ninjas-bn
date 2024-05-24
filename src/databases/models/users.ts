@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 import bcrypt from "bcrypt";
 
@@ -19,6 +17,9 @@ export interface UsersAttributes {
     isVerified: boolean;
     is2FAEnabled: boolean;
     status: boolean;
+    resetPasswordToken?: string;  
+    resetPasswordExpires?: Date;  
+    lastPasswordChange?: Date; 
     createdAt: Date;
     updatedAt: Date;
 }
@@ -40,10 +41,12 @@ module.exports = (sequelize: Sequelize) => {
         declare is2FAEnabled: boolean;
         declare status: boolean;
         declare password: string;
+        declare resetPasswordToken?: string;  
+        declare resetPasswordExpires?: Date; 
+        declare lastPasswordChange?: Date; 
         declare createdAt: Date;
         declare updatedAt: Date;
 
-        // Define any static methods or associations here
     }
 
     Users.init(
@@ -113,6 +116,19 @@ module.exports = (sequelize: Sequelize) => {
                 type: new DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: true
+            },
+            resetPasswordToken: {  
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            resetPasswordExpires: {  
+                type: DataTypes.DATE,
+                allowNull: true
+            },
+            lastPasswordChange: { 
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
             },
             createdAt: {
                 field: "createdAt",
