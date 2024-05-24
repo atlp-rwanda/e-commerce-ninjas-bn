@@ -4,7 +4,7 @@ import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
 import db from "../../../databases/models";
-import { isAccountExist } from "../../../middlewares/validation";
+import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import { Request, Response } from "express";
 chai.use(chaiHttp);
@@ -77,10 +77,10 @@ describe("User Test Cases", () => {
   });
 });
 
-describe("isAccountExist Middleware", () => {
+describe("isUserExist Middleware", () => {
 
   before(() => {
-    app.post("/auth/register", isAccountExist, (req: Request, res: Response) => {
+    app.post("/auth/register", isUserExist, (req: Request, res: Response) => {
       res.status(200).json({ message: "success" });
     });
   });
