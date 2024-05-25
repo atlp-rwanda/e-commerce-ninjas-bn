@@ -80,9 +80,11 @@ export const loginSchema = Joi.object({
         "string.empty": "Email cannot be an empty field",
         "any.required": "Email is required"
     }),
-    password: Joi.string().required().messages({
+    password: Joi.string().min(8).pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required().messages({
         "string.base": "Password should be a type of text",
         "string.empty": "Password cannot be an empty field",
+        "string.min": "Password should have a minimum length of 8",
+        "string.pattern.base": "Password must contain both letters and numbers",
         "any.required": "Password is required"
     })
 });
@@ -96,6 +98,15 @@ export const emailSchema = Joi.object({
         "any.required": "Email is required"
     })
 });
+
+export const tokenSchema = Joi.object({
+    token: Joi.string().required().messages({
+        "any.required": "Token is required",
+        "string.empty": "Token cannot be an empty field",
+        "string.base": "Token should be a type of text"
+    })
+});
+
 
 export const resetPasswordSchema = Joi.object({
     token: Joi.string().required().messages({
