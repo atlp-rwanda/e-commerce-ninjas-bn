@@ -35,7 +35,11 @@ describe("Authentication Test Cases", () => {
       .field("role", "buyer")
       .attach("profilePicture", imageBuffer, "ProjectManagement.jpg")
       .end((error, response) => {
-        expect(response.status).equal(200);
+        if (error || response.status !== 200) {
+          console.error("Error:", error);
+          console.log("Response Body:", response.body);
+        }
+        expect(response.status).to.equal(200);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("user");
         expect(response.body).to.have.property("token");
@@ -59,6 +63,7 @@ describe("Authentication Test Cases", () => {
         done(error);
       });
   });
+  
   it("should return validation return message error and 400", (done) => {
     router()
       .post("/api/auth/register")
@@ -80,8 +85,7 @@ describe("Authentication Test Cases", () => {
         done(error);
       });
   });
-});
-
+})
 describe("multer test", () => {
   it("should return fail", (done) => {
     router()

@@ -44,7 +44,6 @@ const authSchema = Joi.object<User>({
     }),
     // profilePicture: Joi.string().uri().optional().messages({
     //     "string.base": "profilePicture should be a type of text",
-    //     "string.uri": "profilePicture must be a valid URI"
     // }),
     gender: Joi.string().valid("male", "female", "other").required().messages({
         "string.base": "gender should be a type of text",

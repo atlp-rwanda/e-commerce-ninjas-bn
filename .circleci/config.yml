@@ -1,17 +1,19 @@
-version: 2
+version: 2.1
+
 orbs:
   coveralls: coveralls/coveralls@1.0.6
+
 jobs:
   build:
     docker:
       - image: cimg/node:18.17.0
     steps:
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.21 
       - checkout
       - run:
           name: update-npm
-          command: "sudo npm install -g npm@latest"
+          command: "npm install -g npm@latest" 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
