@@ -7,7 +7,6 @@ import app from "../../../index";
 import userRepo from "../repository/userRepositories";
 import db from "../../../databases/models/index";
 
-
 const { Users } = db;
 
 chai.use(chaiHttp);
