@@ -163,3 +163,135 @@ describe("Register User Error Handling", () => {
       });
   });
 });
+
+describe("Auth Routes", () => {
+  describe("POST /login", () => {
+    it("should login user with valid credentials", (done) => {
+      router()
+        .post("/api/auth/login")
+        .send({ email: "user@example.com", password: "Password123" })
+        .end((error, response) => {
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("token");
+          done(error);
+        });
+    });
+
+    it("should not login user with invalid credentials", (done) => {
+      router()
+        .post("/api/auth/login")
+        .send({ email: "user@example.com", password: "wrongpassword" })
+        .end((error, response) => {
+          expect(response.status).to.equal(401);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("error");
+          done(error);
+        });
+    });
+  });
+
+  describe("POST /forgot-password", () => {
+    it("should send password reset email", (done) => {
+      router()
+        .post("/api/auth/forgot-password")
+        .send({ email: "user@example.com" })
+        .end((error, response) => {
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("message");
+          done(error);
+        });
+    });
+
+    it("should not send email for non-existent user", (done) => {
+      router()
+        .post("/api/auth/forgot-password")
+        .send({ email: "nonexistent@example.com" })
+        .end((error, response) => {
+          expect(response.status).to.equal(404);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("error");
+          done(error);
+        });
+    });
+  });
+
+  describe("GET /reset-password/:token", () => {
+    it("should verify valid token", (done) => {
+      const token = "validToken";
+      router()
+        .get(`/api/auth/reset-password/${token}`)
+        .end((error, response) => {
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("message");
+          done(error);
+        });
+    });
+
+    it("should not verify invalid token", (done) => {
+      const token = "invalidToken";
+      router()
+        .get(`/api/auth/reset-password/${token}`)
+        .end((error, response) => {
+          expect(response.status).to.equal(401);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("error");
+          done(error);
+        });
+    });
+  });
+
+  describe("POST /reset-password", () => {
+    it("should reset password with valid token and passwords", (done) => {
+      router()
+        .post("/api/auth/reset-password")
+        .send({ token: "validToken", newPassword: "newpassword123", confirmPassword: "newpassword123" })
+        .end((error, response) => {
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("message");
+          done(error);
+        });
+    });
+
+    it("should not reset password with invalid token", (done) => {
+      router()
+        .post("/api/auth/reset-password")
+        .send({ token: "invalidToken", newPassword: "newpassword123", confirmPassword: "newpassword123" })
+        .end((error, response) => {
+          expect(response.status).to.equal(401);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("error");
+          done(error);
+        });
+    });
+  });
+
+  describe("POST /update-password", () => {
+    it("should update password with valid data", (done) => {
+      router()
+        .post("/api/auth/update-password")
+        .send({ userId: 4, oldPassword: "oldpassword123", newPassword: "newpassword123", confirmPassword: "newpassword123" })
+        .end((error, response) => {
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("message");
+          done(error);
+        });
+    });
+
+    it("should not update password with invalid data", (done) => {
+      router()
+        .post("/api/auth/update-password")
+        .send({ userId: 1, oldPassword: "wrongoldpassword", newPassword: "newpassword123", confirmPassword: "newpassword123" })
+        .end((error, response) => {
+          expect(response.status).to.equal(400);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("error");
+          done(error);
+        });
+    });
+  });
+});
