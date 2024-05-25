@@ -13,8 +13,9 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
                 const register:UsersAttributes = await userRepositories.registerUser(req.body);
                 const token: string = generateToken(register.id);
                 res.status(httpStatus.OK).json({ user: register, token: token })
-        }catch(error: any) {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status:httpStatus.INTERNAL_SERVER_ERROR, message: error})
+        }catch(error) {
+                console.error("Registration error:", error);
+                res.status(500).json({ status: 500, message: error.message || "Internal server error" });
         }
         
 }
