@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
@@ -5,15 +6,14 @@ import httpStatus from "http-status";
 import fs from "fs"
 import path from "path";
 import app from "../../..";
-import db from "../../../databases/models";
 import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
-import { Request, Response } from "express";
-import { afterEach } from "mocha";
+import Users from "../../../databases/models/users";
+
+
+
 chai.use(chaiHttp);
 const router = () => chai.request(app);
-const { Users } = db;
-
 
 const imagePath = path.join(__dirname, "../../../../public/ProjectManagement.jpg");
 const filePath = path.join(__dirname, "../../../../public/BUILD.txt");
@@ -117,11 +117,20 @@ describe("isUserExist Middleware", () => {
   });
 
   it("should return user already exists", (done) => {
-    const mockUser = { email: "usertesting@gmail.com" };
-    sinon.stub(authRepositories, "findUserByEmail").resolves(mockUser);
+
     router()
-      .post("/auth/register")
-      .field("email", "usertesting@gmail.com")
+      .post("/api/auth/register")
+      .field("firstName", "TestUser")
+      .field("lastName", "TestUser")
+      .field("email", "TestUser@example.com")
+      .field("phone", 123456789)
+      .field("password", "TestUser@123")
+      .field("gender", "male")
+      .field("language", "english")
+      .field("currency", "USD")
+      .field("birthDate", "2000-12-12")
+      .field("role", "buyer")
+      .attach("profilePicture", imageBuffer, "ProjectManagement.jpg")
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
         expect(res.body).to.be.an("object");
@@ -158,4 +167,18 @@ describe("isUserExist Middleware", () => {
         done(err);
       });
   });
+  it("should return internal server error", (done) => {
+    sinon.stub(authRepositories, "findUserByEmail").throws(new Error("Database error"));
+
+    chai.request(app)
+        .post("/auth/register")
+        .send({ email: "usertesting@gmail.com" })
+        .end((err, res) => {
+            expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+            expect(res.body).to.be.an("object");
+            expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+            expect(res.body).to.have.property("message");
+            done(err);
+        });
+});
 });

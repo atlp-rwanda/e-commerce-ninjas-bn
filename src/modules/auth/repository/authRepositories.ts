@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import db from "../../../databases/models/index"
-const {Users} = db
+import Users from "../../../databases/models/users"
 
 const registerUser = async (body:any) =>{
     return await Users.create(body)
