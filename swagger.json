@@ -111,6 +111,111 @@
         }
       }
     },
+
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Login Route"
+        ],
+        "summary": "Login user",
+        "description": "This endpoint allows users to login by providing the required details.",
+        "requestBody": {
+          "description": "User login details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                },
+                "required": ["email", "password"]
+                
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User login successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/LoginUser"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+          "401": {
+            "description": "Unauthorized access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/update-password": {
       "post": {
         "tags": [
@@ -418,6 +523,24 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "description": "Token is invalid or expired",
             "content": {
@@ -468,16 +591,16 @@
             "type": "string"
           },
           "email": {
-            "type": "string"
+            "type": "user@example.com"
           },
           "password": {
-            "type": "string"
+            "type": "stringgg"
           },
           "phone": {
             "type": "integer"
           },
           "profilePicture": {
-            "type": "string",
+            "type": "http://example.com/profile.jpg",
             "format": "uri"
           },
           "gender": {
@@ -495,7 +618,7 @@
             "type": "string"
           },
           "role": {
-            "type": "string"
+            "type": "seller"
           }
         }
       },
@@ -519,7 +642,21 @@
           }
         },
         "required": ["userId", "oldPassword", "newPassword","confirmPassword"]
+      },
+      "LoginUser": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        },
+        "required": ["email", "password"]
       }
-    }
+        }
   }
 }
