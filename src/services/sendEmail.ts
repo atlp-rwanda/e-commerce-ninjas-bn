@@ -41,3 +41,39 @@ export const sendForgotPasswordEmail = async (email: string, token: string, firs
 
     await transporter.sendMail(mailOptions);
 };
+
+export const sendPasswordChangeEmail = async (email: string, firstName: string) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail", 
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Your password has been changed",
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #333;">Your password has been changed</h2>
+            <p style="color: #555;">Hello ${firstName},</p>
+            <p style="color: #555;">
+                Your password has been changed, as you asked.
+            </p>
+            <p style="color: #555;">
+                If you didn’t ask to change your password, we’re here to help keep your account secure. Visit our <a href="/support-page">support page</a> for more info.
+            </p>
+            <p style="color: #555;margin-top: 40px;">Best Regards,</p>
+            <p style="color: #555; margin-top:-2px">E-Commerce Ninjas Team</p>
+            <div style="margin-top: 40px; color: #aaa; font-size: 12px;">
+                <p>© 2024 E-Commerce Ninjas. All rights reserved.</p>
+                <p>Kigali, Rwanda</p>
+            </div>
+        </div>
+        `
+    };
+
+    await transporter.sendMail(mailOptions);
+};
