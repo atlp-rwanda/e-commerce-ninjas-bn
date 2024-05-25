@@ -6,7 +6,7 @@ import upload from "../helpers/multer";
 
 const router: Router = Router();
 
-router.post("/register", upload.single("profilePicture"),validation(authSchema), isUserExist, authControllers.registerUser);
+router.post("/register", upload.single("profilePicture"), validation(authSchema), isUserExist, authControllers.registerUser);
 
 
 export default router;

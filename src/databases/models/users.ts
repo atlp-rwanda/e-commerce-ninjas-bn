@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
-import { Model, DataTypes, Sequelize } from "sequelize";
+import { Model, DataTypes } from "sequelize";
+import sequelizeConnection from "../config/db.config"
 import bcrypt from "bcrypt";
 
 export interface UsersAttributes {
@@ -23,7 +24,6 @@ export interface UsersAttributes {
     updatedAt: Date;
 }
 
-module.exports = (sequelize: Sequelize) => {
     class Users extends Model<UsersAttributes> implements UsersAttributes {
         declare id: number;
         declare firstName: string;
@@ -128,7 +128,7 @@ module.exports = (sequelize: Sequelize) => {
             }
         },
         {
-            sequelize,
+            sequelize:sequelizeConnection,
             tableName: "users",
             timestamps: true,
             modelName: "Users",
@@ -140,5 +140,4 @@ module.exports = (sequelize: Sequelize) => {
         }
     );
 
-    return Users;
-};
+    export default Users;
