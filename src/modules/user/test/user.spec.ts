@@ -1,20 +1,20 @@
 // user Tests
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import app from "../../../index"; // Adjust the path to your app's entry point
+import app from "../../../index";
 
 chai.use(chaiHttp);
 
 const router = () => chai.request(app);
 
-const testUserId = 1; // Example user ID for testing
+const testUserId = 1; 
 
 describe("User Account Status Management", () => {
   
   describe("Disable User Account", () => {
     it("Should return 404 if user doesn't exist", (done) => {
         router()
-          .put("/api/admin-change-status/disable/100000") // Non-existent user ID
+          .put("/api/admin-change-status/disable/100000") 
           .end((err, res) => {
             expect(res).to.have.status(404);
             expect(res.body).to.be.an("object");
@@ -38,7 +38,7 @@ describe("User Account Status Management", () => {
 
     it("Should handle server errors", (done) => {
       router()
-        .put("/api/admin-change-status/disable/invalid_id") // Invalid user ID
+        .put("/api/admin-change-status/disable/invalid_id")
         .end((err, res) => {
           expect(res).to.have.status(500);
           expect(res.body).to.be.an("object");
@@ -52,7 +52,7 @@ describe("User Account Status Management", () => {
   describe("Enable User Account", () => {
     it("Should return 404 if user doesn't exist", (done) => {
       router()
-        .put("/api/admin-change-status/enable/100000") // Non-existent user ID
+        .put("/api/admin-change-status/enable/100000")
         .end((err, res) => {
           expect(res).to.have.status(404);
           expect(res.body).to.be.an("object");
@@ -76,7 +76,7 @@ describe("User Account Status Management", () => {
 
     it("Should handle server errors", (done) => {
       router()
-        .put("/api/admin-change-status/enable/invalid_id") // Invalid user ID
+        .put("/api/admin-change-status/enable/invalid_id") 
         .end((err, res) => {
           expect(res).to.have.status(500);
           expect(res.body).to.be.an("object");
