@@ -4,12 +4,15 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:18.17.0
+      - image: cimg/node:20.0.0
     working_directory: ~/repo
     steps:
       - setup_remote_docker:
           version: 20.10.7
       - checkout
+      - run:
+          name: clear cache
+          command: npm cache clean --force
       - run:
           name: update-npm
           command: 'sudo npm install -g npm@latest'
