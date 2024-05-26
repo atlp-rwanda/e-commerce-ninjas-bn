@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
-    "description": "APIs for the E-commerce-ninjas Project",
+    "description": "APIs for the E-commmerce-ninjas  Project",
     "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
       "email": "e-commerce-ninjas@andela.com"
@@ -44,7 +44,7 @@
           "Initial Route"
         ],
         "summary": "Handle Initial / Wrong GET Route",
-        "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
+        "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
             "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
@@ -63,78 +63,45 @@
           "description": "User registration details",
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "in":"formData"
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "in":"formData"
-                  },
                   "email": {
                     "type": "string",
-                    "format": "email",
-                    "in":"formData"
+                    "format": "email"
                   },
                   "password": {
                     "type": "string",
-                    "format": "password",
-                    "in":"formData"
-                  },
-                  "phone": {
-                    "type": "number",
-                    "in":"formData"
-                  },
-                  "profilePicture":{
-                    "type": "string",
-                    "format": "binary",
-                    "in":"formData"
-                  },
-                  "gender": {
-                    "type": "string",
-                    "enum": ["male", "female"],
-                    "in":"formData"
-                  },
-                  "birthDate": {
-                    "type": "string",
-                    "format": "date"
-                    
-                  },
-                  "language": {
-                    "type": "string",
-                    "in":"formData"
-                  },
-                  "currency": {
-                    "type": "string",
-                    "in":"formData"
-                  },
-                  "role": {
-                    "type": "string",
-                    "in":"formData"
+                    "format": "password"
                   }
                 },
-                "required": ["firstName", "lastName", "email", "password", "phone", "gender", "birthDate", "language", "currency", "role"]
+                "required": ["email", "password"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User registered successfully",
+            "description": "Account created successfully.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    },
-                    "token": {
+                    "message": {
                       "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "register": {
+                          "$ref": "#/components/schemas/User"
+                        },
+                        "token": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 }
@@ -172,10 +139,12 @@
             "type": "integer"
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "email": {
             "type": "string"
@@ -184,7 +153,8 @@
             "type": "string"
           },
           "phone": {
-            "type": "integer"
+            "type": "integer",
+            "nullable": true
           },
           "profilePicture": {
             "type": "string",
@@ -192,20 +162,34 @@
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"]
+            "enum": ["male", "female"],
+            "nullable": true
           },
           "birthDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "nullable": true
           },
           "language": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "currency": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "role": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "is2FAEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "boolean"
           },
           "createdAt": {
             "type": "string",

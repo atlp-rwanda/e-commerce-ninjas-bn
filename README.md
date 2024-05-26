@@ -6,7 +6,9 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 [![Maintainability](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/maintainability)](https://codeclimate.com/github/atlp-rwanda/e-commerce-ninjas-bn/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/test_coverage)](https://codeclimate.com/github/atlp-rwanda/e-commerce-ninjas-bn/test_coverage)
 [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/e-commerce-ninjas-bn/badge.svg)](https://coveralls.io/github/atlp-rwanda/e-commerce-ninjas-bn)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop)
 [![codecov](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn/graph/badge.svg?token=6ZWudFPM1S)](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn)
+
 
 ## HOSTED SERVER URL
 
@@ -23,18 +25,16 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 ## Completed Features
 
-- Setup an empty express boilerplate with dotenv
-- setup API documentation using swagger
-- Integrate CircleCI, CodeClimate, Test coverage and HoundCI
-- Link PivotalTracker with Github
-- Setup unit testing
+- Welcome Endpoint
+- Register Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
 
-| No | VERBS | ENDPOINTS | STATUS | ACCESS | DESCRIPTION         |
-|----|-------|-----------|--------|--------|-------------------- |
-| 1  | GET   | /         | 200 OK | public | Show welcome message|
+| No | VERBS | ENDPOINTS         | STATUS | ACCESS | DESCRIPTION         |
+|----|-------|-------------------|--------|--------|-------------------- |
+| 1  | GET   | /                 | 200 OK | public | Show welcome message|
+| 2  | POST  | /api/auth/register| 200 OK | public | create user account |
 
 
 

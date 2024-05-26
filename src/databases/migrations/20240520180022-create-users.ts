@@ -20,11 +20,11 @@ export default {
       },
       firstName: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       lastName: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       email: {
         type: new DataTypes.STRING(128),
@@ -36,31 +36,31 @@ export default {
       },
       phone: {
         type: new DataTypes.BIGINT,
-        allowNull: false
+        allowNull: true
       },
       profilePicture: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       gender: {
         type: new DataTypes.ENUM("male", "female"),
-        allowNull: false
+        allowNull: true
       },
       birthDate: {
         type: new DataTypes.DATE,
-        allowNull: false
+        allowNull: true
       },
       language: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       currency: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       role: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       isVerified: {
         type: new DataTypes.BOOLEAN,
