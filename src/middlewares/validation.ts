@@ -29,7 +29,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     }
     return next();
     } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR , message: error})
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR , message: error.message})
     }
     
 }

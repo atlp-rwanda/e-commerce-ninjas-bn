@@ -9,6 +9,7 @@ import app from "../../..";
 import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
+import * as uploadImages from "../../../helpers/uploadImage";
 
 
 
@@ -63,7 +64,7 @@ describe("Authentication Test Cases", () => {
         done(error);
       });
   });
-  
+
   it("should return validation return message error and 400", (done) => {
     router()
       .post("/api/auth/register")
@@ -153,7 +154,7 @@ describe("isUserExist Middleware", () => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message");
+        expect(res.body).to.have.property("message","Database error");
         done(err);
       });
   });
@@ -171,18 +172,39 @@ describe("isUserExist Middleware", () => {
         done(err);
       });
   });
-  it("should return internal server error", (done) => {
-    sinon.stub(authRepositories, "findUserByEmail").throws(new Error("Database error"));
-
-    chai.request(app)
-        .post("/auth/register")
-        .send({ email: "usertesting@gmail.com" })
-        .end((err, res) => {
-            expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-            expect(res.body).to.be.an("object");
-            expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
-            expect(res.body).to.have.property("message");
-            done(err);
-        });
 });
+
+describe("POST /api/auth/register error handling", () => {
+  let uploadImagesStub: sinon.SinonStub;
+
+  beforeEach(() => {
+      uploadImagesStub = sinon.stub(uploadImages, "uploadImages").throws(new Error("Invalid image file"));
+  });
+
+  afterEach(() => {
+      uploadImagesStub.restore();
+  });
+
+  it("should return 500 and an error message when an error occurs", (done) => {
+      router()
+          .post("/api/auth/register")
+          .field("firstName", "TestUser")
+          .field("lastName", "TestUser")
+          .field("email", "TestUser@example.com")
+          .field("phone", 123456789)
+          .field("password", "TestUser@123")
+          .field("gender", "male")
+          .field("language", "english")
+          .field("currency", "USD")
+          .field("birthDate", "2000-12-12")
+          .field("role", "buyer")
+          .attach("profilePicture", Buffer.from("image content"), "ProjectManagement.jpg")
+          .end((err, res) => {
+              if (err) return done(err);
+              expect(res.status).to.equal(500);
+              expect(res.body).to.have.property("status", 500);
+              expect(res.body).to.have.property("message", "Invalid image file");
+              done();
+          });
+  });
 });

@@ -14,8 +14,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
                 const token: string = generateToken(register.id);
                 res.status(httpStatus.OK).json({ user: register, token: token })
         }catch(error) {
-                console.error("Registration error:", error);
-                res.status(500).json({ status: 500, message: error.message || "Internal server error" });
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
         
 }
