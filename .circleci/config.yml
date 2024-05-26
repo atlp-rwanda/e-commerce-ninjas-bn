@@ -1,21 +1,21 @@
 version: 2.1
+orbs:
+  coveralls: coveralls/coveralls@1.0.6
 executors:
   my-custom-executor:
     docker:
-      - image: cimg/base:stable
-        auth:
-          # ensure you have first added these secrets
-          # visit app.circleci.com/settings/project/github/atlp-rwanda/e-commerce-ninjas-bn/environment-variables
-          username: $DOCKER_HUB_USER
-          password: $DOCKER_HUB_PASSWORD
+      - image: cimg/node:18.17.0
 jobs:
   test:
 
     executor: my-custom-executor
     steps:
+      - setup_remote_docker:
+          version: docker24
       - checkout
-      - run: |
-          # echo Hello, World!
+      - run:
+          name: update-npm
+          command: "npm install -g npm@latest"
 
 workflows:
   my-custom-workflow:
