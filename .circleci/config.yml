@@ -1,19 +1,18 @@
 version: 2
-
 orbs:
   coveralls: coveralls/coveralls@1.0.6
-
 jobs:
   build:
     docker:
       - image: cimg/node:18.17.0
+    working_directory: ~/repo
     steps:
       - setup_remote_docker:
-          version: 20.10.21 
+          version: 20.10.7
       - checkout
       - run:
           name: update-npm
-          command: "npm install -g npm@latest" 
+          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
@@ -34,6 +33,9 @@ jobs:
           command: npm run coverage
           when: always
       - run:
+          name: Upload coverage to Coveralls
+          command: npx coveralls < coverage/lcov.info
+      - run:
           name: Setup Code Climate test-reporter
           command: |
             # download test reporter as a static binary
@@ -47,3 +49,4 @@ jobs:
           when: always
       - store_artifacts:
           path: ./coverage/lcov.info
+          prefix: tests
