@@ -5,18 +5,20 @@ on:
   push:
     branches:
       - develop
+
 env:
   PORT: ${{ secrets.PORT }}
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  DATABASE_TEST_URL : ${{ secrets.DATABASE_TEST_URL }}
+  DATABASE_TEST_URL: ${{ secrets.DATABASE_TEST_URL }}
   NODE_EN: ${{ secrets.NODE_EN }}
   DATABASE_URL_PRO: ${{ secrets.DATABASE_URL_PRO }}
   API_KEY: ${{ secrets.API_KEY }}
   API_SECRET: ${{ secrets.API_SECRET }}
   CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,42 +29,41 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: npm install
-      - run: npm ci
+
+      - name: Install dependencies
+        run: |
+          npm install husky --save-dev
+          npm install
+
       - name: Set NODE_ENV to test
         run: echo "NODE_ENV=test" >> $GITHUB_ENV
+
       - run: npm run build --if-present
+
       - run: npm test --if-present
+
       - run: npm run coverage --if-present
-          when: always
-      - run:
-          name: Run coverage
-          command: npm run coverage
-          when: always
-      - run:
-          name: Setup Code Climate test-reporter
-          command: |
-            # download test reporter as a static binary
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-            ./cc-test-reporter before-build
-          when: always
-      - run:
-          name: Send coverage report to Code Climate
-          command: ./cc-test-reporter after-build -t lcov
-          when: always
-      - store_artifacts:
-          path: ./coverage/lcov.info
-          prefix: tests
+
+      - name: Setup Code Climate test-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+
+      - name: Send coverage report to Code Climate
+        run: ./cc-test-reporter after-build -t lcov
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         env:
