@@ -50,15 +50,6 @@ jobs:
 
       - run: npm run coverage --if-present
 
-      - name: Setup Code Climate test-reporter
-        run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
-
-      - name: Send coverage report to Code Climate
-        run: ./cc-test-reporter after-build -t lcov
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         env:

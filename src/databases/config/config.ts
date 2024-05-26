@@ -15,11 +15,11 @@ const commonDatabaseConfig = {
 const sequelizeConfig = {
   development: {
     ...commonDatabaseConfig,
-    url: process.env.DEV_DATABASE_URL
+    url: process.env.DATABASE_URL_DEV
   },
   test: {
     ...commonDatabaseConfig,
-    url: process.env.DATABASE_TEST_URL
+    url: process.env.DATABASE_URL_TEST
   },
   production: {
     ...commonDatabaseConfig,
