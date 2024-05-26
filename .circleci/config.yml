@@ -21,6 +21,9 @@ jobs:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
       - run:
+          name: install husky
+          command: npm install husky --save-dev
+      - run:
           name: Install dependencies
           command: npm install
       - save_cache:
