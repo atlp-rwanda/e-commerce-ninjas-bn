@@ -41,18 +41,6 @@ jobs:
       - name: Set NODE_ENV to test
         run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
-      - name: Log Environment Variables
-        run: |
-          echo "PORT=$PORT"
-          echo "DATABASE_TEST_URL=$DATABASE_TEST_URL"
-          echo "NODE_ENV=$NODE_ENV"
-          echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY"
-          echo "CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET"
-          echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME"
-
-      - name: Run Database Migrations
-        run: npm run migrate  # Ensure this script exists and runs migrations
-
       - run: npm run build --if-present
 
       - run: npm test --if-present
