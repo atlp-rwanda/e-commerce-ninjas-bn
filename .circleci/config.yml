@@ -15,7 +15,11 @@ jobs:
       - checkout
       - run:
           name: update-npm
-          command: "npm install -g npm@latest"
+          command: "sudo npm install -g npm@latest"
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
       - run:
           name: Install dependencies
           command: npm install
