@@ -1,25 +1,9 @@
-// user validations
-import { Request, Response, NextFunction } from "express";
+import Joi from "joi";
 
-export const validateUserId = (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ success: false, message: "Invalid user ID" });
-    return;
-  }
-  next();
-};
-
-export const checkUserExists = async (req: Request, res: Response, next: NextFunction, userRepo) => {
-  const id = Number(req.params.id);
-  try {
-    const user = await userRepo.getUserById(id);
-    if (!user) {
-      res.status(404).json({ success: false, message: "User doesn't exist." });
-      return;
-    }
-    next();
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
+export const statusSchema = Joi.object({
+  status: Joi.string().valid("enabled", "disabled").required().messages({
+    "string.base": "Status must be a string",
+    "any.only": "Status must be either 'enabled' or 'disabled'",
+    "any.required": "Status is required"
+  })
+});

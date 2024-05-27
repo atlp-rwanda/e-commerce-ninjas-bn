@@ -12,7 +12,8 @@ const findUserByAttributes = async (key:string, value:any) =>{
 }
 
 const UpdateUserByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
-    return await Users.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
+    await Users.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
+    return await findUserByAttributes(whereKey, whereValue)
 }
 
 const createSession = async (body: any) => {

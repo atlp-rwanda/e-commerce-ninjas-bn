@@ -23,6 +23,10 @@
     {
       "name": "Authentication Routes",
       "description": "Authentication Endpoint | POST Route"
+    },
+    {
+      "name": "Admin User Routes",
+      "description": "Change User Status Endpoint | PUT Route"
     }
   ],
   "schemes": [
@@ -288,6 +292,140 @@
           },
           "400": {
             "description": "Invalid credentials / Bad request"
+          }
+        }
+      }
+    },
+    "/api/users/admin-update-user-status/{id}": {
+      "put": {
+        "tags": [
+          "Admin User Routes"
+        ],
+        "summary": "Change User Status",
+        "description": "This endpoint allows an admin to change User account Status by providing the userId.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to change status",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Change user status",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Status updated successfully.",
+                    "value": {
+                      "message": "Status updated successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User Not Found",
+                    "value": {
+                      "success": false,
+                      "message": "User doesn't exist."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "Invalid user ID",
+                    "value": {
+                      "message": "Invalid user ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Server Error",
+                    "value": {
+                      "message": "Server error"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
