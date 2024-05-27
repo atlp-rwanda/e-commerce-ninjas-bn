@@ -2,31 +2,31 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-export interface TokenAttributes {
+export interface SessionAttributes {
     id: number;
     userId: number;
     device: string;
-    accessToken: string;
-    verifyToken: string;
+    token: string;
+    otp: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-    class Tokens extends Model<TokenAttributes> implements TokenAttributes {
+    class Session extends Model<SessionAttributes> implements SessionAttributes {
         declare id: number;
         declare userId: number;
         declare device: string;
-        declare accessToken: string;
-        declare verifyToken:string;
+        declare token: string;
+        declare otp:string;
         declare createdAt: Date;
         declare updatedAt: Date;
 
         static associate(models: any) {
-            Tokens.belongsTo(models.Users, { foreignKey: "userId",as: "user" });
+            Session.belongsTo(models.Users, { foreignKey: "userId",as: "user" });
         }
     }
 
-    Tokens.init(
+    Session.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -41,11 +41,11 @@ export interface TokenAttributes {
                 type: new DataTypes.STRING(280),
                 allowNull: true
             },
-            accessToken: {
+            token: {
                 type: new DataTypes.STRING(280),
                 allowNull: true
             },
-            verifyToken: {
+            otp: {
                 type: new DataTypes.STRING(280),
                 allowNull: true
             },
@@ -64,10 +64,10 @@ export interface TokenAttributes {
         },
         {
             sequelize: sequelizeConnection,
-            tableName: "tokens",
+            tableName: "sessions",
             timestamps: true,
-            modelName:"Tokens"
+            modelName:"Sessions"
         }
     );
 
-export default Tokens;
+export default Session;

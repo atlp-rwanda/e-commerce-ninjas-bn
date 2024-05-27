@@ -1,7 +1,7 @@
 import { QueryInterface, DataTypes } from "sequelize";
 export default {
   up: async (queryInterface: QueryInterface) => {
-    await queryInterface.createTable("tokens", {
+    await queryInterface.createTable("sessions", {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -15,11 +15,11 @@ export default {
         type: new DataTypes.STRING(280),
         allowNull: true
       },
-      accessToken: {
+      token: {
         type: new DataTypes.STRING(280),
         allowNull: true
       },
-      verifyToken: {
+      otp: {
         type: new DataTypes.STRING(280),
         allowNull: true
       },
@@ -39,6 +39,6 @@ export default {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("tokens");
+    await queryInterface.dropTable("sessions");
   }
 };
