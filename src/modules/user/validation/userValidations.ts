@@ -13,7 +13,7 @@ export const validateUserId = (req: Request, res: Response, next: NextFunction) 
 export const checkUserExists = async (req: Request, res: Response, next: NextFunction, userRepo) => {
   const id = Number(req.params.id);
   try {
-    const user = await userRepo.getSingleUserById(id);
+    const user = await userRepo.getUserById(id);
     if (!user) {
       res.status(404).json({ success: false, message: "User doesn't exist." });
       return;
