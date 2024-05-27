@@ -21,10 +21,11 @@ export interface UsersAttributes {
     resetPasswordExpires?: Date;  
     lastPasswordChange?: Date; 
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt: Date;    
 }
 
 module.exports = (sequelize: Sequelize) => {
+    // eslint-disable-next-line require-jsdoc
     class Users extends Model<UsersAttributes> implements UsersAttributes {
         declare id: number;
         declare firstName: string;
