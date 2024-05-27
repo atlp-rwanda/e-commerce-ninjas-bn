@@ -1,11 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import { hashPassword, comparePassword, generateResetToken } from "../../../helpers";
+import userRepositories from "../repository/authRepositories";
+import { generateToken, hashPassword, comparePassword, generateResetToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import { sendForgotPasswordEmail, sendPasswordChangeEmail } from "../../../services/sendEmail";
 import authRepositories from "../repository/authRepositories";
+import jwt from "jsonwebtoken";
 
+const registerUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const register: UsersAttributes = await userRepositories.registerUser(req.body);
+        const token: string = generateToken(register.id);
+        res.status(httpStatus.OK).json({ user: register, token: token });
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error });
+    }
+};
 
 const forgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -90,6 +101,37 @@ const updatePassword = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const login = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, password } = req.body;
+        const user = await authRepositories.findUserByEmail(email);
 
+        if (!user) {
+            res.status(httpStatus.NOT_FOUND).json({ status: false, message: "User not found" });
+            return;
+        }
 
-export default { forgotPassword, verifyResetToken, resetPassword, updatePassword };
+        const isPasswordValid = await comparePassword(password, user.password);
+        if (!isPasswordValid) {
+            res.status(httpStatus.UNAUTHORIZED).json({ status: false, message: "Wrong password" });
+            return;
+        }
+
+        const passwordExpirationTime =2 * 60 * 1000;
+        const passwordLastChanged = user.lastPasswordChange || user.createdAt;
+        const passwordExpired = new Date(passwordLastChanged.getTime() + passwordExpirationTime) < new Date();
+
+        if (passwordExpired) {
+            res.status(httpStatus.UNAUTHORIZED).json({ status: false, message: "Password expired, please change your password before login" });
+            return;
+        }
+
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        res.status(httpStatus.OK).json({ status: true, message: "Login successful", token: token });
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
+    }
+};
+
+export default { registerUser, login, forgotPassword, verifyResetToken, resetPassword, updatePassword };
