@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
@@ -7,13 +8,23 @@ import app from "../../..";
 import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
-
+import Tokens from "../../../databases/models/tokens";
 
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
+let userId:string;
 describe("Authentication Test Cases", () => {
-  it("Should be able to register new user", (done) => {
+  let verifyToken: string | null = null;
+
+  afterEach(async () => {
+    const tokenRecord = await Tokens.findOne();
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.verifyToken;
+    }
+  });
+
+  it("should register a new user", (done) => {
     router()
       .post("/api/auth/register")
       .send({
@@ -22,11 +33,46 @@ describe("Authentication Test Cases", () => {
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
+        expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
+        userId = response.body.data.register.id;
         expect(response.body.message).to.be.a("string");
         done(error);
       });
+  });
+
+  it("should verify the user successfully", async () => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
+
+    const res = await chai.request(app)
+      .get(`/api/auth/${userId}/verify/${verifyToken}`);
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.deep.equal({
+      status: httpStatus.OK,
+      message: " Account verified successfully."
+    });
+  });
+
+  it("should handle errors during user verification", async () => {
+
+    const errorMessage = "Something went wrong";
+    const updateUserVerifiedStub = sinon.stub(authRepositories, "UpdateUserVerified").rejects(new Error(errorMessage));
+    const tokenRemoveStub = sinon.stub(authRepositories, "tokenRemove").rejects(new Error(errorMessage));
+
+    const res = await chai.request(app)
+      .get(`/api/auth/${userId}/verify/${verifyToken}`);
+
+    expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.body).to.deep.equal({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: errorMessage
+    });
+
+    sinon.assert.calledOnce(updateUserVerifiedStub);
+    sinon.assert.notCalled(tokenRemoveStub);
   });
 
   it("should return validation return message error and 400", (done) => {
@@ -125,5 +171,20 @@ describe("POST /auth/register - Error Handling", () => {
         });
         done(err)
       });
+  });
+});
+
+describe("Verify User Endpoint", () => {
+  it("should return 400 if User not found", (done) => {
+    userId = "12345";
+    const token = "invalidtoken";
+    router().get(`/api/auth/${userId}/verify/${token}`)
+      .end((error, res) => {
+        expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(res.body).to.deep.equal({
+          message: "User not found"
+        });
+        done(error);
+      })
   });
 });
