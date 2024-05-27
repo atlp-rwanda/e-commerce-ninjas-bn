@@ -591,17 +591,14 @@
             "type": "string"
           },
           "email": {
-            "type": "user@example.com"
+            "type": "string",
+            "format": "email"
           },
           "password": {
-            "type": "stringgg"
+            "type": "string"
           },
           "phone": {
             "type": "integer"
-          },
-          "profilePicture": {
-            "type": "http://example.com/profile.jpg",
-            "format": "uri"
           },
           "gender": {
             "type": "string",
@@ -618,7 +615,8 @@
             "type": "string"
           },
           "role": {
-            "type": "seller"
+            "type": "string",
+            "enum": ["buyer", "admin", "seller"]
           }
         }
       },
