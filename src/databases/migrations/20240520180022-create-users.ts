@@ -1,6 +1,16 @@
 import { QueryInterface, DataTypes } from "sequelize";
+
 export default {
   up: async (queryInterface: QueryInterface) => {
+    const [results] = await queryInterface.sequelize.query(
+      "SELECT 1 FROM pg_type WHERE typname = 'enum_users_gender';"
+    );
+    if (!results.length) {
+      await queryInterface.sequelize.query(
+        "CREATE TYPE \"enum_users_gender\" AS ENUM('male', 'female');"
+      );
+    }
+
     await queryInterface.createTable("users", {
       id: {
         type: DataTypes.INTEGER,
@@ -10,11 +20,11 @@ export default {
       },
       firstName: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       lastName: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       email: {
         type: new DataTypes.STRING(128),
@@ -26,13 +36,38 @@ export default {
       },
       phone: {
         type: new DataTypes.BIGINT,
-        allowNull: false
+        allowNull: true
+      },
+      profilePicture: {
+        type: new DataTypes.STRING(128),
+        allowNull: true
+      },
+      gender: {
+        type: new DataTypes.ENUM("male", "female"),
+        allowNull: true
+      },
+      birthDate: {
+        type: new DataTypes.DATE,
+        allowNull: true
+      },
+      language: {
+        type: new DataTypes.STRING(128),
+        allowNull: true
+      },
+      currency: {
+        type: new DataTypes.STRING(128),
+        allowNull: true
       },
       role: {
         type: new DataTypes.STRING(128),
-        allowNull: false
+        allowNull: true
       },
       isVerified: {
+        type: new DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      is2FAEnabled: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
@@ -40,22 +75,28 @@ export default {
       status: {
         type: new DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false
+        defaultValue: true
       },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: DataTypes.DATE
+        defaultValue: DataTypes.NOW
       },
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: DataTypes.DATE
+        defaultValue: DataTypes.NOW
       }
     });
   },
 
   down: async (queryInterface: QueryInterface) => {
+    // Drop the users table
     await queryInterface.dropTable("users");
+
+    // Drop the enum type if it exists
+    await queryInterface.sequelize.query(`
+      DROP TYPE IF EXISTS "enum_users_gender";
+    `);
   }
 };
