@@ -40,7 +40,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
             if (userExists) {
                 return next();
             }
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "User not found" });
+            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "User not found" });
         }
 
         return next();

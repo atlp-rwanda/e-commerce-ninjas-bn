@@ -20,7 +20,7 @@ export interface UsersAttributes {
     role?: string;
     isVerified?: boolean;
     is2FAEnabled?: boolean;
-    status?: boolean;
+    status?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -42,7 +42,7 @@ class Users extends Model<UsersAttributes, UsersCreationAttributes> implements U
     declare role?: string;
     declare isVerified?: boolean;
     declare is2FAEnabled?: boolean;
-    declare status?: boolean;
+    declare status?: string;
     declare password: string;
     declare createdAt?: Date;
     declare updatedAt?: Date;
@@ -122,7 +122,7 @@ Users.init(
         status: {
             type: new DataTypes.STRING(128),
             allowNull: true,
-            defaultValue: true
+            defaultValue: "enabled"
         },
         createdAt: {
             field: "createdAt",

@@ -1,8 +1,11 @@
-import express from "express";
+import { Router } from "express";
 import userControllers from "../modules/user/controller/userControllers";
+import {isUserExist, validation} from "../middlewares/validation";
+import { statusSchema } from "../modules/user/validation/userValidations";
 
-const router = express.Router();
 
-router.put("/update-user-status/:id", userControllers.updateUserStatus);
+const router: Router = Router()
+
+router.put("/admin-update-user-status/:id", validation(statusSchema), isUserExist, userControllers.updateUserStatus);
 
 export default router;
