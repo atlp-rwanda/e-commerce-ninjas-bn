@@ -34,4 +34,22 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     
 }
 
-export {validation,isUserExist};
+const isUserVerified = async(req:Request, res:Response, next:NextFunction) => {
+    try {
+        const id:string = req.params.id
+    const token:string = req.params.token;
+    const user = await authRepositories.findUserById(id);
+        if (user) {
+            const verifyToken = await authRepositories.verifyUserToken(id, token);
+            if(verifyToken){
+                return next()
+            }
+            res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid token" });
+        }
+        res.status(httpStatus.BAD_REQUEST).json({ message: "User not found" });
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR , message: error.message})
+    }
+}
+
+export {validation,isUserExist,isUserVerified};

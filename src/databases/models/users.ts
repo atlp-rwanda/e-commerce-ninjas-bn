@@ -48,6 +48,9 @@ class Users extends Model<UsersAttributes, UsersCreationAttributes> implements U
     declare updatedAt?: Date;
 
     // Define any static methods or associations here
+    static associate(models: any) {
+        Users.hasOne(models.Tokens, { foreignKey: "userId",as: "token" });
+    }
 }
 
 Users.init(
