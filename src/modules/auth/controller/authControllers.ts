@@ -117,7 +117,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const passwordExpirationTime = 45 * 60 * 1000;
+        const passwordExpirationTime =2 * 60 * 1000;
         const passwordLastChanged = user.lastPasswordChange || user.createdAt;
         const passwordExpired = new Date(passwordLastChanged.getTime() + passwordExpirationTime) < new Date();
 
