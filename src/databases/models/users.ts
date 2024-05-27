@@ -120,7 +120,7 @@ Users.init(
             defaultValue: false
         },
         status: {
-            type: new DataTypes.BOOLEAN,
+            type: new DataTypes.STRING(128),
             allowNull: true,
             defaultValue: true
         },

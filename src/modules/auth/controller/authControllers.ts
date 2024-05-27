@@ -5,40 +5,39 @@ import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
-import { verifyEmail } from "../../../services/sendEmail";
-import { IToken } from "../../../types";
+import { sendVerificationEmail } from "../../../services/sendEmail";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
         try {
-                const register: UsersAttributes = await userRepositories.registerUser(req.body);
+                const register: UsersAttributes = await userRepositories.createUser(req.body);
                 const token: string = generateToken(register.id);
-                const data = { register, token };
-                const verifyToken = await authRepositories.createToken(register.id);
-                const url = `${process.env.BASE_URL_LOCAL}/api/auth/${register.id}/verify/${verifyToken.verifyToken}`;
-                await verifyEmail(register.email, "Verify Email", url);
-                const newToken: IToken = {
-                        userId: register.id,
-                        device: req.headers["user-agent"] || "TEST DEVICE",
-                        accessToken: token
-                }
-                await authRepositories.addToken(newToken);
-                res.status(httpStatus.OK).json({ message: "Account created successfully. Please check email to verify account.", data })
+                const session = {userId: register.id, device: req.headers["user-device"] , token: token, otp: null };
+                await authRepositories.createSession(session);
+                await sendVerificationEmail(register.email, "Verification Email", `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${token}`);
+                res.status(httpStatus.CREATED).json({ message: "Account created successfully. Please check email to verify account.", data: register })
         } catch (error) {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
 
 }
 
-const verifyUser = async (req: Request, res: Response) => {
+const sendVerifyEmail = async(req:any, res:Response) =>{
         try {
-                const id: string = req.params.id;
-                const token: string = req.params.token;
-                await authRepositories.UpdateUserVerified(id);
-                await authRepositories.tokenRemove(token)
-                res.status(200).json({ status: httpStatus.OK, message: " Account verified successfully." });
+                await sendVerificationEmail(req.user.email, "Verification Email", `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${req.session.token}`);
+                res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Verification email sent successfully." });
         } catch (error) {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
 }
 
-export default { registerUser, verifyUser }
+const verifyEmail = async (req: any, res: Response) => {
+        try {
+                await authRepositories.destroySession(req.user.id, req.session.token)
+                await authRepositories.UpdateUserByAttributes("isVerified", true, "id", req.user.id);
+                res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
+        } catch (error) {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+        }
+}
+
+export default { registerUser, sendVerifyEmail, verifyEmail }
