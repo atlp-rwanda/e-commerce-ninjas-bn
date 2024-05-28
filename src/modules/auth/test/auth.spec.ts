@@ -8,11 +8,11 @@ import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 
-
-
 chai.use(chaiHttp);
 const router = () => chai.request(app);
+
 describe("Authentication Test Cases", () => {
+
   it("Should be able to register new user", (done) => {
     router()
       .post("/api/auth/register")
@@ -25,6 +25,66 @@ describe("Authentication Test Cases", () => {
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
+  it("Should be able to login a registered user", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "john.doe@example.com",
+        password: "password123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        done(error);
+      });
+  });
+
+  it("Should return validation error when no email or password given", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "user@example.com"
+      })
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+
+  it("Should not be able to login user with invalid Email", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "fakeemail@gmail.com",
+        password: "fakepassword"
+      })
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("message", "Invalid Email or Password");
+        done(error);
+      });
+  });
+
+  it("Should not be able to login user with invalid Password", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "user@example.com",
+        password: "fakepassword"
+      })
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("message", "Invalid Email or Password");
         done(error);
       });
   });
@@ -43,6 +103,7 @@ describe("Authentication Test Cases", () => {
         done(error);
       });
   });
+
 })
 
 describe("isUserExist Middleware", () => {
@@ -102,6 +163,7 @@ describe("isUserExist Middleware", () => {
       });
   });
 });
+
 describe("POST /auth/register - Error Handling", () => {
   let registerUserStub: sinon.SinonStub;
 
