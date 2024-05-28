@@ -1,13 +1,19 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable comma-dangle */
-import chai, { expect } from "chai";
-import chaiHttp from "chai-http";
 import app from "./index";
-import sinon from "sinon";
-import jwt from "jsonwebtoken";
+import chai from "chai";
+import chaiHttp from "chai-http";
+const { expect } = require("chai");
+const sinon = require("sinon");
+const sinonChai = require("sinon-chai");
+const { userAuthorization } = require("./middlewares/authorization");
+const httpStatus = require("http-status");
+import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
-import { protect } from "./middlewares";
 
 chai.use(chaiHttp);
+chai.use(sinonChai);
+//
 const router = () => chai.request(app);
 
 describe("Initial configuration", () => {
@@ -26,109 +32,116 @@ describe("Initial configuration", () => {
   });
 });
 
-describe("protect middleware", () => {
-  let req, res, next, sandbox;
+describe("userAuthorization middleware", () => {
+  let req, res, next, roles;
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
+    roles = ["admin", "user"];
     req = {
       headers: {},
+      user: null,
+      session: null,
     };
     res = {
       status: sinon.stub().returnsThis(),
       json: sinon.stub().returnsThis(),
     };
-    next = sinon.stub();
+    next = sinon.spy();
   });
 
   afterEach(() => {
-    sandbox.restore();
+    sinon.restore();
   });
 
-  it("should call next() if token is valid and user exists", async () => {
-    const user = { id: "123", name: "John Doe" };
-    const token = jwt.sign({ id: user.id }, "SECRET");
+  it("should respond with 401 if no authorization header", async () => {
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
 
-    sandbox.stub(jwt, "verify").resolves({ id: user.id });
-    sandbox.stub(authRepositories, "findUserByAttributes").resolves(user);
-
-    req.headers.authorization = `Bearer ${token}`;
-
-    await protect(req, res, next);
-
-    expect(next.calledOnce).to.be.true;
-    expect(req.user).to.deep.equal(user);
+    expect(res.status).to.have.been.calledWith(httpStatus.UNAUTHORIZED);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.UNAUTHORIZED,
+      message: "Not authorized",
+    });
   });
 
-  it("should return 401 if no token is provided", async () => {
-    req.headers.authorization = "";
+  it("should respond with 401 if no session found", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves(null);
 
-    await protect(req, res, next);
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
 
-    expect(res.status.calledWith(401)).to.be.true;
-    expect(
-      res.json.calledWith({
-        ok: false,
-        status: "fail",
-        message: "Login to get access to this resource",
-      })
-    ).to.be.true;
+    expect(res.status).to.have.been.calledWith(httpStatus.UNAUTHORIZED);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.UNAUTHORIZED,
+      message: "Not authorized",
+    });
   });
 
-  it("should return 401 if token is invalid", async () => {
-    req.headers.authorization = "Bearer invalidtoken";
+  it("should respond with 401 if no user found", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
 
-    sandbox
-      .stub(jwt, "verify")
-      .throws(new jwt.JsonWebTokenError("invalid token"));
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
 
-    await protect(req, res, next);
-
-    expect(res.status.calledWith(401)).to.be.true;
-    expect(
-      res.json.calledWith({
-        ok: false,
-        status: "fail",
-        message: "Invalid token. Log in again to get a new one",
-      })
-    ).to.be.true;
+    expect(res.status).to.have.been.calledWith(httpStatus.UNAUTHORIZED);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.UNAUTHORIZED,
+      message: "Not authorized",
+    });
   });
 
-  it("should return 401 if user does not exist", async () => {
-    const token = jwt.sign({ id: "123" }, "SECRET");
+  it("should respond with 401 if user role is not authorized", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .resolves({ role: "guest" });
 
-    sandbox.stub(jwt, "verify").resolves({ id: "123" });
-    sandbox.stub(authRepositories, "findUserByAttributes").resolves(null);
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
 
-    req.headers.authorization = `Bearer ${token}`;
-
-    await protect(req, res, next);
-
-    expect(res.status.calledWith(401)).to.be.true;
-    expect(
-      res.json.calledWith({
-        ok: false,
-        status: "fail",
-        message: "User belonging to this token does not exist",
-      })
-    ).to.be.true;
+    expect(res.status).to.have.been.calledWith(httpStatus.UNAUTHORIZED);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.UNAUTHORIZED,
+      message: "Not authorized",
+    });
   });
 
-  it("should handle jwt token expiration errors", async () => {
-    req.headers.authorization = "Bearer expiredtoken";
+  it("should call next if user is authorized", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .resolves({ role: "admin" });
 
-    const error = new jwt.TokenExpiredError("jwt expired", new Date());
-    sandbox.stub(jwt, "verify").throws(error);
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
 
-    await protect(req, res, next);
+    expect(next).to.have.been.calledOnce;
+    expect(req.user).to.deep.equal({ role: "admin" });
+    expect(req.session).to.deep.equal({});
+  });
 
-    expect(res.status.calledWith(401)).to.be.true;
-    expect(
-      res.json.calledWith({
-        ok: false,
-        status: "fail",
-        message: "Invalid token. Log in again to get a new one",
-      })
-    ).to.be.true;
+  it("should respond with 500 if an unexpected error occurs", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").rejects(new Error("Unexpected error"));
+
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: "Unexpected error",
+    });
   });
 });

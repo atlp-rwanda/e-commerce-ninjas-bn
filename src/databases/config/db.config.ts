@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import { config } from "dotenv";
 import { Sequelize } from "sequelize";
 
