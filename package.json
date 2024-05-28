@@ -29,8 +29,6 @@
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
-    "check-coverage": true,
-    "all": true,
     "include": [
       "src/**/!(*.test.*).[tj]s?(x)"
     ],
@@ -46,7 +44,8 @@
       "text-summary"
     ],
     "report-dir": "coverage",
-    "lines": 40
+    "check-coverage": true,
+    "all": true
   },
   "keywords": [],
   "author": "",
