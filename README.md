@@ -27,14 +27,18 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 - Welcome Endpoint
 - Register Endpoint
+- Verification Email Endpoint
+- Resend verification Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
 
-| No | VERBS | ENDPOINTS         | STATUS | ACCESS | DESCRIPTION         |
-|----|-------|-------------------|--------|--------|-------------------- |
-| 1  | GET   | /                 | 200 OK | public | Show welcome message|
-| 2  | POST  | /api/auth/register| 200 OK | public | create user account |
+| No | VERBS | ENDPOINTS                    | STATUS      | ACCESS | DESCRIPTION               |
+|----|-------|------------------------------|-------------|--------|---------------------------|
+| 1  | GET   | /                            | 200 OK      | public | Show welcome message      |
+| 2  | GET   | /api/auth/verify-email/:token| 200 OK      | public | Verifying email           |
+| 3  | POST  | /api/auth/register           | 201 CREATED | public | create user account       |
+| 4  | POST  | /api/auth/send-verify-email  | 200 OK      | public | Resend verification email |
 
 
 

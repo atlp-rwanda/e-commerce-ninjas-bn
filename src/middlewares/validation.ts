@@ -4,6 +4,7 @@ import authRepositories from "../modules/auth/repository/authRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
+import { decodeToken } from "../helpers";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -22,16 +23,51 @@ const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: R
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const email:string = req.body.email
-    const userExists:UsersAttributes = await authRepositories.findUserByEmail(email);
-    if (userExists) {
-        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "User already exists." });
-    }
-    return next();
+        const userExists: UsersAttributes = await authRepositories.findUserByAttributes("email", req.body.email);
+        if (userExists && userExists.isVerified === true) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists." });
+        }
+        if (userExists && userExists.isVerified === false) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists. Please verify your account" });
+        }
+        return next();
     } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR , message: error.message})
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
     }
-    
+
 }
 
-export {validation,isUserExist};
+const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        let user: any = null;
+        if (req?.params?.token) {
+            const decodedToken = await decodeToken(req.params.token);
+            user = await authRepositories.findUserByAttributes("id", decodedToken.id);
+        }
+        if (req?.body?.email) {
+            user = await authRepositories.findUserByAttributes("email", req.body.email);
+        }
+
+        if (!user) {
+            return res.status(httpStatus.NOT_FOUND).json({ message: "Account not found." });
+        }
+
+        if (user.isVerified) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: "Account already verified." });
+        }
+
+        const session = await authRepositories.findSessionByUserId(user.id);
+        if (!session) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid token." });
+        }
+
+        req.session = session;
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
+
+
+export { validation, isUserExist, isAccountVerified };

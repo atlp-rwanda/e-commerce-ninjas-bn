@@ -21,8 +21,8 @@
       "description": "Initial/Fake Endpoint | GET Route"
     },
     {
-      "name": "Register Route",
-      "description": "Registration for user | POST Route"
+      "name": "Authentication Routes",
+      "description": "Authentication Endpoint | POST Route"
     }
   ],
   "schemes": [
@@ -55,7 +55,7 @@
     "/api/auth/register": {
       "post": {
         "tags": [
-          "Register Route"
+          "Authentication Routes"
         ],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
@@ -82,7 +82,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Account created successfully.",
             "content": {
               "application/json": {
@@ -94,14 +94,127 @@
                     },
                     "data": {
                       "type": "object",
-                      "properties": {
-                        "register": {
-                          "$ref": "#/components/schemas/User"
-                        },
-                        "token": {
-                          "type": "string"
-                        }
-                      }
+                      "$ref": "#/components/schemas/User"
+                    }                      
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+      }
+    },
+    "/api/auth/send-verify-email": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Resend verification email again",
+        "description": "This endpoint allows user to request verification email again",
+        "requestBody": {
+          "description": "Sending email for verification",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification email sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email/{token}": {
+      "get": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Verify user email",
+        "description": "This endpoint allows user to verify their email",
+        "parameters": [
+            {
+              "in":"path",
+              "name": "token",
+              "type": "string",
+              "description":"parsing token"
+            }
+          ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
