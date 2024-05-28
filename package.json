@@ -36,8 +36,7 @@
     "exclude": [
       "src/index.spec.ts",
       "src/databases/**/*.*",
-      "src/modules/**/test/*.spec.ts",
-      "src/middlewares/index.ts"
+      "src/modules/**/test/*.spec.ts"
     ],
     "reporter": [
       "html",
