@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
+import userRepositories from "../modules/user/repository/userRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
@@ -70,4 +71,39 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
 }
 
 
-export { validation, isUserExist, isAccountVerified };
+
+
+// Define the Joi schema for updating user role
+const updateUserRoleSchema = Joi.object({
+  role: Joi.string().valid("Admin", "Customer", "Seller").required().messages({
+    "any.required": "The 'role' parameter is required.",
+    "string.base": "The 'role' parameter must be a string.",
+    "any.only": "The 'role' parameter must be one of ['Admin', 'Customer', 'Seller']."
+  })
+});
+
+
+// Middleware function for validating request body
+const validateUpdateUserRole = async (req: Request, res: Response, next: NextFunction) => {
+  // const { role } = req.body
+  const { id } = req.params
+  const { error } = updateUserRoleSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  //   Check if the User to change exists
+  const user = await userRepositories.getSingleUserFx(Number(id));
+  if (!user) {
+    return res
+      .status(404)
+      .json({ success: false, message: "User does't exist." });
+  }
+
+  next();
+};
+
+
+export { validation, isUserExist, isAccountVerified,validateUpdateUserRole };
