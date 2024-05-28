@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Users from "../../../databases/models/users"
-import Tokens from "../../../databases/models/tokens"
-import { IToken } from "../../../types"
+import Session from "../../../databases/models/session"
 
-const registerUser = async (body:any) =>{
+const createUser = async (body:any) =>{
     return await Users.create(body)
 }
 
-const findUserByEmail = async (email:string) =>{
-    return await Users.findOne({ where: { email: email} })
+
+const findUserByAttributes = async (key:string, value:any) =>{
+    return await Users.findOne({ where: { [key]: value} })
 }
 
-const addToken = async (body: IToken) =>{
-    return await Tokens.create(body);
+const UpdateUserByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
+    return await Users.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
 }
 
+const createSession = async (body: any) => {
+    return await Session.create(body);
+}
 
-export default { registerUser, findUserByEmail, addToken }
+const findSessionByUserId = async( userId:number ) => {
+    return await Session.findOne({ where: { userId } });
+}
+
+const destroySession = async (userId: number, token:string) =>{
+    return await Session.destroy({ where: {userId, token } });
+}
+
+export default { createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId }
