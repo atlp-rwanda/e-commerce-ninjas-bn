@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
+import userRepositories from "../modules/user/repository/userRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
@@ -81,22 +82,40 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
     }
 }
 
-const verifyUserCredentials = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user: UsersAttributes = await authRepositories.findUserByAttributes("email", req.body.email);
-        if (!user) {
-            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
-        }
-        const passwordMatches = await comparePassword(req.body.password, user.password)
-        if (!passwordMatches) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
-        (req as IRequest).loginUserId = user.id;
-        return next();
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error", data: error.message })
-    }
-
-}
 
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials };
+// Define the Joi schema for updating user role
+const updateUserRoleSchema = Joi.object({
+  role: Joi.string().valid("Admin", "Customer", "Seller").required().messages({
+    "any.required": "The 'role' parameter is required.",
+    "string.base": "The 'role' parameter must be a string.",
+    "any.only": "The 'role' parameter must be one of ['Admin', 'Customer', 'Seller']."
+  })
+});
+
+
+// Middleware function for validating request body
+const validateUpdateUserRole = async (req: Request, res: Response, next: NextFunction) => {
+  // const { role } = req.body
+  const { id } = req.params
+  const { error } = updateUserRoleSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  //   Check if the User to change exists
+  const user = await userRepositories.getSingleUserFx(Number(id));
+  if (!user) {
+    return res
+      .status(404)
+      .json({ success: false, message: "User does't exist." });
+  }
+
+  next();
+};
+
+
+export { validation, isUserExist, isAccountVerified,validateUpdateUserRole };
