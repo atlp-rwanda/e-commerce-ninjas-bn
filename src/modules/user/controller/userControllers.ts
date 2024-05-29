@@ -16,7 +16,7 @@ const updateUserRole = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "An error occurred while updating the user role."
+      message: error
     });
   }
 };
