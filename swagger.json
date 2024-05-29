@@ -249,7 +249,7 @@
         }
       }
     },
-    "/api/users/update-role/{userId}": {
+    "/api/users/admin-update-role/{userId}": {
       "put": {
         "tags": [
           "User Management Routes"

@@ -5,11 +5,11 @@ import express from "express";
 import userControllers from "../modules/user/controller/userControllers";
 
 // Import Validations
-import {validateUpdateUserRole} from "../middlewares/validation"
+import {updateUserRoleSchema, validateUpdateUserRole, validation} from "../middlewares/validation"
 
 const userRouter = express.Router();
 
 // Update the users role
-userRouter.put("/update-role/:id",validateUpdateUserRole, userControllers.updateUserRole);
+userRouter.put("/admin-update-role/:id",validation(updateUserRoleSchema),validateUpdateUserRole, userControllers.updateUserRole);
 
 export default userRouter;
