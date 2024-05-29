@@ -75,7 +75,7 @@ export default {
       status: {
         type: new DataTypes.STRING(128),
         allowNull: false,
-        defaultValue: true
+        defaultValue: "enabled"
       },
       createdAt: {
         allowNull: false,

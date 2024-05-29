@@ -162,7 +162,6 @@ describe("isUserExist Middleware", () => {
 
   afterEach(async () => {
     sinon.restore();
-    await Users.destroy({ where: {} });
   });
 
   it("should return user already exists", (done) => {
