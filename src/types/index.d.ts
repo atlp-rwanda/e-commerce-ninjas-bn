@@ -13,4 +13,5 @@ export interface ILogin{
 
 export interface IRequest extends Request{
     loginUserId?: number;
+    token;
 }

@@ -9,7 +9,6 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop)
 [![codecov](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn/graph/badge.svg?token=6ZWudFPM1S)](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn)
 
-
 ## HOSTED SERVER URL
 
 [https://e-commerce-ninjas-backend.onrender.com/](https://e-commerce-ninjas-backend.onrender.com/)
@@ -22,7 +21,6 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
 [https://github.com/atlp-rwanda/e-commerce-ninjas-bn](https://github.com/atlp-rwanda/e-commerce-ninjas-bn)
 
-
 ## COMPLETED FEATURES
 
 - Welcome Endpoint
@@ -30,19 +28,18 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
+- Logout Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
-
-| No | VERBS | ENDPOINTS                    | STATUS      | ACCESS | DESCRIPTION               |
-|----|-------|------------------------------|-------------|--------|---------------------------|
-| 1  | GET   | /                            | 200 OK      | public | Show welcome message      |
-| 2  | POST  | /api/auth/register           | 201 CREATED | public | create user account       |
-| 3  | GET   | /api/auth/verify-email/:token| 200 OK      | public | Verifying email           |
-| 4  | POST  | /api/auth/send-verify-email  | 200 OK      | public | Resend verification email |
-| 4  | POST  | /api/auth/login              | 200 OK      | public | Login with Email and Password |
-
-
+| No  | VERBS | ENDPOINTS                     | STATUS      | ACCESS | DESCRIPTION                   |
+| --- | ----- | ----------------------------- | ----------- | ------ | ----------------------------- |
+| 1   | GET   | /                             | 200 OK      | public | Show welcome message          |
+| 2   | POST  | /api/auth/register            | 201 CREATED | public | create user account           |
+| 3   | GET   | /api/auth/verify-email/:token | 200 OK      | public | Verifying email               |
+| 4   | POST  | /api/auth/send-verify-email   | 200 OK      | public | Resend verification email     |
+| 5   | POST  | /api/auth/login               | 200 OK      | public | Login with Email and Password |
+| 6   | POST  | /api/auth/logout              | 200 OK      | public | Logout user                   |
 
 ## INSTALLATION
 
@@ -89,34 +86,34 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 ## INITILIAZE SEQUELIZE CLI
 
 1. Initialize Sequelize CLI:
-    ```sh
-    npx sequelize-cli init
-    ```
+   ```sh
+   npx sequelize-cli init
+   ```
 2. Generate Seeder:
-    ```sh
-    npx sequelize-cli seed:generate --name name-of-your-seeder
-    ```
+   ```sh
+   npx sequelize-cli seed:generate --name name-of-your-seeder
+   ```
 3. Generate Migrations:
-    ```sh
-    npx sequelize-cli migration:generate --name name-of-your-migration
-    ```
+   ```sh
+   npx sequelize-cli migration:generate --name name-of-your-migration
+   ```
 4. Define Migration:
-    Edit the generated migration file to include the tables you want to create.
+   Edit the generated migration file to include the tables you want to create.
 5. Define Seeder Data:
-    Edit the generated seeder file to include the data you want to insert.
+   Edit the generated seeder file to include the data you want to insert.
 6. Run the Seeder:
-    ```sh
-    npm run createAllSeeders
-    ```
+   ```sh
+   npm run createAllSeeders
+   ```
 7. Run the Migration:
-    ```sh
-    npm run createAllTables
-    ```
+   ```sh
+   npm run createAllTables
+   ```
 8. Delete the Seeder:
-    ```sh
-    npm run deleteAllSeeders
-    ```
+   ```sh
+   npm run deleteAllSeeders
+   ```
 9. Delete the Migration:
-    ```sh
-    npm run deleteAllTables
-    ```
+   ```sh
+   npm run deleteAllTables
+   ```

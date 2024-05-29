@@ -9,8 +9,10 @@ import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
-import { sendVerificationEmail, transporter } from "../../../services/sendEmail";
-
+import {
+  sendVerificationEmail,
+  transporter,
+} from "../../../services/sendEmail";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -19,6 +21,7 @@ let userId: number = 0;
 let verifyToken: string | null = null;
 
 describe("Authentication Test Cases", () => {
+  let token;
 
   afterEach(async () => {
     const tokenRecord = await Session.findOne({ where: { userId } });
@@ -32,14 +35,17 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
         userId = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
   });
@@ -55,9 +61,12 @@ describe("Authentication Test Cases", () => {
         expect(res.status).to.equal(httpStatus.OK);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("status", httpStatus.OK);
-        expect(res.body).to.have.property("message", "Account verified successfully, now login.");
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
         done(err);
-      })
+      });
   });
 
   it("should return validation error and 400", (done) => {
@@ -65,7 +74,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword"
+        password: "userPassword",
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -75,13 +84,12 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -89,17 +97,55 @@ describe("Authentication Test Cases", () => {
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
         expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
         done(error);
       });
   });
 
+  it("Should be able to logout user", (done) => {
+    router()
+      .post(`/api/auth/logout`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.have.property("message", "Successfully logged out");
+        done(err);
+      });
+  });
+
+  it("Should return error on logout", (done) => {
+    sinon
+      .stub(authRepositories, "invalidateToken")
+      .throws(new Error("Database Error"));
+    router()
+      .post(`/api/auth/logout`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message", "Server error");
+        done(err);
+      });
+  });
+
+  it("Should return 401 Unauthorized if logout request lacks valid token", (done) => {
+    router()
+      .post(`/api/auth/logout`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.UNAUTHORIZED);
+        expect(res.body).to.have.property("message");
+        done(err);
+      });
+  });
+
   it("should return internal server error on login", (done) => {
-    sinon.stub(authRepositories, "createSession").throws(new Error("Database error"));
+    sinon
+      .stub(authRepositories, "createSession")
+      .throws(new Error("Database error"));
     router()
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -111,7 +157,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "user@example.com"
+        email: "user@example.com",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -125,12 +171,15 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "fakeemail@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("message", "Invalid Email or Password");
+        expect(response.body).to.have.property(
+          "message",
+          "Invalid Email or Password"
+        );
         done(error);
       });
   });
@@ -140,20 +189,21 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "fakePassword@123"
+        password: "fakePassword@123",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("message", "Invalid Email or Password");
+        expect(response.body).to.have.property(
+          "message",
+          "Invalid Email or Password"
+        );
         done(error);
       });
   });
-
 });
 
 describe("isUserExist Middleware", () => {
-
   before(() => {
     app.post("/auth/register", isUserExist, (req: Request, res: Response) => {
       res.status(200).json({ message: "success" });
@@ -170,7 +220,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -188,7 +238,7 @@ describe("isUserExist Middleware", () => {
       password: "hashedPassword",
       isVerified: false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
@@ -197,37 +247,49 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("status", httpStatus.BAD_REQUEST);
-        expect(res.body).to.have.property("message", "Account already exists. Please verify your account");
+        expect(res.body).to.have.property(
+          "message",
+          "Account already exists. Please verify your account"
+        );
         done(err);
       });
   });
 
-
   it("should return internal server error", (done) => {
-    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Database error"));
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .throws(new Error("Database error"));
     router()
       .post("/auth/register")
       .send({ email: "usertesting@gmail.com" })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property(
+          "status",
+          httpStatus.INTERNAL_SERVER_ERROR
+        );
         expect(res.body).to.have.property("message", "Database error");
         done(err);
       });
   });
 
   it("should return internal server error on login", (done) => {
-    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Database error"));
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .throws(new Error("Database error"));
     router()
       .post("/api/auth/login")
-      .send({ email: "ecommerceninjas45@gmail.com", password: "userPassword@123" })
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123",
+      })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         done(err);
@@ -247,14 +309,15 @@ describe("isUserExist Middleware", () => {
         done(err);
       });
   });
-
 });
 
 describe("POST /auth/register - Error Handling", () => {
   let registerUserStub: sinon.SinonStub;
 
   beforeEach(() => {
-    registerUserStub = sinon.stub(authRepositories, "createUser").throws(new Error("Test error"));
+    registerUserStub = sinon
+      .stub(authRepositories, "createUser")
+      .throws(new Error("Test error"));
   });
 
   afterEach(() => {
@@ -269,7 +332,7 @@ describe("POST /auth/register - Error Handling", () => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
           status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error"
+          message: "Test error",
         });
         done(err);
       });
@@ -291,7 +354,7 @@ describe("isAccountVerified Middleware", () => {
         expect(res.status).to.equal(httpStatus.NOT_FOUND);
         expect(res.body).to.have.property("message", "Account not found.");
         done(err);
-      })
+      });
   });
 
   it("should return 'Account already verified' if user is already verified", (done) => {
@@ -301,7 +364,7 @@ describe("isAccountVerified Middleware", () => {
       password: "hashedPassword",
       isVerified: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
@@ -311,12 +374,13 @@ describe("isAccountVerified Middleware", () => {
       .send({ email: "user@example.com" })
       .end((err, res) => {
         expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(res.body).to.have.property("message", "Account already verified.");
+        expect(res.body).to.have.property(
+          "message",
+          "Account already verified."
+        );
         done(err);
       });
   });
-
-
 });
 
 describe("Authentication Test Cases", () => {
@@ -324,8 +388,14 @@ describe("Authentication Test Cases", () => {
   let findSessionByUserIdStub: sinon.SinonStub;
 
   beforeEach(() => {
-    findUserByAttributesStub = sinon.stub(authRepositories, "findUserByAttributes");
-    findSessionByUserIdStub = sinon.stub(authRepositories, "findSessionByUserId");
+    findUserByAttributesStub = sinon.stub(
+      authRepositories,
+      "findUserByAttributes"
+    );
+    findSessionByUserIdStub = sinon.stub(
+      authRepositories,
+      "findSessionByUserId"
+    );
   });
 
   afterEach(() => {
@@ -344,7 +414,10 @@ describe("Authentication Test Cases", () => {
       .send({ email: "user@example.com" })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
-        expect(res.body).to.have.property("message", "Verification email sent successfully.");
+        expect(res.body).to.have.property(
+          "message",
+          "Verification email sent successfully."
+        );
         done(err);
       });
   });
@@ -353,7 +426,7 @@ describe("Authentication Test Cases", () => {
     const mockSession = { token: "testToken" };
 
     findUserByAttributesStub.resolves(mockUser);
-    findSessionByUserIdStub.resolves(mockSession)
+    findSessionByUserIdStub.resolves(mockSession);
     findSessionByUserIdStub.resolves(null);
     router()
       .post("/api/auth/send-verify-email")
@@ -392,5 +465,4 @@ describe("sendVerificationEmail", () => {
       expect(error).to.be.an("error");
     }
   });
-
 });

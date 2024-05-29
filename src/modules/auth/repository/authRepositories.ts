@@ -27,4 +27,16 @@ const destroySession = async (userId: number, token:string) =>{
     return await Session.destroy({ where: {userId, token } });
 }
 
-export default { createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId }
+const invalidateToken = async (token: string) => {
+  return await Session.destroy({ where: { token } });
+};
+
+export default {
+  createUser,
+  createSession,
+  findUserByAttributes,
+  destroySession,
+  UpdateUserByAttributes,
+  findSessionByUserId,
+  invalidateToken,
+};
