@@ -1,4 +1,3 @@
-/* eslint-disable comma-dangle */
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -16,20 +15,20 @@ const sequelizeConfig = {
     ...commonDatabaseConfig,
     url: process.env.DATABASE_URL_TEST,
     dialectOptions: {
-      // ssl: {
-      //   require: true,
-      //   rejectUnauthorized: false
-      // }
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
   },
   production: {
     ...commonDatabaseConfig,
     url: process.env.DATABASE_URL_PRO,
     dialectOptions: {
-      // ssl: {
-      //   require: true,
-      //   rejectUnauthorized: false
-      // }
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
   },
 };
