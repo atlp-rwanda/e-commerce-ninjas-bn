@@ -41,6 +41,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | 3  | GET   | /api/auth/verify-email/:token| 200 OK      | public | Verifying email           |
 | 4  | POST  | /api/auth/send-verify-email  | 200 OK      | public | Resend verification email |
 | 4  | POST  | /api/auth/login              | 200 OK      | public | Login with Email and Password |
+| 5 | PUT    | /api/users/admin-update-role/:id   | 200 OK      | public | Update the user role by admin|
 
 
 
