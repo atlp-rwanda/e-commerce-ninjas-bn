@@ -6,8 +6,8 @@ import userRepositories from "../repository/userRepositories";
 
 const updateUserRole = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const  role  = req.body.role;
-  try { 
+  const role = req.body.role;
+  try {
     await userRepositories.updateUserRoleFx(Number(id), String(role));
     const updatedUser = await userRepositories.getSingleUserFx(Number(id));
     return res.status(200).json({
@@ -23,5 +23,6 @@ const updateUserRole = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export default { updateUserRole };
