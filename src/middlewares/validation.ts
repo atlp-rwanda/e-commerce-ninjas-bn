@@ -84,7 +84,6 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
 
 
 
-// Define the Joi schema for updating user role
 const updateUserRoleSchema = Joi.object({
     role: Joi.string().valid("Admin", "Buyer", "Seller").required().messages({
         "any.required": "The 'role' parameter is required.",
@@ -94,22 +93,20 @@ const updateUserRoleSchema = Joi.object({
 });
 
 
-// Middleware function for validating request body
 const validateUpdateUserRole = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-//    const role = req.body.role;
     const { error } = updateUserRoleSchema.validate(req.body);
     if (error) {
-        return res.status(400).json({
-            success: false,
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: httpStatus.BAD_REQUEST,
             message: error.details[0].message
         });
     }
     const user = await authRepositories.findUserByAttributes("id",id)
     if (!user) {
         return res
-            .status(404)
-            .json({ success: false, message: "User doesn't exist." });
+            .status(httpStatus.NOT_FOUND)
+            .json({status:httpStatus.NOT_FOUND, message: "User doesn't exist." });
     }
     next();
 };
