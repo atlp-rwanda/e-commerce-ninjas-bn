@@ -313,51 +313,49 @@ describe("Admin - Changing user roles", () => {
         done(error);
       });
   });
+  it("Should notify if the role is updated successfully", (done) => {
+    router().put(`/api/users/update-role/${userId}`).send({ role: "Admin" }).end((error, response) => {
+      expect(response.status).to.equal(httpStatus.OK);
+      expect(response.body).to.have.property("message", "User role updated successfully");
+      done(error);
+    });
+  })
+
+  it("Should notify if the invalid id is sent to server", (done) => {
+    router().put(`/api/users/update-role/invalid_id`).send({ role: "Admin" }).end((error, response) => {
+      expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(response.body).to.have.property("message", "An error occurred while updating the user role.");
+      done(error);
+    });
+  })
 
   it("Should notify if no role is specified", (done) => {
     router()
       .put(`/api/users/update-role/${userId}`)
       .end((error, response) => {
-        expect(response.status).to.equal(400);
-        expect(response.body).to.have.property("success", false);
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         done(error);
       });
   });
 
   it("Should notify if the role is other than ['Admin', 'Buyer', 'Seller']", (done) => {
     router().put(`/api/users/update-role/${userId}`).send({ role: "Hello" }).end((error, response) => {
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.property("success", false);
+      expect(response.status).to.equal(httpStatus.BAD_REQUEST);
       expect(response.body).to.have.property("message", "The 'role' parameter must be one of ['Admin', 'Buyer', 'Seller'].");
       done(error);
     });
   })
 
-  // it("Should notify if the user is not found", (done)=>{
-  //   router().put(`/api/users/update-role/1039482383218223289321242545`).send({ role: "Admin" }).end((error, response) => {
-  //     expect(response.status).to.equal(404);
-  //     expect(response.body).to.have.property("success", false);
-  //     expect(response.body).to.have.property("message", "User doesn't exist.");
-  //     done(error);
-  //   });
-  // })
-
-
-  // it("Should notify if the invalid id is sent to server", (done)=>{
-  //   router().put(`/api/users/update-role/invalid_id`).send({ role: "Admin" }).end((error, response) => {
-  //     expect(response.status).to.equal(500);
-  //     expect(response.body).to.have.property("success", false);
-  //     expect(response.body).to.have.property("message", "An error occurred while updating the user role.");
-  //     done(error);
-  //   });
-  // })
-
-  it("Should notify if the role is updated successfully", (done)=>{
-    router().put(`/api/users/update-role/${userId}`).send({ role: "Admin" }).end((error, response) => {
-      expect(response.status).to.equal(200);
-      expect(response.body).to.have.property("success", true);
-      expect(response.body).to.have.property("message", "User role updated successfully");
+  it("Should notify if the user is not found", (done) => {
+    router().put(`/api/users/update-role/1039482383218223289321242545`).send({ role: "Admin" }).end((error, response) => {
+      expect(response.status).to.equal(httpStatus.NOT_FOUND);
+      expect(response.body).to.have.property("message", "User doesn't exist.");
       done(error);
     });
   })
+
+
+
+
+
 });
