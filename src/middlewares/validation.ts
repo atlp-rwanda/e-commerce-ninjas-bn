@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
-import userRepositories from "../modules/user/repository/userRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
@@ -94,7 +93,7 @@ const validateUpdateUserRole = async (req: Request, res: Response, next: NextFun
             message: error.details[0].message
         });
     }
-    const user = await userRepositories.getSingleUserFx(Number(id));
+    const user = await authRepositories.findUserByAttributes("id",id)
     if (!user) {
         return res
             .status(404)
