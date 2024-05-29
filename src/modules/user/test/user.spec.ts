@@ -343,7 +343,7 @@ describe("Admin - Changing user roles", () => {
 
   it("Should return error when invalid Id is passed", (done) => {
     router()
-      .put(`/api/users/admin-update-role/invalid-id`) // Ensure this matches your actual route
+      .put("/api/users/admin-update-role/invalid-id") // Ensure this matches your actual route
       .send({ role: "Admin" })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
@@ -355,11 +355,11 @@ describe("Admin - Changing user roles", () => {
 
   it("Should return 404 if user not found", (done) => {
     router()
-      .put('/api/users/admin-update-role/9483743213')
+      .put("/api/users/admin-update-role/9483743213")
       .send({ role: "Admin" })
       .end((error,response)=> {
         expect(response.status).to.equal(httpStatus.NOT_FOUND);
-        expect(response).to.have.property('status',httpStatus.NOT_FOUND);
+        expect(response).to.have.property("status",httpStatus.NOT_FOUND);
         expect(response.body).to.have.property("message","User doesn't exist.");
         done()
       })
