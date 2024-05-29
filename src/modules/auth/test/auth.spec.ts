@@ -304,7 +304,6 @@ describe("isAccountVerified Middleware", () => {
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
-    sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
 
     router()
       .post("/api/auth/send-verify-email")
