@@ -31,7 +31,6 @@ describe("Admin update User roles", () => {
   });
 
   it("Should notify if no role is specified", async () => {
-    console.log('UserID before role update without role:', userId);
 
     const response = await router()
       .put(`/api/users/admin-update-role/${userId}`);
@@ -41,7 +40,6 @@ describe("Admin update User roles", () => {
   });
 
   it("Should notify if the role is other than ['Admin', 'Buyer', 'Seller']", async () => {
-    console.log('UserID before invalid role update:', userId);
 
     const response = await router()
       .put(`/api/users/admin-update-role/${userId}`)
@@ -76,7 +74,7 @@ describe("Admin update User roles", () => {
 
 
   it("Should return 404 if user is not found", (done) => {
-    router().put('/api/users/admin-update-role/10001').send({ role: "Admin" }).end((err, res) => {
+    router().put("/api/users/admin-update-role/10001").send({ role: "Admin" }).end((err, res) => {
       expect(res).to.have.status(httpStatus.NOT_FOUND);
       expect(res.body).to.be.an("object");
       expect(res.body).to.have.property("message", "User doesn't exist.")
