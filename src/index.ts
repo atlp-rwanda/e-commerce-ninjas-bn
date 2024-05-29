@@ -7,6 +7,7 @@ import SwaggerUi from "swagger-ui-express";
 import Document from "../swagger.json";
 import router from "./routes";
 
+
 dotenv.config();
 const app: Express = express();
 
@@ -16,10 +17,10 @@ app.use(express.json());
 app.use(morgan(process.env.NODE_EN));
 app.use(compression());
 app.use(cors());
-app.use("/api",router);
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
+app.use("/api", router);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("**", (req: Request, res: Response) => {
   res
     .status(200)
     .json({ status: true, message: "Welcome to the e-Commerce Ninjas BackEnd." });
