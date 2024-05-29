@@ -34,7 +34,8 @@
     "https"
   ],
   "consumes": [
-    "application/json"
+    "application/json",
+    "none"
   ],
   "produces": [
     "application/json"
@@ -79,8 +80,11 @@
                   }
                 },
                 "required": [
+                  
                   "email",
+                 
                   "password"
+                
                 ]
               }
             }
@@ -150,7 +154,9 @@
                   }
                 },
                 "required": [
+                  
                   "email"
+                
                 ]
               }
             }
