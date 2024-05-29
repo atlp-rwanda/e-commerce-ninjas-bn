@@ -313,6 +313,7 @@ describe("Admin - Changing user roles", () => {
         done(error);
       });
   });
+
   it("Should notify if the role is updated successfully", (done) => {
     router().put(`/api/users/update-role/${userId}`).send({ role: "Admin" }).end((error, response) => {
       expect(response.status).to.equal(httpStatus.OK);
