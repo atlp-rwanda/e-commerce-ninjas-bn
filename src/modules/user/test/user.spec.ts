@@ -135,7 +135,7 @@ describe("User Repository Functions", () => {
 
   describe("Admin update User roles", () => {
 
-    let userId: number = null;
+    let userIdd: number = null;
   
   
     it("should register a new user", (done) => {
@@ -149,7 +149,7 @@ describe("User Repository Functions", () => {
           expect(response.status).to.equal(httpStatus.CREATED);
           expect(response.body).to.be.an("object");
           expect(response.body).to.have.property("data");
-          userId = response.body.data.user.id;
+          userIdd = response.body.data.user.id;
           expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
           done(error);
         });
@@ -158,7 +158,7 @@ describe("User Repository Functions", () => {
     it("Should notify if no role is specified", async () => {
   
       const response = await router()
-        .put(`/api/users/admin-update-role/${userId}`);
+        .put(`/api/users/admin-update-role/${userIdd}`);
   
       expect(response.status).to.equal(httpStatus.BAD_REQUEST);
       expect(response.body).to.have.property("message");
@@ -167,7 +167,7 @@ describe("User Repository Functions", () => {
     it("Should notify if the role is other than ['Admin', 'Buyer', 'Seller']", async () => {
   
       const response = await router()
-        .put(`/api/users/admin-update-role/${userId}`)
+        .put(`/api/users/admin-update-role/${userIdd}`)
         .send({ role: "Hello" });
   
       expect(response.status).to.equal(httpStatus.BAD_REQUEST);
@@ -186,7 +186,7 @@ describe("User Repository Functions", () => {
   
     it("Should update User and return updated user", (done) => {
       router()
-        .put(`/api/users/admin-update-role/${userId}`)
+        .put(`/api/users/admin-update-role/${userIdd}`)
         .send({ role: "Admin" })
         .end((err, res) => {
           expect(res).to.have.status(httpStatus.OK);
