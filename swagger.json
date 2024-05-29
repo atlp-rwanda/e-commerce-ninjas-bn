@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
-    "description": "APIs for the E-commmerce-ninjas  Project",
+    "description": "APIs for the E-commerce-ninjas Project",
     "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
       "email": "e-commerce-ninjas@andela.com"
@@ -25,8 +25,8 @@
       "description": "Authentication Endpoint | POST Route"
     },
     {
-      "name": "Admin User Routes",
-      "description": "Change User Status Endpoint | PUT Route"
+      "name": "User Management Routes",
+      "description": "User Management Endpoints"
     }
   ],
   "schemes": [
@@ -34,12 +34,10 @@
     "https"
   ],
   "consumes": [
-    "application/json",
-    "none"
+    "application/json"
   ],
   "produces": [
-    "application/json",
-    "none"
+    "application/json"
   ],
   "paths": {
     "/": {
