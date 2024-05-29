@@ -76,7 +76,10 @@
                     "format": "password"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -93,33 +96,35 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/User"
-                    }                      
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+                      "user": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/User"
+                      }
                     }
                   }
                 }
               }
             }
           }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer"
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/auth/send-verify-email": {
@@ -142,7 +147,9 @@
                     "format": "email"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -195,13 +202,13 @@
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
-            {
-              "in":"path",
-              "name": "token",
-              "type": "string",
-              "description":"parsing token"
-            }
-          ],
+          {
+            "in": "path",
+            "name": "token",
+            "type": "string",
+            "description": "parsing token"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Email verified successfully.",
@@ -241,6 +248,49 @@
           }
         }
       }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Login User",
+        "description": "Login a registered user by providing Email and Password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "yourpassword"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Invalid credentials / Bad request"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -275,7 +325,10 @@
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"],
+            "enum": [
+              "male",
+              "female"
+            ],
             "nullable": true
           },
           "birthDate": {

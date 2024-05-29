@@ -4,7 +4,8 @@ import authRepositories from "../modules/auth/repository/authRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
-import { decodeToken } from "../helpers";
+import { comparePassword, decodeToken } from "../helpers";
+import { IRequest } from "../types";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -20,22 +21,33 @@ const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: R
     }
 };
 
-
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userExists: UsersAttributes = await authRepositories.findUserByAttributes("email", req.body.email);
-        if (userExists && userExists.isVerified === true) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists." });
+        let userExists: UsersAttributes | null = null;
+
+        if (req.body.email) {
+            userExists = await authRepositories.findUserByAttributes("email", req.body.email);
+            if (userExists) {
+                if (userExists.isVerified) {
+                    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists." });
+                }
+                return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists. Please verify your account" });
+            }
         }
-        if (userExists && userExists.isVerified === false) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists. Please verify your account" });
+
+        if (req.params.id) {
+            userExists = await authRepositories.findUserByAttributes("id", req.params.id);
+            if (userExists) {
+                return next();
+            }
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "User not found" });
         }
+
         return next();
     } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-
-}
+};
 
 const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
     try {
@@ -69,5 +81,22 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
     }
 }
 
+const verifyUserCredentials = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user: UsersAttributes = await authRepositories.findUserByAttributes("email", req.body.email);
+        if (!user) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
+        }
+        const passwordMatches = await comparePassword(req.body.password, user.password)
+        if (!passwordMatches) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
+        (req as IRequest).loginUserId = user.id;
+        return next();
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error", data: error.message })
+    }
 
-export { validation, isUserExist, isAccountVerified };
+}
+
+
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials };

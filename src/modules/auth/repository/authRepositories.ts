@@ -6,6 +6,7 @@ const createUser = async (body:any) =>{
     return await Users.create(body)
 }
 
+
 const findUserByAttributes = async (key:string, value:any) =>{
     return await Users.findOne({ where: { [key]: value} })
 }
@@ -26,4 +27,4 @@ const destroySession = async (userId: number, token:string) =>{
     return await Session.destroy({ where: {userId, token } });
 }
 
-export default {createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId}
+export default { createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId }
