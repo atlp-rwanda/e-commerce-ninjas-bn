@@ -5,6 +5,7 @@ import compression from "compression";
 import cors from "cors";
 import SwaggerUi from "swagger-ui-express";
 import Document from "../swagger.json";
+import router from "./routes";
 
 dotenv.config();
 const app: Express = express();
@@ -12,9 +13,10 @@ const app: Express = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use(morgan(process.env.NODE));
+app.use(morgan(process.env.NODE_EN));
 app.use(compression());
 app.use(cors());
+app.use("/api",router);
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 
 app.get("/", (req: Request, res: Response) => {
@@ -26,6 +28,5 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Server is running on the port ${PORT}`);
 });
-
 
 export default app;
