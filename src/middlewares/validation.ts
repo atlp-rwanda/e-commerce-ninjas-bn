@@ -93,23 +93,33 @@ const updateUserRoleSchema = Joi.object({
 });
 
 
+
 const validateUpdateUserRole = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { error } = updateUserRoleSchema.validate(req.body);
+    
     if (error) {
         return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
             message: error.details[0].message
         });
     }
-    const user = await authRepositories.findUserByAttributes("id",id)
-    if (!user) {
-        return res
-            .status(httpStatus.NOT_FOUND)
-            .json({status:httpStatus.NOT_FOUND, message: "User doesn't exist." });
+
+    try {
+        const user = await authRepositories.findUserByAttributes("id", id);
+        if (!user) {
+            return res
+                .status(httpStatus.NOT_FOUND)
+                .json({ status: httpStatus.NOT_FOUND, message: "User doesn't exist." });
+        }
+        next();
+    } catch (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: err.message
+        });
     }
-    next();
 };
 
 
-export { validation, isUserExist, isAccountVerified, validateUpdateUserRole };
+export { validation, isUserExist, isAccountVerified, validateUpdateUserRole, updateUserRoleSchema };
