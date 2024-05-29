@@ -26,13 +26,14 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/register")
       .send({
         email: "niyofo8179@acuxi.com",
+        email: "niyofo8179@acuxi.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
-        userId = response.body.data.user.id;
+        userId = response.body.data.user.user.id;
         expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
         done(error);
       });
@@ -217,27 +218,51 @@ describe("Admin update User roles", () => {
     });
   })
 
-  it("Should return error when invalid Id is passed", (done) => {
+  it("Should update User and return updated user", (done) => {
     router()
-      .put("/api/users/admin-update-role/invalid-id") // Ensure this matches your actual route
+      .put(`/api/users/admin-update-role/${userId}`)
       .send({ role: "Admin" })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(response).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
-        // expect(response.body).to.have.property("message", `invalid input syntax for type integer: "invalid-id"`);
-        done();
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "User role updated successfully");
+        done(err);
       });
   });
 
-  it("Should return 404 if user not found", (done) => {
-    router()
-      .put("/api/users/admin-update-role/9483743213")
-      .send({ role: "Admin" })
-      .end((error,response)=> {
-        expect(response.status).to.equal(httpStatus.NOT_FOUND);
-        expect(response).to.have.property("status",httpStatus.NOT_FOUND);
-        expect(response.body).to.have.property("message","User doesn't exist.");
-        done()
-      })
+
+
+  it("Should return 404 if user is not found", (done) => {
+    router().put('/api/users/admin-update-role/10001').send({ role: "Admin" }).end((err, res) => {
+      expect(res).to.have.status(httpStatus.NOT_FOUND);
+      expect(res.body).to.be.an("object");
+      expect(res.body).to.have.property("message", "User doesn't exist.")
+      done(err)
+    })
   })
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
