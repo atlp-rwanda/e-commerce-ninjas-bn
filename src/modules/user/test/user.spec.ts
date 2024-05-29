@@ -219,7 +219,7 @@ describe("Admin update User roles", () => {
 
   it("Should return error when invalid Id is passed", (done) => {
     router()
-      .put('/api/users/admin-update-role/invalid-id') // Ensure this matches your actual route
+      .put(`/api/users/admin-update-role/invalid-id`) // Ensure this matches your actual route
       .send({ role: "Admin" })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
