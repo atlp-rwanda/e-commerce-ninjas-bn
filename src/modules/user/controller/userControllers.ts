@@ -29,4 +29,5 @@ const updateUserRole = async (req: Request, res: Response) => {
   }
 };
 
+
 export default { updateUserStatus,updateUserRole };// user Controllers
