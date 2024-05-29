@@ -10,11 +10,18 @@ env:
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  DATABASE_PORT_TEST: ${{ secrets.DATABASE_PORT_TEST }}
-  DATABASE_HOST_TEST: ${{ secrets.DATABASE_HOST_TEST }}
-  DATABASE_NAME_TEST: ${{ secrets.DATABASE_NAME_TEST }}
-  DATABASE_USERNAME_TEST: ${{ secrets.DATABASE_USERNAME_TEST }}
-  DATABASE_PASSWORD_TEST: ${{ secrets.DATABASE_PASSWORD_TEST }}
+  DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
+  NODE_EN: ${{ secrets.NODE_EN }}
+  API_KEY: ${{ secrets.API_KEY }}
+  API_SECRET: ${{ secrets.API_SECRET }}
+  CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  SERVER_URL_PRO : ${{ secrets.SERVER_URL_PRO }}
+  SMTP_HOST_PORT: ${{ secrets.SMTP_HOST_PORT }}
+  MP : ${{ secrets.MP }}
+  SMTP_HOST: ${{ secrets.SMTP_HOST }}
+  MAIL_ID: ${{ secrets.MAIL_ID }}
+  DB_HOST_TYPE: ${{ secrets.DB_HOST_TYPE }}
 
 jobs:
   build:
@@ -26,20 +33,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: npm install
-      - run: npm ci
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set NODE_ENV to test
+        run: echo "NODE_ENV=test" >> $GITHUB_ENV
+
       - run: npm run build --if-present
+
       - run: npm test --if-present
+
       - run: npm run coverage --if-present
+
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         env:

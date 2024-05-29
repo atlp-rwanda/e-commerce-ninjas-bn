@@ -1,4 +1,4 @@
-# Team Ninjas Backend
+# TEAM NINJAS BACKEND
 
 This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 
@@ -8,6 +8,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/e-commerce-ninjas-bn/badge.svg)](https://coveralls.io/github/atlp-rwanda/e-commerce-ninjas-bn)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atlp-rwanda/e-commerce-ninjas-bn/tree/develop)
 [![codecov](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn/graph/badge.svg?token=6ZWudFPM1S)](https://codecov.io/gh/atlp-rwanda/e-commerce-ninjas-bn)
+
 
 ## HOSTED SERVER URL
 
@@ -22,24 +23,28 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 [https://github.com/atlp-rwanda/e-commerce-ninjas-bn](https://github.com/atlp-rwanda/e-commerce-ninjas-bn)
 
 
-## Completed Features
+## COMPLETED FEATURES
 
-- Setup an empty express boilerplate with dotenv
-- setup API documentation using swagger
-- Integrate CircleCI, CodeClimate, Test coverage and HoundCI
-- Link PivotalTracker with Github
-- Setup unit testing
+- Welcome Endpoint
+- Register Endpoint
+- Verification Email Endpoint
+- Resend verification Endpoint
+- Login Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
 
-| No | VERBS | ENDPOINTS | STATUS | ACCESS | DESCRIPTION         |
-|----|-------|-----------|--------|--------|-------------------- |
-| 1  | GET   | /         | 200 OK | public | Show welcome message|
+| No | VERBS | ENDPOINTS                    | STATUS      | ACCESS | DESCRIPTION               |
+|----|-------|------------------------------|-------------|--------|---------------------------|
+| 1  | GET   | /                            | 200 OK      | public | Show welcome message      |
+| 2  | POST  | /api/auth/register           | 201 CREATED | public | create user account       |
+| 3  | GET   | /api/auth/verify-email/:token| 200 OK      | public | Verifying email           |
+| 4  | POST  | /api/auth/send-verify-email  | 200 OK      | public | Resend verification email |
+| 4  | POST  | /api/auth/login              | 200 OK      | public | Login with Email and Password |
 
 
 
-## Installation
+## INSTALLATION
 
 1. Clone the repository:
 
@@ -60,7 +65,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
    npm run dev
    ```
 
-## Folder Structure
+## FOLDER STRUCTURE
 
 - `.env`: Secure environment variables.
 - `src/`: Source code directory.
@@ -81,10 +86,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
   - `services/`: Service functions like sendEmails.
   - `index.ts`: Startup file for all requests.
 
-
-
-
-## Initialize Sequelize CLI
+## INITILIAZE SEQUELIZE CLI
 
 1. Initialize Sequelize CLI:
     ```sh
@@ -118,5 +120,3 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
     ```sh
     npm run deleteAllTables
     ```
-
-
