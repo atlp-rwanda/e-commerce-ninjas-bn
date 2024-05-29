@@ -51,14 +51,14 @@ describe("protect middleware", () => {
     const user: UsersAttributes = {
       createdAt: new Date(),
       updatedAt: new Date(),
-      firstName: "hyassin509",
-      lastName: "assin509",
-      email: "hyassin509@gmail.com",
+      firstName: "fabrice",
+      lastName: "dushimimana",
+      email: "fabrice@gmail.com",
       password: "$321!pass!123$",
-      phone: 25089767899,
+      phone: 250782355975,
       profilePicture: "",
-      gender: "female",
-      birthDate: "2-2-2014",
+      gender: "male",
+      birthDate: "3-9-2010",
       language: "english",
       currency: "USD",
       role: "buyer",
@@ -66,11 +66,9 @@ describe("protect middleware", () => {
     };
 
     sinon.stub(jwt, "verify").resolves(decodedToken);
-    // sinon.stub(Users, "findByPk").resolves(user);
 
     await protect(req, res, next);
 
-    // expect(Users.findByPk.toString.have.been.called(decodedToken.id)).to.be.true;
     expect(req.user).to.equal(user);
     expect(next.calledOnce).to.be.true;
   });
