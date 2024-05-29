@@ -1,5 +1,6 @@
 import jwt,{JwtPayload} from "jsonwebtoken"
 import dotenv from "dotenv"
+import bcrypt from "bcrypt"
 
 dotenv.config
 
@@ -12,4 +13,8 @@ dotenv.config
     ;
   };
 
-  export { generateToken, decodeToken}
+  const comparePassword = async (password: string, hashedPassword: string) =>{
+    return await bcrypt.compare(password, hashedPassword);
+}
+
+  export { generateToken, decodeToken, comparePassword }

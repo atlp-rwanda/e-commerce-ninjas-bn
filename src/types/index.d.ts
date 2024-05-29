@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export interface IToken{
     userId: number;
     device: string;
@@ -7,4 +9,8 @@ export interface IToken{
 export interface ILogin{
     email: string;
     password: string;
+}
+
+export interface IRequest extends Request{
+    loginUserId?: number;
 }

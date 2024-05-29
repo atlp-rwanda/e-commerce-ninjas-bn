@@ -5,7 +5,7 @@ interface User {
     password: string;
 }
 
-const registerSchema = Joi.object<User>({
+const credentialSchema = Joi.object<User>({
     email: Joi.string().email().required().messages({
         "string.base": "email should be a type of text",
         "string.email": "email must be a valid email",
@@ -31,4 +31,5 @@ const emailSchema = Joi.object<User>({
 
 });
 
-export {registerSchema, emailSchema};
+
+export { credentialSchema, emailSchema };
