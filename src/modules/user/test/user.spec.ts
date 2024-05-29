@@ -34,13 +34,7 @@ describe("Admin update User roles", () => {
     });
   })
 
-  it("Should notify if the invalid id is sent to server", (done) => {
-    router().put(`/api/users/update-role/invalid_id`).send({ role: "Admin" }).end((error, response) => {
-      expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(response.body).to.have.property("message", "An error occurred while updating the user role.");
-      done(error);
-    });
-  })
+
 
   it("Should notify if no role is specified", (done) => {
     router()
@@ -68,7 +62,13 @@ describe("Admin update User roles", () => {
   })
 
 
-
+  it("Should notify if the invalid id is sent to server", (done) => {
+    router().put(`/api/users/update-role/invalid_id`).send({ role: "Admin" }).end((error, response) => {
+      expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(response.body).to.have.property("message", "An error occurred while updating the user role.");
+      done(error);
+    });
+  })
 
 
 });
