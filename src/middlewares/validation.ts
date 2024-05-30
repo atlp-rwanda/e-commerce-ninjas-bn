@@ -26,18 +26,6 @@ const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: R
     }
 };
 
-const isAccountExist = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const email: string = req.body.email;
-        const userExists: UsersAttributes | null = await authRepositories.findUserByEmail(email);
-        if (userExists) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "User already exists." });
-        }
-        return next();
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-    }
-};
 
 const validateParams = (schema: Joi.ObjectSchema | Joi.ArraySchema) => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -83,4 +71,4 @@ const isEmailExist = async (req: Request, res: Response, next: NextFunction) => 
 
 
 
-export { validation, isAccountExist,  validateParams, validateResetToken, isEmailExist };
+export { validation, validateParams, validateResetToken, isEmailExist };

@@ -502,7 +502,7 @@
                     "format": "password"
                   }
                 },
-                "required": ["token", "password"]
+                "required": ["token", "password", "confirmPassword"]
             }
             }
           }

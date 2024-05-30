@@ -88,7 +88,7 @@ export default {
       },
       lastPasswordChange: { 
         type: new DataTypes.DATE,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

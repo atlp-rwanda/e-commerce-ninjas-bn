@@ -19,7 +19,6 @@ export interface UsersAttributes {
     status: boolean;
     resetPasswordToken?: string;  
     resetPasswordExpires?: Date;  
-    lastPasswordChange?: Date; 
     createdAt: Date;
     updatedAt: Date;    
 }
@@ -44,7 +43,6 @@ module.exports = (sequelize: Sequelize) => {
         declare password: string;
         declare resetPasswordToken?: string;  
         declare resetPasswordExpires?: Date; 
-        declare lastPasswordChange?: Date; 
         declare createdAt: Date;
         declare updatedAt: Date;
 
@@ -125,11 +123,6 @@ module.exports = (sequelize: Sequelize) => {
             resetPasswordExpires: {  
                 type: DataTypes.DATE,
                 allowNull: true
-            },
-            lastPasswordChange: { 
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
             },
             createdAt: {
                 field: "createdAt",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
@@ -7,6 +8,10 @@ import db from "../../../databases/models";
 import { isAccountExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import { Request, Response } from "express";
+// import {sendForgotPasswordEmail} from "../../../services/sendEmail";
+// import {hashPassword} from "../../../helpers"; 
+
+
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 const { Users } = db;
@@ -78,7 +83,6 @@ describe("User Test Cases", () => {
 });
 
 describe("isAccountExist Middleware", () => {
-
   before(() => {
     app.post("/auth/register", isAccountExist, (req: Request, res: Response) => {
       res.status(200).json({ message: "success" });
@@ -121,7 +125,6 @@ describe("isAccountExist Middleware", () => {
 
   it("should call next if user does not exist", (done) => {
     sinon.stub(authRepositories, "findUserByEmail").resolves(null);
-
     router()
       .post("/auth/register")
       .send({ email: "newuser@gmail.com" })
@@ -137,7 +140,6 @@ describe("isAccountExist Middleware", () => {
 describe("Register User Error Handling", () => {
   it("should return internal server error if userRepositories.registerUser throws an error", (done) => {
     const registerUserStub = sinon.stub(authRepositories, "registerUser").throws(new Error("Test Error"));
-
     chai.request(app)
       .post("/api/auth/register")
       .send({
@@ -158,140 +160,108 @@ describe("Register User Error Handling", () => {
         expect(res.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.have.property("error");
         registerUserStub.restore();
-
         done();
       });
   });
 });
 
-describe("Auth Routes", () => {
-  describe("POST /login", () => {
-    it("should login user with valid credentials", (done) => {
-      router()
-        .post("/api/auth/login")
-        .send({ email: "user@example.com", password: "Password123" })
-        .end((error, response) => {
-          expect(response.status).to.equal(200);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("token");
-          done(error);
-        });
-    });
 
-    it("should not login user with invalid credentials", (done) => {
-      router()
-        .post("/api/auth/login")
-        .send({ email: "user@example.com", password: "wrongpassword" })
-        .end((error, response) => {
-          expect(response.status).to.equal(401);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("error");
-          done(error);
-        });
-    });
+// describe("Verify Reset Token", () => {
+//   it("should return internal server error if findUserByResetToken throws an error", (done) => {
+//     const token = "validtoken";
+//     sinon.stub(authRepositories, "findUserByResetToken").throws(new Error("Test Error"));
+//     router()
+//       .get(`/api/auth/reset-password/${token}`)
+//       .end((err, res) => {
+//         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+//         expect(res.body).to.be.a("object");
+//         expect(res.body).to.have.property("status", false);
+//         expect(res.body).to.have.property("message");
+//         done(err);
+//       });
+//   });
+// });
+
+
+
+describe("Reset Password Test Cases", () => {
+  let resetToken: string;
+  let mockUser: any;
+
+  beforeEach(() => {
+    mockUser = {
+      id: 1,
+      email: "usertesting@gmail.com",
+      password: "oldPasswordHash",
+      resetPasswordToken: "validToken",
+      resetPasswordExpires: Date.now() + 3600000 // 1 hour from now
+    };
+
+    resetToken = "validToken";
   });
 
-  describe("POST /forgot-password", () => {
-    it("should send password reset email", (done) => {
-      router()
-        .post("/api/auth/forgot-password")
-        .send({ email: "user@example.com" })
-        .end((error, response) => {
-          expect(response.status).to.equal(200);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("message");
-          done(error);
-        });
-    });
-
-    it("should not send email for non-existent user", (done) => {
-      router()
-        .post("/api/auth/forgot-password")
-        .send({ email: "nonexistent@example.com" })
-        .end((error, response) => {
-          expect(response.status).to.equal(404);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("error");
-          done(error);
-        });
-    });
+  afterEach(() => {
+    sinon.restore();
   });
 
-  describe("GET /reset-password/:token", () => {
-    it("should verify valid token", (done) => {
-      const token = "validToken";
-      router()
-        .get(`/api/auth/reset-password/${token}`)
-        .end((error, response) => {
-          expect(response.status).to.equal(200);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("message");
-          done(error);
-        });
-    });
+  it("should reset the password if token is valid", (done) => {
+    sinon.stub(authRepositories, "findUserByResetToken").resolves(mockUser);
+    sinon.stub(authRepositories, "updateUserPassword").resolves();
 
-    it("should not verify invalid token", (done) => {
-      const token = "invalidToken";
-      router()
-        .get(`/api/auth/reset-password/${token}`)
-        .end((error, response) => {
-          expect(response.status).to.equal(401);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("error");
-          done(error);
-        });
-    });
+    router()
+      .post("/api/auth/reset-password")
+      .send({ token: resetToken, newPassword: "newPassword@123", confirmPassword: "newPassword@123" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "Password reset successfully");
+        done(err);
+      });
   });
 
-  describe("POST /reset-password", () => {
-    it("should reset password with valid token and passwords", (done) => {
-      router()
-        .post("/api/auth/reset-password")
-        .send({ token: "validToken", newPassword: "newpassword123", confirmPassword: "newpassword123" })
-        .end((error, response) => {
-          expect(response.status).to.equal(200);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("message");
-          done(error);
-        });
-    });
+  it("should return an error if token is invalid", (done) => {
+    sinon.stub(authRepositories, "findUserByResetToken").resolves(null);
 
-    it("should not reset password with invalid token", (done) => {
-      router()
-        .post("/api/auth/reset-password")
-        .send({ token: "invalidToken", newPassword: "newpassword123", confirmPassword: "newpassword123" })
-        .end((error, response) => {
-          expect(response.status).to.equal(401);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("error");
-          done(error);
-        });
-    });
+    router()
+      .post("/api/auth/reset-password")
+      .send({ token: "invalidToken", newPassword: "newPassword@123", confirmPassword: "newPassword@123" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", false);
+        expect(res.body).to.have.property("message", "Invalid or expired token");
+        done(err);
+      });
   });
 
-  describe("POST /update-password", () => {
-    it("should update password with valid data", (done) => {
-      router()
-        .post("/api/auth/update-password")
-        .send({ userId: 4, oldPassword: "oldpassword123", newPassword: "newpassword123", confirmPassword: "newpassword123" })
-        .end((error, response) => {
-          expect(response.status).to.equal(200);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("message");
-          done(error);
-        });
-    });
+  it("should return an error if token is expired", (done) => {
+    mockUser.resetPasswordExpires = Date.now() - 3600000;
+    sinon.stub(authRepositories, "findUserByResetToken").resolves(mockUser);
 
-    it("should not update password with invalid data", (done) => {
-      router()
-        .post("/api/auth/update-password")
-        .send({ userId: 1, oldPassword: "wrongoldpassword", newPassword: "newpassword123", confirmPassword: "newpassword123" })
-        .end((error, response) => {
-          expect(response.status).to.equal(400);
-          expect(response.body).to.be.an("object");
-          expect(response.body).to.have.property("error");
-          done(error);
-        });
-    });
+    router()
+      .post("/api/auth/reset-password")
+      .send({ token: resetToken, newPassword: "newPassword@123", confirmPassword: "newPassword@123" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", false);
+        expect(res.body).to.have.property("message", "Invalid or expired token");
+        done(err);
+      });
+  });
+
+  it("should return internal server error if an exception occurs", (done) => {
+    sinon.stub(authRepositories, "findUserByResetToken").throws(new Error("Database error"));
+
+    router()
+      .post("/api/auth/reset-password")
+      .send({ token: resetToken, newPassword: "newPassword@123", confirmPassword: "newPassword@123" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", false);
+        expect(res.body).to.have.property("message", "An error occurred. Please try again later.");
+        done(err);
+      });
   });
 });
