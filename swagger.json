@@ -429,7 +429,7 @@
       }
     },
     
-    "/api/users/admin-update-role/{userId}": {
+    "/api/users/admin-update-role/{id}": {
       "put": {
         "tags": [
           "Admin User Routes"
@@ -438,11 +438,10 @@
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
           {
-            "in": "path",
-            "name": "userId",
+            "in":"path",
+            "name": "id",
             "type": "string",
-            "description": "ID of the user to update",
-            "required": true
+            "description":"Pass the ID"
           }
         ],
         "requestBody": {

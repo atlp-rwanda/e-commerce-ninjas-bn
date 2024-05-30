@@ -13,6 +13,6 @@ export const roleSchema = Joi.object({
   role: Joi.string().valid("Admin", "Buyer", "Seller").required().messages({
       "any.required": "The 'role' parameter is required.",
       "string.base": "The 'role' parameter must be a string.",
-      "any.only": "The 'role' parameter must be one of ['Admin', 'Buyer', 'Seller']."
+      "any.only": "Only Admin, Buyer and Seller are allowed."
   })
 });
