@@ -73,9 +73,8 @@ const signInUser = async(req:Request,res:Response) => {
             
      const token = generateToken(register.id)
      const session = {userId: register.id, device: req.headers["user-device"] , token: token, otp: null };
-            await authRepositories.createSession(session);
-           
-       return res.status(200).json({status:200,token:token});            
+        await authRepositories.createSession(session);
+        return res.status(200).json({status:200,token:token});            
     }catch(err){
       return res.status(500).json({status:500,Message:err.message})
     }

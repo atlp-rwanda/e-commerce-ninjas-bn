@@ -1,11 +1,12 @@
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
-import { comparePassword, decodeToken } from "../helpers";
-import { IRequest } from "../types";
+import { comparePassword, decodeToken,generateToken } from "../helpers";
+import { IRequest,userInfo } from "../types";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -42,13 +43,11 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
             }
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "User not found" });
         }
-
-        return next();
+    return next();
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
 };
-
 const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
     try {
         let user: any = null;
@@ -94,12 +93,25 @@ const verifyUserCredentials = async (req: Request, res: Response, next: NextFunc
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error", data: error.message })
     }
-
 }
 
+const verifyGoogleCredentials = async (req: Request,res: Response,next: NextFunction) => {
+    if ((req as any).isAuthenticated()) {
+      const { email } = req.user as userInfo;
+      const register = await authRepositories.findUserByAttributes("email", email);
+      if (register) {
+        const token = generateToken(register.id);
+        const sessions = { userId: register.id, device: req.headers["user-device"], token: token, otp: null };
+        await authRepositories.createSession(sessions);
+        return res.status(200).json({ status: 200, token: token });
+      } else {
+        next();
+      }
+    } else {
+      return res.json({ Error: "Something Went Wrong" });
+    }
+  };
 
 
 
-
-
-export { validation, isUserExist, isAccountVerified,verifyUserCredentials };
+export { validation, isUserExist, isAccountVerified,verifyUserCredentials,verifyGoogleCredentials};

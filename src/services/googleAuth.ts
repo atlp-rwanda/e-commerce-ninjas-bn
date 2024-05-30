@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response, NextFunction } from "express";
+import { Request } from "express";
 import passport from "passport";
 import session from "express-session";
 import { Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth2";
 import dotenv from "dotenv";
-import authRepositories from "../modules/auth/repository/authRepositories";
-import { generateToken } from "../helpers";
-import { userInfo } from "../types";
 
 dotenv.config();
 
@@ -27,9 +24,9 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      // eslint-disable-next-line quotes
+      
 
-      callbackURL: `${process.env.SERVER_URL_PRO}/api/auth/auth/google/callback`,
+      callbackURL: `${process.env.SERVER_URL_DEV}/api/auth/google/callback`,
 
       passReqToCallback: true
     },
@@ -80,28 +77,4 @@ const SESSION = session({
   resave: false,
   saveUninitialized: true
 });
-
-const authenticated = async (req: Request,res: Response,next: NextFunction) => {
-  if ((req as any).isAuthenticated()) {
-    const { email } = req.user as userInfo;
-    const register = await authRepositories.findUserByAttributes("email", email);
-    if (register) {
-      const token = generateToken(register.id);
-      const sessions = { userId: register.id, device: req.headers["user-device"], token: token, otp: null };
-      await authRepositories.createSession(sessions);
-      return res.status(200).json({ status: 200, token: token });
-    } else {
-      next();
-    }
-  } else {
-    return res.json({ Error: "Something Went Wrong" });
-  }
-};
-
-export default {
-  passport,
-  googleVerify,
-  googlecallback,
-  SESSION,
-  authenticated
-};
+export default { passport, googleVerify, googlecallback,SESSION};

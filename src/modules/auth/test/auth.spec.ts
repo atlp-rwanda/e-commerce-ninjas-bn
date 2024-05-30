@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
@@ -6,18 +5,13 @@ import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
+import app from "../../..";
 import { isUserExist } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 import { sendVerificationEmail, transporter } from "../../../services/sendEmail";
-import passport, { PassportStatic } from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth2";
-import session from "express-session";
-import dotenv from "dotenv";
-import googleAuth from "../../../services/googleAuth";
-import { generateToken } from "../../../helpers";
-import app from "../../../index";
+
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -404,48 +398,11 @@ describe("sendVerificationEmail", () => {
 
 
 describe("Google Authentication", () => {
-  describe("GET /api/auth/auth/google", () => {
+  describe("GET /api/auth/google", () => {
     it("should redirect to Google login page", async () => {
-      
-      sinon.stub(passport, "authenticate").returns((req: Request, res: Response) => {
-       
-        res.redirect("https://accounts.google.com/o/oauth2/v2/auth");
-      });
-
-  
       const res = await chai.request(app).get("/api/auth/auth/google");
-
-      expect(res).to.redirect; 
-      expect(res).to.redirectTo("https://accounts.google.com/o/oauth2/v2/auth"); 
-
-      
-      (passport.authenticate as sinon.SinonStub).restore();
+      expect(res).to.have.status(302);
+      expect(res).to.have.header("location").that.contains("https://accounts.google.com/o/oauth2/v2/auth");
     });
   });
-});
-
-
-
-
-
-
-
-
-
-describe("Serialize and Deserialize User", () => {
-  it("should serialize user", () => {
-    const user = { id: "user-id", email: "user@example.com" };
-    passport.serializeUser((user, done) => {
-      expect(user).to.deep.equal(user);
-      done(null, user);
-    });
-  });
-
-  it("should deserialize user", () => {
-    const user = { id: "user-id", email: "user@example.com" };
-    passport.deserializeUser((user, done) => {
-      expect(user).to.deep.equal(user);
-      done(null, user);
-    });
-  });
-});
+})
