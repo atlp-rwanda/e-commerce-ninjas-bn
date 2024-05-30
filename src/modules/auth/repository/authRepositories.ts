@@ -11,7 +11,7 @@ const findUserByAttributes = async (key:string, value:any) =>{
     return await Users.findOne({ where: { [key]: value} })
 }
 
-const UpdateUserByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
+const updateUserByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
     await Users.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
     return await findUserByAttributes(whereKey, whereValue)
 }
@@ -28,4 +28,4 @@ const destroySession = async (userId: number, token:string) =>{
     return await Session.destroy({ where: {userId, token } });
 }
 
-export default { createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId }
+export default { createUser, createSession, findUserByAttributes, destroySession, updateUserByAttributes, findSessionByUserId }

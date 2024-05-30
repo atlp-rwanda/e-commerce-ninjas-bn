@@ -99,42 +99,7 @@ const verifyUserCredentials = async (req: Request, res: Response, next: NextFunc
 
 
 
-const updateUserRoleSchema = Joi.object({
-    role: Joi.string().valid("Admin", "Buyer", "Seller").required().messages({
-        "any.required": "The 'role' parameter is required.",
-        "string.base": "The 'role' parameter must be a string.",
-        "any.only": "The 'role' parameter must be one of ['Admin', 'Buyer', 'Seller']."
-    })
-});
 
 
 
-const validateUpdateUserRole = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { error } = updateUserRoleSchema.validate(req.body);
-    
-    if (error) {
-        return res.status(httpStatus.BAD_REQUEST).json({
-            status: httpStatus.BAD_REQUEST,
-            message: error.details[0].message
-        });
-    }
-
-    try {
-        const user = await authRepositories.findUserByAttributes("id", id);
-        if (!user) {
-            return res
-                .status(httpStatus.NOT_FOUND)
-                .json({ status: httpStatus.NOT_FOUND, message: "User doesn't exist." });
-        }
-        next();
-    } catch (err) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: err.message
-        });
-    }
-};
-
-
-export { validation, isUserExist, isAccountVerified, validateUpdateUserRole, updateUserRoleSchema,verifyUserCredentials };
+export { validation, isUserExist, isAccountVerified,verifyUserCredentials };

@@ -35,7 +35,7 @@ const sendVerifyEmail = async (req: any, res: Response) => {
 const verifyEmail = async (req: any, res: Response) => {
         try {
                 await authRepositories.destroySession(req.user.id, req.session.token)
-                await authRepositories.UpdateUserByAttributes("isVerified", true, "id", req.user.id);
+                await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
                 res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
         } catch (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
