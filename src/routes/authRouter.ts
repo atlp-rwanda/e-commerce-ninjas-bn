@@ -5,11 +5,11 @@ import {
   isUserExist,
   isAccountVerified,
   verifyUserCredentials,
-  isUserLoggedIn,
+  isUserLoggedIn
 } from "../middlewares/validation";
 import {
   emailSchema,
-  credentialSchema,
+  credentialSchema
 } from "../modules/auth/validation/authValidations";
 
 const router: Router = Router();

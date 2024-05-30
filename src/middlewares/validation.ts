@@ -113,5 +113,5 @@ export {
   isUserExist,
   isAccountVerified,
   verifyUserCredentials,
-  isUserLoggedIn,
+  isUserLoggedIn
 };

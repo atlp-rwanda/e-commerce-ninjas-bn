@@ -11,7 +11,7 @@ import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 import {
   sendVerificationEmail,
-  transporter,
+  transporter
 } from "../../../services/sendEmail";
 
 chai.use(chaiHttp);
@@ -35,7 +35,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -74,7 +74,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword",
+        password: "userPassword"
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -89,7 +89,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -104,7 +104,7 @@ describe("Authentication Test Cases", () => {
 
   it("Should be able to logout user", (done) => {
     router()
-      .post(`/api/auth/logout`)
+      .post("/api/auth/logout")
       .set("Authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
@@ -118,7 +118,7 @@ describe("Authentication Test Cases", () => {
       .stub(authRepositories, "invalidateToken")
       .throws(new Error("Database Error"));
     router()
-      .post(`/api/auth/logout`)
+      .post("/api/auth/logout")
       .set("Authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -129,7 +129,7 @@ describe("Authentication Test Cases", () => {
 
   it("Should return 401 Unauthorized if logout request lacks valid token", (done) => {
     router()
-      .post(`/api/auth/logout`)
+      .post("/api/auth/logout")
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.UNAUTHORIZED);
         expect(res.body).to.have.property("message");
@@ -145,7 +145,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -157,7 +157,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "user@example.com",
+        email: "user@example.com"
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -171,7 +171,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "fakeemail@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -189,7 +189,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "fakePassword@123",
+        password: "fakePassword@123"
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -219,7 +219,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -237,7 +237,7 @@ describe("isUserExist Middleware", () => {
       password: "hashedPassword",
       isVerified: false,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
@@ -246,7 +246,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -287,7 +287,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -331,7 +331,7 @@ describe("POST /auth/register - Error Handling", () => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
           status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error",
+          message: "Test error"
         });
         done(err);
       });
@@ -363,7 +363,7 @@ describe("isAccountVerified Middleware", () => {
       password: "hashedPassword",
       isVerified: true,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);

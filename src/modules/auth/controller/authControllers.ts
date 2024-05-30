@@ -5,7 +5,7 @@ import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import { IRequest } from "../../../types";
-
+// import { decodeToken } from "../../../helpers";
 import authRepositories from "../repository/authRepositories";
 import { sendVerificationEmail } from "../../../services/sendEmail";
 
@@ -19,7 +19,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
       userId: register.id,
       device: req.headers["user-device"],
       token: token,
-      otp: null,
+      otp: null
     };
     await authRepositories.createSession(session);
     await sendVerificationEmail(
@@ -30,12 +30,12 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
     res.status(httpStatus.CREATED).json({
       message:
         "Account created successfully. Please check email to verify account.",
-      data: { user: register },
+      data: { user: register }
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -49,12 +49,12 @@ const sendVerifyEmail = async (req: any, res: Response) => {
     );
     res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      message: "Verification email sent successfully.",
+      message: "Verification email sent successfully."
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -70,12 +70,12 @@ const verifyEmail = async (req: any, res: Response) => {
     );
     res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      message: "Account verified successfully, now login.",
+      message: "Account verified successfully, now login."
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -88,7 +88,7 @@ const loginUser = async (req: Request, res: Response) => {
       userId,
       device: req.headers["user-device"],
       token: token,
-      otp: null,
+      otp: null
     };
     await userRepositories.createSession(session);
     res
@@ -110,7 +110,7 @@ const logoutUser = async (req: Request, res: Response) => {
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Server error",
+        message: "Server error"
       });
   }
 };
@@ -120,5 +120,5 @@ export default {
   sendVerifyEmail,
   verifyEmail,
   loginUser,
-  logoutUser,
+  logoutUser
 };

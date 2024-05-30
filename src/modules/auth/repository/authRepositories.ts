@@ -39,5 +39,5 @@ export default {
   destroySession,
   UpdateUserByAttributes,
   findSessionByUserId,
-  invalidateToken,
+  invalidateToken
 };
