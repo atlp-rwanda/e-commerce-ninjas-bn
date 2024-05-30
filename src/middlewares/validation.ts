@@ -4,8 +4,8 @@ import authRepositories from "../modules/auth/repository/authRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
-import { decodeToken, comparePassword } from "../helpers";
-import { IRequest } from "../types";
+import { decodeToken } from "../helpers";
+
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -87,32 +87,14 @@ const isEmailExist = async (req: Request, res: Response, next: NextFunction) => 
         if (!user) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Email not found." });
         }
-        return next();
+        if (!user.isVerified) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Email is not verified." });
+        }
+        next();
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
 };
 
-const verifyUserCredentials = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user: UsersAttributes = await authRepositories.findUserByAttributes("email", req.body.email);
-        if (!user) {
-            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
-        }
-        const passwordMatches = await comparePassword(req.body.password, user.password)
-        if (!passwordMatches) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password", data: null });
-        (req as IRequest).loginUserId = user.id;
-        return next();
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error", data: error.message })
-    }
 
-}
-
-
-
-
-
-
-
-export { validation,  isUserExist, isAccountVerified, isEmailExist, verifyUserCredentials };
+export { validation,  isUserExist, isEmailExist, isAccountVerified };

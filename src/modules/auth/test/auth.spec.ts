@@ -5,13 +5,13 @@ import chaiHttp from "chai-http";
 import sinon, { SinonStub } from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isUserExist } from "../../../middlewares/validation";
+import authController from "../controller/authControllers";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
-import authController from "../controller/authControllers";
-import { sendVerificationEmail,sendResetPasswordEmail, transporter } from "../../../services/sendEmail";
-
+import { validation, isUserExist} from "../../../middlewares/validation";
+import { resetPasswordSchema } from "../validation/authValidations";
+import { sendResetPasswordEmail, sendVerificationEmail , transporter} from "../../../services/sendEmail";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -76,80 +76,6 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-
-  it("Should be able to login a registered user", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        expect(response.body.data).to.have.property("token");
-        done(error);
-      });
-  });
-
-  it("should return internal server error on login", (done) => {
-    sinon.stub(authRepositories, "createSession").throws(new Error("Database error"));
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        done(err);
-      });
-  });
-
-  it("Should return validation error when no email or password given", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "user@example.com"
-      })
-      .end((error, response) => {
-        expect(response).to.have.status(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        done(error);
-      });
-  });
-
-  it("Should not be able to login user with invalid Email", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "fakeemail@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((error, response) => {
-        expect(response).to.have.status(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("message", "Invalid Email or Password");
-        done(error);
-      });
-  });
-
-  it("Should not be able to login user with invalid Password", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "ecommerceninjas45@gmail.com",
-        password: "fakePassword@123"
-      })
-      .end((error, response) => {
-        expect(response).to.have.status(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("message", "Invalid Email or Password");
-        done(error);
-      });
-  });
 
 });
 
@@ -223,16 +149,6 @@ describe("isUserExist Middleware", () => {
       });
   });
 
-  it("should return internal server error on login", (done) => {
-    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Database error"));
-    router()
-      .post("/api/auth/login")
-      .send({ email: "ecommerceninjas45@gmail.com", password: "userPassword@123" })
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        done(err);
-      });
-  });
 
   it("should call next if user does not exist", (done) => {
     sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
@@ -254,7 +170,7 @@ describe("POST /auth/register - Error Handling", () => {
   let registerUserStub: sinon.SinonStub;
 
   beforeEach(() => {
-    registerUserStub = sinon.stub(authRepositories, "createUser").throws(new Error("Test error"));
+    registerUserStub = sinon.stub(authRepositories, "createUser").throws(new Error("Failed to create account."));
   });
 
   afterEach(() => {
@@ -269,7 +185,7 @@ describe("POST /auth/register - Error Handling", () => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
           status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error"
+          message: "Failed to create account."
         });
         done(err);
       });
@@ -411,27 +327,30 @@ describe("POST /api/auth/request-password-reset", () => {
     sinon.restore();
   });
 
-  it("should send password reset email successfully", (done) => {
+  it("should send password reset email successfully", async () => {
     const email = "user@example.com";
-    const user = { id: 1, email };
-    const token = "resetToken";
+    const user = { id: 1, email, isVerified: true };
 
     findUserByAttributesStub.resolves(user);
-    generateTokenStub.returns(token);
+    generateTokenStub.returns("resetToken");
     sendResetPasswordEmailStub.resolves();
 
-    router()
-      .post("/api/auth/request-password-reset")
-      .send({ email })
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.OK);
-        expect(res.body).to.have.property("message", "Password reset email sent successfully.");
-        expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-        expect(generateTokenStub.calledOnceWith(user.id)).to.be.true;
-        expect(sendResetPasswordEmailStub.calledOnce).to.be.true;
-        done(err);
-      });
-  });
+    const req = {
+        body: { email }
+    };
+    const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+    };
+
+    await authController.requestPasswordReset(req as any, res as any);
+
+    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
+    expect(res.json.calledOnceWith({ message: "Password reset email sent successfully." })).to.be.true;
+    expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
+    expect(generateTokenStub.calledOnceWith(user.id)).to.be.true;
+    expect(sendResetPasswordEmailStub.calledOnceWith(email, "Password Reset Request", sinon.match.string)).to.be.true;
+});
 
   it("should return 404 if user is not found", (done) => {
     const email = "nonexistent@example.com";
@@ -443,27 +362,93 @@ describe("POST /api/auth/request-password-reset", () => {
       .send({ email })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.NOT_FOUND);
-        expect(res.body).to.have.property("message", "Account not found.");
+        expect(res.body).to.have.property("message", "Email not found.");
         expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
         done(err);
       });
   });
 
-  it("should return 500 if an error occurs", (done) => {
-    const email = "user@example.com";
+  it("should return 400 if email field is missing", (done) => {
+    router()
+      .post("/api/auth/request-password-reset")
+      .send({})
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "email is required");
+        done(err);
+      });
+  });
 
-    findUserByAttributesStub.rejects(new Error("Internal server error"));
+  it("should return 400 for invalid email format", (done) => {
+    router()
+      .post("/api/auth/request-password-reset")
+      .send({ email: "invalid-email" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "email must be a valid email");
+        done(err);
+      });
+  });
+
+  it("should return 400 if email is not verified", (done) => {
+    const email = "unverified@example.com";
+    const user = { id: 1, email, isVerified: false };
+
+    findUserByAttributesStub.resolves(user);
 
     router()
       .post("/api/auth/request-password-reset")
       .send({ email })
       .end((err, res) => {
-        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message", "Internal server error");
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Email is not verified.");
         expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
         done(err);
       });
   });
+
+  it("should return 500 if token generation fails", async () => {
+    const email = "user@example.com";
+    const user = { id: 1, email, isVerified: true };
+
+    findUserByAttributesStub.resolves(user);
+    generateTokenStub.throws(new Error("Token generation failed"));
+
+    const req = {
+        body: { email }
+    };
+    const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+    };
+
+    await authController.requestPasswordReset(req as any, res as any);
+
+    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+    expect(res.json.calledOnceWith({ message: "Token generation failed" })).to.be.true;
+});
+
+it("should return 500 if sending email fails", async () => {
+  const email = "user@example.com";
+  const user = { id: 1, email, isVerified: true };
+
+  findUserByAttributesStub.resolves(user);
+  generateTokenStub.returns("resetToken");
+  sendResetPasswordEmailStub.rejects(new Error("Email sending failed"));
+
+  const req = {
+      body: { email }
+  };
+  const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+  };
+
+  await authController.requestPasswordReset(req as any, res as any);
+
+  expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+  expect(res.json.calledOnceWith({ message: "Email sending failed" })).to.be.true;
+});
 });
 
 describe("sendResetPasswordEmail", () => {
@@ -482,36 +467,73 @@ describe("sendResetPasswordEmail", () => {
   });
 });
 
-describe("Reset Password Route", () => {
+
+describe("POST /api/auth/reset-password/:token", () => {
+  let updateUserPasswordByIdStub: SinonStub;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let hashPasswordStub: SinonStub;
+
+  beforeEach(() => {
+      updateUserPasswordByIdStub = sinon.stub(authRepositories, "UpdateUserPasswordById");
+      hashPasswordStub = sinon.stub().resolves("hashedPassword");
+  });
+
   afterEach(() => {
-    sinon.restore();
+      sinon.restore();
   });
 
-  describe("GET /api/auth/reset-password/{token}", () => {
-    it("should return 200 when token is valid", async () => {
-      const req = { params: { token: "validToken" } };
-      const res = { status: sinon.stub().returnsThis(), json: sinon.stub() };
-      
-      await authController.verifyResetToken(req as unknown as Request, res as unknown as Response);
-      
-      sinon.assert.calledWith(res.status, 200);
-      sinon.assert.calledWith(res.json, { message: "Token is valid." });
-    });
+  it("should reset password successfully with valid token and password", async () => {
+      const req = {
+          params: { token: "validToken" },
+          body: { newPassword: "newPassword123" }
+      };
+      const res = {
+          status: sinon.stub().returnsThis(),
+          json: sinon.stub()
+      };
 
-    it("should return 400 when token is invalid or expired", async () => {
-      const req = { params: { token: "invalidToken" } };
-      const res = { status: sinon.stub().returnsThis(), json: sinon.stub() };
-      
-      await authController.verifyResetToken(req as unknown as Request, res as unknown as Response);
-      
-      sinon.assert.calledWith(res.status, 400);
-      sinon.assert.calledWith(res.json, { message: "Invalid or expired token." });
-    });
+      updateUserPasswordByIdStub.resolves();
 
+      await authController.resetPassword(req as any, res as any);
 
+      expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
+      expect(res.json.calledOnceWith({ message: "Password reset successfully." })).to.be.true;
+      expect(updateUserPasswordByIdStub.calledOnceWith(1, "hashedPassword")).to.be.true;
   });
 
-  
+  it("should return 500 if failed to reset password", async () => {
+      const req = {
+          params: { token: "validToken" },
+          body: { newPassword: "newPassword123" }
+      };
+      const res = {
+          status: sinon.stub().returnsThis(),
+          json: sinon.stub()
+      };
+
+      updateUserPasswordByIdStub.rejects(new Error("Database error"));
+
+      await authController.resetPassword(req as any, res as any);
+
+      expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+      expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
+      expect(updateUserPasswordByIdStub.calledOnce).to.be.true;
+  });
+
+  it("should return 400 if newPassword is missing or invalid", async () => {
+      const req = {
+          params: { token: "validToken" },
+          body: {}
+      };
+      const res = {
+          status: sinon.stub().returnsThis(),
+          json: sinon.stub()
+      };
+
+      await validation(resetPasswordSchema)(req as any, res as any, () => {});
+
+      expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
+      expect(res.json.calledOnceWith({ message: "newPassword is required" })).to.be.true;
+      expect(updateUserPasswordByIdStub.called).to.be.false;
+  });
 });
-
-

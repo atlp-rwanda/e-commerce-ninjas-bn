@@ -394,33 +394,6 @@
     },
   
     "/api/auth/reset-password/{token}": {
-      "get": {
-        "summary": "Verify reset token",
-        "description": "Verifies the validity of the reset token.",
-        "tags": [
-          "Authentication Routes"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "token",
-            "description": "Token received in the password reset email",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Token is valid"
-          },
-          "400": {
-            "description": "Invalid or expired token"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
       "post": {
         "summary": "Reset password",
         "description": "Resets the user's password using the provided token and new password.",
