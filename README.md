@@ -30,8 +30,8 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
-- Admin change status Endpoint
-- Admin should update user roles Endpoint
+- Admin Update Status Endpoint
+- Admin Update Role Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
