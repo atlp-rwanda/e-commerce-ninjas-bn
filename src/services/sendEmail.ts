@@ -13,20 +13,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendVerificationEmail = async (email: string, subject: string, message: string) => {
-    try {
-        const mailOptionsVerify: SendMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: subject,
-            text: message
-        };
-    
-        await transporter.sendMail(mailOptionsVerify);
-    } catch (error) {
-        throw new Error(error.message);
-    }
-};
 
 const sendResetPasswordEmail = async (email: string, subject: string, message: string) => {
     try {
@@ -43,4 +29,4 @@ const sendResetPasswordEmail = async (email: string, subject: string, message: s
     }
 };
 
-export { sendVerificationEmail, sendResetPasswordEmail, transporter };
+export { sendResetPasswordEmail, transporter };
