@@ -294,6 +294,20 @@
         }
       }
     },
+    "/api/auth/auth/google": {
+      "get": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Login User via Google",
+        "description": "Redirects the user to the Google login page for authentication.",
+        "responses": {
+          "302": {
+            "description": "Redirects to the Google login page."
+          }
+        }
+      }
+    },    
     "/api/users/admin-update-user-status/{id}": {
       "put": {
         "tags": [

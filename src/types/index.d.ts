@@ -14,3 +14,11 @@ export interface ILogin{
 export interface IRequest extends Request{
     loginUserId?: number;
 }
+
+export interface userInfo{
+    email:string,
+    firstName: string,
+    lastName: string,
+    picture: string,
+    accToken: string
+}

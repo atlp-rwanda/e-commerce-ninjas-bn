@@ -4,7 +4,7 @@ import userRepositories from "../repository/authRepositories";
 import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
-import { IRequest } from "../../../types";
+import { IRequest,userInfo } from "../../../types";
 
 import authRepositories from "../repository/authRepositories";
 import { sendVerificationEmail } from "../../../services/sendEmail";
@@ -57,4 +57,28 @@ const loginUser = async (req: Request, res: Response) => {
 }
 
 
-export default { registerUser, sendVerifyEmail, verifyEmail, loginUser }
+
+const signInUser = async(req:Request,res:Response) => {
+    try{
+    const {email,firstName,lastName,picture,accToken} = req.user as userInfo;
+    const register:UsersAttributes = await authRepositories.createUser({
+            email:email,
+            firstName:firstName,
+            lastName:lastName,
+            password: accToken,
+            profilePicture:picture,
+            isGoogleAccount:true,
+            isVerified:true
+    });
+            
+     const token = generateToken(register.id)
+     const session = {userId: register.id, device: req.headers["user-device"] , token: token, otp: null };
+            await authRepositories.createSession(session);
+           
+       return res.status(200).json({status:200,token:token});            
+    }catch(err){
+      return res.status(500).json({status:500,Message:err.message})
+    }
+}
+
+export default { registerUser, sendVerifyEmail, verifyEmail, loginUser,signInUser }
