@@ -180,7 +180,7 @@ describe("Admin update User roles", () => {
       .send({ role: "Hello" });
 
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    expect(response.body).to.have.property("message", "The 'role' parameter must be one of ['Admin', 'Buyer', 'Seller'].");
+    expect(response.body).to.have.property("message", "Only Admin, Buyer and Seller are allowed.");
   });
 
   it("Should return error when invalid Id is passed", async () => {
