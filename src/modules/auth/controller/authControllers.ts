@@ -5,9 +5,10 @@ import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import { IRequest } from "../../../types";
-
+import { decodeToken } from "../../../helpers";
 import authRepositories from "../repository/authRepositories";
 import { sendVerificationEmail } from "../../../services/sendEmail";
+import { isAccountVerified } from "../../../middlewares/validation";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {

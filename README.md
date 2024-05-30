@@ -40,7 +40,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | 3   | GET   | /api/auth/verify-email/:token | 200 OK      | public | Verifying email               |
 | 4   | POST  | /api/auth/send-verify-email   | 200 OK      | public | Resend verification email     |
 | 5   | POST  | /api/auth/login               | 200 OK      | public | Login with Email and Password |
-| 6   | POST  | /api/auth/logout              | 200 OK      | public | Logout user                   |
+| 6   | POST  | /api/auth/logout              | 200 OK      | private | Logout user                   |
 =======
 - Admin change status Endpoint
 
