@@ -1,15 +1,16 @@
+/* eslint-disable comma-dangle */
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const commonDatabaseConfig = {
-  dialect: "postgres"
+  dialect: "postgres",
 };
 
 const sequelizeConfig = {
   development: {
     ...commonDatabaseConfig,
-    url: process.env.DATABASE_URL_DEV
+    url: process.env.DATABASE_URL_DEV,
   },
   test: {
     ...commonDatabaseConfig,
@@ -17,9 +18,9 @@ const sequelizeConfig = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
-      }
-    }
+        rejectUnauthorized: false,
+      },
+    },
   },
   production: {
     ...commonDatabaseConfig,
@@ -27,10 +28,10 @@ const sequelizeConfig = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
-      }
-    }
-  }
+        rejectUnauthorized: false,
+      },
+    },
+  },
 };
 
 module.exports = sequelizeConfig;
