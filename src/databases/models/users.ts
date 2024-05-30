@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 
 // Define an interface with required and optional attributes
 export interface UsersAttributes {
+    [x: string]: any;
     id: number;
     firstName?: string;
     lastName?: string;
@@ -29,6 +30,7 @@ export interface UsersAttributes {
 export interface UsersCreationAttributes extends Optional<UsersAttributes, "id"> {}
 
 class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
+    [x: string]: any;
     declare id: number;
     declare firstName?: string;
     declare lastName?: string;

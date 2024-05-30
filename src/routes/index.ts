@@ -3,6 +3,7 @@ import authRouter from "./authRouter"
 import userRouter from "./userRouter";
 
 
+
 const router: Router = Router()
 
 router.use("/auth", authRouter);
