@@ -30,7 +30,8 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
-- Admin change status Endpoint
+- Admin Update Status Endpoint
+- Admin Update Role Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -42,8 +43,9 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | 3  | GET   | /api/auth/verify-email/:token           | 200 OK      | public  | Verifying email               |
 | 4  | POST  | /api/auth/send-verify-email             | 200 OK      | public  | Resend verification email     |
 | 5  | POST  | /api/auth/login                         | 200 OK      | public  | Login with Email and Password |
-| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin change status           |
-
+| 5 | PUT    | /api/users/admin-update-role/:id        | 200 OK      | private | Update the user role by admin|
+| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint          |
+| 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private |  Admin Update Role Endpoint  |
 
 ## INSTALLATION
 

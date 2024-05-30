@@ -99,4 +99,7 @@ const verifyUserCredentials = async (req: Request, res: Response, next: NextFunc
 
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials };
+
+
+
+export { validation, isUserExist, isAccountVerified,verifyUserCredentials };
