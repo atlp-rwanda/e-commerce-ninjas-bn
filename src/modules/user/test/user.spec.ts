@@ -113,7 +113,7 @@ describe("User Repository Functions", () => {
     it("should update the user status successfully", async () => {
       updateStub.resolves([1]);
       const user = { id: 1, status: true };
-      const result = await authRepositories.UpdateUserByAttributes("status", "enabled", "id", 1);
+      const result = await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
       expect(updateStub.calledOnce).to.be.true;
       expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to.be.false;
     });
@@ -121,7 +121,7 @@ describe("User Repository Functions", () => {
     it("should throw an error if there is a database error", async () => {
       updateStub.rejects(new Error("Database error"));
       try {
-        await authRepositories.UpdateUserByAttributes("status", "enabled", "id", 1);
+        await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
       } catch (error) {
         expect(updateStub.calledOnce).to.be.true;
         expect(error.message).to.equal("Database error");
@@ -211,7 +211,7 @@ describe("Admin update User roles", () => {
     router().put("/api/users/admin-update-role/10001").send({ role: "Admin" }).end((err, res) => {
       expect(res).to.have.status(httpStatus.NOT_FOUND);
       expect(res.body).to.be.an("object");
-      expect(res.body).to.have.property("message", "User doesn't exist.")
+      expect(res.body).to.have.property("message", "User not found")
       done(err)
     })
   })
