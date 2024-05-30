@@ -1,30 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import db from "../../../databases/models/index"
-const {Users} = db
+import Users from "../../../databases/models/users"
+import Session from "../../../databases/models/session"
+
+const createUser = async (body:any) =>{
+    return await Users.create(body)
+}
+const UpdateUserPasswordById = async (userId: number, newPassword: string) => {
+    await Users.update({ password: newPassword }, { where: { id: userId } });
+};
 
 
-const findUserByEmail = async (email:string) =>{
-    return await Users.findOne({ where: { email: email} })
+const findUserByAttributes = async (key:string, value:any) =>{
+    return await Users.findOne({ where: { [key]: value} })
 }
 
-const findUserById = async (userId: number) => {
-    return await Users.findOne({ where: { id: userId } });
-};
+const UpdateUserByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
+    await Users.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
+    return await findUserByAttributes(whereKey, whereValue)
+}
 
-const updateUserPassword = async (userId: number, newPassword: string) => {
-    return await Users.update({ password: newPassword }, { where: { id: userId } });
-};
+const createSession = async (body: any) => {
+    return await Session.create(body);
+}
 
+const findSessionByUserId = async( userId:number ) => {
+    return await Session.findOne({ where: { userId } });
+}
 
+const destroySession = async (userId: number, token:string) =>{
+    return await Session.destroy({ where: {userId, token } });
+}
 
-const findUserByResetToken = async (resetPasswordToken: string) => {
-    return await Users.findOne({ where: { resetPasswordToken: resetPasswordToken } });
-};
-
-const updateUser = async (id: number, updateFields: any) => {
-    return await Users.update(updateFields, { where: { id: id } });
-};
-
-
-
-export default { findUserByEmail, findUserById, updateUserPassword,  findUserByResetToken, updateUser }
+export default { createUser, createSession, findUserByAttributes, destroySession, UpdateUserByAttributes, findSessionByUserId, UpdateUserPasswordById }

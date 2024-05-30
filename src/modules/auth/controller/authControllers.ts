@@ -1,96 +1,116 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import {  hashPassword, comparePassword, generateResetToken } from "../../../helpers";
+import userRepositories from "../repository/authRepositories";
+import { generateToken, verifyToken , hashPassword } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
-import { sendForgotPasswordEmail, sendPasswordChangeEmail } from "../../../services/sendEmail";
+import { IRequest } from "../../../types";
+
 import authRepositories from "../repository/authRepositories";
+import { sendVerificationEmail, sendResetPasswordEmail } from "../../../services/sendEmail";
 
-
-
-const forgotPassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const email: string = req.body.email;
-        const resetToken = generateResetToken();
-        const resetPasswordExpires = new Date(Date.now() + 3600000);
-        await authRepositories.updateUser(req.user!.id, {
-            resetPasswordToken: resetToken,
-            resetPasswordExpires: resetPasswordExpires
-        });
-
-        await sendForgotPasswordEmail(email, resetToken, req.user!.firstName);
-
-        res.status(httpStatus.OK).json({ status: true, message: "Password reset email sent" });
-    } catch (error: any) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
-    }
-};
-
-
-const verifyResetToken = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { token } = req.params;
-        const user: UsersAttributes | null = await authRepositories.findUserByResetToken(token);
-
-        if (!user || user.resetPasswordExpires! < new Date()) {
-            res.status(httpStatus.UNAUTHORIZED).json({ status: false, message: "Token is invalid or has expired" });
-            return;
+const registerUser = async (req: Request, res: Response): Promise<void> => {
+        try {
+                const register: UsersAttributes = await userRepositories.createUser(req.body);
+                const token: string = generateToken(register.id);
+                const session = { userId: register.id, device: req.headers["user-device"], token: token, otp: null };
+                await authRepositories.createSession(session);
+                await sendVerificationEmail(register.email, "Verification Email", `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${token}`);
+                res.status(httpStatus.CREATED).json({ message: "Account created successfully. Please check email to verify account.", data: { user: register } })
+        } catch (error) {
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
 
-        res.status(httpStatus.OK).json({ status: true, message: "Token is valid" });
-    } catch (error: any) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
-    }
-};
+}
 
-const resetPassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { newPassword } = req.body;
-        const user = req.user as UsersAttributes;
-
-        const hashedPassword = await hashPassword(newPassword);
-
-        await authRepositories.updateUser(user.id, {
-            password: hashedPassword,
-            resetPasswordToken: null,
-            resetPasswordExpires: null
-        });
-
-        await sendPasswordChangeEmail(user.email, user.firstName);
-
-        res.status(httpStatus.OK).json({ status: true, message: "Password has been reset" });
-    } catch (error: any) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
-    }
-};
-
-const updatePassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { userId, oldPassword, newPassword } = req.body;
-        const user = await authRepositories.findUserById(userId);
-
-        if (!user) {
-            res.status(httpStatus.NOT_FOUND).json({ status: false, message: "User not found" });
-            return;
+const sendVerifyEmail = async (req: any, res: Response) => {
+        try {
+                await sendVerificationEmail(req.user.email, "Verification Email", `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${req.session.token}`);
+                res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Verification email sent successfully." });
+        } catch (error) {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
+}
 
-        const isOldPasswordValid = await comparePassword(oldPassword, user.password);
-        if (!isOldPasswordValid) {
-            res.status(httpStatus.UNAUTHORIZED).json({ status: false, message: "Old password is incorrect" });
-            return;
+const verifyEmail = async (req: any, res: Response) => {
+        try {
+                await authRepositories.destroySession(req.user.id, req.session.token)
+                await authRepositories.UpdateUserByAttributes("isVerified", true, "id", req.user.id);
+                res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
+        } catch (error) {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
         }
-
-        const hashedNewPassword = await hashPassword(newPassword);
-        await authRepositories.updateUserPassword(userId, hashedNewPassword);
-
-        await sendPasswordChangeEmail(user.email, user.firstName);
-
-        res.status(httpStatus.OK).json({ status: true, message: "Password updated successfully" });
-    } catch (error: any) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
-    }
-};
+}
 
 
+const loginUser = async (req: Request, res: Response) => {
+        try {
+                const userId = (req as IRequest).loginUserId;
+                const token = generateToken(userId);
+                const session = { userId, device: req.headers["user-device"], token: token, otp: null };
+                await userRepositories.createSession(session);
+                res.status(httpStatus.OK).json({ message: "Logged in successfully", data: { token } });
+        }
+        catch (err) {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error", data: err.message });
+        } 
+}
 
-export default {  forgotPassword, verifyResetToken, resetPassword, updatePassword };
+const requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body;
+            const user = await userRepositories.findUserByAttributes("email", email);
+            const token = generateToken(user.id);
+            const resetLink = `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`;
+    
+            await sendResetPasswordEmail(user.email, "Password Reset Request", resetLink);
+    
+            res.status(httpStatus.OK).json({ message: "Password reset email sent successfully." });
+        } catch (error) {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+        }
+    };
+    
+
+    const verifyResetToken = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { token } = req.params;
+            const decodedToken: any = verifyToken(token);
+    
+            if (!decodedToken || decodedToken.exp < Math.floor(Date.now() / 1000)) {
+
+                res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid or expired token." });
+                return;
+            }
+    
+            // Token is valid
+            res.status(httpStatus.OK).json({ message: "Token is valid.", userId: decodedToken.id });
+        } catch (error) {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+        }
+    };
+    
+
+    const resetPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { token } = req.params;
+            const { newPassword } = req.body;
+    
+            const decodedToken: any = verifyToken(token);
+            const userId = decodedToken.id;
+    
+            // Hash the new password
+            const hashedPassword = await hashPassword(newPassword); // Assuming you have a hashPassword function
+    
+            // Update password with the hashed password
+            await authRepositories.UpdateUserPasswordById(userId, hashedPassword);
+    
+            res.status(httpStatus.OK).json({ message: "Password reset successfully." });
+        } catch (error) {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+        }
+    };
+
+
+
+export default { registerUser, sendVerifyEmail, verifyEmail, loginUser, requestPasswordReset, resetPassword, verifyResetToken  }

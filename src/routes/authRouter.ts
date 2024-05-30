@@ -1,13 +1,16 @@
-import { validation,  isEmailExist } from "../middlewares/validation";
-import authControllers from "../modules/auth/controller/authControllers";
 import { Router } from "express";
-import { emailSchema } from "../modules/auth/validation/authValidations";
+import authControllers from "../modules/auth/controller/authControllers";
+import { validation, isUserExist,isEmailExist ,isAccountVerified, verifyUserCredentials } from "../middlewares/validation";
+import { emailSchema, credentialSchema,resetPasswordSchema } from "../modules/auth/validation/authValidations";
 
 const router: Router = Router();
 
-router.post("/forgot-password",validation(emailSchema),isEmailExist, authControllers.forgotPassword);
-
-
+router.post("/register", validation(credentialSchema), isUserExist, authControllers.registerUser);
+router.post("/login", validation(credentialSchema), verifyUserCredentials, authControllers.loginUser);
+router.get("/verify-email/:token", isAccountVerified, authControllers.verifyEmail);
+router.post("/send-verify-email", validation(emailSchema), isAccountVerified, authControllers.sendVerifyEmail);
+router.post("/request-password-reset", validation(emailSchema), isEmailExist, authControllers.requestPasswordReset);
+router.get("/reset-password/:token", authControllers.verifyResetToken);
+router.post("/reset-password/:token", validation(resetPasswordSchema), authControllers.resetPassword);
 
 export default router;
-

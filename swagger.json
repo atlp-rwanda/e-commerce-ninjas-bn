@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
-    "description": "APIs for the E-commerce-ninjas Project",
+    "description": "APIs for the E-commmerce-ninjas  Project",
     "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
       "email": "e-commerce-ninjas@andela.com"
@@ -21,12 +21,12 @@
       "description": "Initial/Fake Endpoint | GET Route"
     },
     {
-      "name": "Register Route",
-      "description": "Registration for user | POST Route"
+      "name": "Authentication Routes",
+      "description": "Authentication Endpoint | POST Route"
     },
     {
-      "name": "Password Route",
-      "description": "Password reset functionality | POST and GET Routes"
+      "name": "Admin User Routes",
+      "description": "Change User Status Endpoint | PUT Route"
     }
   ],
   "schemes": [
@@ -48,7 +48,7 @@
           "Initial Route"
         ],
         "summary": "Handle Initial / Wrong GET Route",
-        "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
+        "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
           "200": {
             "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
@@ -59,68 +59,12 @@
     "/api/auth/register": {
       "post": {
         "tags": [
-          "Register Route"
+          "Authentication Routes"
         ],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
           "description": "User registration details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User registered successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/api/auth/login": {
-      "post": {
-        "tags": [
-          "Login Route"
-        ],
-        "summary": "Login user",
-        "description": "This endpoint allows users to login by providing the required details.",
-        "requestBody": {
-          "description": "User login details",
           "required": true,
           "content": {
             "application/json": {
@@ -136,78 +80,49 @@
                     "format": "password"
                   }
                 },
-                "required": ["email", "password"]
-                
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "User login successfully",
+          "201": {
+            "description": "Account created successfully.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/LoginUser"
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "user": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/User"
+                      }
                     }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-
-          "401": {
-            "description": "Unauthorized access",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer"
+                  },
+                  "error": {
+                    "type": "string"
                   }
                 }
               }
@@ -216,32 +131,44 @@
         }
       }
     },
-    "/api/auth/update-password": {
+    "/api/auth/send-verify-email": {
       "post": {
         "tags": [
-          "Password Route"
+          "Authentication Routes"
         ],
-        "summary": "Update user password",
-        "description": "This endpoint allows a user to update their password by providing their old password, new password, and confirmation of the new password.",
+        "summary": "Resend verification email again",
+        "description": "This endpoint allows user to request verification email again",
         "requestBody": {
-          "description": "Password update details",
+          "description": "Sending email for verification",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdatePasswordRequest"
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Password updated successfully",
+            "description": "Verification email sent successfully.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
                     "message": {
                       "type": "string"
                     }
@@ -250,8 +177,8 @@
               }
             }
           },
-          "400": {
-            "description": "Bad request",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -267,9 +194,28 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "User not found",
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email/{token}": {
+      "get": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Verify user email",
+        "description": "This endpoint allows user to verify their email",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "type": "string",
+            "description": "parsing token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -278,7 +224,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "error": {
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -307,15 +253,57 @@
         }
       }
     },
-
-
-    "/api/auth/forgot-password": {
+    "/api/auth/login": {
       "post": {
         "tags": [
-          "Password Route"
+          "Authentication Routes"
+        ],
+        "summary": "Login User",
+        "description": "Login a registered user by providing Email and Password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "yourpassword"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Invalid credentials / Bad request"
+          }
+        }
+      }
+    },
+
+    "/api/auth/request-password-reset": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
         ],
         "summary": "Request password reset",
-        "description": "This endpoint allows a user to request a password reset by providing their email address.",
+        "description": "This endpoint allows a user to request a password reset link by providing their email address.",
         "requestBody": {
           "description": "Email address to request password reset",
           "required": true,
@@ -404,84 +392,50 @@
         }
       }
     },
+  
     "/api/auth/reset-password/{token}": {
       "get": {
+        "summary": "Verify reset token",
+        "description": "Verifies the validity of the reset token.",
         "tags": [
-          "Password Route"
+          "Authentication Routes"
         ],
-        "summary": "Verify password reset token",
-        "description": "This endpoint verifies the password reset token sent to the user's email.",
         "parameters": [
           {
-            "name": "token",
             "in": "path",
+            "name": "token",
+            "description": "Token received in the password reset email",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Password reset token"
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Token is valid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Token is valid"
           },
-          "401": {
-            "description": "Token is invalid or expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+          "400": {
+            "description": "Invalid or expired token"
           },
           "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Internal server error"
           }
         }
-      }
-    },
-    
-    "/api/auth/reset-password": {
+      },
       "post": {
+        "summary": "Reset password",
+        "description": "Resets the user's password using the provided token and new password.",
         "tags": [
-          "Password Route"
+          "Authentication Routes"
         ],
-        "summary": "Reset user password",
-        "description": "This endpoint allows a user to reset their password by providing a valid token and new password.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "description": "Token received in the password reset email",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "requestBody": {
           "description": "New password details",
           "required": true,
@@ -490,26 +444,72 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "token": {
-                    "type": "string"
-                  },
                   "newPassword": {
                     "type": "string",
-                    "format": "password"
-                  },
-                  "confirmPassword": {
-                    "type": "string",
-                    "format": "password"
+                    "format": "password",
+                    "description": "The new password"
                   }
                 },
-                "required": ["token", "password", "confirmPassword"]
-            }
+                "required": ["newPassword"]
+              }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Password reset successfully",
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token, or bad request with missing parameters"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+   
+ 
+    "/api/users/admin-update-user-status/{id}": {
+      "put": {
+        "tags": [
+          "Admin User Routes"
+        ],
+        "summary": "Change User Status",
+        "description": "This endpoint allows an admin to change User account Status by providing the userId.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to change status",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Change user status",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -519,37 +519,59 @@
                       "type": "string"
                     }
                   }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Status updated successfully.",
+                    "value": {
+                      "message": "Status updated successfully."
                     }
                   }
                 }
               }
             }
           },
-          "401": {
-            "description": "Token is invalid or expired",
+          "404": {
+            "description": "User doesn't exist",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
+                    "message": {
                       "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User Not Found",
+                    "value": {
+                      "success": false,
+                      "message": "User doesn't exist."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "Invalid user ID",
+                    "value": {
+                      "message": "Invalid user ID"
                     }
                   }
                 }
@@ -563,11 +585,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
+                    "message": {
                       "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Server Error",
+                    "value": {
+                      "message": "Server error"
                     }
                   }
                 }
@@ -577,84 +604,83 @@
         }
       }
     }
+
+    
   },
-  
   "components": {
     "schemas": {
       "User": {
         "type": "object",
-        "properties": {        
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "email": {
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           "password": {
             "type": "string"
           },
           "phone": {
-            "type": "integer"
+            "type": "integer",
+            "nullable": true
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri"
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"]
+            "enum": [
+              "male",
+              "female"
+            ],
+            "nullable": true
           },
           "birthDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "nullable": true
           },
           "language": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "currency": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "role": {
             "type": "string",
-            "enum": ["buyer", "admin", "seller"]
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "is2FAEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
-      },
-      "UpdatePasswordRequest": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "integer"
-          },
-          "oldPassword": {
-            "type": "string",
-            "format": "password"
-          },
-          "newPassword": {
-            "type": "string",
-            "format": "password"
-          },
-          "confirmPassword": {
-            "type": "string",
-            "format": "password"
-          }
-        },
-        "required": ["userId", "oldPassword", "newPassword","confirmPassword"]
-      },
-      "LoginUser": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "password": {
-            "type": "string",
-            "format": "password"
-          }
-        },
-        "required": ["email", "password"]
       }
-        }
+    }
   }
 }
