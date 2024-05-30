@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "E-commerce-ninjas",
-    "description": "APIs for the E-commmerce-ninjas  Project",
+    "description": "APIs for the E-commerce-ninjas Project",
     "termsOfService": "https://github.com/atlp-rwanda/e-commerce-ninjas-bn/blob/develop/README.md",
     "contact": {
       "email": "e-commerce-ninjas@andela.com"
@@ -26,7 +26,7 @@
     },
     {
       "name": "Admin User Routes",
-      "description": "Change User Status Endpoint | PUT Route"
+      "description": ""
     }
   ],
   "schemes": [
@@ -34,12 +34,10 @@
     "https"
   ],
   "consumes": [
-    "application/json",
-    "none"
+    "application/json"
   ],
   "produces": [
-    "application/json",
-    "none"
+    "application/json"
   ],
   "paths": {
     "/": {
@@ -423,6 +421,125 @@
               "summary": "Server Error",
               "value": {
                 "message": "Server error"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "/api/users/admin-update-role/{id}": {
+      "put": {
+        "tags": [
+          "Admin User Routes"
+        ],
+        "summary": "Update user role",
+        "description": "This endpoint allows admin to update a user's role",
+        "parameters": [
+          {
+            "in":"path",
+            "name": "id",
+            "type": "string",
+            "description":"Pass the ID"
+          }
+        ],
+        "requestBody": {
+          "description": "User role update details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "Admin",
+                      "Buyer",
+                      "Seller"
+                    ]
+                  }
+                },
+                "required": [
+                  "role"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User role updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           }

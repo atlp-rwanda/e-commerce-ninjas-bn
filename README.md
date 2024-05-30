@@ -28,21 +28,24 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
+- Admin Update Status Endpoint
+- Admin Update Role Endpoint
 -logout-feature
 - Logout Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
-| No  | VERBS | ENDPOINTS                     | STATUS      | ACCESS | DESCRIPTION                   |
-| --- | ----- | ----------------------------- | ----------- | ------ | ----------------------------- |
-| 1   | GET   | /                             | 200 OK      | public | Show welcome message          |
-| 2   | POST  | /api/auth/register            | 201 CREATED | public | create user account           |
-| 3   | GET   | /api/auth/verify-email/:token | 200 OK      | public | Verifying email               |
-| 4   | POST  | /api/auth/send-verify-email   | 200 OK      | public | Resend verification email     |
-| 5   | POST  | /api/auth/login               | 200 OK      | public | Login with Email and Password |
-| 6   | POST  | /api/auth/logout              | 200 OK      | private | Logout user                   |
-=======
-- Admin change status Endpoint
+
+| No | VERBS | ENDPOINTS                               | STATUS      | ACCESS  | DESCRIPTION                   |
+|----|-------|-----------------------------------------|-------------|---------|-------------------------------|
+| 1  | GET   | /                                       | 200 OK      | public  | Show welcome message          |
+| 2  | POST  | /api/auth/register                      | 201 CREATED | public  | create user account           |
+| 3  | GET   | /api/auth/verify-email/:token           | 200 OK      | public  | Verifying email               |
+| 4  | POST  | /api/auth/send-verify-email             | 200 OK      | public  | Resend verification email     |
+| 5  | POST  | /api/auth/login                         | 200 OK      | public  | Login with Email and Password |
+| 5 | PUT    | /api/users/admin-update-role/:id        | 200 OK      | private | Update the user role by admin|
+| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint          |
+| 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private |  Admin Update Role Endpoint  |
 
 ## INSTALLATION
 

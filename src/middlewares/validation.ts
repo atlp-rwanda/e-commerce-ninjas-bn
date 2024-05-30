@@ -97,21 +97,9 @@ const verifyUserCredentials = async (req: Request, res: Response, next: NextFunc
 
 }
 
-const isUserLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers["authorization"];
-    console.log(authHeader)
-    if (!authHeader) {
-      return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "No Token provided" });
-    }
-    (req as IRequest).token = authHeader.split(" ")[1];
-    next();
-}
 
 
-export {
-  validation,
-  isUserExist,
-  isAccountVerified,
-  verifyUserCredentials,
-  isUserLoggedIn
-};
+
+
+
+export { validation, isUserExist, isAccountVerified,verifyUserCredentials };
