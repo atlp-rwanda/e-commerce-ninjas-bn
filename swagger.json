@@ -25,8 +25,8 @@
       "description": "Authentication Endpoint | POST Route"
     },
     {
-      "name": "User Management Routes",
-      "description": "User Management Endpoints"
+      "name": "Admin User Routes",
+      "description": ""
     }
   ],
   "schemes": [
@@ -79,11 +79,8 @@
                   }
                 },
                 "required": [
-                  
                   "email",
-                 
                   "password"
-                
                 ]
               }
             }
@@ -153,9 +150,7 @@
                   }
                 },
                 "required": [
-                  
                   "email"
-                
                 ]
               }
             }
@@ -299,125 +294,6 @@
         }
       }
     },
-    "/api/users/admin-update-role/{userId}": {
-      "put": {
-        "tags": [
-          "User Management Routes"
-        ],
-        "summary": "Update user role",
-        "description": "This endpoint allows admin to update a user's role",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "type": "string",
-            "description": "ID of the user to update",
-            "required": true
-          }
-        ],
-        "requestBody": {
-          "description": "User role update details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "role": {
-                    "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
-                  }
-                },
-                "required": [
-                  "role"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User role updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/users/admin-update-user-status/{id}": {
       "put": {
         "tags": [
@@ -552,10 +428,11 @@
         }
       }
     },
+    
     "/api/users/admin-update-role/{userId}": {
       "put": {
         "tags": [
-          "User Management Routes"
+          "Admin User Routes"
         ],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
