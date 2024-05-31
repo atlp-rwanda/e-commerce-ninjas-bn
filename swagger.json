@@ -35,7 +35,9 @@
   "paths": {
     "/": {
       "get": {
-        "tags": ["Initial Route"],
+        "tags": [
+          "Initial Route"
+        ],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -47,7 +49,9 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -67,7 +71,10 @@
                     "format": "password"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -117,7 +124,9 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -133,7 +142,9 @@
                     "format": "email"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -180,7 +191,9 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -233,7 +246,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -254,7 +269,10 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
