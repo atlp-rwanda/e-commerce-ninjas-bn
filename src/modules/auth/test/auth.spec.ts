@@ -1,18 +1,30 @@
+/* eslint-disable require-jsdoc */
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isUserExist } from "../../../middlewares/validation";
+import {
+  isUserExist,
+  verifyGoogleCredentials
+} from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
+import { generateToken } from "../../../helpers";
 import Session from "../../../databases/models/session";
+import googleAuth from "../../../services/googleAuth";
+import { userInfo } from "../../../types";
+import authControllers from "../controller/authControllers";
 import {
   sendVerificationEmail,
   transporter
 } from "../../../services/sendEmail";
+import dotenv from "dotenv";
+import { VerifyCallback } from "passport-google-oauth2";
+dotenv.config();
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -119,7 +131,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -472,5 +484,253 @@ describe("sendVerificationEmail", () => {
     } catch (error) {
       expect(error).to.be.an("error");
     }
+  });
+});
+
+describe("Auth Controller for google authentication", () => {
+  describe("signInUserWithGoogle", () => {
+    it("should create a user and return a token if Google sign-in is successful", async () => {
+      const req = {
+        user: {
+          email: "test@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          picture: "https://example.com/profile.jpg",
+          accToken: "google_access_token"
+        },
+        headers: {
+          "user-device": "test_device"
+        }
+      } as unknown as Request;
+
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.spy()
+      } as unknown as Response;
+
+      await authControllers.signInUserWithGoogle(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(
+        sinon.match({ status: 200, token: sinon.match.string })
+      );
+    });
+
+    it("should return 500 status code and error message if an error occurs", async () => {
+      const req = {
+        user: {
+          email: "test@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          picture: "https://example.com/profile.jpg",
+          accToken: "google_access_token"
+        },
+        headers: {
+          "user-device": "test_device"
+        }
+      } as unknown as Request;
+
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.spy()
+      } as unknown as Response;
+      const createUserStub = sinon
+        .stub(authRepositories, "createUser")
+        .throws(new Error("Database error"));
+
+      await authControllers.signInUserWithGoogle(req, res);
+      expect(res.status).to.have.been.calledWith(500);
+      expect(res.json).to.have.been.calledWith(
+        sinon.match({ status: 500, Message: "Database error" })
+      );
+      createUserStub.restore();
+    });
+  });
+
+  describe("Passport Configuration", () => {
+    it("should serialize and deserialize user correctly", () => {
+      const user = { id: "123", username: "testuser" };
+      const doneSerialize = (err: any, serializedUser: any) => {
+        expect(err).to.be.null;
+        expect(serializedUser).to.deep.equal(user);
+      };
+      const doneDeserialize = (err: any, deserializedUser: any) => {
+        expect(err).to.be.null;
+        expect(deserializedUser).to.deep.equal(user);
+      };
+      googleAuth.passport.serializeUser(user, doneSerialize);
+      googleAuth.passport.deserializeUser(user, doneDeserialize);
+    });
+  });
+
+  describe("Google Authentication Strategy", () => {
+    it("should call the strategy callback with correct parameters", () => {
+      // Mock profile object
+    });
+  });
+
+  function googleAuthenticationCallback(
+    request: Request,
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback
+  ) {
+    const userId = profile.id;
+    const email = profile.emails?.[0].value || null;
+    const firstName = profile.name?.givenName || null;
+    const lastName = profile.name?.familyName || null;
+    const picture = profile.photos?.[0].value || null;
+    const accToken = accessToken;
+    const user = {
+      userId,
+      email,
+      firstName,
+      lastName,
+      picture,
+      accToken
+    };
+    return done(null, user);
+  }
+
+  describe("Google Authentication Strategy Callback", () => {
+    it("should create a user with all fields populated", () => {
+      const profile = {
+        id: "123",
+        emails: [{ value: "test@example.com" }],
+        name: { givenName: "John", familyName: "Doe" },
+        photos: [{ value: "https://example.com/profile.jpg" }]
+      };
+
+      const request: Request = {} as Request;
+      const accessToken = "accessToken";
+      const refreshToken = "refreshToken";
+
+      const done: VerifyCallback = (error, user) => {
+        expect(error).to.be.null;
+        expect(user).to.deep.equal({
+          userId: "123",
+          email: "test@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          picture: "https://example.com/profile.jpg",
+          accToken: "accessToken"
+        });
+      };
+
+      googleAuthenticationCallback(
+        request,
+        accessToken,
+        refreshToken,
+        profile,
+        done
+      );
+    });
+  });
+
+  interface AuthenticatedRequest extends Request {
+    isAuthenticated(): boolean;
+  }
+
+  describe("verifyGoogleCredentials function", () => {
+    let req: AuthenticatedRequest;
+    let res: Partial<Response>;
+    let next: sinon.SinonSpy;
+    beforeEach(() => {
+      req = {
+        isAuthenticated: sinon.stub().returns(true),
+        user: { email: "test@example.com" } as userInfo,
+        headers: { "user-device": "test_device" }
+      } as unknown as AuthenticatedRequest;
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      } as Partial<Response>;
+
+      next = sinon.spy();
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it("should return token when user is authenticated and found in the database", async () => {
+      sinon.stub(authRepositories, "findUserByAttributes").resolves({
+        id: 123,
+        email: "test@example.com",
+        password: "hashedPassword"
+      } as Users);
+      const generatedToken = generateToken(123);
+      await verifyGoogleCredentials(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
+      sinon.assert.calledWith(res.status as sinon.SinonStub, 200);
+      sinon.assert.calledWith(res.json as sinon.SinonStub, {
+        status: 200,
+        token: generatedToken
+      });
+
+      it("should call next when user is authenticated but not found in the database", async () => {
+        sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+        await verifyGoogleCredentials(
+          req as Request,
+          res as Response,
+          next as NextFunction
+        );
+        sinon.assert.calledOnce(next);
+        sinon.assert.notCalled(res.status as sinon.SinonStub);
+        sinon.assert.notCalled(res.json as sinon.SinonStub);
+      });
+
+      it("should return error when user is not authenticated", async () => {
+        (req.isAuthenticated as sinon.SinonStub).returns(false);
+
+        await verifyGoogleCredentials(
+          req as Request,
+          res as Response,
+          next as NextFunction
+        );
+
+        sinon.assert.notCalled(next);
+        sinon.assert.calledWith(res.json as sinon.SinonStub, {
+          Error: "Something Went Wrong"
+        });
+      });
+    });
+    describe("Google Authentication", () => {
+      describe("Google Strategy", () => {
+        it("should call the done callback with user object", () => {
+          const requestMock: Partial<Request> = {};
+          const accessTokenMock = "mockAccessToken";
+          const refreshTokenMock = "mockRefreshToken";
+          const profileMock = {
+            id: "mockUserId",
+            emails: [{ value: "test@example.com" }],
+            name: { givenName: "John", familyName: "Doe" },
+            photos: [{ value: "https://example.com/profile.jpg" }]
+          };
+          const doneStub = sinon.stub();
+
+          // Call the strategy function directly with mock parameters
+          googleAuth.passport._strategies.google._verify(
+            requestMock as Request,
+            accessTokenMock,
+            refreshTokenMock,
+            profileMock,
+            doneStub
+          );
+
+          sinon.assert.calledWith(doneStub, null, {
+            userId: "mockUserId",
+            email: "test@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            picture: "https://example.com/profile.jpg",
+            accToken: "mockAccessToken"
+          });
+        });
+      });
+    });
   });
 });
