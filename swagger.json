@@ -639,9 +639,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -770,16 +768,10 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
+                    "enum": ["Admin", "Buyer", "Seller"]
                   }
                 },
-                "required": [
-                  "role"
-                ]
+                "required": ["role"]
               }
             }
           }
@@ -1361,6 +1353,13 @@
             }
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
