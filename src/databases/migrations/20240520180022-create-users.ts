@@ -31,11 +31,11 @@ export default {
         allowNull: false
       },
       password: {
-        type: new DataTypes.STRING(128),
+        type: new DataTypes.STRING(255),
         allowNull: false
       },
       phone: {
-        type: new DataTypes.BIGINT,
+        type: new DataTypes.BIGINT(),
         allowNull: true
       },
       profilePicture: {
@@ -47,7 +47,7 @@ export default {
         allowNull: true
       },
       birthDate: {
-        type: new DataTypes.DATE,
+        type: new DataTypes.DATE(),
         allowNull: true
       },
       language: {
@@ -63,12 +63,17 @@ export default {
         allowNull: true
       },
       isVerified: {
-        type: new DataTypes.BOOLEAN,
+        type: new DataTypes.BOOLEAN(),
         allowNull: false,
         defaultValue: false
       },
+      isGoogleAccount: {
+        type: new DataTypes.BOOLEAN(),
+        allowNull: true,
+        defaultValue: false
+      },
       is2FAEnabled: {
-        type: new DataTypes.BOOLEAN,
+        type: new DataTypes.BOOLEAN(),
         allowNull: false,
         defaultValue: false
       },
