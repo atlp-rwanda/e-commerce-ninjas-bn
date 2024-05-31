@@ -18,7 +18,7 @@
     "deleteAllSeeders": "tsc && npx sequelize db:seed:undo:all",
     "start": "ts-node-dev src/index.ts",
     "dev": "ts-node-dev src/index.ts",
-    "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=development npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
+    "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
     "coverage": " nyc mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "lint": "eslint . --ext .ts",
