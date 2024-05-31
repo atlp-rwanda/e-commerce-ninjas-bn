@@ -1,6 +1,6 @@
 // user Controllers
 import { Request, Response } from "express";
-
+import { hashPassword, comparePassword} from "../../../helpers";
 import authRepositories from "../../auth/repository/authRepositories";
 import httpStatus from "http-status";
 
@@ -19,7 +19,6 @@ const updateUserRole = async (req: Request, res: Response) => {
   }
 };
 
-
 const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId: number = Number(req.params.id);
@@ -30,6 +29,27 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const updateUserPassword = async (req: Request, res: Response) => {
+  const { oldPassword, newPassword} = req.body;
+  const userId: number = Number(req.params.id);
 
+  try {
+    const user = await authRepositories.findUserByAttributes("id", userId);
+     const isPasswordValid = await comparePassword(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(httpStatus.UNAUTHORIZED).json({ message: "Old password is incorrect" });
+    }
 
-export default { updateUserStatus,updateUserRole };
+    const hashedPassword = await hashPassword(newPassword);
+    await authRepositories.updateUserByAttributes("password", hashedPassword, "id", userId);
+
+    return res.status(httpStatus.OK).json({ message: "Password updated successfully" });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+};
+
+export default { updateUserStatus,updateUserRole,  updateUserPassword };
