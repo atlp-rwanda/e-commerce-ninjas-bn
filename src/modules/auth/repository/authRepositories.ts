@@ -4,7 +4,7 @@ import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 
 const createUser = async (body: any) => { 
-  return await Users.create({ ...body, role:'buyer' });
+  return await Users.create({ ...body, role:"buyer" });
 };
 
 const findUserByAttributes = async (key: string, value: any) => {

@@ -5,7 +5,6 @@ import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
 import { comparePassword, decodeToken } from "../helpers";
-import { IRequest } from "../types";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -123,7 +122,7 @@ const verifyUserCredentials = async (
         .status(httpStatus.OK)
         .json({
           message: "Logged in successfully",
-          data: { token: existingToken },
+          data: { token: existingToken }
         });
     } else {
       return next();

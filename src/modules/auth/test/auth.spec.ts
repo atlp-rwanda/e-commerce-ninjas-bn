@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
