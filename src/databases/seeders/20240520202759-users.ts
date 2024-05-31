@@ -13,7 +13,7 @@ const userOne = {
   language: "english",
   currency: "USD",
   role: "buyer",
-  status: "enabled",
+  status: "enabled"
 };
 const userTwo = {
   createdAt: new Date(),
@@ -29,7 +29,7 @@ const userTwo = {
   language: "English",
   currency: "USD",
   role: "buyer",
-  status: "enabled",
+  status: "enabled"
 };
 const userThree = {
   createdAt: new Date(),
@@ -45,7 +45,7 @@ const userThree = {
   language: "english",
   currency: "USD",
   role: "buyer",
-  status: "enabled",
+  status: "enabled"
 };
 const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [userOne, userTwo, userThree]);

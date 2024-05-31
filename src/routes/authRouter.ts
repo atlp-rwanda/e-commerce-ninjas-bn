@@ -5,7 +5,6 @@ import {
   isUserExist,
   isAccountVerified,
   verifyUserCredentials,
-  is2FAenabled,
   verifyOtp
 } from "../middlewares/validation";
 import {
@@ -38,7 +37,6 @@ router.post(
   "/login",
   validation(credentialSchema),
   verifyUserCredentials,
-  is2FAenabled,
   authControllers.loginUser
 );
 router.post(

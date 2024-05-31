@@ -4,7 +4,7 @@ import authRepositories from "../modules/auth/repository/authRepositories";
 import { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
-import { comparePassword, decodeToken} from "../helpers";
+import { comparePassword, decodeToken } from "../helpers";
 import { IRequest } from "../types";
 import generateRandomCode from "../helpers/generateCode";
 import { sendVerificationEmail } from "../services/sendEmail";
@@ -143,33 +143,16 @@ const verifyUserCredentials = async (
       req.body.password,
       user.password
     );
-    if (!passwordMatches)
-      {return res
+    if (!passwordMatches) {
+      return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password", data: null });}
-    (req as IRequest).loginUserId = user.id;
-    return next();
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Server error", data: error.message });
-  }
-};
-const is2FAenabled = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const userId = (req as IRequest).loginUserId;
-    const user: UsersAttributes = await authRepositories.findUserByAttributes(
-      "id",
-      userId
-    );
+        .json({ message: "Invalid Email or Password", data: null });
+    }
     if (!user.is2FAEnabled) {
       (req as IRequest).loginUserId = user.id;
       return next();
     }
+
     const code = generateRandomCode();
     const session = {
       userId: user.id,
@@ -180,19 +163,17 @@ const is2FAenabled = async (
     await authRepositories.createSession(session);
     await sendVerificationEmail(
       user.email,
-      "OTP E-Commerce Ninga",
-      `Here is your OTP ${code}`
+      "E-Commerce Ninja Login",
+      `Dear ${user.lastName || user.email} \n\nUse This Code To Confirm Your Account: ${code}`
     );
-
-
     return res.status(httpStatus.OK).json({
-      message: "2FA code sent to your Phone and Email",
-      data: user.id
+      message: "Check your Email for OTP Confirmation",
+      data:{ userId:user.id}
     });
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: error.message
-    });
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Server error", data: error.message });
   }
 };
 
@@ -209,16 +190,26 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
         message: "User not Found."
       });
     }
-    const otp:number = req.body.otp
-    const sessionData = await authRepositories.findSessionByUserIdOtp(user.id,otp);
+    const otp: number = req.body.otp;
+    const sessionData = await authRepositories.findSessionByUserIdOtp(
+      user.id,
+      otp
+    );
 
     if (sessionData.otp !== req.body.otp) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "Invalid or expired code"
+        message: "Invalid or expired code."
       });
     }
-
+      if (sessionData.otp == null) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Code expired."
+        });
+      }
+    
+  
     await authRepositories.deleteSessionData(user.id);
     (req as IRequest).loginUserId = user.id;
     return next();
@@ -235,6 +226,5 @@ export {
   isUserExist,
   isAccountVerified,
   verifyUserCredentials,
-  is2FAenabled,
   verifyOtp
 };
