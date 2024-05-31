@@ -481,17 +481,14 @@ describe("sendVerificationEmail", () => {
 
 describe("is OTP verified", () => {
   let findUserByAttributesStub;
-  let findSessionByUserIdStub;
+ 
 
   beforeEach(() => {
     findUserByAttributesStub = sinon.stub(
       authRepositories,
       "findUserByAttributes"
     );
-    findSessionByUserIdStub = sinon.stub(
-      authRepositories,
-      "findSessionByUserId"
-    );
+ 
   });
 
   afterEach(() => {
@@ -529,9 +526,7 @@ describe("is OTP verified", () => {
 
 describe("verifyUserCredentials Middleware", () => {
   let findUserByAttributesStub;
-  let comparePasswordStub;
-  let createSessionStub;
-  let sendVerificationEmailStub;
+
 
   before(() => {
     app.post(
@@ -548,9 +543,7 @@ describe("verifyUserCredentials Middleware", () => {
       authRepositories,
       "findUserByAttributes"
     );
-    comparePasswordStub = sinon.stub(comparePassword);
-    createSessionStub = sinon.stub(authRepositories, "createSession");
-    sendVerificationEmailStub = sinon.stub(sendVerificationEmail);
+
   });
 
   afterEach(() => {
