@@ -8,10 +8,73 @@ import app from "../../../index";
 import Users from "../../../databases/models/users";
 import authRepositories from "../../auth/repository/authRepositories"
 import { UsersAttributes } from "../../../databases/models/users";
-
+import * as authHelpers from "../../../helpers/index";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
+
+describe("User Password Update API", () => {
+  it("should return 404 if user is not found", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    const res = await chai.request(app)
+      .put("/api/users/user-update-password/1")
+      .send({ oldPassword: "oldPassword", newPassword: "newPassword", confirmPassword: "newPassword" });
+
+    expect(res).to.have.status(404);
+    expect(res.body).to.have.property("message").to.equal("User not found");
+
+    sinon.restore();
+  });
+
+});
+
+describe("User Password Update API", () => {
+  it("should update user password successfully", async () => {
+    const comparePasswordStub = sinon.stub(authHelpers, "comparePassword").resolves(true);
+    const hashPasswordStub = sinon.stub(authHelpers, "hashPassword").resolves("newHashedPassword");
+    const updateUserByAttributesStub = sinon.stub(authRepositories, "updateUserByAttributes").resolves();
+
+    const res = await chai.request(app)
+      .put("/api/users/user-update-password/1")
+      .send({ oldPassword: "oldPassword", newPassword: "newPassword", confirmPassword: "newPassword" });
+
+    expect(res).to.have.status(200);
+    expect(res.body).to.have.property("message").to.equal("Password updated successfully");
+
+    sinon.restore();
+  });
+
+  it("should return 404 if user is not found", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    const res = await chai.request(app)
+      .put("/api/users/user-update-password/1")
+      .send({ oldPassword: "oldPassword", newPassword: "newPassword", confirmPassword: "newPassword" });
+
+    expect(res).to.have.status(404);
+    expect(res.body).to.have.property("message").to.equal("User not found");
+
+    sinon.restore();
+  });
+
+
+  it("should return 500 if an internal server error occurs", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
+
+    const res = await chai.request(app)
+      .put("/api/users/user-update-password/1")
+      .send({ oldPassword: "oldPassword", newPassword: "newPassword", confirmPassword: "newPassword" });
+
+    expect(res).to.have.status(500);
+    expect(res.body).to.have.property("message").to.equal("Internal Server Error");
+
+    sinon.restore();
+  });
+
+  // Add more test cases for other scenarios
+
+});
 
 describe("Update User Status test case ", () => {
   let getUserStub: sinon.SinonStub;
