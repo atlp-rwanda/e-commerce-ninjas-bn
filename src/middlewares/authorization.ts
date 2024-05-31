@@ -21,7 +21,7 @@ export const userAuthorization = function (roles: string[]) {
       }
 
       if (!token) {
-        res
+        return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
@@ -32,7 +32,7 @@ export const userAuthorization = function (roles: string[]) {
         decoded.id, token
       );
       if (!session) {
-        res
+        return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
@@ -40,13 +40,13 @@ export const userAuthorization = function (roles: string[]) {
       const user = await authRepository.findUserByAttributes("id", decoded.id);
 
       if (!user) {
-        res
+        return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
 
       if (!roles.includes(user.role)) {
-        res
+        return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }

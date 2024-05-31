@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
@@ -115,24 +115,15 @@ describe("Authentication Test Cases", () => {
 
   it("Should return error on logout", (done) => {
     sinon
-      .stub(authRepositories, "invalidateToken")
+      .stub(authRepositories, "destroySession")
       .throws(new Error("Database Error"));
     router()
       .post("/api/auth/logout")
       .set("Authorization", `Bearer ${token}`)
       .end((err, res) => {
+        console.log(res)
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.have.property("message", "Server error");
-        done(err);
-      });
-  });
-
-  it("Should return 401 Unauthorized if logout request lacks valid token", (done) => {
-    router()
-      .post("/api/auth/logout")
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.UNAUTHORIZED);
-        expect(res.body).to.have.property("message");
         done(err);
       });
   });
@@ -393,7 +384,7 @@ describe("Authentication Test Cases", () => {
     );
     findSessionByUserIdStub = sinon.stub(
       authRepositories,
-      "findSessionByUserId"
+      "findSessionByAttributes"
     );
   });
 

@@ -5,7 +5,6 @@ import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import { IRequest } from "../../../types";
-// import { decodeToken } from "../../../helpers";
 import authRepositories from "../repository/authRepositories";
 import { sendVerificationEmail } from "../../../services/sendEmail";
 
@@ -17,7 +16,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
     const token: string = generateToken(register.id);
     const session = {
       userId: register.id,
-      device: req.headers["user-device"],
+      device: req.headers["user-agent"],
       token: token,
       otp: null
     };
@@ -60,23 +59,22 @@ const sendVerifyEmail = async (req: any, res: Response) => {
 };
 
 const verifyEmail = async (req: any, res: Response) => {
-        try {
-                await authRepositories.destroySession(req.user.id, req.session.token)
-                await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
-                res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
-        } catch (error) {
-                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-        }
+  try {
+    await authRepositories.destroySession(req.user.id, req.session.token)
+    await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
 }
 
 
-const loginUser = async (req: Request, res: Response) => {
+const loginUser = async (req: any, res: Response) => {
   try {
-    const userId = (req as IRequest).loginUserId;
-    const token = generateToken(userId);
+    const token = generateToken(req.user.id);
     const session = {
-      userId,
-      device: req.headers["user-device"],
+      userId: req.user.id,
+      device: req.headers["user-agent"],
       token: token,
       otp: null
     };
@@ -87,20 +85,20 @@ const loginUser = async (req: Request, res: Response) => {
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Server error", data: err.message });
+      .json({ message: "Internal Server error", data: err.message });
   }
 };
 
-const logoutUser = async (req: Request, res: Response) => {
+const logoutUser = async (req: any, res: Response) => {
   try {
-    await authRepositories.invalidateToken((req as IRequest).token);
+    await authRepositories.destroySession(req.user.id, req.session.token)
     res.status(httpStatus.OK).json({ message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Server error"
+        message: "Internal Server error"
       });
   }
 };

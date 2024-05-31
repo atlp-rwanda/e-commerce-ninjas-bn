@@ -29,22 +29,13 @@
       "description": ""
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Initial Route"
-        ],
+        "tags": ["Initial Route"],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -56,9 +47,7 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -78,10 +67,7 @@
                     "format": "password"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -131,9 +117,7 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -149,9 +133,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -198,9 +180,7 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -253,9 +233,7 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -276,10 +254,7 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -294,10 +269,36 @@
         }
       }
     },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication Routes"],
+        "summary": "Logout User",
+        "description": "Logout a logged in user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "401": {
+            "description": "No Token provided"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/api/users/admin-update-user-status/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
+        "tags": ["Admin User Routes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "summary": "Change User Status",
         "description": "This endpoint allows an admin to change User account Status by providing the userId.",
@@ -324,9 +325,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -401,46 +400,45 @@
                 }
               }
             }
-          }
-        }
-      },
-    "500": {
-      "description": "Internal server error",
-      "content": {
-        "application/json": {
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string"
-              }
-            }
           },
-          "examples": {
-            "serverError": {
-              "summary": "Server Error",
-              "value": {
-                "message": "Server error"
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Server Error",
+                    "value": {
+                      "message": "Server error"
+                    }
+                  }
+                }
               }
             }
           }
         }
       }
     },
-    
+
     "/api/users/admin-update-role/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
           {
-            "in":"path",
+            "in": "path",
             "name": "id",
             "type": "string",
-            "description":"Pass the ID"
+            "description": "Pass the ID"
           }
         ],
         "requestBody": {
@@ -453,20 +451,19 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
+                    "enum": ["Admin", "Buyer", "Seller"]
                   }
                 },
-                "required": [
-                  "role"
-                ]
+                "required": ["role"]
               }
             }
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "User role updated successfully",
@@ -546,113 +543,84 @@
         }
       }
     }
-    },
-    "/api/auth/logout": {
-        "post": {
-          "tags": [
-            "Authentication Routes"
-          ],
-          "summary": "Logout User",
-          "description": "Logout a logged in user",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Logout successful"
-            },
-            "401": {
-              "description": "No Token provided"
-            },
-            "500": {
-              "description": "Server error"
-            }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "integer",
+            "nullable": true
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"],
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "is2FAEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
+      }
     },
-    "components": {
-      "securitySchemes": {
-        "bearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
-        }
-      },
-      "schemas": {
-        "User": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "firstName": {
-              "type": "string",
-              "nullable": true
-            },
-            "lastName": {
-              "type": "string",
-              "nullable": true
-            },
-            "email": {
-              "type": "string"
-            },
-            "password": {
-              "type": "string"
-            },
-            "phone": {
-              "type": "integer",
-              "nullable": true
-            },
-            "profilePicture": {
-              "type": "string",
-              "format": "uri"
-            },
-            "gender": {
-              "type": "string",
-              "enum": [
-                "male",
-                "female"
-              ],
-              "nullable": true
-            },
-            "birthDate": {
-              "type": "string",
-              "format": "date",
-              "nullable": true
-            },
-            "language": {
-              "type": "string",
-              "nullable": true
-            },
-            "currency": {
-              "type": "string",
-              "nullable": true
-            },
-            "role": {
-              "type": "string",
-              "nullable": true
-            },
-            "isVerified": {
-              "type": "boolean"
-            },
-            "is2FAEnabled": {
-              "type": "boolean"
-            },
-            "status": {
-              "type": "boolean"
-            },
-            "createdAt": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "updatedAt": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        }
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

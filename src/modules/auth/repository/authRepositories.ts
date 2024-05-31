@@ -3,8 +3,8 @@
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 
-const createUser = async (body: any) => {
-  return await Users.create(body);
+const createUser = async (body: any) => { 
+  return await Users.create({ ...body, role:'buyer' });
 };
 
 const findUserByAttributes = async (key: string, value: any) => {
@@ -28,8 +28,17 @@ const createSession = async (body: any) => {
   return await Session.create(body);
 };
 
-const findSessionByUserId = async( userId:number ) => {
-    return await Session.findOne({ where: { userId } });
+const findSessionByAttributes = async( key:string, value: any ) => {
+    return await Session.findOne({ where: { [key]:value } });
+}
+
+const findSessionByUserIdAndToken = async (userId: number, token: string) => {
+  return await Session.findOne({ where: { token, userId } });
+};
+
+const findTokenByDeviceIdAndUserId = async (device: string, userId: number)=>{
+    const session = await Session.findOne({ where: {device, userId} });
+    return session.token;
 }
 
 const destroySession = async (userId: number, token:string) =>{
@@ -42,6 +51,7 @@ export default {
   findUserByAttributes,
   destroySession,
   updateUserByAttributes,
-  findSessionByUserId,
-  findSessionByUserIdAndToken
+  findSessionByAttributes,
+  findSessionByUserIdAndToken,
+  findTokenByDeviceIdAndUserId,
 };

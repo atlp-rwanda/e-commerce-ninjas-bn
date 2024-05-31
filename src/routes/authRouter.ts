@@ -4,13 +4,13 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials,
-  isUserLoggedIn
+  verifyUserCredentials
 } from "../middlewares/validation";
 import {
   emailSchema,
   credentialSchema
 } from "../modules/auth/validation/authValidations";
+import { userAuthorization } from "../middlewares/authorization";
 
 const router: Router = Router();
 
@@ -37,6 +37,10 @@ router.post(
   verifyUserCredentials,
   authControllers.loginUser
 );
-router.post("/logout", isUserLoggedIn, authControllers.logoutUser);
+router.post(
+  "/logout",
+  userAuthorization(["buyer", "seller", "admin"]),
+  authControllers.logoutUser
+);
 
 export default router;

@@ -1,6 +1,6 @@
-# TEAM NINJAS BACKEND
+# E-COMMERCE WEB APPLICATION SERVER - TEAM NINJAS.
 
-This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
+Our e-commerce web application server, developed by Team Ninjas, facilitates smooth online shopping with features like user authentication, product cataloging, and secure payments. It's built to enhance the user experience with high performance and reliability. Suitable for any online marketplace looking to grow.
 
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 [![Maintainability](https://api.codeclimate.com/v1/badges/839fc3fa18d25362cd8b/maintainability)](https://codeclimate.com/github/atlp-rwanda/e-commerce-ninjas-bn/maintainability)
@@ -30,7 +30,6 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Login Endpoint
 - Admin Update Status Endpoint
 - Admin Update Role Endpoint
--logout-feature
 - Logout Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
@@ -43,9 +42,9 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | 3  | GET   | /api/auth/verify-email/:token           | 200 OK      | public  | Verifying email               |
 | 4  | POST  | /api/auth/send-verify-email             | 200 OK      | public  | Resend verification email     |
 | 5  | POST  | /api/auth/login                         | 200 OK      | public  | Login with Email and Password |
-| 5 | PUT    | /api/users/admin-update-role/:id        | 200 OK      | private | Update the user role by admin|
-| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint          |
-| 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private |  Admin Update Role Endpoint  |
+| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint  |
+| 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
+| 8  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
 
 ## INSTALLATION
 
