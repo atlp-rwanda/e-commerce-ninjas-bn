@@ -17,4 +17,8 @@ dotenv.config
     return await bcrypt.compare(password, hashedPassword);
 }
 
-  export { generateToken, decodeToken, comparePassword }
+const hashPassword = (password: string)=>{
+  return bcrypt.hashSync(password, 10);
+}
+
+  export { generateToken, decodeToken, comparePassword, hashPassword }

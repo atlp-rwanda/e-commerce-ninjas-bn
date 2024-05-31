@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
-import { UsersAttributes } from "../databases/models/users";
+import Users, { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
 import { comparePassword, decodeToken } from "../helpers";
@@ -46,6 +46,18 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
+};
+
+const isUsersExist = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userCount = await Users.count();
+        if (userCount === 0) {
+          return res.status(httpStatus.NOT_FOUND).json({ error: "No users found in the database." });
+        }
+        next();
+      } catch (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: "Internet Server error." });
+      }
 };
 
 const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
@@ -139,4 +151,4 @@ const verifyUserCredentials = async (
 
 
 
-export { validation, isUserExist, isAccountVerified,verifyUserCredentials };
+export { validation, isUserExist, isAccountVerified,verifyUserCredentials, isUsersExist };

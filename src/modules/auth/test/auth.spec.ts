@@ -119,7 +119,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);

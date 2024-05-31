@@ -2,7 +2,7 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-import bcrypt from "bcrypt";
+import { hashPassword } from "../../helpers";
 
 // Define an interface with required and optional attributes
 export interface UsersAttributes {
@@ -145,7 +145,7 @@ Users.init(
         hooks: {
             beforeCreate: async (user) => {
                 if (user.password) {
-                    user.password = await bcrypt.hash(user.password, 10);
+                    user.password = await hashPassword(user.password);
                 }
             }
         }
