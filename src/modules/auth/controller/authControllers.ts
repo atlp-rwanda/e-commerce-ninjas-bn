@@ -15,7 +15,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
     const token: string = generateToken(register.id);
     const session = {
       userId: register.id,
-      device: req.headers["user-agent"],
+      device: req.headers["user-device"],
       token: token,
       otp: null
     };
@@ -73,7 +73,7 @@ const loginUser = async (req: any, res: Response) => {
     const token = generateToken(req.user.id);
     const session = {
       userId: req.user.id,
-      device: req.headers["user-agent"],
+      device: req.headers["user-device"],
       token: token,
       otp: null
     };
