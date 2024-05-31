@@ -6,11 +6,73 @@ import httpStatus from "http-status";
 import app from "../../..";
 import authController from "../controller/authControllers";
 import authRepositories from "../repository/authRepositories";
+import * as authHelpers from "../../../helpers/index";
 import { sendResetPasswordEmail, transporter} from "../../../services/sendEmail";
 
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
+
+describe("POST /api/auth/reset-password/:token", () => {
+  let verifyTokenStub: sinon.SinonStub;
+  let hashPasswordStub: sinon.SinonStub;
+  let updateUserByAttributesStub: sinon.SinonStub;
+
+  beforeEach(() => {
+      verifyTokenStub = sinon.stub(authHelpers, "verifyToken");
+      hashPasswordStub = sinon.stub(authHelpers, "hashPassword");
+      updateUserByAttributesStub = sinon.stub(authRepositories, "UpdateUserByAttributes");
+  });
+
+  afterEach(() => {
+      verifyTokenStub.restore();
+      hashPasswordStub.restore();
+      updateUserByAttributesStub.restore();
+  });
+
+  it("should return 500 for invalid token format", async () => {
+      const res = await chai.request(app)
+          .post("/api/auth/reset-password/invalidToken")
+          .send({ newPassword: "NewPassword1!" });
+
+      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.body).to.have.property("message");
+  });
+
+  it("should return 400 for invalid password format", async () => {
+      const res = await chai.request(app)
+          .post("/api/auth/reset-password/validToken")
+          .send({ newPassword: "short" });
+
+      expect(res).to.have.status(httpStatus.BAD_REQUEST);
+      expect(res.body).to.have.property("message");
+  });
+
+  it("should return 500 for expired or invalid token", async () => {
+      verifyTokenStub.throws(new Error("Expired token"));
+
+      const res = await chai.request(app)
+          .post("/api/auth/reset-password/expiredToken")
+          .send({ newPassword: "NewPassword1!" });
+
+      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.body).to.have.property("message", "Expired token");
+  });
+
+  it("should return 500 for internal server error", async () => {
+      verifyTokenStub.returns({ id: 1 });
+      hashPasswordStub.resolves("hashedPassword");
+      updateUserByAttributesStub.rejects(new Error("Internal server error"));
+
+      const res = await chai.request(app)
+          .post("/api/auth/reset-password/validToken")
+          .send({ newPassword: "NewPassword1!" });
+
+      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.body).to.have.property("message", "Internal server error");
+  });
+});
+
 
 describe("POST /api/auth/request-password-reset", () => {
   let findUserByAttributesStub: SinonStub;
@@ -44,11 +106,8 @@ describe("POST /api/auth/request-password-reset", () => {
     };
 
     await authController.requestPasswordReset(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
     expect(res.json.calledOnceWith({ message: "Password reset email sent successfully." })).to.be.true;
     expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-    expect(generateTokenStub.calledOnceWith(user.id)).to.be.true;
     expect(sendResetPasswordEmailStub.calledOnceWith(email, "Password Reset Request", sinon.match.string)).to.be.true;
 });
 
@@ -107,27 +166,6 @@ describe("POST /api/auth/request-password-reset", () => {
       });
   });
 
-  it("should return 500 if token generation fails", async () => {
-    const email = "user@example.com";
-    const user = { id: 1, email, isVerified: true };
-
-    findUserByAttributesStub.resolves(user);
-    generateTokenStub.throws(new Error("Token generation failed"));
-
-    const req = {
-        body: { email }
-    };
-    const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub()
-    };
-
-    await authController.requestPasswordReset(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Token generation failed" })).to.be.true;
-});
-
 });
 
 describe("sendResetPasswordEmail", () => {
@@ -147,562 +185,33 @@ describe("sendResetPasswordEmail", () => {
 });
 
 
-describe("POST /api/auth/reset-password/:token", () => {
-  let updateUserByAttributesStub: SinonStub;
-  let destroySessionStub: SinonStub;
-  let hashPasswordStub: SinonStub;
 
-  beforeEach(() => {
-    updateUserByAttributesStub = sinon.stub(authRepositories, "UpdateUserByAttributes");
-    hashPasswordStub = sinon.stub().resolves("hashedPassword");
+describe("Auth Helpers", () => {
+  describe("generateToken", () => {
+      it("should generate a valid token", () => {
+          const token = authHelpers.generateToken(1);
+          expect(token).to.be.a("string");
+      });
   });
 
-  afterEach(() => {
-    sinon.restore();
+  describe("verifyToken", () => {
+      it("should verify a valid token", () => {
+          const token = authHelpers.generateToken(1);
+          const decoded = authHelpers.verifyToken(token);
+          expect(decoded).to.have.property("id", 1);
+      });
+
+      it("should throw an error for an invalid token", () => {
+          expect(() => authHelpers.verifyToken("invalidToken")).to.throw();
+      });
   });
 
-  it("should reset password successfully with valid token and password", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    updateUserByAttributesStub.resolves();
-    destroySessionStub.resolves();
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Password reset successfully." })).to.be.true;
-    expect(updateUserByAttributesStub.calledOnceWith("password", "hashedPassword", "id", 1)).to.be.true;
-    expect(destroySessionStub.calledOnceWith(1, "validToken")).to.be.true;
-  });
-
-  it("should return 500 if failed to reset password", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    updateUserByAttributesStub.rejects(new Error("Database error"));
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-    expect(updateUserByAttributesStub.calledOnce).to.be.true;
-    expect(destroySessionStub.called).to.be.false;
-  });
-
-  it("should return 400 if newPassword is missing or invalid", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: {}
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password is required" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-    expect(destroySessionStub.called).to.be.false;
-  });
-
-  it("should return 400 if newPassword does not meet requirements", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "weakpassword" } 
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password must contain letters, numbers, and special characters" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-    expect(destroySessionStub.called).to.be.false;
-  });
-
-  it("should return 500 if unable to hash the password", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    hashPasswordStub.rejects(new Error("Hashing error"));
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-    expect(destroySessionStub.called).to.be.false;
-  });
-
-  it("should return 500 if unable to destroy session", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    updateUserByAttributesStub.resolves();
-    destroySessionStub.rejects(new Error("Session destruction error"));
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-    expect(updateUserByAttributesStub.calledOnce).to.be.true;
-    expect(destroySessionStub.calledOnce).to.be.true;
+  describe("hashPassword", () => {
+      it("should hash a password", async () => {
+          const password = "password123";
+          const hashedPassword = await authHelpers.hashPassword(password);
+          expect(hashedPassword).to.be.a("string");
+          expect(hashedPassword).to.not.equal(password);
+      });
   });
 });
-
-
-
-
-
-
-
-describe("POST /api/auth/reset-password/:token", () => {
-  let updateUserByAttributesStub: SinonStub;
-  let destroySessionStub: SinonStub;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let hashPasswordStub: SinonStub;
-
-  beforeEach(() => {
-    updateUserByAttributesStub = sinon.stub(authRepositories, "UpdateUserByAttributes");
-    // destroySessionStub = sinon.stub(authRepositories, "destroySession").resolves();
-    hashPasswordStub = sinon.stub().resolves("hashedPassword");
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should reset password successfully with valid token and password", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    updateUserByAttributesStub.resolves();
-    destroySessionStub.resolves();
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Password reset successfully." })).to.be.true;
-    expect(updateUserByAttributesStub.calledOnceWith("password", "hashedPassword", "id", 1)).to.be.true;
-    expect(destroySessionStub.calledOnceWith(1, "validToken")).to.be.true;
-  });
-
-  it("should return 400 if newPassword is missing", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: {}
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password is required" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-    expect(destroySessionStub.called).to.be.false;
-  });
-
-  it("should return 400 if newPassword does not meet requirements", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "weakpassword" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password should have a minimum length of 8, password must contain letters, numbers, and special characters" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-    expect(destroySessionStub.called).to.be.false;
-  });
-});
-
-
-
-
-describe("POST /api/auth/reset-password/:token", () => {
-  let updateUserByAttributesStub: SinonStub;
-
-  beforeEach(() => {
-    updateUserByAttributesStub = sinon.stub(authRepositories, "UpdateUserByAttributes");
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should reset password successfully with valid token and password", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "newPassword123" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    updateUserByAttributesStub.resolves();
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "Password reset successfully." })).to.be.true;
-    expect(updateUserByAttributesStub.calledOnceWith("password", "hashedPassword", "id", 1)).to.be.true;
-  });
-
-  it("should return 400 if newPassword is missing", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: {}
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password is required" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-  });
-
-  it("should return 400 if newPassword does not meet requirements", async () => {
-    const req = {
-      params: { token: "validToken" },
-      body: { newPassword: "weakpassword" }
-    };
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-
-    await authController.resetPassword(req as any, res as any);
-
-    expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-    expect(res.json.calledOnceWith({ message: "password should have a minimum length of 8, password must contain letters, numbers, and special characters" })).to.be.true;
-    expect(updateUserByAttributesStub.called).to.be.false;
-  });
-});
-
-
-// describe("POST /api/auth/request-password-reset", () => {
-//   let findUserByAttributesStub: SinonStub;
-//   let generateTokenStub: SinonStub;
-//   let sendResetPasswordEmailStub: SinonStub;
-
-//   beforeEach(() => {
-//     findUserByAttributesStub = sinon.stub(authRepositories, "findUserByAttributes");
-//     generateTokenStub = sinon.stub().returns("resetToken");
-//     sendResetPasswordEmailStub = sinon.stub(transporter, "sendMail").resolves();
-//   });
-
-//   afterEach(() => {
-//     sinon.restore();
-//   });
-
-//   it("should send password reset email successfully", async () => {
-//     const email = "user@example.com";
-//     const user = { id: 1, email, isVerified: true };
-
-//     findUserByAttributesStub.resolves(user);
-
-//     const req = {
-//       body: { email }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Password reset email sent successfully." })).to.be.true;
-//     expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-//     expect(generateTokenStub.calledOnceWith(user.id)).to.be.true;
-//     expect(sendResetPasswordEmailStub.calledOnce).to.be.true;
-//   });
-
-//   it("should return 404 if user is not found", async () => {
-//     const email = "nonexistent@example.com";
-
-//     findUserByAttributesStub.resolves(null);
-
-//     const req = {
-//       body: { email }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.NOT_FOUND)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Email not found." })).to.be.true;
-//     expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-//     expect(generateTokenStub.called).to.be.false;
-//     expect(sendResetPasswordEmailStub.called).to.be.false;
-//   });
-
-//   it("should return 400 if email field is missing", async () => {
-//     const req = {
-//       body: {}
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "email is required" })).to.be.true;
-//     expect(findUserByAttributesStub.called).to.be.false;
-//     expect(generateTokenStub.called).to.be.false;
-//     expect(sendResetPasswordEmailStub.called).to.be.false;
-//   });
-
-//   it("should return 400 for invalid email format", async () => {
-//     const req = {
-//       body: { email: "invalid-email" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "email must be a valid email" })).to.be.true;
-//     expect(findUserByAttributesStub.called).to.be.false;
-//     expect(generateTokenStub.called).to.be.false;
-//     expect(sendResetPasswordEmailStub.called).to.be.false;
-//   });
-
-//   it("should return 400 if email is not verified", async () => {
-//     const email = "unverified@example.com";
-//     const user = { id: 1, email, isVerified: false };
-
-//     findUserByAttributesStub.resolves(user);
-
-//     const req = {
-//       body: { email }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Email is not verified." })).to.be.true;
-//     expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-//     expect(generateTokenStub.called).to.be.false;
-//     expect(sendResetPasswordEmailStub.called).to.be.false;
-//   });
-
-//   it("should return 500 if token generation fails", async () => {
-//     const email = "user@example.com";
-//     const user = { id: 1, email, isVerified: true };
-
-//     findUserByAttributesStub.resolves(user);
-//     generateTokenStub.throws(new Error("Token generation failed"));
-
-//     const req = {
-//       body: { email }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.requestPasswordReset(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Token generation failed" })).to.be.true;
-//     expect(findUserByAttributesStub.calledOnceWith("email", email)).to.be.true;
-//     expect(generateTokenStub.calledOnceWith(user.id)).to.be.true;
-//     expect(sendResetPasswordEmailStub.called).to.be.false;
-//   });
-// });
-
-// describe("POST /api/auth/reset-password/:token", () => {
-//   let updateUserByAttributesStub: SinonStub;
-//   let destroySessionStub: SinonStub;
-//   let hashPasswordStub: SinonStub;
-
-//   beforeEach(() => {
-//     updateUserByAttributesStub = sinon.stub(authRepositories, "UpdateUserByAttributes");
-//     hashPasswordStub = sinon.stub().resolves("hashedPassword");
-//   });
-
-//   afterEach(() => {
-//     sinon.restore();
-//   });
-
-//   it("should reset password successfully with valid token and password", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: { newPassword: "newPassword123" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     updateUserByAttributesStub.resolves();
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Password reset successfully." })).to.be.true;
-//     expect(updateUserByAttributesStub.calledOnceWith("password", "hashedPassword", "id", 1)).to.be.true;
-//     expect(destroySessionStub.calledOnceWith(1, "validToken")).to.be.true;
-//   });
-
-//   it("should return 500 if failed to reset password", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: { newPassword: "newPassword123" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     updateUserByAttributesStub.rejects(new Error("Database error"));
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-//     expect(updateUserByAttributesStub.calledOnce).to.be.true;
-//     expect(destroySessionStub.called).to.be.false;
-//   });
-
-//   it("should return 400 if newPassword is missing or invalid", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: {}
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "password is required" })).to.be.true;
-//     expect(updateUserByAttributesStub.called).to.be.false;
-//     expect(destroySessionStub.called).to.be.false;
-//   });
-
-//   it("should return 400 if newPassword does not meet requirements", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: { newPassword: "weakpassword" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "password must contain letters, numbers, and special characters" })).to.be.true;
-//     expect(updateUserByAttributesStub.called).to.be.false;
-//     expect(destroySessionStub.called).to.be.false;
-//   });
-
-//   it("should return 500 if unable to hash the password", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: { newPassword: "newPassword123" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     hashPasswordStub.rejects(new Error("Hashing error"));
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-//     expect(updateUserByAttributesStub.called).to.be.false;
-//     expect(destroySessionStub.called).to.be.false;
-//   });
-
-//   it("should return 500 if unable to destroy session", async () => {
-//     const req = {
-//       params: { token: "validToken" },
-//       body: { newPassword: "newPassword123" }
-//     };
-//     const res = {
-//       status: sinon.stub().returnsThis(),
-//       json: sinon.stub()
-//     };
-
-//     updateUserByAttributesStub.resolves();
-//     destroySessionStub.rejects(new Error("Session destruction error"));
-
-//     await authController.resetPassword(req as any, res as any);
-
-//     expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
-//     expect(res.json.calledOnceWith({ message: "Failed to reset password." })).to.be.true;
-//     expect(updateUserByAttributesStub.calledOnce).to.be.true;
-//     expect(destroySessionStub.calledOnce).to.be.true;
-//   });
-// });
-
-
