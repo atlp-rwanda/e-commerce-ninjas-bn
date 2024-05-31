@@ -433,10 +433,10 @@
             "description": "Password reset successfully"
           },
           "400": {
-            "description": "Invalid or expired token, or bad request with missing parameters"
+            "description": "bad request"
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Expired token or internal server error"
           }
         }
       }
