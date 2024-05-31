@@ -12,6 +12,7 @@ import {
   credentialSchema,
   otpSchema
 } from "../modules/auth/validation/authValidations";
+import { userAuthorization } from "../middlewares/authorization";
 
 
 const router: Router = Router();
@@ -44,6 +45,11 @@ router.post(
   validation(otpSchema),
   verifyOtp,
   authControllers.loginUser
+);
+router.post(
+  "/logout",
+  userAuthorization(["buyer", "seller", "admin"]),
+  authControllers.logoutUser
 );
 
 export default router;

@@ -29,16 +29,9 @@
       "description": ""
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "paths": {
     "/": {
       "get": {
@@ -294,10 +287,82 @@
         }
       }
     },
+    "/api/auth/verify-otp/{id}": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Verify The OTP Sent",
+        "description": "The Verification of OTP Sent to SMS  ",
+         "parameters": [
+          {
+            "in":"path",
+            "name": "id",
+            "type": "string",
+            "description":"Pass the ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                
+                  "otp": {
+                    "type": "string",
+                    "format": "otp",
+                    "example": "otp"
+                  }
+                },
+                "required": [
+                  "OTP"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification of OTP  successful"
+          },
+          "400": {
+            "description": "Invalid Code / Bad request"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication Routes"],
+        "summary": "Logout User",
+        "description": "Logout a logged in user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "401": {
+            "description": "No Token provided"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/api/users/admin-update-user-status/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
+        "tags": ["Admin User Routes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "summary": "Change User Status",
         "description": "This endpoint allows an admin to change User account Status by providing the userId.",
@@ -324,9 +389,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -428,20 +491,18 @@
         }
       }
     },
-    
+
     "/api/users/admin-update-role/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
           {
-            "in":"path",
+            "in": "path",
             "name": "id",
             "type": "string",
-            "description":"Pass the ID"
+            "description": "Pass the ID"
           }
         ],
         "requestBody": {
@@ -454,20 +515,19 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
+                    "enum": ["Admin", "Buyer", "Seller"]
                   }
                 },
-                "required": [
-                  "role"
-                ]
+                "required": ["role"]
               }
             }
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "User role updated successfully",
@@ -546,53 +606,6 @@
           }
         }
       }
-    },
-  
-     "/api/auth/verify-otp/{id}": {
-      "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
-        "summary": "Verify The OTP Sent",
-        "description": "The Verification of OTP Sent to SMS  ",
-         "parameters": [
-          {
-            "in":"path",
-            "name": "id",
-            "type": "string",
-            "description":"Pass the ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                
-                  "otp": {
-                    "type": "string",
-                    "format": "otp",
-                    "example": "otp"
-                  }
-                },
-                "required": [
-                  "OTP"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification of OTP  successful"
-          },
-          "400": {
-            "description": "Invalid Code / Bad request"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -627,10 +640,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female"
-            ],
+            "enum": ["male", "female"],
             "nullable": true
           },
           "birthDate": {
@@ -668,6 +678,13 @@
             "format": "date-time"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

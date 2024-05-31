@@ -56,5 +56,23 @@ const loginUser = async (req: Request, res: Response) => {
         }
 }
 
+const logoutUser = async (req: any, res: Response) => {
+  try {
+    await authRepositories.destroySession(req.user.id, req.session.token);
+    res.status(httpStatus.OK).json({ message: "Successfully logged out" });
+  } catch (err) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: "Internal Server error"
+    });
+  }
+};
 
-export default { registerUser, sendVerifyEmail, verifyEmail, loginUser }
+
+export default {
+  registerUser,
+  sendVerifyEmail,
+  verifyEmail,
+  loginUser,
+  logoutUser
+};

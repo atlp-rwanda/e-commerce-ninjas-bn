@@ -32,6 +32,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 - Login Endpoint
 - Admin Update Status Endpoint
 - Admin Update Role Endpoint
+- Logout Endpoint
 - 2FA ON LOGIN
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
@@ -48,6 +49,7 @@ This is the backend for E-Commerce-Ninjas, written in Node.js with TypeScript.
 | 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Update the user role by admin |
 | 8  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint  |
 | 9  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
+|10  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
 
 ## INSTALLATION
 

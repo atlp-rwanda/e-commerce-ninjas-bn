@@ -27,6 +27,19 @@ const createSession = async (body: any) => {
   return await Session.create(body);
 };
 
+const findSessionByAttributes = async (key: string, value: any) => {
+  return await Session.findOne({ where: { [key]: value } });
+};
+
+const findSessionByUserIdAndToken = async (userId: number, token: string) => {
+  return await Session.findOne({ where: { token, userId } });
+};
+
+const findTokenByDeviceIdAndUserId = async (device: string, userId: number) => {
+  const session = await Session.findOne({ where: { device, userId } });
+  return session.token;
+};
+
 const findSessionByUserId = async (userId: number) => {
   return await Session.findOne({ where: { userId } });
 };
@@ -47,6 +60,9 @@ export default {
   createUser,
   createSession,
   findUserByAttributes,
+  findSessionByAttributes,
+  findSessionByUserIdAndToken,
+  findTokenByDeviceIdAndUserId,
   destroySession,
   updateUserByAttributes,
   findSessionByUserId,
