@@ -8,7 +8,7 @@ import app from "../../../index";
 import Users from "../../../databases/models/users";
 import authRepositories from "../../auth/repository/authRepositories"
 import { isUsersExist } from "../../../middlewares/validation";
-
+import { Op } from "sequelize";
 
 
 chai.use(chaiHttp);
@@ -43,7 +43,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"$321!pass!123$"
+        password:"$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -179,7 +179,7 @@ describe("Admin update User roles", () => {
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"$321!pass!123$"
+        password:"$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -302,18 +302,22 @@ describe("Middleware: isUsersExist", () => {
 describe("Admin Controllers", () => {
   after(async () => {
     await Users.destroy({
-      where: {}
-    })
-  })
+      where: {
+        role: {
+          [Op.ne]: "admin"
+        }
+      }
+    });
+  });
   let tokens: string = null;
   let id:number =null;
-  const userId:number = 1;
+  let userId:number;
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"$321!pass!123$"
+        password:"$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -331,6 +335,8 @@ describe("Admin Controllers", () => {
     .get("/api/user/admin-get-users")
     .set("authorization", `Bearer ${tokens}`)
     .end((error, response) => {
+      userId = response.body.data[0].id;
+
        expect(response.status).to.equal(httpStatus.OK);
        expect(response.body).to.be.an("object");
        done(error)
