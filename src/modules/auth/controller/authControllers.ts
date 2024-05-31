@@ -6,11 +6,10 @@ import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
 import { sendVerificationEmail } from "../../../services/sendEmail";
-import { isAccountVerified } from "../../../middlewares/validation";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const register: UsersAttributes = await userRepositories.createUser(
+    const register: UsersAttributes = await authRepositories.createUser(
       req.body
     );
     const token: string = generateToken(register.id);

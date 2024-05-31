@@ -113,6 +113,25 @@ describe("Authentication Test Cases", () => {
       });
   });
 
+  
+  it("Should be able to login a registered user", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123",
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
   it("Should return error on logout", (done) => {
     sinon
       .stub(authRepositories, "destroySession")
@@ -121,13 +140,12 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/logout")
       .set("Authorization", `Bearer ${token}`)
       .end((err, res) => {
-        console.log(res)
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message", "Server error");
+        expect(res.body).to.have.property("message", "Internal Server error");
         done(err);
       });
   });
-
+  
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
