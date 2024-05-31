@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
