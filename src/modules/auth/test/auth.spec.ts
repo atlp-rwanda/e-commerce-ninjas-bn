@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable comma-dangle */
+/* eslint quotes: "off" */
 import { Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";

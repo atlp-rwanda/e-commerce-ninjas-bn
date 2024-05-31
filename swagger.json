@@ -12,8 +12,8 @@
       "name": "ISC"
     }
   },
-  "host-live": "localhost:5000",
-  "host": "https://e-commerce-ninjas-bn.onrender.com",
+  "host": "localhost:5000",
+  "host-live": "https://e-commerce-ninjas-bn.onrender.com",
   "basePath": "/api",
   "tags": [
     {
@@ -27,6 +27,10 @@
     {
       "name": "Admin User Routes",
       "description": ""
+    },
+    {
+      "name": "Update Profile Route",
+      "description": "  Endpoint PUT Route"
     }
   ],
   "schemes": ["http", "https"],
@@ -555,6 +559,76 @@
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/user-update-profile/{id}":{
+      "put":{
+        "tags": ["Update Profile Route"],
+        "summary": "Update a UserProfile",
+        "description": "By the use of initial/wrong GET endpoint, you will be able to see welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. (Welcome to E-Commerce-Ninja-BackEnd.)"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UserProfile ID",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": { "type": "string",
+                  "example": "MANISHIMWE" },
+                  "lastName": { "type": "string",
+                  "example": "Salton" },
+                  "phone": {
+                    "type": "number",
+                    "example": "0787312593"
+                  },
+                  "profilePicture":{ "type": "string" ,
+                  "example": "https://www.pexels.com/photo/bicycle-under-building-wall-with-painted-pixel-eyes-15997337/"},
+                  "gender" :{ "type": "string" ,
+                  "example": "male"},
+                  "birthDate":{ "type": "number",
+                  "example": "2-2-2024"
+                 },
+                  "language" :{ "type": "string",
+                  "example": "english" },
+                  "currency" :{ "type": "string",
+                  "example": "USD" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string" },
+                "message": { "type": "string" }
               }
             }
           }
