@@ -1,23 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Request, Response } from "express";
 import nodemailer, { SendMailOptions } from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_HOST_PORT),
+    secure: true,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.MAIL_ID,
+        pass: process.env.MP
     }
 });
-
 
 const sendResetPasswordEmail = async (email: string, subject: string, message: string) => {
     try {
         const mailOptionsReset: SendMailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.MAIL_ID,
             to: email,
             subject: subject,
             text: message
