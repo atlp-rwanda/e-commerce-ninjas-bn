@@ -12,8 +12,8 @@
       "name": "ISC"
     }
   },
-  "host-live": "localhost:5000",
-  "host": "https://e-commerce-ninjas-bn.onrender.com",
+  "host": "localhost:5000",
+  "host-live": "https://e-commerce-ninjas-platform-backend.onrender.com",
   "basePath": "/api",
   "tags": [
     {
@@ -199,7 +199,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "error": {
+                    "message": {
                       "type": "string"
                     }
                   }
