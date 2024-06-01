@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isUserExist } from "../../../middlewares/validation";
+import { isUserExist, verifyUserCredentials } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
@@ -119,7 +119,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -335,7 +335,7 @@ describe("POST /auth/register - Error Handling", () => {
   it("should return 500 and error message when an error occurs", (done) => {
     router()
       .post("/api/auth/register")
-      .send({ email: "test@example.com", password: "password@123" })
+      .send({ email: "test@example.com", password: "Password@123" })
       .end((err, res) => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
@@ -374,9 +374,7 @@ describe("isAccountVerified Middleware", () => {
       createdAt: new Date(),
       updatedAt: new Date()
     });
-
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
-
     router()
       .post("/api/auth/send-verify-email")
       .send({ email: "user@example.com" })
@@ -472,5 +470,51 @@ describe("sendVerificationEmail", () => {
     } catch (error) {
       expect(error).to.be.an("error");
     }
+  });
+});
+describe("verifyUserCredentials Middleware", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+
+  beforeEach(() => {
+    req = {
+      body: {
+        email: "user@example.com",
+        password: "_Remove@123"
+      },
+      headers: {}
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return 400 if the user is not found", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      message: "Invalid Email or Password"
+    });
+  });
+
+  it("should return 500 if there is an internal server error", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      message: "Internal Server error",
+      data: "Internal Server Error"
+    });
   });
 });

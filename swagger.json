@@ -29,9 +29,99 @@
       "description": ""
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "integer",
+            "nullable": true
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "is2FAEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
   "paths": {
     "/": {
       "get": {
@@ -91,29 +181,27 @@
                       "type": "string"
                     },
                     "data": {
-                      "user": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/User"
-                      }
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
                     }
                   }
                 }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Internal server error",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "integer"
-                  },
-                  "error": {
-                    "type": "string"
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -289,7 +377,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -310,9 +400,191 @@
         }
       }
     },
-    "/api/users/admin-update-user-status/{id}": {
+    "/api/user/admin-get-users": {
+      "get": {
+        "tags": [
+          "Admin User Routes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "admin get all users",
+        "description": "This endpoint allows an admin get all users.",
+        "responses": {
+          "200": {
+            "description": "Get all users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "admin get all users",
+                    "value": {
+                      "message": "admin get all users"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No users found in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "No users found in the database.",
+                    "value": {
+                      "error": "No users found in the database."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": " Internal server error",
+                    "value": {
+                      "error": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/admin-get-user/{id}": {
+      "get": {
+        "tags": [
+          "Admin User Routes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "admin get users",
+        "description": "This endpoint allows an admin get users.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "description": "parsing id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "admin get user",
+                    "value": {
+                      "message": "admin get user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User Not Found",
+                    "value": {
+                      "error": "User not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Internal Server Error",
+                    "value": {
+                      "message": "Internal Server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/admin-update-user-status/{id}": {
       "put": {
-        "tags": ["Admin User Routes"],
+        "tags": [
+          "Admin User Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -343,7 +615,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -445,10 +719,11 @@
         }
       }
     },
-
-    "/api/users/admin-update-role/{id}": {
+    "/api/user/admin-update-role/{id}": {
       "put": {
-        "tags": ["Admin User Routes"],
+        "tags": [
+          "Admin User Routes"
+        ],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -469,10 +744,16 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": ["Admin", "Buyer", "Seller"]
+                    "enum": [
+                      "Admin",
+                      "Buyer",
+                      "Seller"
+                    ]
                   }
                 },
-                "required": ["role"]
+                "required": [
+                  "role"
+                ]
               }
             }
           }
@@ -559,86 +840,6 @@
             }
           }
         }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "integer",
-            "nullable": true
-          },
-          "profilePicture": {
-            "type": "string",
-            "format": "uri"
-          },
-          "gender": {
-            "type": "string",
-            "enum": ["male", "female"],
-            "nullable": true
-          },
-          "birthDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "language": {
-            "type": "string",
-            "nullable": true
-          },
-          "currency": {
-            "type": "string",
-            "nullable": true
-          },
-          "role": {
-            "type": "string",
-            "nullable": true
-          },
-          "isVerified": {
-            "type": "boolean"
-          },
-          "is2FAEnabled": {
-            "type": "boolean"
-          },
-          "status": {
-            "type": "boolean"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
       }
     }
   }

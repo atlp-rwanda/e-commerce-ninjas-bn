@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
-import { UsersAttributes } from "../databases/models/users";
+import Users, { UsersAttributes } from "../databases/models/users";
 import Joi from "joi";
 import httpStatus from "http-status";
 import { comparePassword, decodeToken } from "../helpers";
@@ -48,6 +48,18 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const isUsersExist = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userCount = await Users.count();
+        if (userCount === 0) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "No users found in the database." });
+        }
+        next();
+    } catch (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: "Internet Server error." });
+    }
+};
+
 const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
     try {
         let user: any = null;
@@ -67,7 +79,7 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
             return res.status(httpStatus.BAD_REQUEST).json({ message: "Account already verified." });
         }
 
-        const session = await authRepositories.findSessionByAttributes("userId",user.id);
+        const session = await authRepositories.findSessionByAttributes("userId", user.id);
         if (!session) {
             return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid token." });
         }
@@ -81,57 +93,57 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
 }
 
 const verifyUserCredentials = async (
-  req: any,
-  res: Response,
-  next: NextFunction
+    req: any,
+    res: Response,
+    next: NextFunction
 ) => {
-  try {
-    const user: UsersAttributes = await authRepositories.findUserByAttributes(
-      "email",
-      req.body.email
-    );
-    if (!user) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
-    }
+    try {
+        const user: UsersAttributes = await authRepositories.findUserByAttributes(
+            "email",
+            req.body.email
+        );
+        if (!user) {
+            return res
+                .status(httpStatus.BAD_REQUEST)
+                .json({ message: "Invalid Email or Password" });
+        }
 
-    const passwordMatches = await comparePassword(
-      req.body.password,
-      user.password
-    );
-    if (!passwordMatches) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
-    }
+        const passwordMatches = await comparePassword(
+            req.body.password,
+            user.password
+        );
+        if (!passwordMatches) {
+            return res
+                .status(httpStatus.BAD_REQUEST)
+                .json({ message: "Invalid Email or Password"});
+        }
 
-    req.user = user;
+        req.user = user;
 
-    const device = req.headers["user-agent"];
-    if (!device) {
-      return next();
-    }
+        const device = req.headers["user-device"];
+        if (!device) {
+            return next();
+        }
 
-    const existingToken = await authRepositories.findTokenByDeviceIdAndUserId(
-      device,
-      user.id
-    );
-    if (existingToken) {
-      return res
-        .status(httpStatus.OK)
-        .json({
-          message: "Logged in successfully",
-          data: { token: existingToken }
-        });
-    } else {
-      return next();
+        const existingToken = await authRepositories.findTokenByDeviceIdAndUserId(
+            device,
+            user.id
+        );
+        if (existingToken) {
+            return res
+                .status(httpStatus.OK)
+                .json({
+                    message: "Logged in successfully",
+                    data: { token: existingToken }
+                });
+        } else {
+            return next();
+        }
+    } catch (error) {
+        return res
+            .status(httpStatus.INTERNAL_SERVER_ERROR)
+            .json({ message: "Internal Server error", data: error.message });
     }
-  } catch (error) {
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal Server error", data: error.message });
-  }
 };
 
 
@@ -139,4 +151,6 @@ const verifyUserCredentials = async (
 
 
 
-export { validation, isUserExist, isAccountVerified,verifyUserCredentials };
+
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist };
