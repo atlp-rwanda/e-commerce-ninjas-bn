@@ -21,7 +21,7 @@ const adminGetUsers = async (req:Request, res:Response) =>{
 
 const adminGetUser = async (req:Request, res:Response) =>{
   try {
-    const data = await userRepositories.getUserById(Number(req.params.id))
+    const data = await authRepositories.findUserByAttributes("id", req.params.id);
     return res.status(httpStatus.OK).json({
       message: "Successfully",
       data

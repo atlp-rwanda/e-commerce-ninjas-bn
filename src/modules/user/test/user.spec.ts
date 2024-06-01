@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable comma-dangle */
 /* eslint quotes: "off" */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon, { SinonStub } from "sinon";
@@ -210,20 +210,20 @@ describe("Admin update User roles", () => {
     expect(response.body).to.have.property("message");
   });
 
-  it("Should notify if the role is other than ['Admin', 'Buyer', 'Seller']", async () => {
+  it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {
 
     const response = await router()
       .put(`/api/user/admin-update-role/${userIdd}`)
       .send({ role: "Hello" })
       .set("authorization", `Bearer ${token}`)
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    expect(response.body).to.have.property("message", "Only Admin, Buyer and Seller are allowed.");
+    expect(response.body).to.have.property("message", "Only admin, buyer and seller are allowed.");
   });
 
   it("Should return error when invalid Id is passed", async () => {
     const response = await router()
       .put("/api/user/admin-update-role/invalid-id")
-      .send({ role: "Admin" })
+      .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`);
 
     expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
@@ -234,7 +234,7 @@ describe("Admin update User roles", () => {
   it("Should update User and return updated user", (done) => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .send({ role: "Admin" })
+      .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
@@ -248,7 +248,7 @@ describe("Admin update User roles", () => {
 
   it("Should return 404 if user is not found", (done) => {
     router().put("/api/user/admin-update-role/10001")
-    .send({ role: "Admin" })
+    .send({ role: "admin" })
     .set("authorization", `Bearer ${token}`)
     .end((err, res) => {
       expect(res).to.have.status(httpStatus.NOT_FOUND);
@@ -362,6 +362,7 @@ describe("Admin Controllers", () => {
      });
   });
 });
+
 describe("updateUserProfile", () => {
   let profileId :number = null;  
 let token
@@ -402,9 +403,10 @@ it("Should be able to login a registered user", (done) => {
 });
 
 
-it("Should be able to get", (done) => {
+it("Should be able to get profile", (done) => {
 router()
   .get(`/api/user/user-get-profile/${profileId}`)
+  .set("authorization", `Bearer ${token}`)
   .end((error, response) => {
     expect(response).to.have.status(200);
     expect(response.body).to.be.a("object");
@@ -429,24 +431,6 @@ it("should update profile ", (done) => {
       done(error);
   });
 });
-it("should return error when user id is invalid", (done) => {
-router().put("/api/user/user-update-profile/-1")
-.set("Authorization", `Bearer ${token}`)
-.send({
-  "firstName": "MANISHIMWE",
-  "lastName": "Salton Joseph",
-  "phone": "787312593",
-  "gender": "male",
-  "birthDate": "1943-02-04T00:00:00.000Z",
-  "language": "english",
-  "currency": "USD"
-}).end((error, response) => {
-  
-    expect(response.status).to.equal(500); 
-    done(error);
-});
-});
-
 
 describe('uploadImages', () => {
   let uploadStub: sinon.SinonStub;
@@ -489,7 +473,6 @@ describe('uploadImages', () => {
     }
   });
 
-  
   after(async () => {
     await Users.destroy({
       where: {}

@@ -22,10 +22,10 @@ export const statusSchema = Joi.object({
 
 
 export const roleSchema = Joi.object({
-  role: Joi.string().valid("Admin", "Buyer", "Seller").required().messages({
+  role: Joi.string().valid("admin", "buyer", "seller").required().messages({
       "any.required": "The 'role' parameter is required.",
       "string.base": "The 'role' parameter must be a string.",
-      "any.only": "Only Admin, Buyer and Seller are allowed."
+      "any.only": "Only admin, buyer and seller are allowed."
   })
 });
 const userSchema = Joi.object<User>({

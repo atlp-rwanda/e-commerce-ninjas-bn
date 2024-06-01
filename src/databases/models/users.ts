@@ -53,10 +53,10 @@ class Users
   declare createdAt?: Date;
   declare updatedAt?: Date;
 
-  // Define any static methods or associations here
-  static associate(models: any) {
-    Users.hasOne(models.Tokens, { foreignKey: "userId", as: "token" });
-  }
+    // Define any static methods or associations here
+    static associate(models: any) {
+        Users.hasOne(models.Sessions, { foreignKey: "userId",as: "session" });
+    }
 }
 
 Users.init(
