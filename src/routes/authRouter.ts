@@ -12,6 +12,7 @@ import {
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 
+
 const router: Router = Router();
 
 router.post(
@@ -37,6 +38,7 @@ router.post(
   verifyUserCredentials,
   authControllers.loginUser
 );
+
 router.post(
   "/logout",
   userAuthorization(["buyer", "seller", "admin"]),

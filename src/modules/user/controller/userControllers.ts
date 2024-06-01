@@ -1,8 +1,37 @@
-// user Controllers
 import { Request, Response } from "express";
-
-import authRepositories from "../../auth/repository/authRepositories";
 import httpStatus from "http-status";
+import userRepositories from "../repository/userRepositories";
+import authRepositories from "../../auth/repository/authRepositories";
+
+const adminGetUsers = async (req:Request, res:Response) =>{
+  try {
+    const data = await userRepositories.getAllUsers()
+    return res.status(httpStatus.OK).json({
+      message: "Successfully",
+      data
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+}
+
+const adminGetUser = async (req:Request, res:Response) =>{
+  try {
+    const data = await userRepositories.getUserById(Number(req.params.id))
+    return res.status(httpStatus.OK).json({
+      message: "Successfully",
+      data
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+}
 
 const updateUserRole = async (req: Request, res: Response) => {
   try {
@@ -32,4 +61,4 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
 
 
 
-export default { updateUserStatus,updateUserRole };
+export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser };

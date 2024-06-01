@@ -15,10 +15,7 @@ interface ExtendedRequest extends Request {
 export const userAuthorization = function (roles: string[]) {
   return async (req: ExtendedRequest, res: Response, next: NextFunction) => {
     try {
-      let token: string;
-      if (req.headers.authorization?.startsWith("Bearer")) {
-        token = req.headers.authorization.split(" ").at(-1);
-      }
+      const token = req.headers["authorization"]?.split(" ")[1];
 
       if (!token) {
         return res
