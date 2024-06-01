@@ -374,9 +374,7 @@ describe("isAccountVerified Middleware", () => {
       createdAt: new Date(),
       updatedAt: new Date()
     });
-
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
-
     router()
       .post("/api/auth/send-verify-email")
       .send({ email: "user@example.com" })
@@ -474,7 +472,6 @@ describe("sendVerificationEmail", () => {
     }
   });
 });
-
 describe("verifyUserCredentials Middleware", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
