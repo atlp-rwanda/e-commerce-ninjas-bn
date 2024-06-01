@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 dotenv.config
 
  const generateToken = (id: number) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "12h" });
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   };
 
   const decodeToken = (token: string) => {
@@ -17,4 +17,8 @@ dotenv.config
     return await bcrypt.compare(password, hashedPassword);
 }
 
-  export { generateToken, decodeToken, comparePassword }
+const hashPassword = (password: string)=>{
+  return bcrypt.hashSync(password, 10);
+}
+
+  export { generateToken, decodeToken, comparePassword, hashPassword }

@@ -1,18 +1,19 @@
 import { QueryInterface  } from "sequelize"
+import { hashPassword } from "../../helpers"
 const userOne = {
   createdAt: new Date(),
   updatedAt: new Date(),
   firstName:"hyassin509",
   lastName: "assin509",
-  email:"hyassin509@gmail.com",
-  password:"$321!pass!123$",
+  email:"admin@gmail.com",
+  password: hashPassword("$321!Pass!123$"),
   phone:25089767899,
   profilePicture: "",
   gender: "female",
   birthDate: "2-2-2014",
   language: "english",
   currency: "USD",
-  role: "buyer",
+  role: "admin",
   status: "enabled"
 }
 const userTwo = {
@@ -21,7 +22,7 @@ const userTwo = {
   firstName: "John",
   lastName: "Doe",
   email: "john.doe@example.com",
-  password: "password123",
+  password: hashPassword("$321!Pass!123$"),
   phone: 1234567890,
   profilePicture: "http://example.com/profile.jpg",
   gender: "male",
@@ -38,7 +39,7 @@ const userThree = {
   firstName:"paccy509",
   lastName:"paccy209",
   email:"paccy509@gmail.com",
-  password:"$321!pass!123$",
+  password: hashPassword("$321!Pass!123$"),
   phone:25089767899,
   profilePicture: "",
   gender: "female",
