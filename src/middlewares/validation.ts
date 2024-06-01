@@ -146,11 +146,4 @@ const verifyUserCredentials = async (
     }
 };
 
-
-
-
-
-
-
-
 export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist };
