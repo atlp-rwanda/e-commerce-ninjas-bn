@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryInterface, DataTypes } from "sequelize";
 
@@ -8,74 +9,74 @@ export default {
         allowNull: false,
         primaryKey: true,
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4
+        defaultValue: DataTypes.UUIDV4,
       },
       shopId: {
         allowNull: false,
         type: DataTypes.UUID,
         references: {
           model: "shops",
-          key: "id"
+          key: "id",
         },
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       },
       name: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       price: {
         allowNull: false,
-        type: DataTypes.DECIMAL(10, 2)
+        type: DataTypes.DECIMAL(10, 2),
       },
       discount: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       category: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       expiryDate: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       expired: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
       },
       bonus: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       images: {
-        type: DataTypes.ARRAY(DataTypes.STRING)
+        type: DataTypes.ARRAY(DataTypes.STRING),
       },
       quantity: {
         allowNull: false,
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
       status: {
         type: DataTypes.STRING(128),
         allowNull: false,
-        defaultValue: "available"
+        defaultValue: "available",
       },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
-      }
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
     });
   },
 
   down: async (queryInterface: QueryInterface) => {
     await queryInterface.dropTable("products");
-  }
+  },
 };
