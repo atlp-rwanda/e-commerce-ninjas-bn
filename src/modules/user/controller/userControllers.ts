@@ -21,7 +21,7 @@ const adminGetUsers = async (req:Request, res:Response) =>{
 
 const adminGetUser = async (req:Request, res:Response) =>{
   try {
-    const data = await authRepositories.findUserByAttributes("id", req.params.id);
+    const data = await authRepositories.findUserByAttributes("id", req.params.id)
     return res.status(httpStatus.OK).json({
       message: "Successfully",
       data
@@ -52,7 +52,7 @@ const updateUserRole = async (req: Request, res: Response) => {
 
 const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId: number = Number(req.params.id);
+    const userId: string = req.params.id;
     const data = await authRepositories.updateUserByAttributes("status", req.body.status, "id", userId);
     res.status(httpStatus.OK).json({ message: "Status updated successfully.", data });
   } catch (error) {

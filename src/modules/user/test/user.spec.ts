@@ -23,12 +23,11 @@ chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("Update User Status test case ", () => {
-  let getUserStub: sinon.SinonStub;
-  let updateUserStub: sinon.SinonStub;
-  const testUserId = 1;
-  let userId: number = null;
-  const unknownId = 100;
-  let token
+  let getUserStub;
+  let updateUserStub;
+  let userId = null;
+  const unknownId = "10000000-0000-0000-0000-000000000000";
+  let token;
 
   it("should register a new user", (done) => {
     router()
@@ -46,12 +45,13 @@ describe("Update User Status test case ", () => {
         done(error);
       });
   });
-  it("Should be able to login a registered user", (done) => {
+
+  it("Should be able to login admin", (done) => {
     router()
       .post("/api/auth/login")
       .send({
-        email:"admin@gmail.com",
-        password:"$321!Pass!123$"
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -63,6 +63,7 @@ describe("Update User Status test case ", () => {
         done(error);
       });
   });
+
   it("should update the user status successfully", (done) => {
     router()
       .put(`/api/user/admin-update-user-status/${userId}`)
@@ -78,7 +79,7 @@ describe("Update User Status test case ", () => {
 
   it("should handle invalid user status", (done) => {
     router()
-      .put(`/api/user/admin-update-user-status/${testUserId}`)
+      .put(`/api/user/admin-update-user-status/${userId}`)
       .send({ status: "disableddd" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -164,6 +165,8 @@ describe("User Repository Functions", () => {
 describe("Admin update User roles", () => {
   let userIdd: number ;
   let token = null;
+  const unknownId = "10000000-0000-0000-0000-000000000000";
+
 
   it("should register a new user", (done) => {
     router()
@@ -247,7 +250,7 @@ describe("Admin update User roles", () => {
 
 
   it("Should return 404 if user is not found", (done) => {
-    router().put("/api/user/admin-update-role/10001")
+    router().put(`/api/user/admin-update-role/${unknownId}`)
     .send({ role: "admin" })
     .set("authorization", `Bearer ${token}`)
     .end((err, res) => {
@@ -308,40 +311,25 @@ describe("Middleware: isUsersExist", () => {
 });
 
 describe("Admin Controllers", () => {
-  after(async () => {
-    await Users.destroy({
-      where: {
-        role: {
-          [Op.ne]: "admin"
-        }
-      }
-    });
-  });
-  let tokens: string = null;
-  let id:number =null;
-  let userId:number;
-  it("Should be able to login a registered user", (done) => {
+  let token: string = null;
+  let userId:string;
+  beforeEach((done)=>{
     router()
-      .post("/api/auth/login")
-      .send({
-        email:"admin@gmail.com",
-        password:"$321!Pass!123$"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        expect(response.body.data).to.have.property("token");
-        tokens = response.body.data.token;
-        id=response.body.data.id;
-        done(error);
-      });
-  });
+    .post("/api/auth/login")
+    .send({
+      email:"admin@gmail.com",
+      password:"$321!Pass!123$"
+    })
+    .end((error, response) => {
+      token = response.body.data.token;
+      done(error);
+    });
+  })
+
   it("should return all users", (done) => {
     router()
     .get("/api/user/admin-get-users")
-    .set("authorization", `Bearer ${tokens}`)
+    .set("authorization", `Bearer ${token}`)
     .end((error, response) => {
       userId = response.body.data[0].id;
 
@@ -354,7 +342,7 @@ describe("Admin Controllers", () => {
   it("should return one user", (done) => {
     router()
     .get(`/api/user/admin-get-user/${userId}`)
-    .set("authorization", `Bearer ${tokens}`)
+    .set("authorization", `Bearer ${token}`)
     .end((error, response) => {
        expect(response.status).to.equal(httpStatus.OK);
        expect(response.body).to.be.an("object");
