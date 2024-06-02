@@ -6,11 +6,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request,Response,NextFunction } from "express";
 import passport from "passport";
-// import session from "express-session";
 import {
   Strategy as GoogleStrategy,
   VerifyCallback
 } from "passport-google-oauth2";
+import httpStatus from "http-status";
 import dotenv from "dotenv";
 import { userInfo } from "../types";
 import { generateToken } from "../helpers";
@@ -96,7 +96,7 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
           otp: null
         };
         await authRepositories.createSession(sessions);
-        return res.status(200).json({ status: 200, token: token });
+        res.status(httpStatus.OK).json({ message: "Logged in successfully", data: { token } });
       } else {
         const newUser = await authRepositories.createUser({
           email: user.email,
@@ -116,11 +116,11 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
           otp: null
         };
         await authRepositories.createSession(session);
-        return res.status(200).json({ status: 200, token: token });
+        res.status(httpStatus.OK).json({ message: "Logged in successfully", data: { token } });
       }
-    } catch (err) {
-      return res.status(500).json({ status: 500, message: err.message });
-    }
+    } catch (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal Server error", data: error.message });
+  }
   })(req, res, next);
 };
 
