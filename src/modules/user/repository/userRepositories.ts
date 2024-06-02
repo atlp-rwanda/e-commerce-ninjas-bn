@@ -5,8 +5,4 @@ const getAllUsers = async () => {
     return Users.findAll();
 }
 
-const getUserById = async (id: number) => {
-    return Users.findByPk(id);
-}
-
-export default { getAllUsers, getUserById}
+export default { getAllUsers}

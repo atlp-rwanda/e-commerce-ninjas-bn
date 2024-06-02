@@ -25,20 +25,17 @@
       "description": "Authentication Endpoint | POST Route"
     },
     {
+      "name": "Seller Routes",
+      "description": "Seller Endpoint"
+    },
+    {
       "name": "Admin User Routes",
       "description": ""
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "components": {
     "schemas": {
       "User": {
@@ -71,10 +68,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female"
-            ],
+            "enum": ["male", "female"],
             "nullable": true
           },
           "birthDate": {
@@ -125,9 +119,7 @@
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Initial Route"
-        ],
+        "tags": ["Initial Route"],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -139,9 +131,7 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -161,10 +151,7 @@
                     "format": "password"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -212,9 +199,7 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -230,9 +215,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -279,9 +262,7 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -334,9 +315,7 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -357,10 +336,7 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -377,9 +353,7 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -402,9 +376,7 @@
     },
     "/api/user/admin-get-users": {
       "get": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -488,9 +460,7 @@
     },
     "/api/user/admin-get-user/{id}": {
       "get": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -582,9 +552,7 @@
     },
     "/api/user/admin-update-user-status/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -615,9 +583,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -721,9 +687,7 @@
     },
     "/api/user/admin-update-role/{id}": {
       "put": {
-        "tags": [
-          "Admin User Routes"
-        ],
+        "tags": ["Admin User Routes"],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -744,16 +708,10 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
+                    "enum": ["Admin", "Buyer", "Seller"]
                   }
                 },
-                "required": [
-                  "role"
-                ]
+                "required": ["role"]
               }
             }
           }
@@ -832,6 +790,506 @@
                       "example": false
                     },
                     "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collection/create-collection": {
+      "post": {
+        "tags": ["Seller Routes"],
+        "summary": "A seller should be able to Create new collections",
+        "description": "This endpoint allows seller to create new collections",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the product"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Collection created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "sellerId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collection/create-product/{id}": {
+      "post": {
+        "tags": ["Seller Routes"],
+        "summary": "A seller should be able to Create/Add a product with collection Id",
+        "description": "This endpoint allows seller to create/add a product with collection Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the collection to which the product belongs",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Array of product images"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the product"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Price of the product"
+                  },
+                  "bonus": {
+                    "type": "integer",
+                    "description": "bonus of the product"
+                  },
+                  "discount": {
+                    "type": "string",
+                    "description": "discount of the product"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "category of the product"
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "description": "expiry date of the product"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "quantity of the product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "collectionId": {
+                          "type": "string"
+                        },
+                        "sellerId": {
+                          "type": "string"
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "price": {
+                          "type": "number"
+                        },
+                        "bonus": {
+                          "type": "integer"
+                        },
+                        "discount": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "expiryDate": {
+                          "type": "date"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Collection not found or Product already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collection/update-product/{id}": {
+      "put": {
+        "tags": ["Seller Routes"],
+        "summary": "A seller should be able to Update/Modify a product with a product Id",
+        "description": "This endpoint allows seller to update/modify a product with product ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the product",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Array of product images"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the product"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Price of the product"
+                  },
+                  "bonus": {
+                    "type": "integer",
+                    "description": "bonus of the product"
+                  },
+                  "discount": {
+                    "type": "string",
+                    "description": "discount of the product"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "category of the product"
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "description": "expiry date of the product"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "quantity of the product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "collectionId": {
+                          "type": "string"
+                        },
+                        "sellerId": {
+                          "type": "string"
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "price": {
+                          "type": "number"
+                        },
+                        "bonus": {
+                          "type": "integer"
+                        },
+                        "discount": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "expiryDate": {
+                          "type": "date"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
                       "type": "string"
                     }
                   }
