@@ -25,17 +25,8 @@
       "description": "Authentication Endpoint | POST Route"
     },
     {
-      "name": "Admin Routes",
-      "description": "Admmin Endpoint"
-    },
-    {
-      "name": "User Routes",
-      "description": "User Endpoint"
-     
-    },
-    {
-      "name": "Seller Routes",
-      "description": "Seller Endpoint"
+      "name": "Admin User Routes",
+      "description": ""
     }
   ],
   "schemes": [
