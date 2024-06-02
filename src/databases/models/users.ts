@@ -3,8 +3,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { hashPassword } from "../../helpers";
-
-// Define an interface with required and optional attributes
 export interface UsersAttributes {
     id: number;
     firstName?: string;
@@ -25,7 +23,6 @@ export interface UsersAttributes {
     updatedAt?: Date;
 }
 
-// Define an interface for creation attributes which excludes the optional fields
 export interface UsersCreationAttributes extends Optional<UsersAttributes, "id"> {}
 
 class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
@@ -47,29 +44,30 @@ class Users extends Model<UsersAttributes, UsersCreationAttributes> implements U
     declare createdAt?: Date;
     declare updatedAt?: Date;
 
-    // Define any static methods or associations here
     static associate(models: any) {
-        Users.hasOne(models.Tokens, { foreignKey: "userId",as: "token" });
+        Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
+        Users.hasMany(models.Collection, { foreignKey: "sellerId", as: "collections" });
+        Users.hasMany(models.Products, { foreignKey: "sellerId", as: "products" });
     }
 }
 
 Users.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
         firstName: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true
         },
         lastName: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true
         },
         email: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: false,
             unique: true,
             validate: {
@@ -77,50 +75,50 @@ Users.init(
             }
         },
         password: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: false
         },
         phone: {
-            type: new DataTypes.BIGINT,
+            type: DataTypes.BIGINT,
             allowNull: true
         },
         profilePicture: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true,
             defaultValue: "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
         },
         gender: {
-            type: new DataTypes.ENUM("male", "female"),
+            type: DataTypes.ENUM("male", "female"),
             allowNull: true
         },
         birthDate: {
-            type: new DataTypes.DATEONLY,
+            type: DataTypes.DATE,
             allowNull: true
         },
         language: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true
         },
         currency: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true
         },
         role: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true
         },
         isVerified: {
-            type: new DataTypes.BOOLEAN,
+            type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: false
         },
         is2FAEnabled: {
-            type: new DataTypes.BOOLEAN,
+            type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: false
         },
         status: {
-            type: new DataTypes.STRING(128),
+            type: DataTypes.STRING(128),
             allowNull: true,
             defaultValue: "enabled"
         },
@@ -152,4 +150,4 @@ Users.init(
     }
 );
 
-export default Users;
+export default Users

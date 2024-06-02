@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
-import Joi from "joi";
 import httpStatus from "http-status";
 import { comparePassword, decodeToken } from "../helpers";
+import productRepositories from "../modules/product/repositories/productRepositories";
+import Collection from "../databases/models/collection";
+import Products from "../databases/models/products";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -146,4 +149,45 @@ const verifyUserCredentials = async (
     }
 };
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist };
+const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+    try {
+        const sellerId = req.user.id;
+        const collectionId = req.params.id
+        const isCollection = await productRepositories.findItemByAttributes(Collection,"id", collectionId);
+        if(!isCollection){
+            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Collection not found" });
+        }
+        const isProductAvailable = await productRepositories.findByModelAndAttributes(Products,"name","sellerId", req.body.name,sellerId);
+        if(isProductAvailable){
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Product already exists" });
+        }
+        next();
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
+
+
+const isCollectionExist = async (req: any, res: Response, next: NextFunction) =>{
+    try {
+        const isCollection = await productRepositories.findByModelAndAttributes(Collection,"name", "sellerId",req.body.name,req.user.id)
+        if(!isCollection){
+           return next();
+        }
+        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Collection already exist."});
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
+
+const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.files) {
+      return res.status(400).json({ status: 400, message: "Images are required" });
+    }
+  
+    const files = req.files as Express.Multer.File[];
+    req.body.images = files.map(file => file.path);
+    next();
+  };
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isCollectionExist, transformFilesToBody };
