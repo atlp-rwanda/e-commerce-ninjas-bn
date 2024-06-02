@@ -1,3 +1,6 @@
+/* eslint-disable require-jsdoc */
+/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import chai, { expect } from "chai";
@@ -13,7 +16,11 @@ import {
   sendVerificationEmail,
   transporter
 } from "../../../services/sendEmail";
-
+import passport from "passport";
+import googleAuth from "../../../services/googleAuth";
+import dotenv from "dotenv";
+import { VerifyCallback } from "passport-google-oauth2";
+dotenv.config();
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
@@ -518,3 +525,236 @@ describe("verifyUserCredentials Middleware", () => {
     });
   });
 });
+
+
+describe("Authentication Test Cases", () => {
+  let findUserByAttributesStub: sinon.SinonStub;
+  let findSessionByUserIdStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    findUserByAttributesStub = sinon.stub(
+      authRepositories,
+      "findUserByAttributes"
+    );
+    findSessionByUserIdStub = sinon.stub(
+      authRepositories,
+      "findSessionByAttributes"
+    );
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should send a verification email successfully", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
+
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
+
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Verification email sent successfully."
+        );
+        done(err);
+      });
+  });
+  it("should return 400 if session is not found", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
+
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
+    findSessionByUserIdStub.resolves(null);
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Invalid token.");
+        done(err);
+      });
+  });
+
+  it("should return internal server error", (done) => {
+    findSessionByUserIdStub.resolves(null);
+    const token = "invalid token";
+    router()
+      .get(`/api/auth/verify-email/${token}`)
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message");
+        done(err);
+      });
+  });
+});
+
+describe("sendVerificationEmail", () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should throw an error when sendMail fails", async () => {
+    sinon.stub(transporter, "sendMail").rejects(new Error("Network Error"));
+    try {
+      await sendVerificationEmail("email@example.com", "subject", "message");
+    } catch (error) {
+      expect(error).to.be.an("error");
+    }
+  });
+});
+
+  describe("Passport Configuration", () => {
+    it("should serialize and deserialize user correctly", () => {
+      const user = { id: "123", username: "testuser" };
+      const doneSerialize = (err: any, serializedUser: any) => {
+        expect(err).to.be.null;
+        expect(serializedUser).to.deep.equal(user);
+      };
+      const doneDeserialize = (err: any, deserializedUser: any) => {
+        expect(err).to.be.null;
+        expect(deserializedUser).to.deep.equal(user);
+      };
+      googleAuth.passport.serializeUser(user, doneSerialize);
+      googleAuth.passport.deserializeUser(user, doneDeserialize);
+    });
+  });
+
+  describe("Google Authentication Strategy", () => {
+    it("should call the strategy callback with correct parameters", () => {
+       });
+  });
+
+  function googleAuthenticationCallback(
+    request: Request,
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback
+  ) {
+    const userId = profile.id;
+    const email = profile.emails?.[0].value || null;
+    const firstName = profile.name?.givenName || null;
+    const lastName = profile.name?.familyName || null;
+    const picture = profile.photos?.[0].value || null;
+    const accToken = accessToken;
+    const user = {
+      userId,
+      email,
+      firstName,
+      lastName,
+      picture,
+      accToken
+    };
+    return done(null, user);
+  }
+
+  describe("Google Authentication Strategy Callback", () => {
+    it("should create a user with all fields populated", () => {
+      const profile = {
+        id: "123",
+        emails: [{ value: "test@example.com" }],
+        name: { givenName: "John", familyName: "Doe" },
+        photos: [{ value: "https://example.com/profile.jpg" }]
+      };
+
+      const request: Request = {} as Request;
+      const accessToken = "accessToken";
+      const refreshToken = "refreshToken";
+
+      const done: VerifyCallback = (error, user) => {
+        expect(error).to.be.null;
+        expect(user).to.deep.equal({
+          userId: "123",
+          email: "test@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          picture: "https://example.com/profile.jpg",
+          accToken: "accessToken"
+        });
+      };
+
+      googleAuthenticationCallback(
+        request,
+        accessToken,
+        refreshToken,
+        profile,
+        done
+      );
+    });
+  });
+
+     describe("Google Authentication", () => {
+      describe("Google Strategy", () => {
+        it("should call the done callback with user object", () => {
+          const requestMock: Partial<Request> = {};
+          const accessTokenMock = "mockAccessToken";
+          const refreshTokenMock = "mockRefreshToken";
+          const profileMock = {
+            id: "mockUserId",
+            emails: [{ value: "test@example.com" }],
+            name: { givenName: "John", familyName: "Doe" },
+            photos: [{ value: "https://example.com/profile.jpg" }]
+          };
+          const doneStub = sinon.stub();
+
+        
+          googleAuth.passport._strategies.google._verify(
+            requestMock as Request,
+            accessTokenMock,
+            refreshTokenMock,
+            profileMock,
+            doneStub
+          );
+
+          sinon.assert.calledWith(doneStub, null, {
+            userId: "mockUserId",
+            email: "test@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            picture: "https://example.com/profile.jpg",
+            accToken: "mockAccessToken"
+          });
+        });
+      });
+    });
+
+    describe("authenticateViaGoogle", () => {
+      let req: Partial<Request>;
+      let res: Partial<Response>;
+      let next: NextFunction;
+      let resJsonSpy: sinon.SinonSpy;
+      let resStatusSpy: sinon.SinonStub;
+    
+      beforeEach(() => {
+        req = {};
+        res = {
+          json: sinon.spy(),
+          status: sinon.stub().returnsThis()
+        };
+        next = sinon.spy() as NextFunction;
+        resJsonSpy = res.json as sinon.SinonSpy;
+        resStatusSpy = res.status as sinon.SinonStub;
+      });
+    
+      it("should respond with 401 if authentication fails", async () => {
+        const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
+          callback(null, null); 
+          return (req: Request, res: Response, next: NextFunction) => { };
+        });
+    
+        await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
+    
+        expect(resStatusSpy.calledWith(401)).to.be.true;
+        expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
+    
+        authenticateStub.restore();
+      });
+    });
