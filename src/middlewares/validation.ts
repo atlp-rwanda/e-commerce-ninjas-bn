@@ -118,7 +118,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -149,16 +149,16 @@ const verifyUserCredentials = async (
     }
 };
 
-const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     try {
         const sellerId = req.user.id;
         const collectionId = req.params.id
-        const isCollection = await productRepositories.findItemByAttributes(Collection,"id", collectionId);
-        if(!isCollection){
+        const isCollection = await productRepositories.findItemByAttributes(Collection, "id", collectionId);
+        if (!isCollection) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Collection not found" });
         }
-        const isProductAvailable = await productRepositories.findByModelAndAttributes(Products,"name","sellerId", req.body.name,sellerId);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelAndAttributes(Products, "name", "sellerId", req.body.name, sellerId);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Product already exists" });
         }
         next();
@@ -168,13 +168,13 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
 }
 
 
-const isCollectionExist = async (req: any, res: Response, next: NextFunction) =>{
+const isCollectionExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const isCollection = await productRepositories.findByModelAndAttributes(Collection,"name", "sellerId",req.body.name,req.user.id)
-        if(!isCollection){
-           return next();
+        const isCollection = await productRepositories.findByModelAndAttributes(Collection, "name", "sellerId", req.body.name, req.user.id)
+        if (!isCollection) {
+            return next();
         }
-        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Collection already exist."});
+        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Collection already exist." });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
@@ -182,12 +182,69 @@ const isCollectionExist = async (req: any, res: Response, next: NextFunction) =>
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-      return res.status(400).json({ status: 400, message: "Images are required" });
+        return res.status(400).json({ status: 400, message: "Images are required" });
     }
-  
+
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();
-  };
+};
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isCollectionExist, transformFilesToBody };
+
+const productsPagination = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        const page = Number(req.query.page);
+        const limit = Number(req.query.limit);
+        const user = req.user;
+
+        if (!req.query.page || !req.query.limit) {
+            if (user.role === "seller") {
+                const data = await productRepositories.getProductsByAttributes("sellerId", req.user.id);
+                return res.status(httpStatus.OK).json({ status: httpStatus.OK, data });
+            }
+            const data = await productRepositories.getAllProducts();
+            return res.status(httpStatus.OK).json({ status: httpStatus.OK, data });
+        }
+
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        let allProducts;
+        if (user.role === "seller") {
+            allProducts = await productRepositories.getProductsByAttributes("sellerId", user.id);
+        } else if (user.role === "buyer") {
+            allProducts = await productRepositories.getAllProducts();
+        }
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        req.paginationResults = { nextPage, previousPage, data: paginatedProducts };
+
+        next();
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isCollectionExist, transformFilesToBody, productsPagination };

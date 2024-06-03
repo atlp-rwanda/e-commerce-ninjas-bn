@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import chai,{expect} from "chai";
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
 import Users from "../../../databases/models/users";
@@ -50,7 +50,7 @@ describe("Product and Collection API Tests", () => {
         where:{}
       })
     });
-  
+
     describe("POST /api/collection/create-collection", () => {
       it("should create a collection successfully", (done) => {
        router()
@@ -67,7 +67,7 @@ describe("Product and Collection API Tests", () => {
             done();
           });
       });
-  
+
       it("should return a validation error when name is missing", (done) => {
        router()
           .post("/api/collection/create-collection")
@@ -81,7 +81,7 @@ describe("Product and Collection API Tests", () => {
           });
       });
     });
-  
+
     describe("POST /api/collection/create-product/:id", () => {
       let collectionId:string;
       before((done) => {
@@ -94,7 +94,7 @@ describe("Product and Collection API Tests", () => {
               done(err);
           })
       });
-  
+
       it("should create a product successfully", (done) => {
         router()
           .post(`/api/collection/create-product/${collectionId}`)
@@ -118,7 +118,7 @@ describe("Product and Collection API Tests", () => {
             done();
           });
       });
-  
+
       it("should return a validation error when images are missing", (done) => {
        router()
           .post(`/api/collection/create-product/${collectionId}`)
@@ -145,7 +145,7 @@ describe("Product and Collection API Tests", () => {
           const file = {
               originalname: "test.txt" 
           } as Express.Multer.File;
-  
+
           const cb = (err: Error | null) => {
               try {
                   expect(err).to.be.an("error");
@@ -155,7 +155,7 @@ describe("Product and Collection API Tests", () => {
                   done(error);
               }
           };
-  
+
           fileFilter(req, file, cb);
       });
   });
@@ -234,3 +234,128 @@ describe("isCollectionExist Middleware", () => {
       (productRepositories.findByModelAndAttributes as sinon.SinonStub).restore();
   });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+describe("Seller's Products List", () => {
+  let token: string = null
+  it("Should be able to login a seller", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+
+  it("Should retrieve unipaginated data if no queries are specified", (done) => {
+    router().get("/api/collection/seller-products")
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error)
+      })
+  })
+
+  it("Should  notify if limit or page is not number", (done) => {
+    router().get("/api/collection/seller-products?limit=-10&page=page1")
+    .set("Authorization", `Bearer ${token}`)
+    .end((error, response) => {
+      expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+      expect(response.body).to.be.a("object");
+      expect(response.body).to.have.property("error");
+      done(error)
+    })
+  })
+  
+  it("Should return all seller's products", (done) => {
+    router().get("/api/collection/seller-products?limit=10&page=1")
+    .set("Authorization", `Bearer ${token}`)
+    .end((error, response) => {
+      expect(response.status).to.equal(httpStatus.OK);
+      expect(response.body).to.be.a("object");
+      expect(response.body).to.have.property("data");
+      done(error)
+    })
+  })
+})
