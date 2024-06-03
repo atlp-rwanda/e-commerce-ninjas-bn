@@ -3,7 +3,7 @@ import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 
-const createProduct = async(body:any) => {
+const createProduct = async (body: any) => {
     return await Products.create(body);
 }
 
@@ -26,4 +26,19 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
     });
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes};
+const getProductsByAttributes = async (key: string, value: string) => {
+    return await Products.findAll({
+        where: {
+            [key]: value
+        }
+    });
+}
+
+const findProductsPaginatted = async (limit, offset) => {
+    return await Products.findAll({
+        limit,
+        offset
+    });
+}
+
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, findProductsPaginatted,getProductsByAttributes };

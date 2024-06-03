@@ -53,4 +53,4 @@ const shopSchema = Joi.object({
     })
 })
 
-export { productSchema , shopSchema};
+export { productSchema, shopSchema };

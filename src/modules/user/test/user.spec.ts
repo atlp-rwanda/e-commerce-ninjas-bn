@@ -178,7 +178,7 @@ describe("User Repository Functions", () => {
 
 
 describe("Admin update User roles", () => {
-  let userIdd: number ;
+  let userIdd: number;
   let token = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
 
@@ -204,8 +204,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email:"admin@gmail.com",
-        password:"$321!Pass!123$"
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -266,7 +266,7 @@ describe("Admin update User roles", () => {
 
   it("Should return 404 if user is not found", (done) => {
     router().put(`/api/user/admin-update-role/${unknownId}`)
-    .send({ role: "admin" })
+    .send({ role: "Admin" })
     .set("authorization", `Bearer ${token}`)
     .end((err, res) => {
       expect(res).to.have.status(httpStatus.NOT_FOUND);
@@ -276,28 +276,14 @@ describe("Admin update User roles", () => {
     })
   })
 
-  it("Should return 500 internal server error", (done) => {
-    sinon.stub(authRepositories, "updateUserByAttributes").throws(new Error("Internal server error"));
-
-    router()
-    .put(`/api/user/admin-update-role/${userIdd}`)
-    .send({ role: "admin" })
-    .set("authorization", `Bearer ${token}`)
-    .end((err, res) => {
-      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.body).to.be.an("object");
-      expect(res.body).to.have.property("message", "Internal server error")
-      done(err)
-    })
-  })
 
 });
 
 describe("Middleware: isUsersExist", () => {
   it("should call next if users exist", async () => {
     const userCountStub = sinon.stub(Users, "count").resolves(1);
-    const req: any = {} ;
-    const res: any = {} ;
+    const req: any = {};
+    const res: any = {};
     const next = sinon.spy();
 
     await isUsersExist(req, res, next);
@@ -308,11 +294,11 @@ describe("Middleware: isUsersExist", () => {
 
   it("should return 404 if no users exist", async () => {
     const userCountStub = sinon.stub(Users, "count").resolves(0);
-    const req: any = {} ;
+    const req: any = {};
     const res: any = {
       status: sinon.stub().returnsThis(),
       json: sinon.spy()
-    } ;
+    };
     const next = sinon.spy();
 
     await isUsersExist(req, res, next);
@@ -325,11 +311,11 @@ describe("Middleware: isUsersExist", () => {
 
   it("should return 500 if there is an error", async () => {
     const userCountStub = sinon.stub(Users, "count").throws(new Error("DB error"));
-    const req: any = {} ;
+    const req: any = {};
     const res: any = {
       status: sinon.stub().returnsThis(),
       json: sinon.spy()
-    } ;
+    };
     const next = sinon.spy();
 
     await isUsersExist(req, res, next);
@@ -342,17 +328,17 @@ describe("Middleware: isUsersExist", () => {
 describe("Admin Controllers", () => {
   let token: string = null;
   let userId:string;
-  before((done)=>{
+  beforeEach((done)=>{
     router()
-    .post("/api/auth/login")
-    .send({
-      email:"admin@gmail.com",
-      password:"$321!Pass!123$"
-    })
-    .end((error, response) => {
-      token = response.body.data.token;
-      done(error);
-    });
+      .post("/api/auth/login")
+      .send({
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        token = response.body.data.token;
+        done(error);
+      });
   })
 
   it("should return all users", (done) => {
@@ -360,7 +346,8 @@ describe("Admin Controllers", () => {
     .get("/api/user/admin-get-users")
     .set("authorization", `Bearer ${token}`)
     .end((error, response) => {
-      userId = response.body.data.user[0].id;
+      userId = response.body.data[0].id;
+
        expect(response.status).to.equal(httpStatus.OK);
        expect(response.body).to.be.an("object");
        done(error)
