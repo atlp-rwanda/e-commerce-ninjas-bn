@@ -48,7 +48,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
 | 8  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
 | 9  | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
-| 10 | GET   | /api/collection/products                | 200 OK      | private  | Buyer view products          |
+| 10 | GET   | /api/collection/products                | 200 OK      | public   | Buyer view products          |
 
 ## INSTALLATION
 
