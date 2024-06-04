@@ -4,7 +4,7 @@
 import { NextFunction, Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import sinon from "sinon";
+import sinon,{SinonStub} from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
 import { isUserExist, verifyUserCredentials } from "../../../middlewares/validation";
