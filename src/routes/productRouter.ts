@@ -11,6 +11,6 @@ const router: Router = Router()
 router.post("/create-product/:id", userAuthorization(["seller"]), upload.array("images"), transformFilesToBody, validation(productSchema), isProductExist, productController.createProduct);
 router.post("/create-collection", userAuthorization(["seller"]), validation(collectionSchema), isCollectionExist, productController.createCollections)
 router.get("/seller-products", userAuthorization(["seller"]),productsPagination,productController.paginatedProducts)
-router.get("/buyer-products", userAuthorization(["buyer"]),productsPagination,productController.paginatedProducts)
+router.get("/products", userAuthorization(["buyer"]),productsPagination,productController.paginatedProducts)
 
 export default router;

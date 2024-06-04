@@ -16,7 +16,7 @@ import httpStatus from "http-status";
 import Session from "../../../databases/models/session";
 
 chai.use(chaiHttp);
-const router = () => chai.request(app);
+const router = () => chai.request(app)
 const imagePath = path.join(__dirname, "../../../__test__/images/69180880-2138-11eb-8b06-03db3ef1abad.jpeg");
 const imageBuffer = fs.readFileSync(imagePath)
 describe("Product and Collection API Tests", () => {
@@ -306,12 +306,13 @@ describe("isCollectionExist Middleware", () => {
 
 
 describe("Seller's Products List", () => {
-  let token: string = null
+  let token: string = null;
+
   it("Should be able to login a seller", (done) => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
+        email: "paccy509@gmail.com",
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
@@ -325,37 +326,316 @@ describe("Seller's Products List", () => {
       });
   });
 
+  it("Should restrict unauthorized user", (done) => {
+    router().get("/api/collection/seller-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
 
-  it("Should retrieve unipaginated data if no queries are specified", (done) => {
+  it("Should retrieve unpaginated data if no queries are specified", (done) => {
     router().get("/api/collection/seller-products")
       .set("Authorization", `Bearer ${token}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
-        done(error)
-      })
-  })
+        done(error);
+      });
+  });
 
-  it("Should  notify if limit or page is not number", (done) => {
+  it("Should notify if limit or page is not number", (done) => {
     router().get("/api/collection/seller-products?limit=-10&page=page1")
-    .set("Authorization", `Bearer ${token}`)
-    .end((error, response) => {
-      expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-      expect(response.body).to.be.a("object");
-      expect(response.body).to.have.property("error");
-      done(error)
-    })
-  })
-  
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error");
+        done(error);
+      });
+  });
+
   it("Should return all seller's products", (done) => {
     router().get("/api/collection/seller-products?limit=10&page=1")
-    .set("Authorization", `Bearer ${token}`)
-    .end((error, response) => {
-      expect(response.status).to.equal(httpStatus.OK);
-      expect(response.body).to.be.a("object");
-      expect(response.body).to.have.property("data");
-      done(error)
-    })
-  })
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+});
+
+
+
+
+describe("User retrieve products", () => {
+  let token: string = null;
+
+  it("Should be able to login a buyer", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "john.doe@example.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+  it("Should restrict unauthorized user", (done) => {
+    router().get("/api/collection/seller-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+
+  it("Should retrieve unpaginated data if no queries are specified", (done) => {
+    router().get("/api/collection/seller-products")
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+
+  it("Should notify if limit or page is not number", (done) => {
+    router().get("/api/collection/seller-products?limit=-10&page=page1")
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error");
+        done(error);
+      });
+  });
+
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// describe("Seller's Products List", () => {
+//   let token = null;
+
+//   it("Should be able to login a seller", (done) => {
+//     router()
+//       .post("/api/auth/login")
+//       .send({
+//         email: "paccy509@gmail.com",
+//         password: "$321!Pass!123$"
+//       })
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.message).to.be.a("string");
+//         expect(response.body.data).to.have.property("token");
+//         token = response.body.data.token;
+//         done(error);
+//       });
+//   });
+
+//   it("Should restrict unauthorized user", (done) => {
+//     router().get("/api/collection/seller-products")
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+//         expect(response.body).to.be.a("object");
+//         done(error);
+//       });
+//   });
+
+//   it("Should retrieve unpaginated data if no queries are specified", (done) => {
+//     router().get("/api/collection/seller-products")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.data).to.be.an("array");
+//         done(error);
+//       });
+//   });
+
+//   it("Should notify if limit or page is not number", (done) => {
+//     router().get("/api/collection/seller-products?limit=-10&page=page1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("error");
+//         done(error);
+//       });
+//   });
+
+//   it("Should return paginated products if valid limit and page are provided", (done) => {
+//     router().get("/api/collection/seller-products?limit=10&page=1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.data).to.have.property("data");
+//         expect(response.body.data.data).to.be.an("array");
+//         expect(response.body.data.data.length).to.be.at.most(10);
+//         done(error);
+//       });
+//   });
+
+//   it("Should handle server errors gracefully", (done) => {
+//     // Simulate a server error by mocking the repository method to throw an error
+//     const originalMethod = productRepositories.getProductsByAttributes;
+//     productRepositories.getProductsByAttributes = () => { throw new Error('Server error'); };
+
+//     router().get("/api/collection/seller-products")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+//         expect(response.body).to.have.property("error");
+//         productRepositories.getProductsByAttributes = originalMethod; // Restore the original method
+//         done(error);
+//       });
+//   });
+
+//   it("Should handle pagination correctly with edge cases", (done) => {
+//     router().get("/api/collection/seller-products?limit=0&page=1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+//         expect(response.body).to.have.property("error");
+//         done(error);
+//       });
+//   });
+// });
+
+// describe("User retrieve products", () => {
+//   let token = null;
+
+//   it("Should be able to login a buyer", (done) => {
+//     router()
+//       .post("/api/auth/login")
+//       .send({
+//         email: "john.doe@example.com",
+//         password: "$321!Pass!123$"
+//       })
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.message).to.be.a("string");
+//         expect(response.body.data).to.have.property("token");
+//         token = response.body.data.token;
+//         done(error);
+//       });
+//   });
+
+//   it("Should restrict unauthorized user", (done) => {
+//     router().get("/api/collection/products")
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+//         expect(response.body).to.be.a("object");
+//         done(error);
+//       });
+//   });
+
+//   it("Should retrieve unpaginated data if no queries are specified", (done) => {
+//     router().get("/api/collection/products")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.data).to.be.an("array");
+//         done(error);
+//       });
+//   });
+
+//   it("Should notify if limit or page is not number", (done) => {
+//     router().get("/api/collection/products?limit=-10&page=page1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("error");
+//         done(error);
+//       });
+//   });
+
+//   it("Should return paginated products if valid limit and page are provided", (done) => {
+//     router().get("/api/collection/products?limit=10&page=1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.be.a("object");
+//         expect(response.body).to.have.property("data");
+//         expect(response.body.data).to.have.property("data");
+//         expect(response.body.data.data).to.be.an("array");
+//         expect(response.body.data.data.length).to.be.at.most(10);
+//         done(error);
+//       });
+//   });
+
+//   it("Should handle server errors gracefully", (done) => {
+//     // Simulate a server error by mocking the repository method to throw an error
+//     const originalMethod = productRepositories.getAllProducts;
+//     productRepositories.getAllProducts = () => { throw new Error('Server error'); };
+
+//     router().get("/api/collection/products")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+//         expect(response.body).to.have.property("error");
+//         productRepositories.getAllProducts = originalMethod; // Restore the original method
+//         done(error);
+//       });
+//   });
+
+//   it("Should handle pagination correctly with edge cases", (done) => {
+//     router().get("/api/collection/products?limit=0&page=1")
+//       .set("Authorization", `Bearer ${token}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+//         expect(response.body).to.have.property("error");
+//         done(error);
+//       });
+//   });
+// });

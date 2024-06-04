@@ -20,35 +20,35 @@ const router = () => chai.request(app);
 let userId: number = 0;
 let verifyToken: string | null = null;
 
-describe("Authentication Test Cases", () => {
-  let token;
+  describe("Authentication Test Cases", () => {
+    let token;
 
-  afterEach(async () => {
-    const tokenRecord = await Session.findOne({ where: { userId } });
-    if (tokenRecord) {
-      verifyToken = tokenRecord.dataValues.token;
-    }
-  });
+    afterEach(async () => {
+      const tokenRecord = await Session.findOne({ where: { userId } });
+      if (tokenRecord) {
+        verifyToken = tokenRecord.dataValues.token;
+      }
+    });
 
-  it("should register a new user", (done) => {
-    router()
-      .post("/api/auth/register")
-      .send({
-        email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.CREATED);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("data");
-        userId = response.body.data.user.id;
-        expect(response.body).to.have.property(
-          "message",
-          "Account created successfully. Please check email to verify account."
-        );
-        done(error);
-      });
-  });
+    it("should register a new user", (done) => {
+      router()
+        .post("/api/auth/register")
+        .send({
+          email: "ecommerceninjas45@gmail.com",
+          password: "userPassword@123"
+        })
+        .end((error, response) => {
+          expect(response.status).to.equal(httpStatus.CREATED);
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.have.property("data");
+          userId = response.body.data.user.id;
+          expect(response.body).to.have.property(
+            "message",
+            "Account created successfully. Please check email to verify account."
+          );
+          done(error);
+        });
+    });
 
   it("should verify the user successfully", (done) => {
     if (!verifyToken) {
