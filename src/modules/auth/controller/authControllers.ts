@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import userRepositories from "../repository/authRepositories";
-import { generateToken,hashPassword, verifyToken } from "../../../helpers";
+import { generateToken,hashPassword} from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
@@ -91,7 +91,7 @@ const loginUser = async (req: any, res: Response) => {
 const logoutUser = async (req: any, res: Response) => {
   try {
     await authRepositories.destroySession(req.user.id, req.session.token)
-    res.status(httpStatus.OK).json({ message: "Successfully logged out" });
+    res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -102,28 +102,29 @@ const logoutUser = async (req: any, res: Response) => {
   }
 };
 
-const requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+const requestResetPassword = async (req: any, res: Response): Promise<void> => {
   try {
-      const { email } = req.body;
-      const user = await userRepositories.findUserByAttributes("email", email);
-      const token = generateToken(user.id);
-      const resetLink = `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`;
-      await sendEmail(user.email, "Password Reset Request", resetLink);
-      res.status(httpStatus.OK).json({ message: "Password reset email sent successfully." });
+      const token = generateToken(req.user.id);
+      const session = {
+        userId: req.user.id,
+        device: req.headers["user-device"],
+        token: token,
+        otp: null
+      };
+      await authRepositories.createSession(session);
+      await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
+      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password." });
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 }
 
-const resetPassword = async (req: Request, res: Response): Promise<void> => {
-  try {
-      const { token } = req.params;
-      const { newPassword } = req.body;
-      const decodedToken: any = verifyToken(token);
-      const userId = decodedToken.id;
-      const hashedPassword = await hashPassword(newPassword); 
-      await authRepositories.updateUserByAttributes("password", hashedPassword, "id", userId);  
-      res.status(httpStatus.OK).json({ message: "Password reset successfully." });
+const resetPassword = async (req: any, res: Response): Promise<void> => {
+  try {  
+      const hashedPassword = await hashPassword(req.body.newPassword);
+      await authRepositories.destroySession(req.user.id, req.session.token) 
+      await authRepositories.updateUserByAttributes("password", hashedPassword, "id", req.session.id);  
+      res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
@@ -134,7 +135,7 @@ export default {
   sendVerifyEmail,
   verifyEmail,
   loginUser,
-  logoutUser,
-  requestPasswordReset,
-  resetPassword 
+  requestResetPassword,
+  resetPassword,
+  logoutUser
 };

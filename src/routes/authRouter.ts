@@ -49,7 +49,7 @@ router.post(
 
 router.post(
   "/logout",
-  userAuthorization(["buyer", "seller", "admin"]),
+  userAuthorization(["admin", "buyer", "seller"]),
   authControllers.logoutUser
 );
 
@@ -58,8 +58,7 @@ router.get(
   "/google/callback",
   googleAuth.authenticateWithGoogle);
 
-router.post("/request-password-reset", validation(emailSchema), authControllers.requestPasswordReset);
+router.post("/request-reset-password", validation(emailSchema), authControllers.requestResetPassword);
 router.post("/reset-password/:token", validation(resetPasswordSchema), authControllers.resetPassword);
-
 
 export default router;

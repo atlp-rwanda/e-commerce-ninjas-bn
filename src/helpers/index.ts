@@ -22,9 +22,4 @@ const hashPassword = (password: string)=>{
   return bcrypt.hashSync(password, 10);
 }
 
-const verifyToken = (token: string): any => {
-  return jwt.verify(token, process.env.JWT_SECRET as string);
-};
-
-
-  export { generateToken, decodeToken, verifyToken, comparePassword, hashPassword }
+export { generateToken, decodeToken, comparePassword, hashPassword }
