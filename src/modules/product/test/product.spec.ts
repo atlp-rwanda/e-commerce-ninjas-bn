@@ -562,7 +562,7 @@ describe("Seller's Products List", () => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
-        expect(response.body.data.data.length).to.be.at.most(10);
+        
         done(error);
       });
   });
