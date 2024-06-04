@@ -7,6 +7,6 @@ const router: Router = Router()
 
 router.use("/auth", authRouter);
 router.use("/user", userRouter);
-router.use("/collection", productRouter);
+router.use("/shop", productRouter);
 
 export default router;

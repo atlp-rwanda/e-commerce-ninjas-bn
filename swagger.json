@@ -399,7 +399,6 @@
         }
       }
     },
-
     "/api/auth/logout": {
       "post": {
         "tags": [
@@ -869,13 +868,13 @@
         }
       }
     },
-    "/api/collection/create-collection": {
+    "/api/shop/create-shop": {
       "post": {
         "tags": [
           "Seller Routes"
         ],
-        "summary": "A seller should be able to Create new collections",
-        "description": "This endpoint allows seller to create new collections",
+        "summary": "A seller should be able to Create new shop",
+        "description": "This endpoint allows seller to create new shop",
         "requestBody": {
           "required": true,
           "content": {
@@ -903,7 +902,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Collection created successfully",
+            "description": "Shop created successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -953,7 +952,7 @@
             }
           },
           "404": {
-            "description": "Collection not found",
+            "description": "Shop not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -991,24 +990,13 @@
         }
       }
     },
-    "/api/collection/create-product/{id}": {
+    "/api/shop/create-product": {
       "post": {
         "tags": [
           "Seller Routes"
         ],
-        "summary": "A seller should be able to Create/Add a product with collection Id",
-        "description": "This endpoint allows seller to create/add a product with collection Id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the collection to which the product belongs",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "A seller should be able to Create/Add a product with shop Id",
+        "description": "This endpoint allows seller to create/add a product with shop Id",
         "requestBody": {
           "required": true,
           "content": {
@@ -1083,7 +1071,7 @@
                         "id": {
                           "type": "integer"
                         },
-                        "collectionId": {
+                        "shopId": {
                           "type": "string"
                         },
                         "sellerId": {

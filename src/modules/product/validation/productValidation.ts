@@ -43,7 +43,7 @@ const productSchema = Joi.object({
     })
 });
 
-const collectionSchema = Joi.object({
+const shopSchema = Joi.object({
     name: Joi.string().required().messages({
         "string.base": "Name must be a string",
         "any.required": "Name is required"
@@ -53,4 +53,4 @@ const collectionSchema = Joi.object({
     })
 })
 
-export { productSchema , collectionSchema};
+export { productSchema , shopSchema};

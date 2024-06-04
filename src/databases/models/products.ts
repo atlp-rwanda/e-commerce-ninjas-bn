@@ -5,9 +5,8 @@ import sequelizeConnection from "../config/db.config";
 import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
-    declare id: number;
-    declare collectionId: number;
-    declare sellerId: number;
+    declare id: string;
+    declare shopId: string;
     declare name: string;
     declare description?: string;
     declare price: number;
@@ -23,8 +22,8 @@ class Products extends Model<IProduct> {
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Products.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
-        Products.belongsTo(models.Collection, { foreignKey: "collectionId", as: "collection" });
+        Products.belongsTo(models.Users, { foreignKey: "userId", as: "user" });
+        Products.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
     }
 }
 
@@ -37,20 +36,11 @@ Products.init(
             defaultValue: DataTypes.UUIDV4
 
         },
-        collectionId: {
+        shopId: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
-                model: "collection",
-                key: "id"
-            },
-            onDelete: "CASCADE"
-        },
-        sellerId: {
-            allowNull: false,
-            type: DataTypes.INTEGER,
-            references: {
-                model: "users",
+                model: "Shops",
                 key: "id"
             },
             onDelete: "CASCADE"

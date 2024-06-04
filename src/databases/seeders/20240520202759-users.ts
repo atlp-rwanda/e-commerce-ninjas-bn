@@ -1,6 +1,6 @@
 import { QueryInterface } from "sequelize";
 import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId } from "../../types/uuid";
+import { userOneId, userTwoId, userThreeId, userFourId, userFiveId } from "../../types/uuid";
 
 const userOne = {
     id: userOneId,
@@ -73,9 +73,26 @@ const userFour = {
     role: "seller",
     status: "enabled"
 };
+const userFive = {
+    id: userFiveId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    firstName: "dj5090",
+    lastName: "dj2090",
+    email: "dj@gmail.com",
+    password: hashPassword("$321!Pass!123$"),
+    phone: 25089767899,
+    profilePicture: "",
+    gender: "female",
+    birthDate: "2014-02-02",
+    language: "english",
+    currency: "USD",
+    role: "seller",
+    status: "enabled"
+};
 
 export const up = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkInsert("users", [userOne, userTwo, userThree, userFour]);
+    await queryInterface.bulkInsert("users", [userOne, userTwo, userThree, userFour, userFive]);
 };
 
 export const down = async (queryInterface: QueryInterface) => {

@@ -10,6 +10,15 @@ export default {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4
       },
+      shopId: {
+        allowNull: false,
+        type: DataTypes.UUID,
+        references: {
+          model: "shops",
+          key: "id"
+        },
+        onDelete: "CASCADE"
+      },
       name: {
         allowNull: false,
         type: DataTypes.STRING
@@ -39,24 +48,6 @@ export default {
       },
       bonus: {
         type: DataTypes.STRING
-      },
-      collectionId: {
-        allowNull: false,
-        type: DataTypes.UUID,
-        references: {
-          model: "collection",
-          key: "id"
-        },
-        onDelete: "CASCADE"
-      },
-      sellerId: {
-        allowNull: false,
-        type: DataTypes.UUID,
-        references: {
-          model: "users",
-          key: "id"
-        },
-        onDelete: "CASCADE"
       },
       images: {
         type: DataTypes.ARRAY(DataTypes.STRING)

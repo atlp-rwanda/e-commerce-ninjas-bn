@@ -3,7 +3,7 @@ import { DataTypes, QueryInterface} from "sequelize";
 
 export default {
   up: async (queryInterface: QueryInterface, Sequelize: any) => {
-    await queryInterface.createTable("collection", {
+    await queryInterface.createTable("shops", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -14,7 +14,7 @@ export default {
         allowNull: false,
         type: DataTypes.STRING(128)
       },
-      sellerId: {
+      userId: {
         allowNull: false,
         type: DataTypes.UUID,
         references: {
@@ -41,6 +41,6 @@ export default {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("collection");
+    await queryInterface.dropTable("shops");
   }
 };

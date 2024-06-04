@@ -10,15 +10,14 @@ const createProduct = async (req:ExtendRequest,res:Response) =>{
         const uploadPromises = req.files.map(file => uploadImages(file));
         const images = await Promise.all(uploadPromises);
         const productData = {
-          collectionId: req.params.id,
-          sellerId: req.user.id,
+          shopId: req.shop.id,
           images: images.map(image => image.secure_url),
           ...req.body
         };    
         const product = await productRepositories.createProduct(productData);
         res.status(httpStatus.CREATED).json({
           message: "Product created successfully",
-          data: product
+          data: { product: product }
         });
       } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -28,17 +27,17 @@ const createProduct = async (req:ExtendRequest,res:Response) =>{
       }
     };
 
-const createCollections = async (req: ExtendRequest, res: Response) => {
+const createShop = async (req: ExtendRequest, res: Response) => {
     try {
-      const collectionData = {
-        sellerId: req.user.id,
+      const shopData = {
+        userId: req.user.id,
         name: req.body.name,
         description: req.body.description
       };
-      const collection = await productRepositories.createCollection(collectionData);
+      const shop = await productRepositories.createShop(shopData);
       res.status(httpStatus.CREATED).json({
-        message: "Collection created successfully",
-        data: collection
+        message: "Shop created successfully",
+        data: {shop: shop}
       });
     } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -47,4 +46,4 @@ const createCollections = async (req: ExtendRequest, res: Response) => {
       });
     }
   };
-export default { createProduct, createCollections }
+export default { createProduct, createShop }

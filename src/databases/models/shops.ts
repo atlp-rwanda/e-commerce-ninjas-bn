@@ -2,21 +2,21 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-import { ICollection } from "../../types";
+import { IShops } from "../../types";
 
-class Collection extends Model<ICollection> {
+class Shops extends Model<IShops> {
     declare id: number;
-    declare sellerId: number;
+    declare userId: number;
     declare name: string;
     declare description?: string;
 
     static associate(models: any) {
-        Collection.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
-        Collection.hasMany(models.Products, { foreignKey: "collectionId", as: "products" });
+        Shops.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
+        Shops.hasMany(models.Products, { foreignKey: "shopId", as: "products" });
     }
 }
 
-Collection.init(
+Shops.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -24,7 +24,7 @@ Collection.init(
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
-        sellerId: {
+        userId: {
             allowNull: false,
             type: DataTypes.INTEGER,
             references: {
@@ -44,9 +44,9 @@ Collection.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "collection",
-        modelName: "Collection"
+        tableName: "shops",
+        modelName: "Shops"
     }
 );
 
-export default Collection;
+export default Shops;

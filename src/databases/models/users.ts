@@ -4,54 +4,51 @@ import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { hashPassword } from "../../helpers";
 export interface UsersAttributes {
-  id: number;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-  password: string;
-  phone?: number;
-  profilePicture?: string;
-  gender?: string;
-  birthDate?: string;
-  language?: string;
-  currency?: string;
-  role?: string;
-  isVerified?: boolean;
-  isGoogleAccount?: boolean;
-  is2FAEnabled?: boolean;
-  status?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    password: string;
+    phone?: number;
+    profilePicture?: string;
+    gender?: string;
+    birthDate?: string;
+    language?: string;
+    currency?: string;
+    role?: string;
+    isGoogleAccount?: boolean;
+    isVerified?: boolean;
+    is2FAEnabled?: boolean;
+    status?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface UsersCreationAttributes extends Optional<UsersAttributes, "id"> {}
 
-class Users
-  extends Model<UsersAttributes, UsersCreationAttributes>
-  implements UsersAttributes
-{
-  declare id: number;
-  declare firstName?: string;
-  declare lastName?: string;
-  declare email: string;
-  declare phone?: number;
-  declare profilePicture?: string;
-  declare gender?: string;
-  declare birthDate?: string;
-  declare language?: string;
-  declare currency?: string;
-  declare role?: string;
-  declare isVerified?: boolean;
-  declare isGoogleAccount?: boolean;
-  declare is2FAEnabled?: boolean;
-  declare status?: string;
-  declare password: string;
-  declare createdAt?: Date;
-  declare updatedAt?: Date;
+class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
+    declare id: number;
+    declare firstName?: string;
+    declare lastName?: string;
+    declare email: string;
+    declare phone?: number;
+    declare profilePicture?: string;
+    declare gender?: string;
+    declare birthDate?: string;
+    declare language?: string;
+    declare currency?: string;
+    declare role?: string;
+    declare isVerified?: boolean;
+    declare isGoogleAccount?: boolean;
+    declare is2FAEnabled?: boolean;
+    declare status?: string;
+    declare password: string;
+    declare createdAt?: Date;
+    declare updatedAt?: Date;
 
     static associate(models: any) {
         Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
-        Users.hasMany(models.Collection, { foreignKey: "sellerId", as: "collections" });
+        Users.hasOne(models.Shops, { foreignKey: "sellerId", as: "shops" });
         Users.hasMany(models.Products, { foreignKey: "sellerId", as: "products" });
     }
 }
@@ -80,7 +77,7 @@ Users.init(
             }
         },
         password: {
-            type: DataTypes.STRING(128),
+            type: DataTypes.STRING(255),
             allowNull: false
         },
         phone: {
@@ -145,19 +142,19 @@ Users.init(
             defaultValue: DataTypes.NOW
         }
     },
-  {
-    sequelize: sequelizeConnection,
-    tableName: "users",
-    timestamps: true,
-    modelName: "Users",
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          user.password = await hashPassword(user.password);
+    {
+        sequelize: sequelizeConnection,
+        tableName: "users",
+        timestamps: true,
+        modelName: "Users",
+        hooks: {
+            beforeCreate: async (user) => {
+                if (user.password) {
+                    user.password = await hashPassword(user.password);
+                }
+            }
         }
-      }
     }
-  }
 );
 
 export default Users

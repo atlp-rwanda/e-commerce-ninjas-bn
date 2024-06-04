@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Collection from "../../../databases/models/collection";
+import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 
@@ -7,19 +7,15 @@ const createProduct = async(body:any) => {
     return await Products.create(body);
 }
 
-const createCollection = async(body:any) => {
-    return await Collection.create(body);
+const createShop = async(body:any) => {
+    return await Shops.create(body);
 }
 
-const getAllProducts = async() => {
-    return await Products.findAll();
-}
-
-const findItemByAttributes = async(model:any,key:string,value:any) => {
+const findShopByAttributes = async(model:any,key:string,value:any) => {
     return await model.findOne({ where: { [key]: value } });
 }
 
-const findByModelAndAttributes = async (model: any, keyOne: string, keyTwo: string, valueOne: any, valueTwo: any) => {
+const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: string, valueOne: any, valueTwo: any) => {
     return await model.findOne({
         where: {
             [keyOne]: {
@@ -30,4 +26,4 @@ const findByModelAndAttributes = async (model: any, keyOne: string, keyTwo: stri
     });
 }
 
-export default { createProduct, createCollection, getAllProducts, findItemByAttributes,findByModelAndAttributes};
+export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes};
