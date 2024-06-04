@@ -600,7 +600,7 @@ describe("Seller's Products List", () => {
 
   it("Should handle server errors gracefully", (done) => {
     const originalMethod = productRepositories.getAllProducts;
-    productRepositories.getAllProducts = () => { throw new Error('Server error'); };
+    productRepositories.getAllProducts = () => { throw new Error("Server error"); };
 
     router().get("/api/collection/products")
       .set("Authorization", `Bearer ${buyerToken}`)
@@ -715,7 +715,7 @@ describe("Seller's Products List", () => {
   it("Should handle server errors gracefully", (done) => {
     // Simulate a server error by mocking the repository method to throw an error
     const originalMethod = productRepositories.getProductsByAttributes;
-    productRepositories.getProductsByAttributes = () => { throw new Error('Server error'); };
+    productRepositories.getProductsByAttributes = () => { throw new Error("Server error"); };
 
     router().get("/api/collection/seller-products")
       .set("Authorization", `Bearer ${sellerToken}`)
