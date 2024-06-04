@@ -82,7 +82,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 11 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
 | 12 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
 | 13 | GET   | /api/auth/google                        | 200 OK      | public  | Login Via google account      |
-| 14 | POST | /api/auth/request-password-reset         | 200 OK      | public  | Request Password Reset Email  |
+| 14 | POST | /api/auth/request-reset-password         | 200 OK      | public  | Request Password Reset Email  |
 | 15 | POST | /api/auth/reset-password/{token}         | 200 OK      | public  | Reset Password                |
 >>>>>>> 22e3d65 (update user password)
 =======

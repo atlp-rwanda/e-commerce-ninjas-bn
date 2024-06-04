@@ -468,7 +468,7 @@
 =======
 >>>>>>> ce88cd5 (update user password)
 
-    "/api/auth/request-password-reset": {
+    "/api/auth/request-reset-password": {
       "post": {
         "tags": [
           "Authentication Routes"
