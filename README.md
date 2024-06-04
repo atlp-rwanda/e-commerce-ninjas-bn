@@ -45,6 +45,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint  |
 | 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
 | 8  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
+| 9  | GET  | /api/auth/google                         | 200 OK      | public  | Login Via google account      |
 
 ## INSTALLATION
 

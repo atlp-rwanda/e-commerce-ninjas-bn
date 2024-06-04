@@ -375,6 +375,24 @@
         }
       }
     },
+
+    "/api/auth/google": {
+      "get": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Login User via Google",
+        "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-backend.onrender.com/api/auth/google)",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google for authentication"
+          }
+        }
+      }
+    },
+
+
+
     "/api/auth/logout": {
       "post": {
         "tags": [
