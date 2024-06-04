@@ -239,221 +239,6 @@ describe("isCollectionExist Middleware", () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// describe("Seller's Products List", () => {
-//   let token: string = null;
-
-//   it("Should be able to login a seller", (done) => {
-//     router()
-//       .post("/api/auth/login")
-//       .send({
-//         email: "paccy509@gmail.com",
-//         password: "$321!Pass!123$"
-//       })
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.OK);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("data");
-//         expect(response.body.message).to.be.a("string");
-//         expect(response.body.data).to.have.property("token");
-//         token = response.body.data.token;
-//         done(error);
-//       });
-//   });
-
-//   it("Should restrict unauthorized user", (done) => {
-//     router().get("/api/collection/seller-products")
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
-//         expect(response.body).to.be.a("object");
-//         done(error);
-//       });
-//   });
-
-//   it("Should retrieve unpaginated data if no queries are specified", (done) => {
-//     router().get("/api/collection/seller-products")
-//       .set("Authorization", `Bearer ${token}`)
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.OK);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("data");
-//         done(error);
-//       });
-//   });
-
-//   it("Should notify if limit or page is not number", (done) => {
-//     router().get("/api/collection/seller-products?limit=-10&page=page1")
-//       .set("Authorization", `Bearer ${token}`)
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("error");
-//         done(error);
-//       });
-//   });
-
-//   it("Should return all seller's products", (done) => {
-//     router().get("/api/collection/seller-products?limit=10&page=1")
-//       .set("Authorization", `Bearer ${token}`)
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.OK);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("data");
-//         done(error);
-//       });
-//   });
-// });
-
-
-
-
-// describe("User retrieve products", () => {
-//   let token: string = null;
-
-//   it("Should be able to login a buyer", (done) => {
-//     router()
-//       .post("/api/auth/login")
-//       .send({
-//         email: "john.doe@example.com",
-//         password: "$321!Pass!123$"
-//       })
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.OK);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("data");
-//         expect(response.body.message).to.be.a("string");
-//         expect(response.body.data).to.have.property("token");
-//         token = response.body.data.token;
-//         done(error);
-//       });
-//   });
-
-//   it("Should restrict unauthorized user", (done) => {
-//     router().get("/api/collection/seller-products")
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
-//         expect(response.body).to.be.a("object");
-//         done(error);
-//       });
-//   });
-
-//   it("Should retrieve unpaginated data if no queries are specified", (done) => {
-//     router().get("/api/collection/seller-products")
-//       .set("Authorization", `Bearer ${token}`)
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.OK);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("data");
-//         done(error);
-//       });
-//   });
-
-
-//   it("Should notify if limit or page is not number", (done) => {
-//     router().get("/api/collection/seller-products?limit=-10&page=page1")
-//       .set("Authorization", `Bearer ${token}`)
-//       .end((error, response) => {
-//         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-//         expect(response.body).to.be.a("object");
-//         expect(response.body).to.have.property("error");
-//         done(error);
-//       });
-//   });
-
-// })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 describe("Seller's Products List", () => {
   let token: string = null;
   let sellerToken: string = null
@@ -513,8 +298,6 @@ describe("Seller's Products List", () => {
       });
   });
 
-
-
   it("Should restrict unauthorized user", (done) => {
     router().get("/api/collection/products")
       .end((error, response) => {
@@ -562,7 +345,6 @@ describe("Seller's Products List", () => {
   });
 
   it("Should handle server errors gracefully", (done) => {
-    // Simulate a server error by mocking the repository method to throw an error
     const originalMethod = productRepositories.getAllProducts;
     productRepositories.getAllProducts = () => { throw new Error('Server error'); };
 
@@ -571,7 +353,7 @@ describe("Seller's Products List", () => {
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.have.property("error");
-        productRepositories.getAllProducts = originalMethod; // Restore the original method
+        productRepositories.getAllProducts = originalMethod; 
         done(error);
       });
   });
@@ -585,19 +367,6 @@ describe("Seller's Products List", () => {
         done(error);
       });
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   it("Should update the user role to seller", (done) => {
@@ -625,36 +394,6 @@ describe("Seller's Products List", () => {
       });
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   it("Should be able to login a seller", (done) => {
     router()
       .post("/api/auth/login")
@@ -672,71 +411,6 @@ describe("Seller's Products List", () => {
         done(error);
       });
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   it("Should restrict unauthorized user", (done) => {
     router().get("/api/collection/seller-products")
@@ -808,10 +482,4 @@ describe("Seller's Products List", () => {
         done(error);
       });
   });
-});
-
-describe("User retrieve products", () => {
-
-
-  
 });
