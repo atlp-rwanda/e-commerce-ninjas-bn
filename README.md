@@ -11,11 +11,11 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 
 ## HOSTED SERVER URL
 
-[https://e-commerce-ninjas-backend.onrender.com/](https://e-commerce-ninjas-backend.onrender.com/)
+[https://e-commerce-ninjas-platform-backend.onrender.com/](https://e-commerce-ninjas-platform-backend.onrender.com/)
 
 #### Hosted Swagger Documentation
 
-[https://e-commerce-ninjas-backend.onrender.com/api-docs](https://e-commerce-ninjas-backend.onrender.com/api-docs)
+[https://e-commerce-ninjas-platform-backend.onrender.com/api-docs](https://e-commerce-ninjas-platform-backend.onrender.com/api-docs)
 
 #### Github Repository For E-Commerce-Ninjas Backend
 
@@ -34,6 +34,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Admin Update Role Endpoint
 - Logout Endpoint
 - Update User Profile Endpoint
+- Get User Profile Endpoint 
+- Login Via google account
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -50,8 +52,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 8  | PUT   | /api/user/admin-update-user-status/:id  | 200 OK      | private | Admin Update Status Endpoint  |
 | 9  | PUT   | /api/user/admin-update-role/:id         | 200 OK      | private | Admin Update Role Endpoint    |
 | 10 | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
-| 11 | PUT   | /api/user/user-update-profile/:id       | 200 OK      | private | Update User Profile Endpoint  |
-
+| 11 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
+| 11 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
+| 12 | GET   | /api/auth/google                        | 200 OK      | public  | Login Via google account      |
 ## INSTALLATION
 
 1. Clone the repository:

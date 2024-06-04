@@ -3,8 +3,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import bcrypt from "bcrypt";
-
-// Define an interface with required and optional attributes
 export interface UsersAttributes {
   id: number;
   firstName?: string;
@@ -25,8 +23,6 @@ export interface UsersAttributes {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-// Define an interface for creation attributes which excludes the optional fields
 export interface UsersCreationAttributes
   extends Optional<UsersAttributes, "id"> {}
 
@@ -53,7 +49,6 @@ class Users
   declare createdAt?: Date;
   declare updatedAt?: Date;
 
-    // Define any static methods or associations here
     static associate(models: any) {
         Users.hasOne(models.Sessions, { foreignKey: "userId",as: "session" });
     }

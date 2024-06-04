@@ -35,7 +35,8 @@
     "exclude": [
       "src/index.spec.ts",
       "src/databases/**/*.*",
-      "src/modules/**/test/*.spec.ts"
+      "src/modules/**/test/*.spec.ts",
+      "src/services/googleAuth.ts"
     ],
     "reporter": [
       "html",

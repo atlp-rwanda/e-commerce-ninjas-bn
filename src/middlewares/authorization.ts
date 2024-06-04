@@ -48,6 +48,12 @@ export const userAuthorization = function (roles: string[]) {
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
 
+      if (user.status !== "enabled") {
+        return res
+          .status(httpStatus.UNAUTHORIZED)
+          .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
+      }
+
       req.user = user;
       req.session = session;
       next();

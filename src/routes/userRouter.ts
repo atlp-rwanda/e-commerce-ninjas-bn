@@ -12,7 +12,7 @@ router.get("/admin-get-user/:id",userAuthorization(["admin"]), isUserExist, user
 router.put("/admin-update-user-status/:id",userAuthorization(["admin"]), validation(statusSchema), isUserExist, userControllers.updateUserStatus);
 router.put("/admin-update-role/:id",userAuthorization(["admin"]), validation(roleSchema),isUserExist, userControllers.updateUserRole);
 
-router.get("/user-get-profile/:id",userAuthorization(["buyer", "seller"]),userControllers.getUserDetails)
-router.put("/user-update-profile/:id",userAuthorization(["buyer", "seller" ]),upload.single("profilePicture"),validation(userSchema), userControllers.updateUserProfile)
+router.get("/user-get-profile",userAuthorization(["admin","buyer", "seller"]),userControllers.getUserDetails)
+router.put("/user-update-profile",userAuthorization(["admin","buyer", "seller"]),upload.single("profilePicture"),validation(userSchema), userControllers.updateUserProfile)
 
 export default router;

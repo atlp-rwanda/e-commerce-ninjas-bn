@@ -386,7 +386,7 @@
           "Authentication Routes"
         ],
         "summary": "Login User via Google",
-        "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-backend.onrender.com/api/auth/google)",
+        "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-platform-backend.onrender.com/api/auth/google)",
         "responses": {
           "302": {
             "description": "Redirect to Google for authentication"
@@ -863,7 +863,7 @@
         }
       }
     },
-    "/api/user/user-get-profile/{id}": {
+    "/api/user/user-get-profile": {
       "get": {
         "tags": [
           "User Routes"
@@ -875,14 +875,6 @@
         ],
         "summary": " get user profile",
         "description": "This endpoint allows user get  his/her data.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "type": "string",
-            "description": "parsing id"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Get  user.",
@@ -957,7 +949,7 @@
         }
       }
     },
-    "/api/user/user-update-profile/{id}": {
+    "/api/user/user-update-profile": {
       "put": {
         "tags": [
           "User Routes"
@@ -990,14 +982,6 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "User Profile ID",
-            "required": true
-          }
-        ],
         "requestBody": {
           "required": false,
           "content": {

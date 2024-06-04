@@ -61,8 +61,8 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
 };
 const getUserDetails = async(req:Request,res:Response)=>{
   try {
-      const Users = await authRepositories.findUserByAttributes("id", req.params.id);
-      res.status(httpStatus.OK).json({status: httpStatus.OK,Users});
+      const user = await authRepositories.findUserByAttributes("id", req.user.id);
+      res.status(httpStatus.OK).json({status: httpStatus.OK,data:{user:user}});
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
   }
@@ -72,8 +72,8 @@ const updateUserProfile = async (req: Request, res: Response) => {
   try {
       const upload = await uploadImages(req.file);
       const userData = { ...req.body, profilePicture:upload.secure_url };
-      const updatedUser = await userRepositories.updateUserProfile(userData, Number(req.params.id));
-      res.status(httpStatus.OK).json({status:httpStatus.OK, data:updatedUser});
+      const user = await userRepositories.updateUserProfile(userData, Number(req.user.id));
+      res.status(httpStatus.OK).json({status:httpStatus.OK, data:{user:user}});
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status:httpStatus.INTERNAL_SERVER_ERROR, error: error.message}); 
   }

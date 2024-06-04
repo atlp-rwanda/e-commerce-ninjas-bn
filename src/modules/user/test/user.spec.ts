@@ -15,7 +15,7 @@ import path from "path";
 import fs from 'fs'
 import uploadImages from "../../../helpers/uploadImage";
 import { v2 as cloudinary } from "cloudinary";
-const imagePath = path.join(__dirname, '../../../__test__/testImage.jpg');
+const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath)
 
 
@@ -405,7 +405,7 @@ it("Should be able to login a registered user", (done) => {
 
 it("Should be able to get profile", (done) => {
 router()
-  .get(`/api/user/user-get-profile/${profileId}`)
+  .get(`/api/user/user-get-profile/`)
   .set("authorization", `Bearer ${token}`)
   .end((error, response) => {
     expect(response).to.have.status(200);
@@ -415,7 +415,7 @@ router()
 });
 
 it("should update profile ", (done) => {
-  router().put(`/api/user/user-update-profile/${profileId}`)
+  router().put(`/api/user/user-update-profile/`)
   .set("Authorization", `Bearer ${token}`)
     .field('firstName', 'MANISHIMWE')
     .field('lastName', 'Salton Joseph')
