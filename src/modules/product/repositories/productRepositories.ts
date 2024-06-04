@@ -12,7 +12,7 @@ const createCollection = async (body: any) => {
 }
 
 const getAllProducts = async () => {
-    return await Products.findAll();
+    return await Products.findAll({});
 }
 
 const findItemByAttributes = async (model: any, key: string, value: any) => {
@@ -29,7 +29,6 @@ const findByModelAndAttributes = async (model: any, keyOne: string, keyTwo: stri
         }
     });
 }
-// include: [{ model: Collection, required: true }],
 
 const getProductsByAttributes = async (key: string, value: string) => {
     return await Products.findAll({

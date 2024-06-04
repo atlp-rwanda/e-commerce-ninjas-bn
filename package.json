@@ -21,7 +21,7 @@
     "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "test-local": "cross-env NODE_ENV=development npm run deleteAllTables && cross-env NODE_ENV=development npm run createAllTables && cross-env NODE_ENV=development npm run createAllSeeders && nyc cross-env NODE_ENV=development mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test | coveralls",
-    "coverage": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
+    "coverage": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "lint": "eslint . --ext .ts",
     "lint-staged": "lint-staged",
     "prepare": "husky",
@@ -36,7 +36,8 @@
       "src/index.spec.ts",
       "src/databases/**/*.*",
       "src/modules/**/test/*.spec.ts",
-      "src/types/*.*"
+      "src/types/*.*",
+      "src/services/googleAuth.ts"
     ],
     "reporter": [
       "html",
@@ -80,6 +81,8 @@
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
     "nyc": "^15.1.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth2": "^0.2.0",
     "pg": "^8.11.5",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3",

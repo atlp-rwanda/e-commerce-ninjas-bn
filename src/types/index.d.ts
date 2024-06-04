@@ -1,14 +1,14 @@
 import { Request } from "express";
 
-export interface IToken{
-    userId: number;
-    device: string;
-    accessToken: string;
+export interface IToken {
+  userId: number;
+  device: string;
+  accessToken: string;
 }
 
-export interface ILogin{
-    email: string;
-    password: string;
+export interface ILogin {
+  email: string;
+  password: string;
 }
 
 export interface ExtendRequest extends Request {
@@ -40,4 +40,11 @@ export interface ICollection{
     sellerId: number;
     name: string;
     description?: string;
+}
+export interface userInfo {
+  email: string;
+  firstName: string;
+  lastName: string;
+  picture: string;
+  accToken: string;
 }

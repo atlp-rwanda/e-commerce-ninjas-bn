@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
@@ -308,7 +308,7 @@ describe("Seller's Products List", () => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
-        
+
         done(error);
       });
   });
@@ -444,137 +444,118 @@ describe("Seller's Products List", () => {
   });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 describe("getBuyerProducts", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let allProducts: any[];
 
   beforeEach(() => {
-      req = {
-          query: {}
-      };
+    req = {
+      query: {}
+    };
 
-      res = {
-          status: sinon.stub().returnsThis(),
-          json: sinon.stub()
-      };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
 
-      allProducts = [
-          { id: 1, name: "Product 1" },
-          { id: 2, name: "Product 2" },
-          { id: 3, name: "Product 3" }
-      ];
+    allProducts = [
+      { id: 1, name: "Product 1" },
+      { id: 2, name: "Product 2" },
+      { id: 3, name: "Product 3" }
+    ];
 
-      sinon.stub(productRepositories, "getAllProducts").resolves(allProducts);
+    sinon.stub(productRepositories, "getAllProducts").resolves(allProducts);
   });
 
   afterEach(() => {
-      sinon.restore();
+    sinon.restore();
   });
 
   it("should return paginated products with next and previous page information", async () => {
-      req.query.page = "2";
-      req.query.limit = "1";
+    req.query.page = "2";
+    req.query.limit = "1";
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
-      expect(res.json).to.have.been.calledWith({
-          nextPage: { page: 3, limit: 1 },
-          previousPage: { page: 1, limit: 1 },
-          data: [{ id: 2, name: "Product 2" }]
-      });
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      nextPage: { page: 3, limit: 1 },
+      previousPage: { page: 1, limit: 1 },
+      data: [{ id: 2, name: "Product 2" }]
+    });
   });
 
   it("should return an error if page or limit is not a positive number", async () => {
-      req.query.page = "-1";
-      req.query.limit = "10";
+    req.query.page = "-1";
+    req.query.limit = "10";
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-      expect(res.json).to.have.been.calledWith({ error: "Page and limit must be positive numbers" });
+    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({ error: "Page and limit must be positive numbers" });
   });
 
   it("should handle server errors gracefully", async () => {
-      sinon.restore(); 
-      sinon.stub(productRepositories, "getAllProducts").throws(new Error("Server error"));
+    sinon.restore();
+    sinon.stub(productRepositories, "getAllProducts").throws(new Error("Server error"));
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(500);
-      expect(res.json).to.have.been.calledWith({ error: "Server error" });
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ error: "Server error" });
   });
 
   it("should return paginated products without nextPage when on last page", async () => {
-      req.query.page = "3";
-      req.query.limit = "1";
+    req.query.page = "3";
+    req.query.limit = "1";
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
-      expect(res.json).to.have.been.calledWith({
-          nextPage: undefined,
-          previousPage: { page: 2, limit: 1 },
-          data: [{ id: 3, name: "Product 3" }]
-      });
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      nextPage: undefined,
+      previousPage: { page: 2, limit: 1 },
+      data: [{ id: 3, name: "Product 3" }]
+    });
   });
 
   it("should return paginated products without previousPage when on first page", async () => {
-      req.query.page = "1";
-      req.query.limit = "1";
+    req.query.page = "1";
+    req.query.limit = "1";
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
-      expect(res.json).to.have.been.calledWith({
-          nextPage: { page: 2, limit: 1 },
-          previousPage: undefined,
-          data: [{ id: 1, name: "Product 1" }]
-      });
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      nextPage: { page: 2, limit: 1 },
+      previousPage: undefined,
+      data: [{ id: 1, name: "Product 1" }]
+    });
   });
 
   it("should return an empty array if no products are available", async () => {
-      sinon.restore();
-      sinon.stub(productRepositories, "getAllProducts").resolves([]);
+    sinon.restore();
+    sinon.stub(productRepositories, "getAllProducts").resolves([]);
 
-      req.query.page ="1";
-      req.query.limit = "10";
+    req.query.page = "1";
+    req.query.limit = "10";
 
-      await getBuyerProducts(req as Request, res as Response);
+    await getBuyerProducts(req as Request, res as Response);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
-      expect(res.json).to.have.been.calledWith({
-          nextPage: undefined,
-          previousPage: undefined,
-          data: []
-      });
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      nextPage: undefined,
+      previousPage: undefined,
+      data: []
+    });
   });
 
   it("should return an error if page or limit is non-numeric", async () => {
-      req.query.page = "abc";
-      req.query.limit = "10";
+    req.query.page = "abc";
+    req.query.limit = "10";
 
-      await getBuyerProducts(req as Request, res as Response);
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    await getBuyerProducts(req as Request, res as Response);
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
   });
 });

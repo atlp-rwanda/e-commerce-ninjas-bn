@@ -11,6 +11,7 @@ import {
   credentialSchema
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
+import googleAuth from "../services/googleAuth";
 
 
 const router: Router = Router();
@@ -44,5 +45,11 @@ router.post(
   userAuthorization(["buyer", "seller", "admin"]),
   authControllers.logoutUser
 );
+
+router.get("/google", googleAuth.googleVerify);
+router.get(
+  "/google/callback",
+  googleAuth.authenticateWithGoogle);
+
 
 export default router;

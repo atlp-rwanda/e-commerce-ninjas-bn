@@ -22,7 +22,10 @@ env:
   SMTP_HOST: ${{ secrets.SMTP_HOST }}
   MAIL_ID: ${{ secrets.MAIL_ID }}
   DB_HOST_TYPE: ${{ secrets.DB_HOST_TYPE }}
-
+  GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET }}
+  Session_secret: ${{secrets.Session_secret }}
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
