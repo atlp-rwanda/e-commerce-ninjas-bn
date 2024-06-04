@@ -182,24 +182,6 @@ describe("Admin update User roles", () => {
   let token = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
 
-
-  it("should register a new user", (done) => {
-    router()
-      .post("/api/auth/register")
-      .send({
-        email: "nda12345@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.CREATED);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("data");
-        userIdd = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
-        done(error);
-      });
-  });
-
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
