@@ -25,6 +25,7 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
         }
     });
 }
+// include: [{ model: Collection, required: true }],
 
 const getProductsByAttributes = async (key: string, value: string) => {
     return await Products.findAll({
@@ -41,4 +42,4 @@ const findProductsPaginatted = async (limit, offset) => {
     });
 }
 
-export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, findProductsPaginatted,getProductsByAttributes };
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, findProductsPaginatted, getProductsByAttributes };

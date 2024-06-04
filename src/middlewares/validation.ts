@@ -190,34 +190,64 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
 };
 
 
-const productsPagination = async (req: any, res: Response, next: NextFunction) => {
+
+const getBuyerProducts = async (req: any, res: Response) => {
     try {
-        const page = Number(req.query.page);
-        const limit = Number(req.query.limit);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+        const allProducts = await productRepositories.getAllProducts();
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+        
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+const getSellerProducts = async (req: any, res: Response) => {
+    try {
         const user = req.user;
 
-        if (!req.query.page || !req.query.limit) {
-            if (user.role === "seller") {
-                const data = await productRepositories.getProductsByAttributes("sellerId", req.user.id);
-                return res.status(httpStatus.OK).json({ status: httpStatus.OK, data });
-            }
-            const data = await productRepositories.getAllProducts();
-            return res.status(httpStatus.OK).json({ status: httpStatus.OK, data });
+        if (user.role !== "seller") {
+            return res.status(httpStatus.UNAUTHORIZED).json({ error: "Not authorized" });
         }
+
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
 
         if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
         }
 
+        const allProducts = await productRepositories.getProductsByAttributes("sellerId", user.id);
+
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
-
-        let allProducts;
-        if (user.role === "seller") {
-            allProducts = await productRepositories.getProductsByAttributes("sellerId", user.id);
-        } else if (user.role === "buyer") {
-            allProducts = await productRepositories.getAllProducts();
-        }
 
         const paginatedProducts = allProducts.slice(startIndex, endIndex);
 
@@ -238,12 +268,15 @@ const productsPagination = async (req: any, res: Response, next: NextFunction) =
             };
         }
 
-        req.paginationResults = { nextPage, previousPage, data: paginatedProducts };
-
-        next();
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 };
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsPagination };
+
+
+
+
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getSellerProducts, getBuyerProducts };

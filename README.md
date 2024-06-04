@@ -62,7 +62,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 15 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
 | 16 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
 | 17 | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
-| 18 | GET   | /api/collection/products                | 200 OK      | private  | Buyer view products          |
+| 18 | GET   | /api/collection/products                | 200 OK      | public   | Buyer view products          |
 
 ## INSTALLATION
 

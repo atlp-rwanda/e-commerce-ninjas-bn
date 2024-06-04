@@ -1481,11 +1481,6 @@
             "description": "The number of items per page."
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "Products retrieved successfully",
@@ -1504,21 +1499,6 @@
           },
           "500": {
             "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "User not authorized to perform this action",
             "content": {
               "application/json": {
                 "schema": {

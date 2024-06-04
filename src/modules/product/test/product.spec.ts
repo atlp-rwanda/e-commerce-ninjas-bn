@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request,Response } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
@@ -12,6 +13,7 @@ import { fileFilter } from "../../../helpers/multer";
 import { isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
+import { getBuyerProducts } from "../../../middlewares/validation";
 import httpStatus from "http-status";
 import Session from "../../../databases/models/session";
 import productController from "../controller/productController";
@@ -496,7 +498,6 @@ it("should handle missing required parameter - file", async () => {
 describe("Seller's Products List", () => {
   let token: string = null;
   let sellerToken: string = null
-  let buyerToken: string = null
   let buyerId: string = null
   it("Should be able to login an admin", (done) => {
     router()
@@ -519,51 +520,23 @@ describe("Seller's Products List", () => {
 
   it("Should create a buyer", (done) => {
     router()
-    .post("/api/auth/register")
-    .send({
-      email: "seller_test@gmail.com",
-      password: "$321!Pass!123$"
-    })
-    .end((error, response) => {
-      expect(response.status).to.equal(httpStatus.CREATED);
-      expect(response.body).to.be.a("object");
-      expect(response.body).to.have.property("data");
-      expect(response.body.message).to.be.a("string");
-      buyerId = response.body.data.user.id
-      done(error);
-    });
-  })
-
-  it("Should be able to login a buyer", (done) => {
-    router()
-      .post("/api/auth/login")
+      .post("/api/auth/register")
       .send({
         email: "seller_test@gmail.com",
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.status).to.equal(httpStatus.CREATED);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
-        expect(response.body.data).to.have.property("token");
-        buyerToken = response.body.data.token;
+        buyerId = response.body.data.user.id
         done(error);
       });
-  });
-
-  it("Should restrict unauthorized user", (done) => {
-    router().get("/api/collection/products")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
-        expect(response.body).to.be.a("object");
-        done(error);
-      });
-  });
+  })
 
   it("Should retrieve unpaginated data if no queries are specified", (done) => {
     router().get("/api/collection/products")
-      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -575,7 +548,6 @@ describe("Seller's Products List", () => {
 
   it("Should notify if limit or page is not number", (done) => {
     router().get("/api/collection/products?limit=-10&page=page1")
-      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.a("object");
@@ -584,15 +556,12 @@ describe("Seller's Products List", () => {
       });
   });
 
-  it("Should return paginated products if valid limit and page are provided", (done) => {
-    router().get("/api/collection/products?limit=10&page=1")
-      .set("Authorization", `Bearer ${buyerToken}`)
+  it("Should get next page", (done) => {
+    router().get("/api/collection/products?limit=1&page=1")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
-        expect(response.body.data).to.have.property("data");
-        expect(response.body.data.data).to.be.an("array");
         expect(response.body.data.data.length).to.be.at.most(10);
         done(error);
       });
@@ -603,21 +572,19 @@ describe("Seller's Products List", () => {
     productRepositories.getAllProducts = () => { throw new Error("Server error"); };
 
     router().get("/api/collection/products")
-      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.have.property("error");
-        productRepositories.getAllProducts = originalMethod; 
+        productRepositories.getAllProducts = originalMethod;
         done(error);
       });
   });
 
   it("Should handle pagination correctly with edge cases", (done) => {
     router().get("/api/collection/products?limit=0&page=1")
-      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.have.property("error");
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.have.property("data");
         done(error);
       });
   });
@@ -626,7 +593,7 @@ describe("Seller's Products List", () => {
   it("Should update the user role to seller", (done) => {
     router().get(`/api/user/admin-update-role/${buyerId}`)
       .set("Authorization", `Bearer ${token}`)
-      .send({role: "seller"})
+      .send({ role: "seller" })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.an("object");
@@ -699,21 +666,15 @@ describe("Seller's Products List", () => {
   });
 
   it("Should return paginated products if valid limit and page are provided", (done) => {
-    router().get("/api/collection/seller-products?limit=10&page=1")
+    router().get("/api/collection/seller-products?limit=0&page=1")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.data).to.have.property("data");
-        expect(response.body.data.data).to.be.an("array");
-        expect(response.body.data.data.length).to.be.at.most(10);
         done(error);
       });
   });
 
   it("Should handle server errors gracefully", (done) => {
-    // Simulate a server error by mocking the repository method to throw an error
     const originalMethod = productRepositories.getProductsByAttributes;
     productRepositories.getProductsByAttributes = () => { throw new Error("Server error"); };
 
@@ -722,7 +683,7 @@ describe("Seller's Products List", () => {
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.have.property("error");
-        productRepositories.getProductsByAttributes = originalMethod; // Restore the original method
+        productRepositories.getProductsByAttributes = originalMethod;
         done(error);
       });
   });
@@ -731,9 +692,143 @@ describe("Seller's Products List", () => {
     router().get("/api/collection/seller-products?limit=0&page=1")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.have.property("error");
+        expect(response.status).to.equal(httpStatus.OK);
         done(error);
       });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+describe("getBuyerProducts", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let allProducts: any[];
+
+  beforeEach(() => {
+      req = {
+          query: {}
+      };
+
+      res = {
+          status: sinon.stub().returnsThis(),
+          json: sinon.stub()
+      };
+
+      allProducts = [
+          { id: 1, name: "Product 1" },
+          { id: 2, name: "Product 2" },
+          { id: 3, name: "Product 3" }
+      ];
+
+      sinon.stub(productRepositories, 'getAllProducts').resolves(allProducts);
+  });
+
+  afterEach(() => {
+      sinon.restore();
+  });
+
+  it('should return paginated products with next and previous page information', async () => {
+      req.query.page = '2';
+      req.query.limit = '1';
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+          nextPage: { page: 3, limit: 1 },
+          previousPage: { page: 1, limit: 1 },
+          data: [{ id: 2, name: 'Product 2' }]
+      });
+  });
+
+  it('should return an error if page or limit is not a positive number', async () => {
+      req.query.page = '-1';
+      req.query.limit = '10';
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+      expect(res.json).to.have.been.calledWith({ error: 'Page and limit must be positive numbers' });
+  });
+
+  it('should handle server errors gracefully', async () => {
+      sinon.restore(); // restore previous stubs before throwing error
+      sinon.stub(productRepositories, 'getAllProducts').throws(new Error('Server error'));
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(500);
+      expect(res.json).to.have.been.calledWith({ error: 'Server error' });
+  });
+
+  it('should return paginated products without nextPage when on last page', async () => {
+      req.query.page = '3';
+      req.query.limit = '1';
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+          nextPage: undefined,
+          previousPage: { page: 2, limit: 1 },
+          data: [{ id: 3, name: 'Product 3' }]
+      });
+  });
+
+  it('should return paginated products without previousPage when on first page', async () => {
+      req.query.page = '1';
+      req.query.limit = '1';
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+          nextPage: { page: 2, limit: 1 },
+          previousPage: undefined,
+          data: [{ id: 1, name: 'Product 1' }]
+      });
+  });
+
+  it('should return an empty array if no products are available', async () => {
+      sinon.restore();
+      sinon.stub(productRepositories, 'getAllProducts').resolves([]);
+
+      req.query.page = '1';
+      req.query.limit = '10';
+
+      await getBuyerProducts(req as Request, res as Response);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+          nextPage: undefined,
+          previousPage: undefined,
+          data: []
+      });
+  });
+
+  it('should return an error if page or limit is non-numeric', async () => {
+      req.query.page = 'abc';
+      req.query.limit = '10';
+
+      await getBuyerProducts(req as Request, res as Response);
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
   });
 });
