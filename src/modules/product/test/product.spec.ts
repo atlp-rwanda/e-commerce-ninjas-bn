@@ -505,7 +505,7 @@ describe("getBuyerProducts", () => {
       });
   });
 
-  it('should return an error if page or limit is not a positive number', async () => {
+  it("should return an error if page or limit is not a positive number", async () => {
       req.query.page = "-1";
       req.query.limit = "10";
 
@@ -573,7 +573,7 @@ describe("getBuyerProducts", () => {
   it("should return an error if page or limit is non-numeric", async () => {
       req.query.page = "abc";
       req.query.limit = "10";
-      
+
       await getBuyerProducts(req as Request, res as Response);
       expect(res.status).to.have.been.calledWith(httpStatus.OK);
   });
