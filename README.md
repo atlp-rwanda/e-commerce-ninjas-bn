@@ -33,6 +33,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Admin Update Role Endpoint
 - Admin get users Endpoint
 - Admin get user Endpoint
+- Seller view products Endpoint
+- Buyer view products Endpoint
 - Logout Endpoint
 - Update User Profile Endpoint
 - Get User Profile Endpoint 
@@ -58,7 +60,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 13 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
 | 14 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
 | 15 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
-| 15 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
+| 16 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
+| 17 | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
+| 18 | GET   | /api/collection/products                | 200 OK      | private  | Buyer view products          |
 
 ## INSTALLATION
 
