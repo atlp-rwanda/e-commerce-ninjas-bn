@@ -738,16 +738,16 @@ describe("getBuyerProducts", () => {
           { id: 3, name: "Product 3" }
       ];
 
-      sinon.stub(productRepositories, 'getAllProducts').resolves(allProducts);
+      sinon.stub(productRepositories, "getAllProducts").resolves(allProducts);
   });
 
   afterEach(() => {
       sinon.restore();
   });
 
-  it('should return paginated products with next and previous page information', async () => {
-      req.query.page = '2';
-      req.query.limit = '1';
+  it("should return paginated products with next and previous page information", async () => {
+      req.query.page = "2";
+      req.query.limit = "1";
 
       await getBuyerProducts(req as Request, res as Response);
 
@@ -755,13 +755,13 @@ describe("getBuyerProducts", () => {
       expect(res.json).to.have.been.calledWith({
           nextPage: { page: 3, limit: 1 },
           previousPage: { page: 1, limit: 1 },
-          data: [{ id: 2, name: 'Product 2' }]
+          data: [{ id: 2, name: "Product 2" }]
       });
   });
 
   it('should return an error if page or limit is not a positive number', async () => {
-      req.query.page = '-1';
-      req.query.limit = '10';
+      req.query.page = "-1";
+      req.query.limit = "10";
 
       await getBuyerProducts(req as Request, res as Response);
 
