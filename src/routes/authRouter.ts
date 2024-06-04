@@ -11,7 +11,8 @@ import {
 } from "../middlewares/validation";
 import {
   emailSchema,
-  credentialSchema
+  credentialSchema,
+  resetPasswordSchema 
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
@@ -56,6 +57,9 @@ router.get("/google", googleAuth.googleVerify);
 router.get(
   "/google/callback",
   googleAuth.authenticateWithGoogle);
+
+router.post("/request-password-reset", validation(emailSchema), authControllers.requestPasswordReset);
+router.post("/reset-password/:token", validation(resetPasswordSchema), authControllers.resetPassword);
 
 
 export default router;

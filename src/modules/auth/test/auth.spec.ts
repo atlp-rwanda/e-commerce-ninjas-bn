@@ -12,7 +12,7 @@ import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 import {
-  sendVerificationEmail,
+  sendEmail,
   transporter
 } from "../../../services/sendEmail";
 import googleAuth from "../../../services/googleAuth";
@@ -492,7 +492,7 @@ describe("Authentication Test Cases", () => {
   });
 });
 
-describe("sendVerificationEmail", () => {
+describe("sendEmail", () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -500,7 +500,7 @@ describe("sendVerificationEmail", () => {
   it("should throw an error when sendMail fails", async () => {
     sinon.stub(transporter, "sendMail").rejects(new Error("Network Error"));
     try {
-      await sendVerificationEmail("email@example.com", "subject", "message");
+      await sendEmail("email@example.com", "subject", "message");
     } catch (error) {
       expect(error).to.be.an("error");
     }
@@ -553,21 +553,110 @@ describe("verifyUserCredentials Middleware", () => {
   });
 });
 
-describe("Passport Configuration", () => {
-  it("should serialize and deserialize user correctly", () => {
-    const user = { id: "123", username: "testuser" };
-    const doneSerialize = (err: any, serializedUser: any) => {
-      expect(err).to.be.null;
-      expect(serializedUser).to.deep.equal(user);
-    };
-    const doneDeserialize = (err: any, deserializedUser: any) => {
-      expect(err).to.be.null;
-      expect(deserializedUser).to.deep.equal(user);
-    };
-    googleAuth.passport.serializeUser(user, doneSerialize);
-    googleAuth.passport.deserializeUser(user, doneDeserialize);
+describe("Authentication Test Cases", () => {
+  let findUserByAttributesStub: sinon.SinonStub;
+  let findSessionByUserIdStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    findUserByAttributesStub = sinon.stub(
+      authRepositories,
+      "findUserByAttributes"
+    );
+    findSessionByUserIdStub = sinon.stub(
+      authRepositories,
+      "findSessionByAttributes"
+    );
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should send a verification email successfully", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
+
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
+
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Verification email sent successfully."
+        );
+        done(err);
+      });
+  });
+  it("should return 400 if session is not found", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
+
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
+    findSessionByUserIdStub.resolves(null);
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Invalid token.");
+        done(err);
+      });
+  });
+
+  it("should return internal server error", (done) => {
+    findSessionByUserIdStub.resolves(null);
+    const token = "invalid token";
+    router()
+      .get(`/api/auth/verify-email/${token}`)
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message");
+        done(err);
+      });
   });
 });
+
+describe("sendEmail", () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should throw an error when sendMail fails", async () => {
+    sinon.stub(transporter, "sendMail").rejects(new Error("Network Error"));
+    try {
+      await sendEmail("email@example.com", "subject", "message");
+    } catch (error) {
+      expect(error).to.be.an("error");
+    }
+  });
+});
+
+  describe("Passport Configuration", () => {
+    it("should serialize and deserialize user correctly", () => {
+      const user = { id: "123", username: "testuser" };
+      const doneSerialize = (err: any, serializedUser: any) => {
+        expect(err).to.be.null;
+        expect(serializedUser).to.deep.equal(user);
+      };
+      const doneDeserialize = (err: any, deserializedUser: any) => {
+        expect(err).to.be.null;
+        expect(deserializedUser).to.deep.equal(user);
+      };
+      googleAuth.passport.serializeUser(user, doneSerialize);
+      googleAuth.passport.deserializeUser(user, doneDeserialize);
+    });
+  });
+
+  describe("Google Authentication Strategy", () => {
+    it("should call the strategy callback with correct parameters", () => {
+       });
+  });
 
 describe("Google Authentication Strategy", () => {
   it("should call the strategy callback with correct parameters", () => {

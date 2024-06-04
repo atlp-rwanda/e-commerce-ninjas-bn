@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import jwt,{JwtPayload} from "jsonwebtoken"
 import dotenv from "dotenv"
 import bcrypt from "bcrypt"
@@ -21,4 +22,9 @@ const hashPassword = (password: string)=>{
   return bcrypt.hashSync(password, 10);
 }
 
-  export { generateToken, decodeToken, comparePassword, hashPassword }
+const verifyToken = (token: string): any => {
+  return jwt.verify(token, process.env.JWT_SECRET as string);
+};
+
+
+  export { generateToken, decodeToken, verifyToken, comparePassword, hashPassword }

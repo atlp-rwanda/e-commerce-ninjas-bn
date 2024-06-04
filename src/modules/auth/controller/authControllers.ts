@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import userRepositories from "../repository/authRepositories";
-import { generateToken } from "../../../helpers";
+import { generateToken,hashPassword, verifyToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
-import { sendVerificationEmail } from "../../../services/sendEmail";
+import { sendEmail } from "../../../services/sendEmail";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -20,7 +20,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
       otp: null
     };
     await authRepositories.createSession(session);
-    await sendVerificationEmail(
+    await sendEmail(
       register.email,
       "Verification Email",
       `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${token}`
@@ -40,7 +40,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
 
 const sendVerifyEmail = async (req: any, res: Response) => {
   try {
-    await sendVerificationEmail(
+    await sendEmail(
       req.user.email,
       "Verification Email",
       `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${req.session.token}`
@@ -102,10 +102,39 @@ const logoutUser = async (req: any, res: Response) => {
   }
 };
 
+const requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const { email } = req.body;
+      const user = await userRepositories.findUserByAttributes("email", email);
+      const token = generateToken(user.id);
+      const resetLink = `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`;
+      await sendEmail(user.email, "Password Reset Request", resetLink);
+      res.status(httpStatus.OK).json({ message: "Password reset email sent successfully." });
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+}
+
+const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const { token } = req.params;
+      const { newPassword } = req.body;
+      const decodedToken: any = verifyToken(token);
+      const userId = decodedToken.id;
+      const hashedPassword = await hashPassword(newPassword); 
+      await authRepositories.updateUserByAttributes("password", hashedPassword, "id", userId);  
+      res.status(httpStatus.OK).json({ message: "Password reset successfully." });
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};
+
 export default {
   registerUser,
   sendVerifyEmail,
   verifyEmail,
   loginUser,
-  logoutUser
+  logoutUser,
+  requestPasswordReset,
+  resetPassword 
 };
