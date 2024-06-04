@@ -59,6 +59,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 4  | POST  | /api/auth/send-verify-email             | 200 OK      | public  | Resend verification email     |
 | 5  | POST  | /api/auth/login                         | 200 OK      | public  | Login with Email and Password |
 <<<<<<< HEAD
+<<<<<<< HEAD
 | 6  | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
 | 7  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
 | 8  | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
@@ -84,6 +85,14 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 14 | POST | /api/auth/request-password-reset         | 200 OK      | public  | Request Password Reset Email  |
 | 15 | POST | /api/auth/reset-password/{token}         | 200 OK      | public  | Reset Password                |
 >>>>>>> 22e3d65 (update user password)
+=======
+| 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint  |
+| 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
+| 8  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
+| 9  | GET  | /api/auth/google                         | 200 OK      | public  | Login Via google account      |
+| 10 | POST | /api/auth/request-password-reset         | 200 OK      | public  | Request Password Reset Email |
+| 11 | POST | /api/auth/reset-password/{token}         | 200 OK      | public  | Reset Password |
+>>>>>>> ce88cd5 (update user password)
 
 ## INSTALLATION
 

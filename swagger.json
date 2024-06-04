@@ -424,6 +424,7 @@
       }
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "/api/user/user-get-profile": {
       "get": {
         "tags": [
@@ -464,6 +465,8 @@
           "404": {
             "description": "User doesn't exist",
 =======
+=======
+>>>>>>> ce88cd5 (update user password)
 
     "/api/auth/request-password-reset": {
       "post": {
@@ -493,7 +496,10 @@
         "responses": {
           "200": {
             "description": "Password reset email sent successfully",
+<<<<<<< HEAD
 >>>>>>> 22e3d65 (update user password)
+=======
+>>>>>>> ce88cd5 (update user password)
             "content": {
               "application/json": {
                 "schema": {
@@ -504,6 +510,7 @@
                     }
                   }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 },
                 "examples": {
                   "userNotFound": {
@@ -511,6 +518,8 @@
                     "value": {
                       "error": "User not found."
 =======
+=======
+>>>>>>> ce88cd5 (update user password)
                 }
               }
             }
@@ -542,7 +551,10 @@
                   "properties": {
                     "error": {
                       "type": "string"
+<<<<<<< HEAD
 >>>>>>> 22e3d65 (update user password)
+=======
+>>>>>>> ce88cd5 (update user password)
                     }
                   }
                 }
@@ -557,6 +569,7 @@
                   "type": "object",
                   "properties": {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     "message": {
                       "type": "string"
                     }
@@ -570,6 +583,8 @@
                     }
                   }
 =======
+=======
+>>>>>>> ce88cd5 (update user password)
                     "status": {
                       "type": "integer"
                     },
@@ -577,7 +592,10 @@
                       "type": "string"
                     }
                   }
+<<<<<<< HEAD
 >>>>>>> 22e3d65 (update user password)
+=======
+>>>>>>> ce88cd5 (update user password)
                 }
               }
             }
@@ -585,6 +603,7 @@
         }
       }
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "/api/user/user-update-profile": {
       "put": {
@@ -616,6 +635,8 @@
                   }
                 }
 =======
+=======
+>>>>>>> ce88cd5 (update user password)
   
     "/api/auth/reset-password/{token}": {
       "post": {
@@ -648,11 +669,15 @@
                   }
                 },
                 "required": ["newPassword"]
+<<<<<<< HEAD
 >>>>>>> 22e3d65 (update user password)
+=======
+>>>>>>> ce88cd5 (update user password)
               }
             }
           }
         },
+<<<<<<< HEAD
 <<<<<<< HEAD
         "requestBody": {
           "required": false,
@@ -724,6 +749,8 @@
               }
             }
 =======
+=======
+>>>>>>> ce88cd5 (update user password)
         "responses": {
           "200": {
             "description": "Password reset successfully"
@@ -733,17 +760,26 @@
           },
           "500": {
             "description": "Expired token or internal server error"
+<<<<<<< HEAD
 >>>>>>> 22e3d65 (update user password)
+=======
+>>>>>>> ce88cd5 (update user password)
           }
         }
       }
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
    
  
 
 >>>>>>> 22e3d65 (update user password)
+=======
+   
+ 
+
+>>>>>>> ce88cd5 (update user password)
     "/api/user/admin-get-users": {
       "get": {
         "tags": [
