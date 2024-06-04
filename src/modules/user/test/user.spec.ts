@@ -159,7 +159,36 @@ describe("Admin update User roles", () => {
   let token = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
 
-  it("Should be able to login a registered user", (done) => {
+
+
+
+
+
+
+
+
+  it("Should create a buyer", (done) => {
+    router()
+    .post("/api/auth/register")
+    .send({
+      email: "buyer_test_role@gmail.com",
+      password: "$321!Pass!123$"
+    })
+    .end((error, response) => {
+      expect(response.status).to.equal(httpStatus.CREATED);
+      expect(response.body).to.be.a("object");
+      expect(response.body).to.have.property("data");
+      expect(response.body.message).to.be.a("string");
+      userIdd = response.body.data.user.id
+      done(error);
+    });
+  })
+
+
+
+
+
+  it("Should be able to login a registered adminr", (done) => {
     router()
       .post("/api/auth/login")
       .send({
@@ -177,6 +206,12 @@ describe("Admin update User roles", () => {
       });
   });
 
+
+
+
+  
+
+
   it("Should notify if no role is specified", async () => {
 
     const response = await router()
@@ -187,7 +222,7 @@ describe("Admin update User roles", () => {
     expect(response.body).to.have.property("message");
   });
 
-  it("Should notify if the role is other than ['Admin', 'Buyer', 'Seller']", async () => {
+  it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {
 
     const response = await router()
       .put(`/api/user/admin-update-role/${userIdd}`)
@@ -200,7 +235,7 @@ describe("Admin update User roles", () => {
   it("Should return error when invalid Id is passed", async () => {
     const response = await router()
       .put("/api/user/admin-update-role/invalid-id")
-      .send({ role: "Admin" })
+      .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`);
 
     expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
@@ -208,10 +243,10 @@ describe("Admin update User roles", () => {
   });
 
 
-  it("Should update User and return updated user", (done) => {
+  it("Should update User role and return updated user", (done) => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .send({ role: "Admin" })
+      .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
@@ -225,7 +260,7 @@ describe("Admin update User roles", () => {
 
   it("Should return 404 if user is not found", (done) => {
     router().put(`/api/user/admin-update-role/${unknownId}`)
-      .send({ role: "Admin" })
+      .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.NOT_FOUND);
