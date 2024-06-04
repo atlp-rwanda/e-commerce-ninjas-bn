@@ -30,6 +30,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Login Endpoint
 - Admin Update Status Endpoint
 - Admin Update Role Endpoint
+- Seller view products Endpoint
+- Buyer view products Endpoint
 - Logout Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
@@ -45,6 +47,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 6  | PUT   | /api/users/admin-update-user-status/:id | 200 OK      | private | Admin Update Status Endpoint  |
 | 7  | PUT   | /api/users/admin-update-role/:id        | 200 OK      | private | Admin Update Role Endpoint    |
 | 8  | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
+| 9  | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
+| 10 | GET   | /api/collection/products                | 200 OK      | private  | Buyer view products          |
 
 ## INSTALLATION
 
