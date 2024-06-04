@@ -624,7 +624,7 @@
             "required": true,
             "description": "ID of the user to change status",
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -755,7 +755,10 @@
             "in": "path",
             "name": "id",
             "type": "string",
-            "description": "Pass the ID"
+            "description": "Pass the ID",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
