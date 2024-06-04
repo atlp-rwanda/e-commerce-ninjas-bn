@@ -92,6 +92,7 @@ const logoutUser = async (req: any, res: Response) => {
   try {
     await authRepositories.destroySession(req.user.id, req.session.token)
     res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
+    res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
