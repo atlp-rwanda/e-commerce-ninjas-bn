@@ -1653,6 +1653,60 @@
           }
         }
       }
+    },
+    "/api/user/update-password": {
+      "put": {
+        "summary": "User update password",
+        "description": "Updates the password for a user with the specified ID.",
+        "tags": ["User Routes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "description": "Old password of the user"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "description": "New password of the user. It must be at least 8 characters long and contain both letters and numbers."
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "Confirmation of the new password. It must match the new password."
+                  }
+                },
+                "required": ["oldPassword", "newPassword", "confirmPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully"
+          },
+          "400": {
+            "description": "Bad request. Invalid input or passwords do not match."
+          },
+          "401": {
+            "description": "Unauthorized. Old password is incorrect."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
    }
   }
