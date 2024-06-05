@@ -41,6 +41,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Seller Delete Item Endpoint
 - Reset Password Endpoint
 - Update Password Endpoint
+- Update Password Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
