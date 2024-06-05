@@ -192,19 +192,19 @@ describe("Admin update User roles", () => {
 
   it("Should create a buyer", (done) => {
     router()
-    .post("/api/auth/register")
-    .send({
-      email: "buyer_test_role@gmail.com",
-      password: "$321!Pass!123$"
-    })
-    .end((error, response) => {
-      expect(response.status).to.equal(httpStatus.CREATED);
-      expect(response.body).to.be.a("object");
-      expect(response.body).to.have.property("data");
-      expect(response.body.message).to.be.a("string");
-      userIdd = response.body.data.user.id
-      done(error);
-    });
+      .post("/api/auth/register")
+      .send({
+        email: "buyer_test_role@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        userIdd = response.body.data.user.id
+        done(error);
+      });
   })
 
 
@@ -232,7 +232,7 @@ describe("Admin update User roles", () => {
 
 
 
-  
+
 
 
   it("Should notify if no role is specified", async () => {
@@ -381,17 +381,58 @@ describe("Admin Controllers", () => {
        done(error)
      });
   });
-
-it("Should be able to get profile", (done) => {
-router()
-  .get(`/api/user/user-get-profile/`)
-  .set("authorization", `Bearer ${token}`)
-  .end((error, response) => {
-    expect(response).to.have.status(200);
-    expect(response.body).to.be.a("object");
-    done(error);
-  });
 });
+
+describe("updateUserProfile", () => {
+  let profileId: number = null;
+  let token: string = null;
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "salt23@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        profileId = response.body.data.user.id;
+        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        done(error);
+      });
+  });
+
+  it("Should be able to login a registered user", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "salt23@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+
+  it("Should be able to get profile", (done) => {
+    router()
+      .get(`/api/user/user-get-profile/`)
+      .set("authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
 
 it("should update profile ", (done) => {
   router().put(`/api/user/user-update-profile`)

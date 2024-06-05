@@ -46,7 +46,7 @@ let verifyToken: string | null = null;
           expect(response.status).to.equal(httpStatus.CREATED);
           expect(response.body).to.be.an("object");
           expect(response.body).to.have.property("data");
-          userId = response.body.data.user.id;
+          userId = response.body.data.user.id; 
           expect(response.body).to.have.property(
             "message",
             "Account created successfully. Please check email to verify account."
