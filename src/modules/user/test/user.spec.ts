@@ -15,6 +15,7 @@ import path from "path";
 import fs from 'fs'
 import uploadImages from "../../../helpers/uploadImage";
 import { v2 as cloudinary } from "cloudinary";
+import Session from "../../../databases/models/session";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath)
 
@@ -28,7 +29,15 @@ describe("Update User Status test case ", () => {
   const testUserId = 1;
   let userId: number = null;
   const unknownId = 100;
-  let token
+  let token;
+  let verifyToken: string | null = null;
+
+  afterEach(async () => {
+    const tokenRecord = await Session.findOne({ where: { userId } });
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.token;
+    }
+  });
 
   it("should register a new user", (done) => {
     router()
@@ -46,6 +55,27 @@ describe("Update User Status test case ", () => {
         done(error);
       });
   });
+
+  it("should verify the user successfully", (done) => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
+
+    router()
+      .get(`/api/auth/verify-email/${verifyToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
+        done(err);
+      });
+  });
+
+
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
@@ -164,6 +194,14 @@ describe("User Repository Functions", () => {
 describe("Admin update User roles", () => {
   let userIdd: number ;
   let token = null;
+  let verifyToken: string | null = null;
+
+  afterEach(async () => {
+    const tokenRecord = await Session.findOne({ where: { userId: userIdd } });
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.token;
+    }
+  });
 
   it("should register a new user", (done) => {
     router()
@@ -179,6 +217,25 @@ describe("Admin update User roles", () => {
         userIdd = response.body.data.user.id;
         expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
         done(error);
+      });
+  });
+
+  it("should verify the user successfully", (done) => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
+
+    router()
+      .get(`/api/auth/verify-email/${verifyToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
+        done(err);
       });
   });
 
@@ -365,7 +422,14 @@ describe("Admin Controllers", () => {
 
 describe("updateUserProfile", () => {
   let profileId :number = null;  
-let token
+let token;
+let verifyToken: string | null = null;
+afterEach(async () => {
+  const tokenRecord = await Session.findOne({ where: { userId: profileId } });
+  if (tokenRecord) {
+    verifyToken = tokenRecord.dataValues.token;
+  }
+});
 
 it("should register a new user", (done) => {
 router()
@@ -382,6 +446,25 @@ router()
     expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
     done(error);
   });
+});
+
+it("should verify the user successfully", (done) => {
+  if (!verifyToken) {
+    throw new Error("verifyToken is not set");
+  }
+
+  router()
+    .get(`/api/auth/verify-email/${verifyToken}`)
+    .end((err, res) => {
+      expect(res.status).to.equal(httpStatus.OK);
+      expect(res.body).to.be.an("object");
+      expect(res.body).to.have.property("status", httpStatus.OK);
+      expect(res.body).to.have.property(
+        "message",
+        "Account verified successfully, now login."
+      );
+      done(err);
+    });
 });
 
 it("Should be able to login a registered user", (done) => {

@@ -115,7 +115,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -146,4 +146,14 @@ const verifyUserCredentials = async (
     }
 };
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist };
+const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
+    return next();
+}
+
+const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.status !== "enabled" ) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
+    return next();
+}
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isUserVerified, isUserEnabled };

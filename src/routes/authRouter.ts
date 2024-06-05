@@ -4,7 +4,9 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials
+  verifyUserCredentials,
+  isUserVerified,
+  isUserEnabled
 } from "../middlewares/validation";
 import {
   emailSchema,
@@ -37,6 +39,8 @@ router.post(
   "/login",
   validation(credentialSchema),
   verifyUserCredentials,
+  isUserVerified,
+  isUserEnabled,
   authControllers.loginUser
 );
 
