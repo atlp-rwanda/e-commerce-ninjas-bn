@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import userRepositories from "../repository/authRepositories";
-import { generateToken,hashPassword} from "../../../helpers";
+import { generateToken} from "../../../helpers";
 import httpStatus from "http-status";
 import { UsersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
@@ -120,10 +120,8 @@ const requestResetPassword = async (req: any, res: Response): Promise<void> => {
 }
 
 const resetPassword = async (req: any, res: Response): Promise<void> => {
-  try {  
-      const hashedPassword = await hashPassword(req.body.newPassword);
-      await authRepositories.destroySession(req.user.id, req.session.token) 
-      await authRepositories.updateUserByAttributes("password", hashedPassword, "id", req.session.id);  
+  try {
+    await authRepositories.updateUserByAttributes("password", req.user.password, "id", req.user.id);  
       res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
