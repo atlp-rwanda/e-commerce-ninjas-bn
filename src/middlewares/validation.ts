@@ -16,7 +16,6 @@ const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: R
         if (error) {
             throw new Error(error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "));
         }
-
         return next();
     } catch (error) {
         res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: error.message });
