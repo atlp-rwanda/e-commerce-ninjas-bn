@@ -26,7 +26,7 @@ class OrderProduct extends Model<OrderProductAttributes> implements OrderProduct
 
     static associate(models: any) {
         OrderProduct.belongsTo(models.Order, { foreignKey: "orderId", as: "order" });
-        OrderProduct.belongsTo(models.Product, { foreignKey: "productId", as: "product" });
+        OrderProduct.belongsTo(models.Product, { foreignKey: "productId", as: "Products" });
     }
 }
 

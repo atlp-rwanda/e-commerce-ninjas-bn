@@ -53,7 +53,25 @@ const userThree = {
   id: 3
 }
 
-const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree])
+const userFour = {
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  firstName:"SellerTest",
+  lastName:"SellerTest",
+  email:"testingseller@gmail.com",
+  password: hashPassword("$321!Pass!123$"),
+  phone:25089767099,
+  profilePicture: "",
+  gender: "male",
+  birthDate: "2-2-2014",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled",
+  id: 4
+}
+
+const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour])
 
 const down = (queryInterface: QueryInterface) => queryInterface.bulkDelete("users",[])
 export { up, down }

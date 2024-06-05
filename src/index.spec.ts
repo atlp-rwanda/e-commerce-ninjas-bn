@@ -13,7 +13,7 @@ import authRepositories from "./modules/auth/repository/authRepositories";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
-//
+
 const router = () => chai.request(app);
 
 describe("Initial configuration", () => {
@@ -113,19 +113,37 @@ describe("userAuthorization middleware", () => {
     });
   });
 
+  it("should respond with 401 if user status is not enabled", async () => {
+    req.headers.authorization = "Bearer validToken";
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .resolves({ role: "admin", status: "disabled" });
+
+    const middleware = userAuthorization(roles);
+    await middleware(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.UNAUTHORIZED);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.UNAUTHORIZED,
+      message: "Not authorized",
+    });
+  });
+
   it("should call next if user is authorized", async () => {
     req.headers.authorization = "Bearer validToken";
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
     sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
     sinon
       .stub(authRepositories, "findUserByAttributes")
-      .resolves({ role: "admin" });
+      .resolves({ role: "admin", status: "enabled" });
 
     const middleware = userAuthorization(roles);
     await middleware(req, res, next);
 
     expect(next).to.have.been.calledOnce;
-    expect(req.user).to.deep.equal({ role: "admin" });
+    expect(req.user).to.deep.equal({ role: "admin", status: "enabled" });
     expect(req.session).to.deep.equal({});
   });
 

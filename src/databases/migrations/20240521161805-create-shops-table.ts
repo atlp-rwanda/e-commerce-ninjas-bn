@@ -2,7 +2,7 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 export = {
   up: async (queryInterface: QueryInterface) => {
-    await queryInterface.createTable("orders", {
+    await queryInterface.createTable("shops", {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -16,34 +16,15 @@ export = {
           key: "id"
         },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "SET NULL"
       },
-      shopId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "users",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
-      paymentMethodId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      amount: {
-        type: DataTypes.DOUBLE,
+      name: {
+        type: DataTypes.STRING(280),
         allowNull: true
       },
-      orderDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW
-      },
-      status: {
-        type: DataTypes.STRING,
-        allowNull: false
+      description: {
+        type: DataTypes.STRING(560),
+        allowNull: true
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -59,6 +40,6 @@ export = {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("orders");
+    await queryInterface.dropTable("shops");
   }
 };

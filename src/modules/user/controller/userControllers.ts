@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
 
@@ -20,7 +21,7 @@ const adminGetUsers = async (req:Request, res:Response) =>{
 
 const adminGetUser = async (req:Request, res:Response) =>{
   try {
-    const data = await userRepositories.getUserById(Number(req.params.id))
+    const data = await authRepositories.findUserByAttributes("id", req.params.id);
     return res.status(httpStatus.OK).json({
       message: "Successfully",
       data
@@ -58,7 +59,25 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
+const getUserDetails = async(req:Request,res:Response)=>{
+  try {
+      const user = await authRepositories.findUserByAttributes("id", req.user.id);
+      res.status(httpStatus.OK).json({status: httpStatus.OK,data:{user:user}});
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+
+const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+      const upload = await uploadImages(req.file);
+      const userData = { ...req.body, profilePicture:upload.secure_url };
+      const user = await userRepositories.updateUserProfile(userData, Number(req.user.id));
+      res.status(httpStatus.OK).json({status:httpStatus.OK, data:{user:user}});
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status:httpStatus.INTERNAL_SERVER_ERROR, error: error.message}); 
+  }
+}
 
 
-
-export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser };
+export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser,updateUserProfile ,getUserDetails};

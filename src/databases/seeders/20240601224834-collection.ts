@@ -6,7 +6,7 @@ module.exports = {
       {
         id: 1,
         name: "Shoes",
-        sellerId: 3,
+        sellerId: 1,
         description: "Shoes",
         createdAt: new Date(),
         updatedAt: new Date()
@@ -14,7 +14,7 @@ module.exports = {
       {
         id: 2,
         name: "Electronics",
-        sellerId: 4,
+        sellerId: 2,
         description: "Electronics",
         createdAt: new Date(),
         updatedAt: new Date()

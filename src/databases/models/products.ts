@@ -6,7 +6,7 @@ import { IProduct } from "../../types";
 class Products extends Model<IProduct> {
     declare id: number;
     declare collectionId:number;
-    declare sellerId: number;
+    declare shopId: number;
     declare name: string;
     declare description?: string;
     declare price: number;
@@ -39,11 +39,11 @@ Products.init(
             },
             onDelete: "CASCADE"
         },
-        sellerId: {
+        shopId: {
             allowNull: false,
             type: DataTypes.INTEGER,
             references: {
-                model: "users",
+                model: "shops",
                 key: "id"
             },
             onDelete: "CASCADE"

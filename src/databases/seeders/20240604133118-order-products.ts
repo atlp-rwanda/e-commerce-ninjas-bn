@@ -1,57 +1,52 @@
-'use strict';
+import { QueryInterface } from "sequelize";
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('order_products', [
+  async up(queryInterface: QueryInterface) {
+    await queryInterface.bulkInsert("order_products", [
       {
+        id: 1,
         productId: 1,
         orderId: 1,
-        quantity: 2,
+        quantity: 5,
         discount: 10.0,
-        unitPrice: 50.0,
+        unitPrice: 30.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        id: 2,
         productId: 2,
         orderId: 1,
-        quantity: 1,
+        quantity: 19,
         discount: 5.0,
         unitPrice: 100.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        productId: 3,
+        id: 3,
+        productId: 1,
         orderId: 2,
-        quantity: 3,
+        quantity: 23,
         discount: 0.0,
         unitPrice: 30.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        productId: 4,
+        id: 4,
+        productId: 2,
         orderId: 2,
-        quantity: 4,
+        quantity: 40,
         discount: 15.0,
-        unitPrice: 40.0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        productId: 5,
-        orderId: 3,
-        quantity: 2,
-        discount: 20.0,
-        unitPrice: 20.0,
+        unitPrice: 100.0,
         createdAt: new Date(),
         updatedAt: new Date()
       }
     ], {});
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('order_products', null, {});
+  async down(queryInterface: QueryInterface) {
+    await queryInterface.bulkDelete("order_products", null, {});
   }
 };

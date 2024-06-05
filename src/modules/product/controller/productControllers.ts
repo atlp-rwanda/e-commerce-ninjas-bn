@@ -6,9 +6,9 @@ import productRepositories from "../repository/productRepositories";
 const getSellerStatistics = async (req: Request, res: Response): Promise<void> => {
   try {
     const { startDate, endDate } = req.body;
-    const sellerId = (req as IRequest).userId;
-    const orders = await productRepositories.getOrdersPerTimeframe(sellerId, new Date(startDate), new Date(endDate));
-    
+    const shop = await productRepositories.findShopByUserId((req as IRequest).user.id);
+    const orders = await productRepositories.getOrdersPerTimeframe(shop.id, new Date(startDate), new Date(endDate));
+
     let totalOrders = 0;
     let totalRevenue = 0;
     let totalProducts = 0;
@@ -17,19 +17,19 @@ const getSellerStatistics = async (req: Request, res: Response): Promise<void> =
     await Promise.all(orders.map(async (order) => {
       totalOrders += 1;
       totalRevenue += order.amount;
-      
-      const allProducts = await productRepositories.getOrderProductsByOrderId(order.id);
-      
-      await Promise.all(allProducts.map(async (product) => {
-        totalProducts += 1;
-        const productName = (await productRepositories.findProductById(product.id)).name;
-        
-        if (productsSoldMap.has(product.id)) {
-          productsSoldMap.get(product.id)!.quantity += product.quantity;
+
+      const allOrderProducts = await productRepositories.getOrderProductsByOrderId(order.id);
+
+      await Promise.all(allOrderProducts.map(async (orderProduct) => {
+        const productDetails = await productRepositories.findProductById(orderProduct.productId);
+        if (productsSoldMap.has(orderProduct.productId)) {
+          productsSoldMap.get(orderProduct.productId)!.quantity += orderProduct.quantity;
         } else {
-          productsSoldMap.set(product.id, { product: productName, quantity: product.quantity });
+          totalProducts += 1;
+          productsSoldMap.set(orderProduct.productId, { id: productDetails.id, name: productDetails.name, quantity: orderProduct.quantity });
         }
       }));
+
     }));
 
     const productsSold = Array.from(productsSoldMap.values());

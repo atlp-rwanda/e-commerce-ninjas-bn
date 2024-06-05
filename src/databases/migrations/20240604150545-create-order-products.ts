@@ -12,7 +12,7 @@ export = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "products", // refers to table name
+          model: "Products",
           key: "id"
         },
         onUpdate: "CASCADE",
@@ -22,7 +22,7 @@ export = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "orders", // refers to table name
+          model: "orders",
           key: "id"
         },
         onUpdate: "CASCADE",

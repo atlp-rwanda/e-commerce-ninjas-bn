@@ -49,11 +49,11 @@ export default{
           },
           onDelete: "CASCADE"
       },
-      sellerId: {
+      shopId: {
         allowNull: false,
         type: DataTypes.INTEGER,
         references: {
-            model: "users",
+            model: "shops",
             key: "id"
         },
         onDelete: "CASCADE"
