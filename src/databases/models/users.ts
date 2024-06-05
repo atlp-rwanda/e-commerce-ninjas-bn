@@ -58,7 +58,8 @@ Users.init(
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4
     },
     firstName: {
       type: new DataTypes.STRING(128),
