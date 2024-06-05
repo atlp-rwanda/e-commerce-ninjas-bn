@@ -46,7 +46,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 =======
 - Login Via google account
 - Reset Password Endpoint
->>>>>>> 22e3d65 (update user password)
+- Update Password Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
