@@ -16,7 +16,7 @@ describe("Seller test cases", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "testingseller@gmail.com", password: "$321!Pass!123$" })
+      .send({ email: "seller@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);

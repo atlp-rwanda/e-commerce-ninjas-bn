@@ -25,7 +25,7 @@ dotenv.config();
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
-let userId: number = 0;
+let userId: string;
 let verifyToken: string | null = null;
 
 describe("Authentication Test Cases", () => {

@@ -57,8 +57,9 @@ class Users
 Users.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
     firstName: {

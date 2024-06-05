@@ -33,16 +33,17 @@ class OrderProduct extends Model<OrderProductAttributes> implements OrderProduct
 OrderProduct.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true
-        },
+          },
         productId: {
-            type: new DataTypes.INTEGER,
+            type: new DataTypes.UUID,
             allowNull: false
         },
         orderId: {
-            type: new DataTypes.INTEGER,
+            type: new DataTypes.UUID,
             allowNull: false
         },
         quantity: {

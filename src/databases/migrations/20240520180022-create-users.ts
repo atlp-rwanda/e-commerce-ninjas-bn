@@ -13,9 +13,9 @@ export default {
 
     await queryInterface.createTable("users", {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       firstName: {

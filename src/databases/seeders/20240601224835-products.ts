@@ -1,10 +1,11 @@
 import { QueryInterface } from "sequelize";
+import { productOneId, productTwoId, shopOneId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
     await queryInterface.bulkInsert("Products", [
       {
-        id: 1,
+        id: productOneId,
         name: "Product 1",
         description: "Description for product 1",
         price: 19.99,
@@ -13,8 +14,7 @@ module.exports = {
         expiryDate: new Date("2023-12-31"),
         expired: false,
         bonus: "Bonus 1",
-        collectionId: 1,
-        shopId: 1,
+        shopId: shopOneId,
         images: ["image1.jpg", "image2.jpg"],
         quantity: 50,
         isAvailable: "available",
@@ -22,7 +22,7 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        id: 2,
+        id: productTwoId,
         name: "Product 2",
         description: "Description for product 2",
         price: 29.99,
@@ -31,8 +31,7 @@ module.exports = {
         expiryDate: new Date("2024-12-31"),
         expired: false,
         bonus: "Bonus 2",
-        collectionId: 2,
-        shopId:1,
+        shopId:shopOneId,
         images: ["image3.jpg", "image4.jpg"],
         quantity: 100,
         isAvailable: "available",

@@ -4,11 +4,11 @@ import { QueryInterface, DataTypes } from "sequelize";
 export default{
   up :async (queryInterface: QueryInterface, Sequelize: any)=> {
   await queryInterface.createTable("Products", {
-      id: {
-          allowNull: false,
-          primaryKey: true,
-          type: DataTypes.INTEGER,
-          autoIncrement: true
+    id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
       },
       name: {
           allowNull: false,
@@ -40,18 +40,9 @@ export default{
       bonus: {
           type: DataTypes.STRING
       },
-      collectionId: {
-          allowNull: false,
-          type: DataTypes.INTEGER,
-          references: {
-              model: "collection",
-              key: "id"
-          },
-          onDelete: "CASCADE"
-      },
       shopId: {
         allowNull: false,
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
             model: "shops",
             key: "id"

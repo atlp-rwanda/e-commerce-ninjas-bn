@@ -1,12 +1,13 @@
 import { QueryInterface } from "sequelize";
+import { orderOneId, orderProductFourId, orderProductThreeId, orderTwoId, productOneId, productTwoId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
     await queryInterface.bulkInsert("order_products", [
       {
-        id: 1,
-        productId: 1,
-        orderId: 1,
+        id: orderOneId,
+        productId: productOneId,
+        orderId: orderOneId,
         quantity: 5,
         discount: 10.0,
         unitPrice: 30.0,
@@ -14,9 +15,9 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        id: 2,
-        productId: 2,
-        orderId: 1,
+        id: orderTwoId,
+        productId: productTwoId,
+        orderId: orderOneId,
         quantity: 19,
         discount: 5.0,
         unitPrice: 100.0,
@@ -24,9 +25,9 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        id: 3,
-        productId: 1,
-        orderId: 2,
+        id: orderProductThreeId,
+        productId: productOneId,
+        orderId: orderTwoId,
         quantity: 23,
         discount: 0.0,
         unitPrice: 30.0,
@@ -34,9 +35,9 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        id: 4,
-        productId: 2,
-        orderId: 2,
+        id: orderProductFourId,
+        productId: productTwoId,
+        orderId: orderTwoId,
         quantity: 40,
         discount: 15.0,
         unitPrice: 100.0,

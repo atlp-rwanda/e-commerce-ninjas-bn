@@ -5,7 +5,6 @@ import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
     declare id: number;
-    declare collectionId:number;
     declare shopId: number;
     declare name: string;
     declare description?: string;
@@ -25,23 +24,15 @@ class Products extends Model<IProduct> {
 Products.init(
     {
         id: {
+            type: DataTypes.UUID,
             allowNull: false,
-            primaryKey: true,
-            autoIncrement: true,
-            type: DataTypes.INTEGER
-        },
-        collectionId: {
-            allowNull: false,
-            type: DataTypes.INTEGER,
-            references: {
-                model: "collection",
-                key: "id"
-            },
-            onDelete: "CASCADE"
-        },
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
+          },
+        
         shopId: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
                 model: "shops",
                 key: "id"

@@ -1,11 +1,12 @@
 import { QueryInterface } from "sequelize";
+import { shopOneId, userFourId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
     await queryInterface.bulkInsert("shops", [
       {
-        id: 1,
-        userId: 4,
+        id: shopOneId,
+        userId: userFourId,
         name: "Shop One",
         description: "Description for Shop One",
         createdAt: new Date(),

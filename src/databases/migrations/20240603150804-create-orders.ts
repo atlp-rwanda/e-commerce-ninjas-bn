@@ -4,12 +4,13 @@ export = {
   up: async (queryInterface: QueryInterface) => {
     await queryInterface.createTable("orders", {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "users",
@@ -19,10 +20,10 @@ export = {
         onDelete: "CASCADE"
       },
       shopId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "users",
+          model: "shops",
           key: "id"
         },
         onUpdate: "CASCADE",

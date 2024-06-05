@@ -1,12 +1,15 @@
+
 import { QueryInterface  } from "sequelize"
 import { hashPassword } from "../../helpers"
+import { userFourId, userOneId, userThreeId, userTwoId } from "../../types/uuid"
 const userOne = {
+  id: userOneId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"hyassin509",
-  lastName: "assin509",
+  firstName:"F Admin",
+  lastName: "L Admin",
   email:"admin@gmail.com",
-  password: hashPassword("$321!Pass!123$"),
+  password: hashPassword("Password@123"),
   phone:25089767899,
   profilePicture: "",
   gender: "female",
@@ -15,15 +18,16 @@ const userOne = {
   currency: "USD",
   role: "admin",
   status: "enabled",
-  id: 1
+  isVerified: true
 }
 const userTwo = {
+  id: userTwoId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  password: hashPassword("$321!Pass!123$"),
+  firstName: "F Buyer",
+  lastName: "L Buyer",
+  email: "buyer@gmail.com",
+  password: hashPassword("Password@123"),
   phone: 1234567890,
   profilePicture: "http://example.com/profile.jpg",
   gender: "male",
@@ -32,16 +36,17 @@ const userTwo = {
   currency: "USD",
   role: "buyer",
   status: "enabled",
-  id: 2
+  isVerified: true
 }
 
 const userThree = {
+  id: userThreeId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"paccy509",
-  lastName:"paccy209",
-  email:"paccy509@gmail.com",
-  password: hashPassword("$321!Pass!123$"),
+  firstName:"F Buyer1",
+  lastName:"L Buyer1",
+  email:"buyer1@gmail.com",
+  password: hashPassword("Password@123"),
   phone:25089767899,
   profilePicture: "",
   gender: "female",
@@ -50,16 +55,17 @@ const userThree = {
   currency: "USD",
   role: "buyer",
   status: "enabled",
-  id: 3
+  isVerified: true
 }
 
 const userFour = {
+  id: userFourId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"SellerTest",
-  lastName:"SellerTest",
-  email:"testingseller@gmail.com",
-  password: hashPassword("$321!Pass!123$"),
+  firstName:"F Seller",
+  lastName:"L Seller",
+  email:"seller@gmail.com",
+  password: hashPassword("Password@123"),
   phone:25089767099,
   profilePicture: "",
   gender: "male",
@@ -68,7 +74,7 @@ const userFour = {
   currency: "USD",
   role: "seller",
   status: "enabled",
-  id: 4
+  isVerified: true
 }
 
 const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour])

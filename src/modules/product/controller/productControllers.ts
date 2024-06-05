@@ -21,12 +21,12 @@ const getSellerStatistics = async (req: Request, res: Response): Promise<void> =
       const allOrderProducts = await productRepositories.getOrderProductsByOrderId(order.id);
 
       await Promise.all(allOrderProducts.map(async (orderProduct) => {
-        const productDetails = await productRepositories.findProductById(orderProduct.productId);
+        const product = await productRepositories.findProductById(orderProduct.productId);
         if (productsSoldMap.has(orderProduct.productId)) {
           productsSoldMap.get(orderProduct.productId)!.quantity += orderProduct.quantity;
         } else {
           totalProducts += 1;
-          productsSoldMap.set(orderProduct.productId, { id: productDetails.id, name: productDetails.name, quantity: orderProduct.quantity });
+          productsSoldMap.set(orderProduct.productId, { id: product.id, name: product.name, price: product.price, quantity: orderProduct.quantity });
         }
       }));
 

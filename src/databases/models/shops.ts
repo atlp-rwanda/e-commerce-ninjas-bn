@@ -27,12 +27,13 @@ export interface ShopAttributes {
     Shop.init(
         {
             id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
+                type: DataTypes.UUID,
+                allowNull: false,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true
-            },
+              },
             userId: {
-                type: new DataTypes.INTEGER,
+                type: new DataTypes.UUID,
                 allowNull: false
             },
             name: {

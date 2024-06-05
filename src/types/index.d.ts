@@ -22,13 +22,13 @@ export interface IRequest extends Request {
 export interface IProductSold {
   id: number;
   name: string;
+  price: number;
   quantity: number;
 }
 
 
 export interface IProduct {
   id: number;
-  collectionId: number;
   shopId: number;
   name: string;
   description?: string;
@@ -45,12 +45,6 @@ export interface IProduct {
   updatedAt: Date;
 }
 
-export interface ICollection {
-  id: number;
-  sellerId: number;
-  name: string;
-  description?: string;
-}
 export interface userInfo {
   email: string;
   firstName: string;
