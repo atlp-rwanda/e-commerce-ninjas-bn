@@ -149,6 +149,16 @@ const verifyUserCredentials = async (
     }
 };
 
+const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
+    return next();
+}
+
+const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.status !== "enabled" ) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
+    return next();
+}
+
 const isProductExist = async(req: any, res: Response, next: NextFunction) => {
     try {
         const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
@@ -188,15 +198,5 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
     req.body.images = files.map(file => file.path);
     next();
   };
-
-  const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
-    if (req.user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
-    return next();
-}
-
-const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
-    if (req.user.status !== "enabled" ) return res.status(httpStatus.UNAUTHORIZED).json({status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
-    return next();
-}
 
 export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled };
