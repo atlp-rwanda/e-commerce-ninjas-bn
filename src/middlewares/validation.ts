@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
@@ -186,8 +187,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     }
 }
 
-
-const isShopExist = async (req: any, res: Response, next: NextFunction) => {
+const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
     try {
         const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
         if (shop) {
@@ -218,7 +218,7 @@ const credential = async (req, res, next) => {
     } catch (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-  };  
+};  
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
@@ -229,5 +229,48 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
     req.body.images = files.map(file => file.path);
     next();
 };
+const verifyUser = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        let user: any = null;
+        if (req?.params?.token) {
+            const decodedToken = await decodeToken(req.params.token);
+            user = await authRepositories.findUserByAttributes("id", decodedToken.id);
+        }
+        if (req?.body?.email) {
+            user = await authRepositories.findUserByAttributes("email", req.body.email);
+        }
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled, isGoogleEnabled, credential };
+        if (!user) {
+            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Account not found." });
+        }
+        if (!user.isVerified) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account is not verified." });
+        }    
+         
+        req.user = user;  
+        next();
+
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+};
+
+const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        const session = await authRepositories.findSessionByAttributes("userId", req.user.id);
+        if (!session) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid token." });
+        }
+        const destroy = await authRepositories.destroySession(req.user.id, session.token);
+        if(destroy) {
+            const hashedPassword = await hashPassword(req.body.newPassword);
+            req.user.password = hashedPassword;
+            next()
+        } 
+        
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser };
