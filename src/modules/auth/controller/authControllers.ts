@@ -102,7 +102,6 @@ const logoutUser = async (req: any, res: Response) => {
       });
   }
 };
-
 const requestResetPassword = async (req: any, res: Response): Promise<void> => {
   try {
       const token = generateToken(req.user.id);
