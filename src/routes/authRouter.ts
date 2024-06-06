@@ -4,12 +4,7 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-<<<<<<< HEAD
   verifyUserCredentials
-=======
-  verifyUserCredentials,
-  verifyOtp
->>>>>>> e9f6e11 (modifying verify otp to give out meaningfull messages)
 } from "../middlewares/validation";
 import {
   emailSchema,
@@ -42,15 +37,6 @@ router.post(
   "/login",
   validation(credentialSchema),
   verifyUserCredentials,
-<<<<<<< HEAD
-=======
-  authControllers.loginUser
-);
-router.post(
-  "/verify-otp/:id",
-  validation(otpSchema),
-  verifyOtp,
->>>>>>> e9f6e11 (modifying verify otp to give out meaningfull messages)
   authControllers.loginUser
 );
 
