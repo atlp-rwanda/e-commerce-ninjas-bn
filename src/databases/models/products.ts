@@ -18,7 +18,7 @@ class Products extends Model<IProduct> {
   declare bonus?: string;
   declare images: string[];
   declare quantity: number;
-  declare isAvailable: string;
+  declare status: string;
   declare createdAt: Date;
   declare updatedAt: Date;
 

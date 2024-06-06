@@ -48,6 +48,16 @@ router.post(
   productController.sellerGetStatistics
 );
 router.put(
+  "/seller-update-product/:id",
+  userAuthorization(["seller"]),
+  upload.array("images"),
+  transformFilesToBody,
+  validation(productSchema),
+  isProductExist,
+  productController.sellerUpdateProduct
+);
+
+router.put(
   "/seller-update-product-status/:id",
   userAuthorization(["seller"]),
   validation(statusSchema),

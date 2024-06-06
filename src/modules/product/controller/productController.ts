@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import productRepositories from "../repositories/productRepositories";
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
+import Products from "../../../databases/models/products";
 
 const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
   try {
@@ -166,9 +167,47 @@ const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
   }
 };
 
+const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    const uploadPromises = req.files.map((file) => uploadImages(file));
+    const images = await Promise.all(uploadPromises);
+    const imagesArr = images.map((image) => image.secure_url);
+
+    const updatedProductData = {
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      discount: req.body.discount,
+      category: req.body.category,
+      expiryDate: req.body.expiryDate,
+      bonus: req.body.bonus,
+      quantity: req.body.quantity,
+      images: imagesArr,
+    };
+
+    const { id: productId } = req.params;
+    const updatedProduct = await productRepositories.updateProduct(
+      Products,
+      updatedProductData,
+      "id",
+      productId
+    );
+
+    res.status(httpStatus.OK).json({
+      message: "Product updated successfully",
+      data: { product: updatedProduct },
+    });
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  }
+};
+
 export default {
   sellerCreateProduct,
   sellerCreateShop,
+  sellerUpdateProduct,
   sellerDeleteProduct,
   sellerGetStatistics,
   updateProductStatus,

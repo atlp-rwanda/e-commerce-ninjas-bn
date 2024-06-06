@@ -13,11 +13,11 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 
 [https://e-commerce-ninjas-platform-backend.onrender.com/](https://e-commerce-ninjas-platform-backend.onrender.com/)
 
-#### Hosted Swagger Documentation
+#### HOSTED SWAGGER DOCUMENTATION
 
 [https://e-commerce-ninjas-platform-backend.onrender.com/api-docs](https://e-commerce-ninjas-platform-backend.onrender.com/api-docs)
 
-#### Github Repository For E-Commerce-Ninjas Backend
+#### GITHUB REPOSITORY FOR E-COMMERCE-NINJAS BACKEND
 
 [https://github.com/atlp-rwanda/e-commerce-ninjas-bn](https://github.com/atlp-rwanda/e-commerce-ninjas-bn)
 
@@ -29,6 +29,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Resend verification Endpoint
 - Login Endpoint
 - login vie google Endpoint
+- Forget Password Endpoint
+- Reset Password Endpoint
+- Change Password Endpoint
 - Admin Update Status Endpoint
 - Admin Update Role Endpoint
 - Admin get users Endpoint
@@ -38,11 +41,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - User Update Profile Endpoint
 - Seller create shop Endpoint
 - Seller create product Endpoint
+- Seller update product Endpoint
 - Seller Delete Item Endpoint
 - Seller get statistics Endpoint
-- Forget Password Endpoint
-- Reset Password Endpoint
-- Change Password Endpoint
 - Seller update product status Endpoint
 - Seller get products Endpoint
 
@@ -68,10 +69,11 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 16  | GET    | /api/user/admin-get-user/:id               | 200 OK      | private | Admin get one user Endpoint         |
 | 17  | POST   | /api/shop/seller-create-shop               | 201 OK      | private | Create shop for products            |
 | 18  | POST   | /api/shop/seller-create-product            | 201 OK      | private | create product in shop              |
-| 19  | DELETE | /api/shop/delete-product/:id               | 200 OK      | private | Delete Item in Collection           |
-| 20  | POST   | /api/shop/seller-statistics                | 200 OK      | public  | Get seller statistics per timeframe |
-| 21  | PUT    | /api/shop/seller-update-product-status/:id | 200 OK      | private | Seller update product status        |
-| 22  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
+| 19  | PUT    | /api/shop/seller-update-product/:id        | 200 OK      | private | update product in shop              |
+| 20  | DELETE | /api/shop/delete-product/:id               | 200 OK      | private | Delete Item in Collection           |
+| 21  | POST   | /api/shop/seller-statistics                | 200 OK      | private | Get seller statistics per timeframe |
+| 22  | PUT    | /api/shop/seller-update-product-status/:id | 200 OK      | private | Seller update product status        |
+| 23  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
 
 ## INSTALLATION
 

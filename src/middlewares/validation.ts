@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -265,41 +266,22 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
   }
 };
 
-const isProductExist = async (req: any, res: Response, next: NextFunction) => {
-  try {
-    const shop = await productRepositories.findShopByAttributes(
-      Shops,
-      "userId",
-      req.user.id
-    );
-    if (!shop) {
-      return res
-        .status(httpStatus.NOT_FOUND)
-        .json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
+const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+    try {
+        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
+        if(!shop){
+            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
+        }
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
+        if(isProductAvailable){
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
+        }
+        req.shop = shop;
+        next();
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-    const isProductAvailable =
-      await productRepositories.findByModelsAndAttributes(
-        Products,
-        "name",
-        "shopId",
-        req.body.name,
-        shop.id
-      );
-    if (isProductAvailable) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: httpStatus.BAD_REQUEST,
-        message: "Please update the quantities.",
-      });
-    }
-    req.shop = shop;
-    next();
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
-    });
-  }
-};
+}
 
 const credential = async (
   req: ExtendRequest,
@@ -434,6 +416,7 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
     });
   return next();
 };
+
 export {
   validation,
   isUserExist,

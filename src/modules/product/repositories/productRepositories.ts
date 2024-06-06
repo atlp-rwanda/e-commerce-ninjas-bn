@@ -90,10 +90,28 @@ const sellerGetProducts = async (shopId: string) => {
   return await Products.findAll({ where: { shopId } });
 };
 
+const updateProduct = async (
+  model: any,
+  productData: any,
+  key: string,
+  value: any
+) => {
+  return await model.update(
+    { ...productData },
+    { where: { [key]: value }, returning: true }
+  );
+};
+
+const findProductByIdAndShopId = async (id: string, shopId: string) => {
+  return await Products.findOne({ where: { id, shopId } });
+};
+
 export default {
   createProduct,
+  updateProduct,
   createShop,
   findShopByAttributes,
+  findProductByIdAndShopId,
   findByModelsAndAttributes,
   deleteProductById,
   getOrdersPerTimeframe,

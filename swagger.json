@@ -46,7 +46,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string"
           },
           "firstName": {
             "type": "string",
@@ -151,11 +151,8 @@
             "type": "string",
             "format": "uri"
           },
-          "isAvailable": {
-            "type": "string"
-          },
           "status": {
-            "type": "boolean"
+            "type": "string"
           },
           "createdAt": {
             "type": "string",
@@ -166,6 +163,86 @@
             "format": "date-time"
           }
         }
+      },
+      "Shop": {
+         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        } 
+      },
+      "Cart": {
+         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        } 
+      },
+      "CartProducts": {
+         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "cartId": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "totalPrice": {
+            "type": "number"
+          }
+        } 
+      },
+      "Orders": {
+         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "shopId": {
+            "type": "string"
+          },
+          "cartId": {
+            "type": "string"
+          },
+          "paymentMethodId": {
+            "type": "number"
+          },
+          "orderDate": {
+            "type": "date"
+          },
+          "status": {
+            "type": "string"
+          }
+        } 
       }
     },
     "securitySchemes": {
@@ -1361,6 +1438,193 @@
         }
       }
     },
+    "/api/shop/seller-update-product/{id}": {
+      "put": {
+        "tags": ["Seller Routes"],
+        "summary": "A seller should be able to Update/Modify a product with Id",
+        "description": "This endpoint allows seller to update/modify a product with Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the product to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Array of product images"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the product"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Price of the product"
+                  },
+                  "bonus": {
+                    "type": "integer",
+                    "description": "bonus of the product"
+                  },
+                  "discount": {
+                    "type": "string",
+                    "description": "discount of the product"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "category of the product"
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "description": "expiry date of the product"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "quantity of the product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "shopId": {
+                          "type": "string"
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "price": {
+                          "type": "number"
+                        },
+                        "bonus": {
+                          "type": "integer"
+                        },
+                        "discount": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "expiryDate": {
+                          "type": "date"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/shop/seller-delete-product/{id}": {
       "delete": {
         "tags": ["Seller Routes"],
@@ -1674,6 +1938,7 @@
         }
       }
     },
+
     "/api/shop/seller-update-product-status/{id}": {
       "put": {
         "tags": ["Seller Routes"],
