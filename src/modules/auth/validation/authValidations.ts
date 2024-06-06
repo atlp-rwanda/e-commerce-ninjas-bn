@@ -1,8 +1,8 @@
 import Joi from "joi";
 
 interface User {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 const credentialSchema = Joi.object<User>({
@@ -22,14 +22,20 @@ const credentialSchema = Joi.object<User>({
 });
 
 const emailSchema = Joi.object<User>({
-    email: Joi.string().email().required().messages({
-        "string.base": "email should be a type of text",
-        "string.email": "email must be a valid email",
-        "string.empty": "email cannot be an empty field",
-        "any.required": "email is required"
-    })
-
+  email: Joi.string().email().required().messages({
+    "string.base": "email should be a type of text",
+    "string.email": "email must be a valid email",
+    "string.empty": "email cannot be an empty field",
+    "any.required": "email is required"
+  })
 });
 
+const otpSchema = Joi.object({
+  otp: Joi.number().integer().required().messages({
+    "number.base": "OTP must be a 6-digit number",
+    "number.empty": "OTP cannot be an empty field",
+    "any.required": "OTP is required"
+  })
+});
 
-export { credentialSchema, emailSchema };
+export { credentialSchema, emailSchema, otpSchema };
