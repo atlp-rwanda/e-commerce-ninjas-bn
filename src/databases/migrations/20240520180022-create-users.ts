@@ -13,9 +13,9 @@ export default {
 
     await queryInterface.createTable("users", {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       firstName: {
@@ -96,12 +96,9 @@ export default {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    // Drop the users table
     await queryInterface.dropTable("users");
-
-    // Drop the enum type if it exists
-    await queryInterface.sequelize.query(`
-      DROP TYPE IF EXISTS "enum_users_gender";
-    `);
+    await queryInterface.sequelize.query(
+      "DROP TYPE IF EXISTS \"enum_users_gender\";"
+    );
   }
 };
