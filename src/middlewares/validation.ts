@@ -274,6 +274,55 @@ const transformFilesToBody = (
   next();
 };
 
+const verifyOtp = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = await authRepositories.findUserByAttributes(
+      "id",
+      req.params.id
+    );
+
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "User not Found.",
+      });
+    }
+
+    const sessionData = await authRepositories.findSessionByUserIdOtp(
+      user.id,
+      req.body.otp
+    );
+
+    if (sessionData === null || sessionData.otp === null) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "Code expired.",
+      });
+    }
+
+    if (sessionData.otp !== req.body.otp) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "Invalid or expired code.",
+      });
+    }
+
+    await authRepositories.destroySessionByAttribute(
+      "userId",
+      user.id,
+      "otp",
+      req.body.otp
+    );
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
 export {
   validation,
   isUserExist,
@@ -282,5 +331,6 @@ export {
   isUsersExist,
   isProductExist,
   isShopExist,
-  transformFilesToBody
+  transformFilesToBody,
+  verifyOtp
 };

@@ -4,11 +4,14 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials
+  verifyUserCredentials,
+  verifyOtp
 } from "../middlewares/validation";
 import {
   emailSchema,
-  credentialSchema
+  credentialSchema,
+  otpSchema,
+  is2FAenabledSchema
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
@@ -55,6 +58,20 @@ router.get("/google", googleAuth.googleVerify);
 router.get(
   "/google/callback",
   googleAuth.authenticateWithGoogle);
+
+  router.post(
+    "/verify-otp/:id",
+    validation(otpSchema),
+    verifyOtp,
+    authControllers.loginUser
+  );
+  router.put(
+    "/enable-2f",
+    validation(is2FAenabledSchema),
+    userAuthorization(["admin", "buyer", "seller"]),
+    authControllers.updateUser2FA
+  );
+
 
 
 export default router;

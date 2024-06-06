@@ -38,4 +38,12 @@ const otpSchema = Joi.object({
   })
 });
 
-export { credentialSchema, emailSchema, otpSchema };
+const is2FAenabledSchema = Joi.object({
+  is2FAEnabled: Joi.boolean().required().messages({
+    "boolean.base": "2FAenabled must be a boolean",
+    "boolean.empty": "2FAenabled cannot be an empty field",
+    "any.required": "2FAenabled is required"
+  })
+});
+
+export { credentialSchema, emailSchema, otpSchema, is2FAenabledSchema };
