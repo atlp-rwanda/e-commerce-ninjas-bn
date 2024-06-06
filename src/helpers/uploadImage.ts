@@ -7,12 +7,12 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
   });
   
-export const uploadImages = async (fileToUpload: any): Promise<{ public_id: string; secure_url: string }> => {
+  export const uploadImages = async (fileToUpload: Express.Multer.File): Promise<{ public_id: string; secure_url: string }> => {
     const result = await cloudinary.uploader.upload(fileToUpload.path);
     return {
-      public_id: result.public_id,
-      secure_url: result.secure_url
+        public_id: result.public_id,
+        secure_url: result.secure_url
     };
-  };
+};
 
 export default uploadImages;

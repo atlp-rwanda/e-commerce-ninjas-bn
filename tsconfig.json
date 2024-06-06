@@ -61,11 +61,4 @@
 		"forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
 		"skipLibCheck": true, /* Skip type checking all .d.ts files. */
 	},
-	"exclude": [
-		"node_modules",
-		"src/test"
-	],
-	"ts-node": {
-		"esm": true
-	}
 }

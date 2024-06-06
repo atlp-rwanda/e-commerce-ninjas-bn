@@ -21,7 +21,7 @@ describe("Initial configuration", () => {
     router()
       .get("/")
       .end((err, res) => {
-        expect(res).to.have.status(200);
+        expect(res).to.have.status(httpStatus.OK);
         expect(res.body).to.be.a("object");
         expect(res.body).to.have.property(
           "message",
