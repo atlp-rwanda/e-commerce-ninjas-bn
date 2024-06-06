@@ -203,7 +203,7 @@ const getBuyerProducts = async (req: any, res: Response) => {
         const endIndex = startIndex + limit;
 
         const paginatedProducts = allProducts.slice(startIndex, endIndex);
-        
+
         let nextPage: { page: number; limit: number } | undefined;
         let previousPage: { page: number; limit: number } | undefined;
 
@@ -229,7 +229,7 @@ const getBuyerProducts = async (req: any, res: Response) => {
 
 
 
-const getSellerProducts = async (req: any, res: Response) => {
+const getShopProducts = async (req: any, res: Response) => {
     try {
         const user = req.user;
 
@@ -243,8 +243,12 @@ const getSellerProducts = async (req: any, res: Response) => {
         if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
         }
+        const shop = await productRepositories.findByModelAndAttributes(Shop, "userId", "userId", user.id, user.id);
 
-        const allProducts = await productRepositories.getProductsByAttributes("sellerId", user.id);
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
+        }
+        const allProducts = await productRepositories.getProductsByAttributes("shopId", shop.id);
 
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
@@ -279,4 +283,4 @@ const getSellerProducts = async (req: any, res: Response) => {
 
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getSellerProducts, getBuyerProducts };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, getShopProducts, getBuyerProducts };

@@ -1,34 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { ICollection } from "../../types";
 
-class Collection extends Model<ICollection> {
+class collection extends Model<ICollection> {
     declare id: number;
-    declare sellerId: number;
+    declare shopId: number;
     declare name: string;
     declare description?: string;
-
-    static associate(models: any) {
-        Collection.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
-        Collection.hasMany(models.Products, { foreignKey: "collectionId", as: "products" });
-    }
 }
 
-Collection.init(
+collection.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-            defaultValue: DataTypes.UUIDV4
-        },
-        sellerId: {
+            type: DataTypes.UUID,
             allowNull: false,
-            type: DataTypes.INTEGER,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
+          },
+        shopId: {
+            allowNull: false,
+            type: DataTypes.UUID,
             references: {
-                model: "users",
+                model: "shops",
                 key: "id"
             },
             onDelete: "CASCADE"
@@ -45,8 +39,8 @@ Collection.init(
     {
         sequelize: sequelizeConnection,
         tableName: "collection",
-        modelName: "Collection"
+        modelName: "collection"
     }
 );
 
-export default Collection;
+export default collection;

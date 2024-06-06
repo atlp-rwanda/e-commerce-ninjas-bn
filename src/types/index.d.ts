@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { UsersAttributes } from "../databases/models/users";
 
 export interface IToken {
   userId: number;
@@ -9,6 +10,19 @@ export interface IToken {
 export interface ILogin {
   email: string;
   password: string;
+}
+
+export interface IRequest extends Request {
+  loginUserId?: number;
+  token;
+  userId?: number,
+  user?: UsersAttributes
+}
+
+export interface IProductSold {
+  id: number;
+  name: string;
+  quantity: number;
 }
 
 export interface ExtendRequest extends Request {

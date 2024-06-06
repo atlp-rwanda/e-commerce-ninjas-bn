@@ -13,8 +13,7 @@ import { fileFilter } from "../../../helpers/multer";
 import { isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
-import productController from "../controller/productController";
-
+import Shop from "../../../databases/models/shops";
 import { getBuyerProducts } from "../../../middlewares/validation";
 import httpStatus from "http-status";
 import Session from "../../../databases/models/session";
@@ -538,7 +537,7 @@ describe("Seller's Products List", () => {
   })
 
   it("Should retrieve unpaginated data if no queries are specified", (done) => {
-    router().get("/api/collection/products")
+    router().get("/api/shop/all-products")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -549,7 +548,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should notify if limit or page is not number", (done) => {
-    router().get("/api/collection/products?limit=-10&page=page1")
+    router().get("/api/shop/all-products?limit=-10&page=page1")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.a("object");
@@ -559,7 +558,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should get next page", (done) => {
-    router().get("/api/collection/products?limit=1&page=1")
+    router().get("/api/shop/all-products?limit=1&page=1")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -573,7 +572,7 @@ describe("Seller's Products List", () => {
     const originalMethod = productRepositories.getAllProducts;
     productRepositories.getAllProducts = () => { throw new Error("Server error"); };
 
-    router().get("/api/collection/products")
+    router().get("/api/shop/all-products")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.have.property("error");
@@ -583,7 +582,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should handle pagination correctly with edge cases", (done) => {
-    router().get("/api/collection/products?limit=0&page=1")
+    router().get("/api/shop/all-products?limit=0&page=1")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.have.property("data");
@@ -636,7 +635,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should restrict unauthorized user", (done) => {
-    router().get("/api/collection/seller-products")
+    router().get("/api/shop/shop-products")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
         expect(response.body).to.be.a("object");
@@ -644,8 +643,49 @@ describe("Seller's Products List", () => {
       });
   });
 
+  it("Should returrn 'SHop does not exists'", (done) => {
+    router().get("/api/shop/shop-products")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.NOT_FOUND);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+
+
+   // Define the function to insert data into the Shop model
+   async function createShop(data: { userId: any; name: string; description?: string }) {
+    try {
+      const shop = await Shop.create(data);
+      return shop;
+    } catch (error) {
+      console.error("Error creating shop:", error);
+      throw error;
+    }
+  }
+ 
+  it("should create a shop directly using the function", async () => {
+    const shopData = {
+      userId: buyerId,
+      name: "Test Shop for tests",
+      description: "A shop created for testing purposes"
+    };
+
+    const shop = await createShop(shopData);
+
+    expect(shop).to.have.property('id');
+    expect(shop.name).to.equal(shopData.name);
+    expect(shop.description).to.equal(shopData.description);
+    expect(shop.userId).to.equal(shopData.userId);
+  });
+
+
+
+  
+
   it("Should retrieve unpaginated data if no queries are specified", (done) => {
-    router().get("/api/collection/seller-products")
+    router().get("/api/shop/shop-products")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -657,7 +697,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should notify if limit or page is not number", (done) => {
-    router().get("/api/collection/seller-products?limit=-10&page=page1")
+    router().get("/api/shop/shop-products?limit=-10&page=page1")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
@@ -668,7 +708,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should return paginated products if valid limit and page are provided", (done) => {
-    router().get("/api/collection/seller-products?limit=0&page=1")
+    router().get("/api/shop/shop-products?limit=0&page=1")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -680,7 +720,7 @@ describe("Seller's Products List", () => {
     const originalMethod = productRepositories.getProductsByAttributes;
     productRepositories.getProductsByAttributes = () => { throw new Error("Server error"); };
 
-    router().get("/api/collection/seller-products")
+    router().get("/api/shop/shop-products")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
@@ -691,7 +731,7 @@ describe("Seller's Products List", () => {
   });
 
   it("Should handle pagination correctly with edge cases", (done) => {
-    router().get("/api/collection/seller-products?limit=0&page=1")
+    router().get("/api/shop/shop-products?limit=0&page=1")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);

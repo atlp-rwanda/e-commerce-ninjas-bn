@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelizeConnection from "../config/db.config";
@@ -30,12 +29,11 @@ class Products extends Model<IProduct> {
 Products.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            defaultValue: DataTypes.UUIDV4
-
-        },
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
+          },
         shopId: {
             allowNull: false,
             type: DataTypes.UUID,
@@ -76,8 +74,7 @@ Products.init(
             type: DataTypes.STRING
         },
         images: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: false
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         quantity: {
             allowNull: false,
