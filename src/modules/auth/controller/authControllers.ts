@@ -111,9 +111,9 @@ const requestResetPassword = async (req: any, res: Response): Promise<void> => {
         token: token,
         otp: null
       };
-      await authRepositories.createSession(session);
+      const data = await authRepositories.createSession(session);
       await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
-      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password." });
+      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password.", user: data });
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
