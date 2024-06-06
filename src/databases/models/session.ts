@@ -4,8 +4,8 @@ import { Model, DataTypes} from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
 export interface SessionAttributes {
-    id: number;
-    userId: number;
+    id: string;
+    userId: string;
     device: string;
     token: string;
     otp: string;
@@ -14,8 +14,8 @@ export interface SessionAttributes {
 }
 
 class Session extends Model<SessionAttributes> implements SessionAttributes {
-    declare id: number;
-    declare userId: number;
+    declare id: string;
+    declare userId: string;
     declare device: string;
     declare token: string;
     declare otp: string;
@@ -30,13 +30,13 @@ class Session extends Model<SessionAttributes> implements SessionAttributes {
 Session.init(
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             autoIncrement: true,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
         userId: {
-            type: new DataTypes.INTEGER,
+            type: new DataTypes.UUID,
             allowNull: false
         },
         device: {

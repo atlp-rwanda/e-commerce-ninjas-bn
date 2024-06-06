@@ -3,15 +3,15 @@ import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 
-const createProduct = async(body:any) => {
+const createProduct = async (body: any) => {
     return await Products.create(body);
 }
 
-const createShop = async(body:any) => {
+const createShop = async (body: any) => {
     return await Shops.create(body);
 }
 
-const findShopByAttributes = async(model:any,key:string,value:any) => {
+const findShopByAttributes = async (model: any, key: string, value: any) => {
     return await model.findOne({ where: { [key]: value } });
 }
 
@@ -26,9 +26,8 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
     });
 }
 
-const deleteProductById = async (productId: string): Promise<void> => 
-{ 
-    await Products.destroy({ where: { id: productId } }); 
+const deleteProductById = async (productId: string): Promise<void> => {
+    await Products.destroy({ where: { id: productId } });
 };
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById};
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById };

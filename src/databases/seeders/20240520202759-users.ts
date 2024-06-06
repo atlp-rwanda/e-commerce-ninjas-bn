@@ -21,7 +21,7 @@ const userOne = {
     isVerified: true
 };
 
-const userTwo = {
+export const userTwo = {
     id: userTwoId,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -37,7 +37,7 @@ const userTwo = {
     currency: "USD",
     role: "buyer",
     status: "enabled",
-    isVerified: true
+    isVerified: false
 };
 
 const userThree = {
@@ -56,7 +56,8 @@ const userThree = {
     currency: "USD",
     role: "seller",
     status: "enabled",
-    isVerified: true
+    isVerified: false
+
 };
 
 const userFour = {
@@ -75,7 +76,8 @@ const userFour = {
     currency: "USD",
     role: "seller",
     status: "enabled",
-    isVerified: true
+    isVerified: false
+
 };
 const userFive = {
     id: userFiveId,
@@ -93,7 +95,8 @@ const userFive = {
     currency: "USD",
     role: "seller",
     status: "enabled",
-    isVerified: true
+    isVerified: false
+
 };
 
 export const up = async (queryInterface: QueryInterface) => {

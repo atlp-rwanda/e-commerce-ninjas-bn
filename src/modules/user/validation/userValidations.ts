@@ -28,7 +28,7 @@ export const roleSchema = Joi.object({
       "any.only": "Only admin, buyer and seller are allowed."
   })
 });
-const userSchema = Joi.object<User>({
+export const userSchema = Joi.object<User>({
   firstName: Joi.string().messages({
       "string.base": "firstName should be a type of text",
       "string.empty": "firstName cannot be an empty field",
@@ -73,9 +73,8 @@ const userSchema = Joi.object<User>({
       "any.required": "role is required"
   })
 });
-export {userSchema};
 
-export const updatePasswordSchema = Joi.object({
+export const changePasswordSchema = Joi.object({
   oldPassword: Joi.string().pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")).required().messages({
     "string.base": "Old password should be a type of text",
     "string.empty": "Old password cannot be an empty field",
@@ -89,13 +88,8 @@ export const updatePasswordSchema = Joi.object({
     "string.pattern.base": "New password must contain both letters and numbers",
     "any.required": "New password is required"
 }),
-  confirmPassword: Joi.any().valid(Joi.ref("newPassword")).required().messages({
+  confirmPassword: Joi.string().valid(Joi.ref("newPassword")).required().messages({
     "any.only": "Confirm password must match new password",
     "any.required": "Confirm password is required"
   })
-}).custom((value, helpers) => {
-  if (value.oldPassword === value.newPassword) {
-    return helpers.message({ custom: "Old password should not be similar to the new password" });
-  }
-  return value;
 });

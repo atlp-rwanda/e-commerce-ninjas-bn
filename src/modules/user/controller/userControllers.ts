@@ -80,7 +80,7 @@ const updateUserProfile = async (req: Request, res: Response) => {
   }
 }
 
-const updatePassword = async (req: any , res: Response) => {
+const changePassword = async (req: any , res: Response) => {
   try {
        console.log(req.user.password)
        const user = await authRepositories.updateUserByAttributes("password",req.user.password, "id", req.user.id) ;
@@ -93,4 +93,4 @@ const updatePassword = async (req: any , res: Response) => {
   }
 };
 
-export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser,updateUserProfile ,getUserDetails, updatePassword};
+export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser,updateUserProfile ,getUserDetails, changePassword};

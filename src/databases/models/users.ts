@@ -3,8 +3,8 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { hashPassword } from "../../helpers";
-export interface UsersAttributes {
-    id: number;
+export interface usersAttributes {
+    id: string;
     firstName?: string;
     lastName?: string;
     email: string;
@@ -24,10 +24,10 @@ export interface UsersAttributes {
     updatedAt?: Date;
 }
 
-export interface UsersCreationAttributes extends Optional<UsersAttributes, "id"> {}
+export interface UsersCreationAttributes extends Optional<usersAttributes, "id"> {}
 
-class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
-    declare id: number;
+class Users extends Model<usersAttributes, UsersCreationAttributes> implements usersAttributes {
+    declare id: string;
     declare firstName?: string;
     declare lastName?: string;
     declare email: string;

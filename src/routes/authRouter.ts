@@ -54,7 +54,7 @@ router.get(
   "/google/callback",
   googleAuth.authenticateWithGoogle);
 
-router.post("/request-reset-password", validation(emailSchema), verifyUser, authControllers.requestResetPassword);
-router.post("/reset-password/:token", validation(resetPasswordSchema), verifyUser, isSessionExist, authControllers.resetPassword);
+router.post("/forget-password", validation(emailSchema), verifyUser, authControllers.forgetPassword);
+router.put("/reset-password/:token", validation(resetPasswordSchema), verifyUser, isSessionExist, authControllers.resetPassword);
 
 export default router;

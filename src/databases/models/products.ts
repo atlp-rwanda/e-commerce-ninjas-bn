@@ -30,11 +30,10 @@ class Products extends Model<IProduct> {
 Products.init(
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             primaryKey: true,
             autoIncrement: true,
             defaultValue: DataTypes.UUIDV4
-
         },
         shopId: {
             allowNull: false,

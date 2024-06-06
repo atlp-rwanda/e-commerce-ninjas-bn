@@ -2,14 +2,14 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
-import Users from "../../../databases/models/users";
+import Users, { usersAttributes } from "../../../databases/models/users";
 import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import Products from "../../../databases/models/products";
 import Shops from "../../../databases/models/shops";
 import { fileFilter } from "../../../helpers/multer";
-import { isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -18,6 +18,7 @@ import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
+import { ExtendRequest } from "../../../types";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -483,3 +484,84 @@ it("should handle missing required parameter - file", async () => {
 
 });
 })
+
+describe("Change Password Test Cases", () => {
+  let token: string = null;
+  before((done)=>{
+    router()
+    .post("/api/auth/login")
+    .send({
+      email:"admin@gmail.com",
+      password:"Newpassword#12"
+    })
+    .end((error, response) => {
+      token = response.body.data.token;
+      done(error);
+    });
+  })
+  it("should change the password when the user changes the password", (done) => {
+  router()
+  .put("/api/user/change-password")
+  .set("authorization", `Bearer ${token}`)
+  .send({
+     oldPassword: "Newpassword#12",
+     newPassword: "NewPassword!123",
+     confirmPassword: "NewPassword!123"
+   })
+   .end((err, res) => {
+     expect(res).to.have.status(httpStatus.OK);
+     expect(res.body).to.be.an("object");
+     expect(res.body).to.have.property("message", "Password updated successfully");
+     done(err)
+   })
+})
+it("should return an error if the password is invalid", (done)=>{
+  router()
+ .put("/api/user/change-password")
+ .set("authorization", `Bearer ${token}`)
+ .send({
+    oldPassword: "Newpassword#12",
+    newPassword: "NewPassword!123",
+    confirmPassword: "NewPassword!123"
+  })
+  .end((err, res) => {
+    expect(res).to.have.status(httpStatus.BAD_REQUEST);
+    expect(res.body).to.be.an("object");
+    expect(res.body).to.have.property("message", "Invalid password.");
+    done(err)
+  })
+})
+})
+
+describe("credential middleware", () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      body: {},
+      user: null
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.spy();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should handle errors and respond with 500", async () => {
+    req.user = { id: "userId" } as usersAttributes;
+    sinon.stub(authRepositories, "findUserByAttributes").rejects(new Error("Unexpected error"));
+
+    await credential(req as ExtendRequest, res as any, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: "Unexpected error"
+    });
+  });
+});

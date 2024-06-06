@@ -31,7 +31,6 @@
     {
       "name": "User Routes",
       "description": "User Endpoint"
-     
     },
     {
       "name": "Seller Routes",
@@ -108,6 +107,62 @@
           },
           "is2FAEnabled": {
             "type": "boolean"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Products": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "shopId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer"
+          },
+          "discount": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "expiryDate": {
+            "type": "date"
+          },
+          "expired": {
+            "type": "boolean"
+          },
+          "bonus": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "isAvailable": {
+            "type": "string"
           },
           "status": {
             "type": "boolean"
@@ -423,8 +478,6 @@
         }
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
     "/api/user/user-get-profile": {
       "get": {
         "tags": [
@@ -464,42 +517,6 @@
           },
           "404": {
             "description": "User doesn't exist",
-=======
-=======
->>>>>>> ce88cd5 (update user password)
-
-    "/api/auth/request-reset-password": {
-      "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
-        "summary": "Request password reset",
-        "description": "This endpoint allows a user to request a password reset link by providing their email address.",
-        "requestBody": {
-          "description": "Email address to request password reset",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  }
-                },
-                "required": ["email"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Password reset email sent successfully",
-<<<<<<< HEAD
->>>>>>> 22e3d65 (update user password)
-=======
->>>>>>> ce88cd5 (update user password)
             "content": {
               "application/json": {
                 "schema": {
@@ -509,52 +526,12 @@
                       "type": "string"
                     }
                   }
-<<<<<<< HEAD
-<<<<<<< HEAD
                 },
                 "examples": {
                   "userNotFound": {
                     "summary": "User Not Found",
                     "value": {
                       "error": "User not found."
-=======
-=======
->>>>>>> ce88cd5 (update user password)
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-<<<<<<< HEAD
->>>>>>> 22e3d65 (update user password)
-=======
->>>>>>> ce88cd5 (update user password)
                     }
                   }
                 }
@@ -568,8 +545,6 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     "message": {
                       "type": "string"
                     }
@@ -582,20 +557,6 @@
                       "message": "Internal Server error"
                     }
                   }
-=======
-=======
->>>>>>> ce88cd5 (update user password)
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-<<<<<<< HEAD
->>>>>>> 22e3d65 (update user password)
-=======
->>>>>>> ce88cd5 (update user password)
                 }
               }
             }
@@ -603,8 +564,6 @@
         }
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
     "/api/user/user-update-profile": {
       "put": {
         "tags": [
@@ -628,57 +587,16 @@
                     "status": {
                       "type": "integer"
                     },
-                    "data":{
-                      "type":"object",
-                      "$ref":"#/components/schemas/User"
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
                     }
                   }
                 }
-=======
-=======
->>>>>>> ce88cd5 (update user password)
-  
-    "/api/auth/reset-password/{token}": {
-      "post": {
-        "summary": "Reset password",
-        "description": "Resets the user's password using the provided token and new password.",
-        "tags": [
-          "Authentication Routes"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "token",
-            "description": "Token received in the password reset email",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "requestBody": {
-          "description": "New password details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "newPassword": {
-                    "type": "string",
-                    "format": "password",
-                    "description": "The new password"
-                  }
-                },
-                "required": ["newPassword"]
-<<<<<<< HEAD
->>>>>>> 22e3d65 (update user password)
-=======
->>>>>>> ce88cd5 (update user password)
               }
             }
           }
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
         "requestBody": {
           "required": false,
           "content": {
@@ -689,7 +607,7 @@
                   "firstName": {
                     "type": "string",
                     "description": "firstName",
-                    "in": "formData" 
+                    "in": "formData"
                   },
                   "lastName": {
                     "type": "string",
@@ -748,38 +666,10 @@
                 }
               }
             }
-=======
-=======
->>>>>>> ce88cd5 (update user password)
-        "responses": {
-          "200": {
-            "description": "Password reset successfully"
-          },
-          "400": {
-            "description": "bad request"
-          },
-          "500": {
-            "description": "Expired token or internal server error"
-<<<<<<< HEAD
->>>>>>> 22e3d65 (update user password)
-=======
->>>>>>> ce88cd5 (update user password)
           }
         }
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-   
- 
-
->>>>>>> 22e3d65 (update user password)
-=======
-   
- 
-
->>>>>>> ce88cd5 (update user password)
     "/api/user/admin-get-users": {
       "get": {
         "tags": [
@@ -1550,115 +1440,210 @@
             }
           }
         ],
-      "responses": {
-        "200": {
-          "description": "Item deleted successfully",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "description": "Success message",
-                    "example": "Item deleted successfully"
-                  }
-                },
-                "401": {
-                  "description": "Unauthorized access (missing or invalid token)"
-                },
-                "403": {
-                  "description": "Forbidden access (non-seller user trying to delete)"
-                },
-                "404": {
-                  "description": "Item not found",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "type": "object",
-                        "properties": {
-                          " message": {
-                            "type": "string",
-                            "description": "Error message",
-                            "example": "Item not found"
+        "responses": {
+          "200": {
+            "description": "Item deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message",
+                      "example": "Item deleted successfully"
+                    }
+                  },
+                  "401": {
+                    "description": "Unauthorized access (missing or invalid token)"
+                  },
+                  "403": {
+                    "description": "Forbidden access (non-seller user trying to delete)"
+                  },
+                  "404": {
+                    "description": "Item not found",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            " message": {
+                              "type": "string",
+                              "description": "Error message",
+                              "example": "Item not found"
+                            }
                           }
                         }
                       }
                     }
+                  },
+                  "400": {
+                    "description": "Bad request (e.g., missing or invalid itemId)"
+                  },
+                  "500": {
+                    "description": "Internal Server Error"
                   }
-                },
-                "400": {
-                  "description": "Bad request (e.g., missing or invalid itemId)"
-                },
-                "500": {
-                  "description": "Internal Server Error"
                 }
               }
             }
           }
-        
         }
       }
     },
-    "/api/user/update-password": {
-      "put": {
-        "summary": "User update password",
-        "description": "Updates the password for a user with the specified ID.",
-        "tags": ["User Routes"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
+    "/api/auth/forget-password": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
         ],
+        "summary": "Request password reset",
+        "description": "This endpoint allows a user to request a password reset link by providing their email address.",
         "requestBody": {
+          "description": "Email address to request password reset",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "oldPassword": {
+                  "email": {
                     "type": "string",
-                    "description": "Old password of the user"
-                  },
-                  "newPassword": {
-                    "type": "string",
-                    "description": "New password of the user. It must be at least 8 characters long and contain both letters and numbers."
-                  },
-                  "confirmPassword": {
-                    "type": "string",
-                    "description": "Confirmation of the new password. It must match the new password."
+                    "format": "email"
                   }
                 },
-                "required": ["oldPassword", "newPassword", "confirmPassword"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Password updated successfully"
+            "description": "Password reset email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad request. Invalid input or passwords do not match."
-          },
-          "401": {
-            "description": "Unauthorized. Old password is incorrect."
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "User not found."
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/user/update-password": {
+    "/api/auth/reset-password/{token}": {
+      "post": {
+        "summary": "Reset password",
+        "description": "Resets the user's password using the provided token and new password.",
+        "tags": [
+          "Authentication Routes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "description": "Token received in the password reset email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "New password details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "The new password"
+                  }
+                },
+                "required": [
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "500": {
+            "description": "Expired token or internal server error"
+          }
+        }
+      }
+    },
+    "/api/user/change-password": {
       "put": {
         "summary": "User update password",
         "description": "Updates the password for a user with the specified ID.",
-        "tags": ["User Routes"],
+        "tags": [
+          "User Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1684,14 +1669,18 @@
                     "description": "Confirmation of the new password. It must match the new password."
                   }
                 },
-                "required": ["oldPassword", "newPassword", "confirmPassword"]
+                "required": [
+                  "oldPassword",
+                  "newPassword",
+                  "confirmPassword"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Password updated successfully"
+            "description": "Password changed successfully"
           },
           "400": {
             "description": "Bad request. Invalid input or passwords do not match."
@@ -1708,6 +1697,5 @@
         }
       }
     }
-   }
   }
 }

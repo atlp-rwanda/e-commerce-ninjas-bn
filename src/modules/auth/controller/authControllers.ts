@@ -3,13 +3,13 @@ import { Request, Response } from "express";
 import userRepositories from "../repository/authRepositories";
 import { generateToken} from "../../../helpers";
 import httpStatus from "http-status";
-import { UsersAttributes } from "../../../databases/models/users";
+import { usersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const register: UsersAttributes = await authRepositories.createUser(
+    const register: usersAttributes = await authRepositories.createUser(
       req.body
     );
     const token: string = generateToken(register.id);
@@ -92,7 +92,6 @@ const logoutUser = async (req: any, res: Response) => {
   try {
     await authRepositories.destroySession(req.user.id, req.session.token)
     res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
-    res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -102,7 +101,7 @@ const logoutUser = async (req: any, res: Response) => {
       });
   }
 };
-const requestResetPassword = async (req: any, res: Response): Promise<void> => {
+const forgetPassword = async (req: any, res: Response): Promise<void> => {
   try {
       const token = generateToken(req.user.id);
       const session = {
@@ -111,9 +110,9 @@ const requestResetPassword = async (req: any, res: Response): Promise<void> => {
         token: token,
         otp: null
       };
-      const data = await authRepositories.createSession(session);
+      await authRepositories.createSession(session);
       await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
-      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password.", user: data });
+      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password."});
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
@@ -133,7 +132,7 @@ export default {
   sendVerifyEmail,
   verifyEmail,
   loginUser,
-  requestResetPassword,
+  forgetPassword,
   resetPassword,
   logoutUser
 };
