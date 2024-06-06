@@ -50,7 +50,6 @@ const updateUserRole = async (req: Request, res: Response) => {
   }
 };
 
-
 const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId: string = req.params.id;
@@ -82,16 +81,10 @@ const updateUserProfile = async (req: Request, res: Response) => {
 
 const updatePassword = async (req: any , res: Response) => {
   try {
-       console.log(req.user.password)
        const user = await authRepositories.updateUserByAttributes("password",req.user.password, "id", req.user.id) ;
        return res.status(httpStatus.OK).json({ message: "Password updated successfully", data: {user:user}});
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message
-    });
-  }
-};
-
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status: httpStatus.INTERNAL_SERVER_ERROR,message: error.message});
+}};
 
 export default { updateUserStatus, updateUserRole, adminGetUsers , adminGetUser,updateUserProfile ,getUserDetails, updatePassword};
