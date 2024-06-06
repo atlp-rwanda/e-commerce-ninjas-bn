@@ -8,36 +8,34 @@ import sinon, { SinonStub } from "sinon";
 import httpStatus from "http-status";
 import app from "../../../index";
 import Users from "../../../databases/models/users";
-import authRepositories from "../../auth/repository/authRepositories"
+import authRepositories from "../../auth/repository/authRepositories";
 import { isUsersExist } from "../../../middlewares/validation";
 import { Op } from "sequelize";
 import path from "path";
-import fs from 'fs'
+import fs from "fs";
 import uploadImages from "../../../helpers/uploadImage";
 import { v2 as cloudinary } from "cloudinary";
 import userRepositories from "../repository/userRepositories";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
-const imageBuffer = fs.readFileSync(imagePath)
+const imageBuffer = fs.readFileSync(imagePath);
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("Update User Status test case ", () => {
-
   let getUserStub: sinon.SinonStub;
   let updateUserStub: sinon.SinonStub;
   const testUserId = 1;
   let userId: number = null;
   const unknownId = 100;
-  let token
-
+  let token;
 
   it("should register a new user", (done) => {
     router()
       .post("/api/auth/register")
       .send({
         email: "nda1234@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -57,7 +55,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "$321!Pass!123$"
+        password: "$321!Pass!123$",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -116,19 +114,21 @@ describe("Update User Status test case ", () => {
       });
   });
   it("Should return 500 internal server error", (done) => {
-    sinon.stub(authRepositories, "updateUserByAttributes").throws(new Error("Internal server error"));
+    sinon
+      .stub(authRepositories, "updateUserByAttributes")
+      .throws(new Error("Internal server error"));
 
     router()
-    .put(`/api/user/admin-update-user-status/${userId}`)
-    .send({ status: "disabled" })
-    .set("authorization", `Bearer ${token}`)
-    .end((err, res) => {
-      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.body).to.be.an("object");
-      expect(res.body).to.have.property("message", "Internal server error")
-      done(err)
-    })
-  })
+      .put(`/api/user/admin-update-user-status/${userId}`)
+      .send({ status: "disabled" })
+      .set("authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "Internal server error");
+        done(err);
+      });
+  });
 });
 
 describe("User Repository Functions", () => {
@@ -198,26 +198,24 @@ describe("User Repository Functions", () => {
 });
 
 describe("Admin update User roles", () => {
-
   before(async () => {
     await Users.destroy({
-      where: {}
+      where: {},
     });
   });
   after(async () => {
     await Users.destroy({
-      where: {}
+      where: {},
     });
   });
   let userIdd: number = null;
-
 
   it("should register a new user", (done) => {
     router()
       .post("/api/auth/register")
       .send({
         email: "nda12345@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -236,8 +234,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email:"admin@gmail.com",
-        password:"$321!Pass!123$"
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -245,36 +243,36 @@ describe("Admin update User roles", () => {
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
         expect(response.body.data).to.have.property("token");
-      
+
         done(error);
       });
   });
 
   it("Should notify if no role is specified", async () => {
-
-    const response = await router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
-
+    const response = await router().put(
+      `/api/user/admin-update-role/${userIdd}`
+    );
 
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
     expect(response.body).to.have.property("message");
   });
 
   it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {
-
     const response = await router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .send({ role: "Hello" })
-  
+      .send({ role: "Hello" });
+
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    expect(response.body).to.have.property("message", "Only admin, buyer and seller are allowed.");
+    expect(response.body).to.have.property(
+      "message",
+      "Only admin, buyer and seller are allowed."
+    );
   });
 
   it("Should return error when invalid Id is passed", async () => {
     const response = await router()
       .put("/api/user/admin-update-role/invalid-id")
-      .send({ role: "admin" })
-
+      .send({ role: "admin" });
 
     expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
     expect(response).to.have.property(
@@ -287,7 +285,7 @@ describe("Admin update User roles", () => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
       .send({ role: "admin" })
-   
+
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
         expect(res.body).to.be.an("object");

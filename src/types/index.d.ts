@@ -12,37 +12,35 @@ export interface ILogin {
 }
 
 export interface ExtendRequest extends Request {
-    files: Express.Multer.File[];
-    user?: user;
-    shop?:Shops;
+  files: Express.Multer.File[];
+  user?: user;
+  shop?: Shops;
 }
 
-
-export interface IProduct{
-    id: string;
-    shopId: string;
-    name: string;
-    description?: string;
-    price: number;
-    discount?: string;
-    category: string;
-    expiryDate?: Date;
-    expired: boolean;
-    bonus?: string;
-    images: string[];
-    quantity: number;
-    isAvailable: string;
-    createdAt: Date;
-    updatedAt: Date;
+export interface IProduct {
+  id: string;
+  shopId: string;
+  name: string;
+  description?: string;
+  price: number;
+  discount?: string;
+  category: string;
+  expiryDate?: Date;
+  expired: boolean;
+  bonus?: string;
+  images: string[];
+  quantity: number;
+  isAvailable: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface IShops{
-    id: number;
-    userId: number;
-    name: string;
-    description?: string;
+export interface IShops {
+  id: number;
+  userId: number;
+  name: string;
+  description?: string;
 }
-
 
 export interface userInfo {
   email: string;
@@ -51,4 +49,3 @@ export interface userInfo {
   picture: string;
   accToken: string;
 }
-

@@ -38,7 +38,6 @@
       "description": "Seller Endpoint"
     }
   ],
-<<<<<<< HEAD
   "schemes": [
     "http",
     "https"
@@ -132,11 +131,6 @@
       }
     }
   },
-=======
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
->>>>>>> 01aa5dc (adding some test for validation middleware)
   "paths": {
     "/": {
       "get": {
@@ -390,7 +384,6 @@
         }
       }
     },
-<<<<<<< HEAD
 
     "/api/auth/google": {
       "get": {
@@ -407,60 +400,10 @@
       }
     },
     "/api/auth/logout": {
-=======
-    "/api/auth/verify-otp/{id}": {
->>>>>>> 01aa5dc (adding some test for validation middleware)
       "post": {
         "tags": [
           "Authentication Routes"
         ],
-<<<<<<< HEAD
-=======
-        "summary": "Verify The OTP Sent",
-        "description": "The Verification of OTP Sent to SMS  ",
-         "parameters": [
-          {
-            "in":"path",
-            "name": "id",
-            "type": "string",
-            "description":"Pass the ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                
-                  "otp": {
-                    "type": "string",
-                    "format": "otp",
-                    "example": "otp"
-                  }
-                },
-                "required": [
-                  "OTP"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification of OTP  successful"
-          },
-          "400": {
-            "description": "Invalid Code / Bad request"
-          }
-        }
-      }
-    },
-    "/api/auth/logout": {
-      "post": {
-        "tags": ["Authentication Routes"],
->>>>>>> 01aa5dc (adding some test for validation middleware)
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -481,7 +424,6 @@
         }
       }
     },
-<<<<<<< HEAD
     "/api/user/admin-get-users": {
       "get": {
         "tags": [
@@ -667,11 +609,6 @@
         "tags": [
           "Admin Routes"
         ],
-=======
-    "/api/users/admin-update-user-status/{id}": {
-      "put": {
-        "tags": ["Admin User Routes"],
->>>>>>> 01aa5dc (adding some test for validation middleware)
         "security": [
           {
             "bearerAuth": []
@@ -803,18 +740,11 @@
         }
       }
     },
-<<<<<<< HEAD
     "/api/user/admin-update-role/{id}": {
       "put": {
         "tags": [
           "Admin Routes"
         ],
-=======
-
-    "/api/users/admin-update-role/{id}": {
-      "put": {
-        "tags": ["Admin User Routes"],
->>>>>>> 01aa5dc (adding some test for validation middleware)
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -929,7 +859,6 @@
           }
         }
       }
-<<<<<<< HEAD
     },
     "/api/shop/create-shop": {
       "post": {
@@ -1422,78 +1351,6 @@
                 }
               }
             }
-=======
-    }
-  },
-  "components": {
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "integer",
-            "nullable": true
-          },
-          "profilePicture": {
-            "type": "string",
-            "format": "uri"
-          },
-          "gender": {
-            "type": "string",
-            "enum": ["male", "female"],
-            "nullable": true
-          },
-          "birthDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "language": {
-            "type": "string",
-            "nullable": true
-          },
-          "currency": {
-            "type": "string",
-            "nullable": true
-          },
-          "role": {
-            "type": "string",
-            "nullable": true
-          },
-          "isVerified": {
-            "type": "boolean"
-          },
-          "is2FAEnabled": {
-            "type": "boolean"
-          },
-          "status": {
-            "type": "boolean"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
->>>>>>> 01aa5dc (adding some test for validation middleware)
           }
         }
       }

@@ -21,4 +21,8 @@ const hashPassword = (password: string)=>{
   return bcrypt.hashSync(password, 10);
 }
 
-  export { generateToken, decodeToken, comparePassword, hashPassword }
+const generateRandomCode = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+  export { generateToken, decodeToken, comparePassword, hashPassword, generateRandomCode }
