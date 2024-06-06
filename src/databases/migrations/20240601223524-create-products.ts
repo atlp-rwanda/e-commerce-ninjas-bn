@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryInterface, DataTypes } from "sequelize";
 
-export default {
-  up: async (queryInterface: QueryInterface, Sequelize: any) => {
-    await queryInterface.createTable("Products", {
-      id: {
-        allowNull: false,
-        primaryKey: true,
+export default{
+  up :async (queryInterface: QueryInterface, Sequelize: any)=> {
+  await queryInterface.createTable("Products", {
+    id: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
       },
       name: {
           allowNull: false,
@@ -40,6 +40,24 @@ export default {
       bonus: {
           type: DataTypes.STRING
       },
+      collectionId: {
+          allowNull: false,
+          type: DataTypes.UUID,
+          references: {
+              model: "collection",
+              key: "id"
+          },
+          onDelete: "CASCADE"
+      },
+      shopId: {
+        allowNull: false,
+        type: DataTypes.UUID,
+        references: {
+            model: "shops",
+            key: "id"
+        },
+        onDelete: "CASCADE"
+    },
       images: {
           type: DataTypes.ARRAY(DataTypes.STRING)
       },

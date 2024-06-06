@@ -35,6 +35,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Admin get user Endpoint
 - Seller view products Endpoint
 - Buyer view products Endpoint
+- Seller view products Endpoint
+- Buyer view products Endpoint
 - Logout Endpoint
 - Update User Profile Endpoint
 - Get User Profile Endpoint 
@@ -57,12 +59,14 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 9  | GET   | /api/user/admin-get-users/:id           | 200 OK      | private | Admin get one user Endpoint   |
 | 10 | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
 | 11 | POST  | /api/shop/create-shop                   | 201 OK      | private | Create shop for products      |
-| 13 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
-| 14 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
-| 15 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
-| 16 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
-| 17 | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
-| 18 | GET   | /api/collection/products                | 200 OK      | public   | Buyer view products          |
+| 12 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
+| 13  | GET   | /api/shop/shop-products         | 200 OK      | private  | Seller view products         |
+| 14 | GET   | /api/shop/all-products                | 200 OK      | public   | Buyer view products          |
+| 15 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
+| 16 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
+| 17 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
+| 18 | GET   | /api/collection/seller-products         | 200 OK      | private  | Seller view products         |
+| 19 | GET   | /api/collection/products                | 200 OK      | public   | Buyer view products          |
 
 ## INSTALLATION
 

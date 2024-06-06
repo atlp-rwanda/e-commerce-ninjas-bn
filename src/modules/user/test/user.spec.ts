@@ -269,7 +269,7 @@ describe("Admin update User roles", () => {
   it("Should update User role and return updated user", (done) => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .send({ role: "admin" })
+      .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
@@ -365,10 +365,10 @@ describe("Admin Controllers", () => {
     .end((error, response) => {
       userId = response.body.data[0].id;
 
-       expect(response.status).to.equal(httpStatus.OK);
-       expect(response.body).to.be.an("object");
-       done(error)
-     });
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.an("object");
+        done(error)
+      });
   });
 
   it("should return one user", (done) => {
