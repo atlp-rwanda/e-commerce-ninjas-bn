@@ -49,3 +49,8 @@ export interface userInfo {
   picture: string;
   accToken: string;
 }
+
+export interface IRequest extends Request {
+  loginUserId?: number;
+  token;
+}

@@ -4,11 +4,12 @@ import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
 import httpStatus from "http-status";
-import { comparePassword, decodeToken } from "../helpers";
+import { comparePassword, decodeToken, generateRandomCode } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
-
+import { sendVerificationEmail } from "../services/sendEmail";
+import { IRequest } from "../types";
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
   async (req: Request, res: Response, next: NextFunction) => {
@@ -173,25 +174,36 @@ const verifyUserCredentials = async (
         .json({ message: "Invalid Email or Password" });
     }
 
-    req.user = user;
-
+    if (!user.is2FAEnabled) {
+      (req as IRequest).loginUserId = user.id;
+    }
     const device = req.headers["user-device"];
     if (!device) {
-      return next();
+      if (!user.is2FAEnabled) {
+        req.user = user;
+        return next();
+      }
     }
-
-    const existingToken = await authRepositories.findTokenByDeviceIdAndUserId(
+    const code = generateRandomCode();
+    const session = {
+      userId: user.id,
       device,
-      user.id
+      token: null,
+      otp: code
+    };
+    await authRepositories.createSession(session);
+    await sendVerificationEmail(
+      user.email,
+      "E-Commerce Ninja Login",
+      `Dear ${
+        user.lastName || user.email
+      } \n\nUse This Code To Confirm Your Account: ${code}`
     );
-    if (existingToken) {
-      return res.status(httpStatus.OK).json({
-        message: "Logged in successfully",
-        data: { token: existingToken }
-      });
-    } else {
-      return next();
-    }
+    req.user = user;
+    return res.status(httpStatus.OK).json({
+      message: "Check your Email for OTP Confirmation",
+      data: { userId: user.id }
+    });
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)

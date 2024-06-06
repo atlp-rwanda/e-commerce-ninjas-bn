@@ -60,5 +60,7 @@
 		/* Advanced Options */
 		"forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
 		"skipLibCheck": true, /* Skip type checking all .d.ts files. */
+		"typeRoots": ["./node_modules/@types", "./types"],
+		"types": ["node", "mocha", "chai", "sinon", "sinon-chai"]
 	},
 }

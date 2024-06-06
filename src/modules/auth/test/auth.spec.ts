@@ -9,7 +9,8 @@ import httpStatus from "http-status";
 import app from "../../..";
 import {
   isUserExist,
-  verifyUserCredentials
+  verifyUserCredentials,
+  verifyOtp
 } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
@@ -21,8 +22,7 @@ import {
 import googleAuth from "../../../services/googleAuth";
 import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
-import dotenv from "dotenv";
-dotenv.config();
+import * as helpers from "../../../helpers/index";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -481,23 +481,6 @@ describe("sendVerificationEmail", () => {
     }
   });
 });
-
-describe("Passport Configuration", () => {
-  it("should serialize and deserialize user correctly", () => {
-    const user = { id: "123", username: "testuser" };
-    const doneSerialize = (err: any, serializedUser: any) => {
-      expect(err).to.be.null;
-      expect(serializedUser).to.deep.equal(user);
-    };
-    const doneDeserialize = (err: any, deserializedUser: any) => {
-      expect(err).to.be.null;
-      expect(deserializedUser).to.deep.equal(user);
-    };
-    googleAuth.passport.serializeUser(user, doneSerialize);
-    googleAuth.passport.deserializeUser(user, doneDeserialize);
-  });
-});
-
 describe("verifyUserCredentials Middleware", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -546,6 +529,22 @@ describe("verifyUserCredentials Middleware", () => {
       message: "Internal Server error",
       data: "Internal Server Error"
     });
+  });
+});
+
+describe("Passport Configuration", () => {
+  it("should serialize and deserialize user correctly", () => {
+    const user = { id: "123", username: "testuser" };
+    const doneSerialize = (err: any, serializedUser: any) => {
+      expect(err).to.be.null;
+      expect(serializedUser).to.deep.equal(user);
+    };
+    const doneDeserialize = (err: any, deserializedUser: any) => {
+      expect(err).to.be.null;
+      expect(deserializedUser).to.deep.equal(user);
+    };
+    googleAuth.passport.serializeUser(user, doneSerialize);
+    googleAuth.passport.deserializeUser(user, doneDeserialize);
   });
 });
 
@@ -683,5 +682,287 @@ describe("authenticateViaGoogle", () => {
       .true;
 
     authenticateStub.restore();
+  });
+});
+
+describe("updateUser2FA", () => {
+  let req;
+  let res;
+  let token: string = null;
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "john.doe@example.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should enable 2FA for the user and return success message", (done) => {
+    router()
+      .put("/api/auth/enable-2f")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ is2FAEnabled: true })
+      .end((error, response) => {
+        expect(response.body).to.have.property("status", httpStatus.OK);
+        expect(response.body).to.have.property(
+          "message",
+          "2FA enabled successfully."
+        );
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+  it("should return internal server error message if updating 2FA fails", (done) => {
+    const errorMessage = "Failed to enable 2FA";
+    sinon
+      .stub(authRepositories, "updateUserByAttributes")
+      .throws(new Error(errorMessage));
+    router()
+      .put("/api/auth/enable-2f")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ is2FAEnabled: true })
+      .end((error, response) => {
+        console.log(response);
+        expect(response.body).to.have.property(
+          "status",
+          httpStatus.INTERNAL_SERVER_ERROR
+        );
+        expect(response.body).to.have.property("message", errorMessage);
+        done(error);
+      });
+  });
+});
+
+describe("verifyOtp", () => {
+  let findUserByAttributesStub;
+  let findSessionByUserIdOtpStub;
+  let deleteSessionDataStub;
+  let req;
+  let res;
+  let next;
+
+  beforeEach(() => {
+    findUserByAttributesStub = sinon.stub(
+      authRepositories,
+      "findUserByAttributes"
+    );
+    findSessionByUserIdOtpStub = sinon.stub(
+      authRepositories,
+      "findSessionByUserIdOtp"
+    );
+    deleteSessionDataStub = sinon.stub(
+      authRepositories,
+      "destroySessionByAttribute"
+    );
+    req = {
+      params: { id: 1 },
+      body: { otp: 123456 }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return 404 if user is not found", async () => {
+    findUserByAttributesStub.resolves(null);
+
+    await verifyOtp(req, res, next);
+
+    expect(findUserByAttributesStub.calledOnceWithExactly("id", req.params.id))
+      .to.be.true;
+    expect(res.status.calledWith(httpStatus.NOT_FOUND)).to.be.true;
+    expect(
+      res.json.calledWith({
+        status: httpStatus.NOT_FOUND,
+        message: "User not Found."
+      })
+    ).to.be.true;
+    expect(next.called).to.be.false;
+  });
+
+  it("should return 400 if OTP is invalid or expired", async () => {
+    const user = { id: 1 };
+    findUserByAttributesStub.resolves(user);
+    findSessionByUserIdOtpStub.resolves({ otp: 654321 });
+
+    await verifyOtp(req, res, next);
+
+    expect(findUserByAttributesStub.calledOnceWithExactly("id", req.params.id))
+      .to.be.true;
+    expect(
+      findSessionByUserIdOtpStub.calledOnceWithExactly(user.id, req.body.otp)
+    ).to.be.true;
+    expect(res.status.calledWith(httpStatus.BAD_REQUEST)).to.be.true;
+    expect(
+      res.json.calledWith({
+        status: httpStatus.BAD_REQUEST,
+        message: "Invalid or expired code."
+      })
+    ).to.be.true;
+    expect(next.called).to.be.false;
+  });
+
+  it("should return 400 if OTP is expired", async () => {
+    const user = { id: 1 };
+    findUserByAttributesStub.resolves(user);
+    findSessionByUserIdOtpStub.resolves({ otp: null });
+
+    await verifyOtp(req, res, next);
+
+    expect(findUserByAttributesStub.calledOnceWithExactly("id", req.params.id))
+      .to.be.true;
+    expect(
+      findSessionByUserIdOtpStub.calledOnceWithExactly(user.id, req.body.otp)
+    ).to.be.true;
+    expect(res.status.calledWith(httpStatus.BAD_REQUEST)).to.be.true;
+    expect(
+      res.json.calledWith({
+        status: httpStatus.BAD_REQUEST,
+        message: "Code expired."
+      })
+    ).to.be.true;
+    expect(next.called).to.be.false;
+  });
+
+  it("should return internal server error if an error occurs", async () => {
+    const errorMessage = "Internal server error";
+    findUserByAttributesStub.rejects(new Error(errorMessage));
+
+    await verifyOtp(req, res, next);
+
+    expect(findUserByAttributesStub.calledOnceWithExactly("id", req.params.id))
+      .to.be.true;
+    expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+    expect(
+      res.json.calledWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: errorMessage
+      })
+    ).to.be.true;
+    expect(next.called).to.be.false;
+  });
+});
+
+describe("verifyUserCredentials Middleware", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: any;
+
+  beforeEach(() => {
+    req = {
+      body: {
+        email: "user@example.com",
+        password: "Password@123"
+      },
+      headers: {}
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return 400 if the user is not found", async () => {
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      message: "Invalid Email or Password"
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should return 400 if the password does not match", async () => {
+    const user: any = {
+      id: 1,
+      email: req.body.email,
+      password: "hashedPassword"
+    };
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+    sinon.stub(helpers, "comparePassword").resolves(false);
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      message: "Invalid Email or Password"
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should return 500 if there is an internal server error while finding user", async () => {
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .throws(new Error("Internal Server Error"));
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      message: "Internal Server error",
+      data: "Internal Server Error"
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should return 500 if there is an internal server error while comparing passwords", async () => {
+    const user: any = {
+      id: 1,
+      email: req.body.email,
+      password: "hashedPassword"
+    };
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+    sinon
+      .stub(helpers, "comparePassword")
+      .throws(new Error("Comparison Error"));
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      message: "Internal Server error",
+      data: "Comparison Error"
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should call next if user is found and password matches", async () => {
+    const user: any = {
+      id: 1,
+      email: req.body.email,
+      password: "hashedPassword"
+    };
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+    sinon.stub(helpers, "comparePassword").resolves(true);
+
+    await verifyUserCredentials(req as Request, res as Response, next);
+    expect(req.user).to.deep.equal(user);
   });
 });
