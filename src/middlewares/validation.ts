@@ -9,41 +9,64 @@ import productRepositories from "../modules/product/repositories/productReposito
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
 
-const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
+
+const validation =
+  (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { error } = schema.validate(req.body, { abortEarly: false });
+      const { error } = schema.validate(req.body, { abortEarly: false });
 
-        if (error) {
-            throw new Error(error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "));
-        }
+      if (error) {
+        throw new Error(
+          error.details
+            .map((detail) => detail.message.replace(/"/g, ""))
+            .join(", ")
+        );
+      }
 
-        return next();
+      return next();
     } catch (error) {
-        res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: error.message });
+      res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
     }
-};
+  };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        let userExists: UsersAttributes | null = null;
+  try {
+    let userExists: UsersAttributes | null = null;
 
-        if (req.body.email) {
-            userExists = await authRepositories.findUserByAttributes("email", req.body.email);
-            if (userExists) {
-                if (userExists.isVerified) {
-                    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists." });
-                }
-                return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account already exists. Please verify your account" });
-            }
+    if (req.body.email) {
+      userExists = await authRepositories.findUserByAttributes(
+        "email",
+        req.body.email
+      );
+      if (userExists) {
+        if (userExists.isVerified) {
+          return res.status(httpStatus.BAD_REQUEST).json({
+            status: httpStatus.BAD_REQUEST,
+            message: "Account already exists."
+          });
         }
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Account already exists. Please verify your account"
+        });
+      }
+    }
 
-        if (req.params.id) {
-            userExists = await authRepositories.findUserByAttributes("id", req.params.id);
-            if (userExists) {
-                return next();
-            }
-            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "User not found" });
-        }
+    if (req.params.id) {
+      userExists = await authRepositories.findUserByAttributes(
+        "id",
+        req.params.id
+      );
+      if (userExists) {
+        return next();
+      }
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ status: httpStatus.NOT_FOUND, message: "User not found" });
+    }
 
         return next();
     } catch (error) {
