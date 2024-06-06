@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
 import httpStatus from "http-status";
-import { comparePassword, decodeToken } from "../helpers";
+import { comparePassword, decodeToken, hashPassword } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
@@ -198,6 +198,27 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
 }
+const credential = async (req, res, next) => {
+    try {
+      let user = null;
+      if (req.user.id) {
+        user = await authRepositories.findUserByAttributes("id", req.user.id);
+      }
+  
+      const compareDbPassword = await comparePassword(req.body.oldPassword, user.password);
+      if (!compareDbPassword) {
+        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid password." });
+      }
+  
+      const hashedPassword = await hashPassword(req.body.newPassword);
+      user.password = hashedPassword;
+      await user.save();
+      req.user = user;
+      next();
+    } catch (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+  };  
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
@@ -209,4 +230,4 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
     next();
 };
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled, isGoogleEnabled };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled, isGoogleEnabled, credential };
