@@ -11,7 +11,7 @@ interface ExtendedRequest extends Request {
   user: UsersAttributes;
   session: Session;
 }
-
+ 
 export const userAuthorization = function (roles: string[]) {
   return async (req: ExtendedRequest, res: Response, next: NextFunction) => {
     try {
