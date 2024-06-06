@@ -49,9 +49,9 @@ export default {
   createUser,
   createSession,
   findUserByAttributes,
-  destroySession,
-  updateUserByAttributes,
   findSessionByAttributes,
   findSessionByUserIdAndToken,
   findTokenByDeviceIdAndUserId,
-};
+  destroySession,
+  updateUserByAttributes,
+}

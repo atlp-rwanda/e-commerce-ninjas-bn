@@ -3,7 +3,11 @@
 import app from "./index";
 import chai from "chai";
 import chaiHttp from "chai-http";
+<<<<<<< HEAD
 const { expect } = require("chai");
+=======
+import { expect } from "chai";
+>>>>>>> 01aa5dc (adding some test for validation middleware)
 const sinon = require("sinon");
 const sinonChai = require("sinon-chai");
 const { userAuthorization } = require("./middlewares/authorization");
@@ -13,7 +17,11 @@ import authRepositories from "./modules/auth/repository/authRepositories";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
+<<<<<<< HEAD
 
+=======
+//
+>>>>>>> 01aa5dc (adding some test for validation middleware)
 const router = () => chai.request(app);
 
 describe("Initial configuration", () => {
@@ -113,6 +121,7 @@ describe("userAuthorization middleware", () => {
     });
   });
 
+<<<<<<< HEAD
   it("should respond with 401 if user status is not enabled", async () => {
     req.headers.authorization = "Bearer validToken";
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
@@ -131,19 +140,29 @@ describe("userAuthorization middleware", () => {
     });
   });
 
+=======
+>>>>>>> 01aa5dc (adding some test for validation middleware)
   it("should call next if user is authorized", async () => {
     req.headers.authorization = "Bearer validToken";
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
     sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({});
     sinon
       .stub(authRepositories, "findUserByAttributes")
+<<<<<<< HEAD
       .resolves({ role: "admin", status: "enabled" });
+=======
+      .resolves({ role: "admin" });
+>>>>>>> 01aa5dc (adding some test for validation middleware)
 
     const middleware = userAuthorization(roles);
     await middleware(req, res, next);
 
     expect(next).to.have.been.calledOnce;
+<<<<<<< HEAD
     expect(req.user).to.deep.equal({ role: "admin", status: "enabled" });
+=======
+    expect(req.user).to.deep.equal({ role: "admin" });
+>>>>>>> 01aa5dc (adding some test for validation middleware)
     expect(req.session).to.deep.equal({});
   });
 

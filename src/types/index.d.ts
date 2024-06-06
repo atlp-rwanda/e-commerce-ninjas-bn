@@ -17,6 +17,7 @@ export interface ExtendRequest extends Request {
     shop?:Shops;
 }
 
+
 export interface IProduct{
     id: string;
     shopId: string;
@@ -42,6 +43,7 @@ export interface IShops{
     description?: string;
 }
 
+
 export interface userInfo {
   email: string;
   firstName: string;
@@ -49,3 +51,4 @@ export interface userInfo {
   picture: string;
   accToken: string;
 }
+

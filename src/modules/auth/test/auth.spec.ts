@@ -18,6 +18,10 @@ import {
 import googleAuth from "../../../services/googleAuth";
 import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
+import dotenv from "dotenv";
+dotenv.config();
+import { comparePassword } from "../../../helpers";
+
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);

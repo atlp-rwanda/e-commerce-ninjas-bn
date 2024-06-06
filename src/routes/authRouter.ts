@@ -39,6 +39,11 @@ router.post(
   verifyUserCredentials,
   authControllers.loginUser
 );
+router.post(
+  "/logout",
+  userAuthorization(["buyer", "seller", "admin"]),
+  authControllers.logoutUser
+);
 
 router.post(
   "/logout",

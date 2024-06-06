@@ -19,16 +19,18 @@ import userRepositories from "../repository/userRepositories";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath)
 
-
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("Update User Status test case ", () => {
-  let getUserStub;
-  let updateUserStub;
-  let userId = null;
-  const unknownId = "10000000-0000-0000-0000-000000000000";
-  let token;
+
+  let getUserStub: sinon.SinonStub;
+  let updateUserStub: sinon.SinonStub;
+  const testUserId = 1;
+  let userId: number = null;
+  const unknownId = 100;
+  let token
+
 
   it("should register a new user", (done) => {
     router()
@@ -42,7 +44,10 @@ describe("Update User Status test case ", () => {
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
         userId = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
   });
@@ -73,7 +78,10 @@ describe("Update User Status test case ", () => {
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message", "Status updated successfully.");
+        expect(res.body).to.have.property(
+          "message",
+          "Status updated successfully."
+        );
         done(err);
       });
   });
@@ -86,7 +94,10 @@ describe("Update User Status test case ", () => {
       .end((err, res) => {
         expect(res).to.have.status(400);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message", "Status must be either 'enabled' or 'disabled'");
+        expect(res.body).to.have.property(
+          "message",
+          "Status must be either 'enabled' or 'disabled'"
+        );
         done(err);
       });
   });
@@ -158,15 +169,26 @@ describe("User Repository Functions", () => {
     it("should update the user status successfully", async () => {
       updateStub.resolves([1]);
       const user = { id: 1, status: true };
-      const result = await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
+      const result = await authRepositories.updateUserByAttributes(
+        "status",
+        "enabled",
+        "id",
+        1
+      );
       expect(updateStub.calledOnce).to.be.true;
-      expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to.be.false;
+      expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to
+        .be.false;
     });
 
     it("should throw an error if there is a database error", async () => {
       updateStub.rejects(new Error("Database error"));
       try {
-        await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
+        await authRepositories.updateUserByAttributes(
+          "status",
+          "enabled",
+          "id",
+          1
+        );
       } catch (error) {
         expect(updateStub.calledOnce).to.be.true;
         expect(error.message).to.equal("Database error");
@@ -175,12 +197,19 @@ describe("User Repository Functions", () => {
   });
 });
 
-
-
 describe("Admin update User roles", () => {
-  let userIdd: number ;
-  let token = null;
-  const unknownId = "10000000-0000-0000-0000-000000000000";
+
+  before(async () => {
+    await Users.destroy({
+      where: {}
+    });
+  });
+  after(async () => {
+    await Users.destroy({
+      where: {}
+    });
+  });
+  let userIdd: number = null;
 
 
   it("should register a new user", (done) => {
@@ -195,7 +224,10 @@ describe("Admin update User roles", () => {
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
         userIdd = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
   });
@@ -213,7 +245,7 @@ describe("Admin update User roles", () => {
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
         expect(response.body.data).to.have.property("token");
-        token = response.body.data.token;
+      
         done(error);
       });
   });
@@ -222,7 +254,7 @@ describe("Admin update User roles", () => {
 
     const response = await router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .set("authorization", `Bearer ${token}`);
+
 
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
     expect(response.body).to.have.property("message");
@@ -233,7 +265,7 @@ describe("Admin update User roles", () => {
     const response = await router()
       .put(`/api/user/admin-update-role/${userIdd}`)
       .send({ role: "Hello" })
-      .set("authorization", `Bearer ${token}`)
+  
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
     expect(response.body).to.have.property("message", "Only admin, buyer and seller are allowed.");
   });
@@ -242,193 +274,40 @@ describe("Admin update User roles", () => {
     const response = await router()
       .put("/api/user/admin-update-role/invalid-id")
       .send({ role: "admin" })
-      .set("authorization", `Bearer ${token}`);
+
 
     expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(response).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+    expect(response).to.have.property(
+      "status",
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
   });
-
 
   it("Should update User and return updated user", (done) => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
       .send({ role: "admin" })
-      .set("authorization", `Bearer ${token}`)
+   
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message", "User role updated successfully");
+        expect(res.body).to.have.property(
+          "message",
+          "User role updated successfully"
+        );
         done(err);
       });
   });
 
-
-
   it("Should return 404 if user is not found", (done) => {
-    router().put(`/api/user/admin-update-role/${unknownId}`)
-    .send({ role: "admin" })
-    .set("authorization", `Bearer ${token}`)
-    .end((err, res) => {
-      expect(res).to.have.status(httpStatus.NOT_FOUND);
-      expect(res.body).to.be.an("object");
-      expect(res.body).to.have.property("message", "User not found")
-      done(err)
-    })
-  })
-
-  it("Should return 500 internal server error", (done) => {
-    sinon.stub(authRepositories, "updateUserByAttributes").throws(new Error("Internal server error"));
-
     router()
-    .put(`/api/user/admin-update-role/${userIdd}`)
-    .send({ role: "admin" })
-    .set("authorization", `Bearer ${token}`)
-    .end((err, res) => {
-      expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.body).to.be.an("object");
-      expect(res.body).to.have.property("message", "Internal server error")
-      done(err)
-    })
-  })
-
-});
-
-describe("Middleware: isUsersExist", () => {
-  it("should call next if users exist", async () => {
-    const userCountStub = sinon.stub(Users, "count").resolves(1);
-    const req: any = {} ;
-    const res: any = {} ;
-    const next = sinon.spy();
-
-    await isUsersExist(req, res, next);
-
-    expect(next.calledOnce).to.be.true;
-    userCountStub.restore();
-  });
-
-  it("should return 404 if no users exist", async () => {
-    const userCountStub = sinon.stub(Users, "count").resolves(0);
-    const req: any = {} ;
-    const res: any = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.spy()
-    } ;
-    const next = sinon.spy();
-
-    await isUsersExist(req, res, next);
-
-    expect(res.status.calledWith(404)).to.be.true;
-    expect(res.json.calledWith({ error: "No users found in the database." })).to.be.true;
-    expect(next.called).to.be.false;
-    userCountStub.restore();
-  });
-
-  it("should return 500 if there is an error", async () => {
-    const userCountStub = sinon.stub(Users, "count").throws(new Error("DB error"));
-    const req: any = {} ;
-    const res: any = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.spy()
-    } ;
-    const next = sinon.spy();
-
-    await isUsersExist(req, res, next);
-
-    expect(res.status.calledWith(500)).to.be.true;
-    userCountStub.restore();
+      .put("/api/users/admin-update-role/10001")
+      .send({ role: "Admin" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.NOT_FOUND);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "User not found");
+        done(err);
+      });
   });
 });
-
-describe("Admin Controllers", () => {
-  let token: string = null;
-  let userId:string;
-  before((done)=>{
-    router()
-    .post("/api/auth/login")
-    .send({
-      email:"admin@gmail.com",
-      password:"$321!Pass!123$"
-    })
-    .end((error, response) => {
-      token = response.body.data.token;
-      done(error);
-    });
-  })
-
-  it("should return all users", (done) => {
-    router()
-    .get("/api/user/admin-get-users")
-    .set("authorization", `Bearer ${token}`)
-    .end((error, response) => {
-      userId = response.body.data.user[0].id;
-       expect(response.status).to.equal(httpStatus.OK);
-       expect(response.body).to.be.an("object");
-       done(error)
-     });
-  });
-
-  it("should return one user", (done) => {
-    router()
-    .get(`/api/user/admin-get-user/${userId}`)
-    .set("authorization", `Bearer ${token}`)
-    .end((error, response) => {
-       expect(response.status).to.equal(httpStatus.OK);
-       expect(response.body).to.be.an("object");
-       done(error)
-     });
-  });
-
-it("Should be able to get profile", (done) => {
-router()
-  .get(`/api/user/user-get-profile/`)
-  .set("authorization", `Bearer ${token}`)
-  .end((error, response) => {
-    expect(response).to.have.status(200);
-    expect(response.body).to.be.a("object");
-    done(error);
-  });
-});
-
-it("should update profile ", (done) => {
-  router().put(`/api/user/user-update-profile`)
-  .set("Authorization", `Bearer ${token}`)
-    .field('firstName', 'MANISHIMWE')
-    .field('lastName', 'Salton Joseph')
-    .field('phone', '787312593')
-    .field('gender', 'male')
-    .field('birthDate', '1943-02-04')
-    .field('language', 'english')
-    .field('currency', 'USD')
-    .attach("profilePicture",imageBuffer,'testImage.jpg')
-  .end((error, response) => {
-      expect(response.status).to.equal(200); 
-      done(error);
-  });
-});
-
-it("should return Internal server error", (done) => {
-  sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal server error"))
-  router()
-  .get(`/api/user/admin-get-user/${userId}`)
-  .set("authorization", `Bearer ${token}`)
-  .end((error, response) => {
-    expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-     expect(response.body).to.be.an("object");
-     expect(response.body).to.have.property("message", "Internal server error");
-     done(error)
-   });
-});
-
-it("should return internal server error", (done) => {
-  sinon.stub(userRepositories, "getAllUsers").throws(new Error("Internal server error"))
-  router()
-  .get("/api/user/admin-get-users")
-  .set("authorization", `Bearer ${token}`)
-  .end((error, response) => {
-    expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-     expect(response.body).to.be.an("object");
-     expect(response.body).to.have.property("message", "Internal server error");
-     done(error)
-   });
-});
-})

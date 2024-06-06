@@ -8,7 +8,6 @@ import Document from "../swagger.json";
 import router from "./routes";
 import httpStatus from "http-status";
 
-
 dotenv.config();
 const app: Express = express();
 
