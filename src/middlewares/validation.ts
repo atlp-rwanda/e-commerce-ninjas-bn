@@ -151,12 +151,12 @@ const verifyUserCredentials = async (
 
 const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
-        if(!shop){
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
+        if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -167,11 +167,11 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
 }
 
 
-const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
+const isShopExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
-        if(shop){
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (shop) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
         }
         return next();
     } catch (error) {
@@ -197,8 +197,10 @@ const getBuyerProducts = async (req: any, res: Response) => {
         const limit = Number(req.query.limit) || 10;
         if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
-        }
-        const allProducts = await productRepositories.getAllProducts();
+            }
+            const allProducts = await productRepositories.getAllProducts();
+            console.log("Hello there",allProducts)
+   
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
 
@@ -243,7 +245,7 @@ const getShopProducts = async (req: any, res: Response) => {
         if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
         }
-        const shop = await productRepositories.findByModelAndAttributes(Shop, "userId", "userId", user.id, user.id);
+        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
 
         if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
@@ -281,6 +283,4 @@ const getShopProducts = async (req: any, res: Response) => {
 
 
 
-
-
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, getShopProducts, getBuyerProducts };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getBuyerProducts, getShopProducts };

@@ -24,7 +24,6 @@ export const up = async (queryInterface: QueryInterface) => {
   ]);
 };
 
-  async down(queryInterface: QueryInterface) {
-    await queryInterface.bulkDelete("Products", null, {});
-  }
+export const down = async (queryInterface: QueryInterface) => {
+  await queryInterface.bulkDelete("Products", null, {});
 };

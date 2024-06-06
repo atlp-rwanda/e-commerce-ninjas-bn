@@ -454,7 +454,7 @@ it("should update profile ", (done) => {
 it("should return Internal server error", (done) => {
   sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal server error"))
   router()
-  .get(`/api/user/admin-get-user/${userId}`)
+  .get(`/api/user/admin-get-user/${profileId}`)
   .set("authorization", `Bearer ${token}`)
   .end((error, response) => {
     expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);

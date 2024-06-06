@@ -1,6 +1,3 @@
-import { QueryInterface } from "sequelize";
-import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId, userFiveId } from "../../types/uuid";
 
 import { QueryInterface  } from "sequelize"
 import { hashPassword } from "../../helpers"
@@ -59,44 +56,24 @@ const userThree = {
 }
 
 const userFour = {
-    id: userFourId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    firstName: "paccy5090",
-    lastName: "paccy2090",
-    email: "paccy5090@gmail.com",
-    password: hashPassword("$321!Pass!123$"),
-    phone: 25089767899,
-    profilePicture: "",
-    gender: "female",
-    birthDate: "2014-02-02",
-    language: "english",
-    currency: "USD",
-    role: "seller",
-    status: "enabled"
-};
-const userFive = {
-    id: userFiveId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    firstName: "dj5090",
-    lastName: "dj2090",
-    email: "dj@gmail.com",
-    password: hashPassword("$321!Pass!123$"),
-    phone: 25089767899,
-    profilePicture: "",
-    gender: "female",
-    birthDate: "2014-02-02",
-    language: "english",
-    currency: "USD",
-    role: "seller",
-    status: "enabled"
-};
+  id: userFourId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  firstName:"SellerTest",
+  lastName:"SellerTest",
+  email:"testingseller@gmail.com",
+  password: hashPassword("$321!Pass!123$"),
+  phone:25089767099,
+  profilePicture: "",
+  gender: "male",
+  birthDate: "2-2-2014",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled"
+}
 
-export const up = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkInsert("users", [userOne, userTwo, userThree, userFour, userFive]);
-};
+const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour])
 
-export const down = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete("users", {});
-};
+const down = (queryInterface: QueryInterface) => queryInterface.bulkDelete("users",[])
+export { up, down }
