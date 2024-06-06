@@ -28,14 +28,16 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
-- Admin get users Endpoint
-- Admin get user Endpoint
+- login vie google Endpoint
 - Admin Update Status Endpoint
 - Admin Update Role Endpoint
+- Admin get users Endpoint
+- Admin get user Endpoint
 - Logout Endpoint
 - Update User Profile Endpoint
 - Get User Profile Endpoint 
-- Login Via google account
+- Seller create shop Endpoint
+- Seller create product Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -47,14 +49,17 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 3  | GET   | /api/auth/verify-email/:token           | 200 OK      | public  | Verifying email               |
 | 4  | POST  | /api/auth/send-verify-email             | 200 OK      | public  | Resend verification email     |
 | 5  | POST  | /api/auth/login                         | 200 OK      | public  | Login with Email and Password |
-| 6  | GET   | /api/user/admin-get-users               | 200 OK      | private | Admin get all users Endpoint  |
-| 7  | GET   | /api/user/admin-get-user/:id            | 200 OK      | private | Admin get user Endpoint       |
-| 8  | PUT   | /api/user/admin-update-user-status/:id  | 200 OK      | private | Admin Update Status Endpoint  |
-| 9  | PUT   | /api/user/admin-update-role/:id         | 200 OK      | private | Admin Update Role Endpoint    |
+| 6  | PUT   | /admin-update-user-status/:id           | 200 OK      | private | Admin Update Status Endpoint  |
+| 7  | PUT   | /admin-update-role/:id                  | 200 OK      | private | Admin Update role   Endpoint  |
+| 8  | GET   | /api/user/admin-get-users               | 200 OK      | private | Admin get all users Endpoint  |
+| 9  | GET   | /api/user/admin-get-users/:id           | 200 OK      | private | Admin get one user Endpoint   |
 | 10 | POST  | /api/auth/logout                        | 200 OK      | private | Logout user                   |
-| 11 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
-| 11 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
-| 12 | GET   | /api/auth/google                        | 200 OK      | public  | Login Via google account      |
+| 11 | POST  | /api/shop/create-shop                   | 201 OK      | private | Create shop for products      |
+| 13 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
+| 14 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
+| 15 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
+| 15 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
+
 ## INSTALLATION
 
 1. Clone the repository:
