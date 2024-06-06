@@ -44,12 +44,12 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
         if (userExists.isVerified) {
           return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
-            message: "Account already exists.",
+            message: "Account already exists."
           });
         }
         return res.status(httpStatus.BAD_REQUEST).json({
           status: httpStatus.BAD_REQUEST,
-          message: "Account already exists. Please verify your account",
+          message: "Account already exists. Please verify your account"
         });
       }
     }
@@ -71,7 +71,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -142,7 +142,7 @@ const isAccountVerified = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -187,7 +187,7 @@ const verifyUserCredentials = async (
     if (existingToken) {
       return res.status(httpStatus.OK).json({
         message: "Logged in successfully",
-        data: { token: existingToken },
+        data: { token: existingToken }
       });
     } else {
       return next();
@@ -222,7 +222,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     if (isProductAvailable) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "Please update the quantities.",
+        message: "Please update the quantities."
       });
     }
     req.shop = shop;
@@ -230,7 +230,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -246,14 +246,14 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
         message: "Already have a shop.",
-        data: { shop: shop },
+        data: { shop: shop }
       });
     }
     return next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -282,5 +282,5 @@ export {
   isUsersExist,
   isProductExist,
   isShopExist,
-  transformFilesToBody,
+  transformFilesToBody
 };
