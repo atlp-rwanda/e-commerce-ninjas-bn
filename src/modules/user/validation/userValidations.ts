@@ -21,17 +21,10 @@ export const statusSchema = Joi.object({
 });
 
 export const roleSchema = Joi.object({
-<<<<<<< HEAD
   role: Joi.string().valid("admin", "buyer", "seller").required().messages({
       "any.required": "The 'role' parameter is required.",
       "string.base": "The 'role' parameter must be a string.",
       "any.only": "Only admin, buyer and seller are allowed."
-=======
-  role: Joi.string().valid("Admin", "Buyer", "Seller").required().messages({
-    "any.required": "The 'role' parameter is required.",
-    "string.base": "The 'role' parameter must be a string.",
-    "any.only": "Only Admin, Buyer and Seller are allowed."
->>>>>>> 01aa5dc (adding some test for validation middleware)
   })
 });
 const userSchema = Joi.object<User>({
