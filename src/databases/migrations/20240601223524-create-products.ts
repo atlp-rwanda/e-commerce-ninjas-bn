@@ -40,15 +40,6 @@ export default{
       bonus: {
           type: DataTypes.STRING
       },
-      collectionId: {
-          allowNull: false,
-          type: DataTypes.UUID,
-          references: {
-              model: "collection",
-              key: "id"
-          },
-          onDelete: "CASCADE"
-      },
       shopId: {
         allowNull: false,
         type: DataTypes.UUID,
