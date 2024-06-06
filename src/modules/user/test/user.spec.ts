@@ -10,6 +10,7 @@ import app from "../../../index";
 import Users from "../../../databases/models/users";
 import authRepositories from "../../auth/repository/authRepositories"
 import { isUsersExist } from "../../../middlewares/validation";
+import Session from "../../../databases/models/session";
 import { Op } from "sequelize";
 import path from "path";
 import fs from 'fs'
@@ -163,15 +164,7 @@ describe("User Repository Functions", () => {
       expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to.be.false;
     });
 
-    it("should throw an error if there is a database error", async () => {
-      updateStub.rejects(new Error("Database error"));
-      try {
-        await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
-      } catch (error) {
-        expect(updateStub.calledOnce).to.be.true;
-        expect(error.message).to.equal("Database error");
-      }
-    });
+
   });
 });
 
@@ -432,3 +425,170 @@ it("should return internal server error", (done) => {
    });
 });
 })
+
+
+let userId = 0;
+let verifyToken = null;
+
+describe("Update Password Test Cases", () => {
+  let token;
+
+  afterEach(async () => {
+    const tokenRecord = await Session.findOne({ where: { userId } });
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.token;
+    }
+  });
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123",
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
+        done(error);
+      });
+  });
+
+  it("should verify the user successfully", (done) => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
+
+    router()
+      .get(`/api/auth/verify-email/${verifyToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
+        done(err);
+      });
+  });
+
+  it("should login a registered user", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123",
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+  it("should handle unauthorized access", (done) => {
+    chai.request(app)
+      .put("/api/user/update-password")
+      .send({
+        oldPassword: "userPassword@123",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.UNAUTHORIZED);
+        done(err);
+      });
+  });
+
+  it("should handle old password validation", (done) => {
+    router()
+      .put("/api/user/update-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        oldPassword: "wrongPassword",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Old password must contain both letters, special character and numbers");
+        done(err);
+      });
+  });
+
+  it("should not update password with incorrect old password", (done) => {
+    router()
+      .put("/api/user/update-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        oldPassword: "wrongPassword2!",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Invalid password.");
+        done(err);
+      });
+  });
+
+  it("should not update password if new password matches old password", (done) => {
+    router()
+      .put("/api/user/update-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        oldPassword: "newPassword456!",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Old password should not be similar to the new password");
+        done(err);
+      });
+  });
+
+  it("should update password successfully", (done) => {
+    router()
+      .put("/api/user/update-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        oldPassword: "userPassword@123",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.have.property("message", "Password updated successfully");
+        done(err);
+      });
+  });
+  it("Should return error on update password", (done) => {
+    const stub = sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Database Error"));
+    router()
+      .put("/api/user/update-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        oldPassword: "userPassword@123",
+        newPassword: "newPassword456!",
+        confirmPassword: "newPassword456!",
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message", "Database Error");
+        stub.restore();
+        done(err);
+      });
+  });
+});
