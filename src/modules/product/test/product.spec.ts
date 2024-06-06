@@ -13,6 +13,8 @@ import { fileFilter } from "../../../helpers/multer";
 import { isCollectionExist, isProductExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
+import productController from "../controller/productController";
+
 import { getBuyerProducts } from "../../../middlewares/validation";
 import httpStatus from "http-status";
 import Session from "../../../databases/models/session";
@@ -557,5 +559,50 @@ describe("getBuyerProducts", () => {
 
     await getBuyerProducts(req as Request, res as Response);
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
+  });
+});
+
+describe("paginatedProducts", () => {
+  let req: any;
+  let res: any;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      json: sinon.stub(),
+      status: sinon.stub().returnsThis()
+    };
+  });
+
+  it("should return paginated results with status 200", async () => {
+    req.paginationResults = { items: ["product1", "product2"], total: 2 };
+
+    await productController.paginatedProducts(req, res);
+
+    expect(res.json.calledOnce).to.be.true;
+    expect(res.json.firstCall.args[0]).to.deep.equal({
+      status: 200,
+      data: req.paginationResults
+    });
+  });
+
+  it("should handle errors and return status 500", async () => {
+    const error = new Error("Something went wrong");
+    const paginatedProductsWithError = async (req: any, res: Response) => {
+      try {
+        throw error;
+      } catch (err) {
+        return res.status(500).json({ error: err.message });
+      }
+    };
+
+    await paginatedProductsWithError(req, res);
+
+    expect(res.status.calledOnce).to.be.true;
+    expect(res.status.firstCall.args[0]).to.equal(500);
+    expect(res.json.calledOnce).to.be.true;
+    expect(res.json.firstCall.args[0]).to.deep.equal({
+      error: error.message
+    });
   });
 });
