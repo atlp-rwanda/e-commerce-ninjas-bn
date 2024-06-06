@@ -6,13 +6,15 @@ import {
   isAccountVerified,
   verifyUserCredentials,
   verifyUser,
-  isSessionExist
+  isSessionExist, credential
 } from "../middlewares/validation";
+import userControllers from "../modules/user/controller/userControllers";
 import {
   emailSchema,
   credentialSchema,
   resetPasswordSchema 
 } from "../modules/auth/validation/authValidations";
+import {  updatePasswordSchema } from "../modules/user/validation/userValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
 
@@ -56,5 +58,6 @@ router.get(
 
 router.post("/request-reset-password", validation(emailSchema), verifyUser, authControllers.requestResetPassword);
 router.post("/reset-password/:token", validation(resetPasswordSchema), verifyUser, isSessionExist, authControllers.resetPassword);
+router.put("/update-password", validation(updatePasswordSchema), credential, userControllers.updatePassword);
 
 export default router;
