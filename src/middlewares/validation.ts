@@ -213,3 +213,4 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
   };
 
 export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody };
+

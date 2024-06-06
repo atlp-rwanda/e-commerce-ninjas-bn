@@ -477,6 +477,23 @@ describe("sendVerificationEmail", () => {
     }
   });
 });
+
+describe("Passport Configuration", () => {
+  it("should serialize and deserialize user correctly", () => {
+    const user = { id: "123", username: "testuser" };
+    const doneSerialize = (err: any, serializedUser: any) => {
+      expect(err).to.be.null;
+      expect(serializedUser).to.deep.equal(user);
+    };
+    const doneDeserialize = (err: any, deserializedUser: any) => {
+      expect(err).to.be.null;
+      expect(deserializedUser).to.deep.equal(user);
+    };
+    googleAuth.passport.serializeUser(user, doneSerialize);
+    googleAuth.passport.deserializeUser(user, doneDeserialize);
+  });
+});
+
 describe("verifyUserCredentials Middleware", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -521,22 +538,6 @@ describe("verifyUserCredentials Middleware", () => {
       message: "Internal Server error",
       data: "Internal Server Error"
     });
-  });
-});
-
-describe("Passport Configuration", () => {
-  it("should serialize and deserialize user correctly", () => {
-    const user = { id: "123", username: "testuser" };
-    const doneSerialize = (err: any, serializedUser: any) => {
-      expect(err).to.be.null;
-      expect(serializedUser).to.deep.equal(user);
-    };
-    const doneDeserialize = (err: any, deserializedUser: any) => {
-      expect(err).to.be.null;
-      expect(deserializedUser).to.deep.equal(user);
-    };
-    googleAuth.passport.serializeUser(user, doneSerialize);
-    googleAuth.passport.deserializeUser(user, doneDeserialize);
   });
 });
 
@@ -662,6 +663,7 @@ describe("Google Authentication", () => {
         callback(null, null); 
         return (req: Request, res: Response) => { };
       });
+
   
       await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
   
@@ -671,3 +673,5 @@ describe("Google Authentication", () => {
       authenticateStub.restore();
     });
   });
+
+    
