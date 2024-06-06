@@ -1,32 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { DataTypes, QueryInterface} from "sequelize";
+/* eslint-disable no-shadow */
+import { DataTypes, Sequelize,QueryInterface  } from "sequelize";
 
 export default {
-  up: async (queryInterface: QueryInterface, Sequelize: any) => {
+  up:async(queryInterface: QueryInterface, Sequelize: Sequelize)=> {
     await queryInterface.createTable("collection", {
       id: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
       },
       name: {
         allowNull: false,
         type: DataTypes.STRING(128)
       },
-      sellerId: {
+      shopId: {
         allowNull: false,
         type: DataTypes.UUID,
         references: {
-          model: "users",
+          model: "shops", 
           key: "id"
         },
-        onDelete: "CASCADE"
+        onDelete: "CASCADE" 
       },
       description: {
         type: DataTypes.STRING,
         allowNull: true
-      },
+    },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -40,7 +40,7 @@ export default {
     });
   },
 
-  down: async (queryInterface: QueryInterface) => {
+  down: async (queryInterface: QueryInterface)=>{
     await queryInterface.dropTable("collection");
   }
 };

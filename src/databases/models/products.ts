@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelizeConnection from "../config/db.config";
@@ -6,8 +5,8 @@ import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
     declare id: number;
-    declare collectionId: number;
-    declare sellerId: number;
+    declare collectionId:number;
+    declare shopId: number;
     declare name: string;
     declare description?: string;
     declare price: number;
@@ -19,38 +18,32 @@ class Products extends Model<IProduct> {
     declare images: string[];
     declare quantity: number;
     declare isAvailable: string;
-    declare createdAt: Date;
-    declare updatedAt: Date;
-
-    static associate(models: any) {
-        Products.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
-        Products.belongsTo(models.Collection, { foreignKey: "collectionId", as: "collection" });
-    }
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 }
 
 Products.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            defaultValue: DataTypes.UUIDV4
-
-        },
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
+          },
         collectionId: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
                 model: "collection",
                 key: "id"
             },
             onDelete: "CASCADE"
         },
-        sellerId: {
+        shopId: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
-                model: "users",
+                model: "shops",
                 key: "id"
             },
             onDelete: "CASCADE"
@@ -86,8 +79,7 @@ Products.init(
             type: DataTypes.STRING
         },
         images: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: false
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         quantity: {
             allowNull: false,

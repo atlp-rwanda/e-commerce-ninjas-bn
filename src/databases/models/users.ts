@@ -4,62 +4,63 @@ import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import bcrypt from "bcrypt";
 export interface UsersAttributes {
-    id: number;
-    firstName?: string;
-    lastName?: string;
-    email: string;
-    password: string;
-    phone?: number;
-    profilePicture?: string;
-    gender?: string;
-    birthDate?: string;
-    language?: string;
-    currency?: string;
-    role?: string;
-    isVerified?: boolean;
-    isGoogleAccount?: boolean;
-    is2FAEnabled?: boolean;
-    status?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  email: string;
+  password: string;
+  phone?: number;
+  profilePicture?: string;
+  gender?: string;
+  birthDate?: string;
+  language?: string;
+  currency?: string;
+  role?: string;
+  isVerified?: boolean;
+  isGoogleAccount?: boolean;
+  is2FAEnabled?: boolean;
+  status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export interface UsersCreationAttributes
-    extends Optional<UsersAttributes, "id"> { }
+  extends Optional<UsersAttributes, "id"> {}
 
 class Users
-    extends Model<UsersAttributes, UsersCreationAttributes>
-    implements UsersAttributes {
-    declare id: number;
-    declare firstName?: string;
-    declare lastName?: string;
-    declare email: string;
-    declare phone?: number;
-    declare profilePicture?: string;
-    declare gender?: string;
-    declare birthDate?: string;
-    declare language?: string;
-    declare currency?: string;
-    declare role?: string;
-    declare isVerified?: boolean;
-    declare isGoogleAccount?: boolean;
-    declare is2FAEnabled?: boolean;
-    declare status?: string;
-    declare password: string;
-    declare createdAt?: Date;
-    declare updatedAt?: Date;
+  extends Model<UsersAttributes, UsersCreationAttributes>
+  implements UsersAttributes
+{
+  declare id: number;
+  declare firstName?: string;
+  declare lastName?: string;
+  declare email: string;
+  declare phone?: number;
+  declare profilePicture?: string;
+  declare gender?: string;
+  declare birthDate?: string;
+  declare language?: string;
+  declare currency?: string;
+  declare role?: string;
+  declare isVerified?: boolean;
+  declare isGoogleAccount?: boolean;
+  declare is2FAEnabled?: boolean;
+  declare status?: string;
+  declare password: string;
+  declare createdAt?: Date;
+  declare updatedAt?: Date;
 
     static associate(models: any) {
-        Users.hasOne(models.Tokens, { foreignKey: "userId", as: "token" });
+        Users.hasOne(models.Sessions, { foreignKey: "userId",as: "session" });
     }
 }
 
 Users.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
     firstName: {
       type: new DataTypes.STRING(128),

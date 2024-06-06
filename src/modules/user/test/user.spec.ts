@@ -476,13 +476,7 @@ describe("updateUserProfile", () => {
         expect(error).to.be.an('error');
         expect(error.message).to.equal('Upload failed');
       }
-    });
-
-    after(async () => {
-      await Users.destroy({
-        where: {}
-      })
-    });
+    })
 
   });
 })

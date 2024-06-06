@@ -6,8 +6,7 @@ import Users, { UsersAttributes } from "../databases/models/users";
 import httpStatus from "http-status";
 import { comparePassword, decodeToken } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
-import Collection from "../databases/models/collection";
-import Products from "../databases/models/products";
+import Shop from "../databases/models/shops";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -149,46 +148,6 @@ const verifyUserCredentials = async (
     }
 };
 
-const isProductExist = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        const sellerId = req.user.id;
-        const collectionId = req.params.id
-        const isCollection = await productRepositories.findItemByAttributes(Collection, "id", collectionId);
-        if (!isCollection) {
-            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Collection not found" });
-        }
-        const isProductAvailable = await productRepositories.findByModelAndAttributes(Products, "name", "sellerId", req.body.name, sellerId);
-        if (isProductAvailable) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Product already exists" });
-        }
-        next();
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-    }
-}
-
-
-const isCollectionExist = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        const isCollection = await productRepositories.findByModelAndAttributes(Collection, "name", "sellerId", req.body.name, req.user.id)
-        if (!isCollection) {
-            return next();
-        }
-        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Collection already exist." });
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-    }
-}
-
-const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.files) {
-        return res.status(400).json({ status: 400, message: "Images are required" });
-    }
-
-    const files = req.files as Express.Multer.File[];
-    req.body.images = files.map(file => file.path);
-    next();
-};
 
 
 
@@ -204,7 +163,7 @@ const getBuyerProducts = async (req: any, res: Response) => {
         const endIndex = startIndex + limit;
 
         const paginatedProducts = allProducts.slice(startIndex, endIndex);
-        
+
         let nextPage: { page: number; limit: number } | undefined;
         let previousPage: { page: number; limit: number } | undefined;
 
@@ -230,7 +189,7 @@ const getBuyerProducts = async (req: any, res: Response) => {
 
 
 
-const getSellerProducts = async (req: any, res: Response) => {
+const getShopProducts = async (req: any, res: Response) => {
     try {
         const user = req.user;
 
@@ -244,8 +203,12 @@ const getSellerProducts = async (req: any, res: Response) => {
         if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
         }
+        const shop = await productRepositories.findByModelAndAttributes(Shop, "userId", "userId", user.id, user.id);
 
-        const allProducts = await productRepositories.getProductsByAttributes("sellerId", user.id);
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
+        }
+        const allProducts = await productRepositories.getProductsByAttributes("shopId", shop.id);
 
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
@@ -280,4 +243,4 @@ const getSellerProducts = async (req: any, res: Response) => {
 
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isCollectionExist, transformFilesToBody, getSellerProducts, getBuyerProducts };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, getShopProducts, getBuyerProducts };
