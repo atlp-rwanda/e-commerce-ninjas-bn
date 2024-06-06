@@ -4,10 +4,11 @@ import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
 import httpStatus from "http-status";
-import { comparePassword, decodeToken } from "../helpers";
+import { comparePassword, decodeToken, generateRandomCode } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
+import { sendVerificationEmail } from "../services/sendEmail";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
@@ -223,26 +224,43 @@ const verifyUserCredentials = async (
         .status(httpStatus.BAD_REQUEST)
         .json({ message: "Invalid Email or Password" });
     }
-
-    req.user = user;
-
-    const device = req.headers["user-device"];
-    if (!device) {
-      return next();
+    const device = req.headers["user-device"] || null;
+    if(!user.is2FAEnabled){
+     req.user = user;
+     return next();
     }
-
+    const code = generateRandomCode();
+    const session = {
+      userId: user.id,
+      device,
+      token: null,
+      otp: code
+    };
+    await authRepositories.createSession(session);
+    await sendVerificationEmail(
+      user.email,
+      "E-Commerce Ninja Login",
+      `Dear ${
+        user.lastName || user.email
+      } \n\nUse This Code To Confirm Your Account: ${code}`
+    );
+    req.user = user;
+ 
     const isTokenExist = await authRepositories.findTokenByDeviceIdAndUserId(
       device,
       user.id
     );
     if (isTokenExist) {
+      req.user = user;
       return res.status(httpStatus.OK).json({
-        message: "Logged in successfully",
+        message: "Check your Email for OTP Confirmation",
+        UserId: { userId: user.id },
         data: { token: isTokenExist }
       });
     }
     return next();
   } catch (error) {
+    console.log("error", error);
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal Server error", data: error.message });
@@ -332,6 +350,55 @@ const transformFilesToBody = (
   next();
 };
 
+const verifyOtp = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = await authRepositories.findUserByAttributes(
+      "id",
+      req.params.id
+    );
+
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "User not Found."
+      });
+    }
+
+    const sessionData = await authRepositories.findSessionByUserIdOtp(
+      user.id,
+      req.body.otp
+    );
+
+    if (sessionData === null || sessionData.otp === null) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "Code expired."
+      });
+    }
+
+    if (sessionData.otp !== req.body.otp) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "Invalid or expired code."
+      });
+    }
+
+    await authRepositories.destroySessionByAttribute(
+      "userId",
+      user.id,
+      "otp",
+      req.body.otp
+    );
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+};
+
 export {
   validation,
   isUserExist,
@@ -343,5 +410,6 @@ export {
   transformFilesToBody,
   isUserVerified,
   isUserEnabled,
-  isGoogleEnabled
+  isGoogleEnabled,
+  verifyOtp
 };

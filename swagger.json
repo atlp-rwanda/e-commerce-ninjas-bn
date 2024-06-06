@@ -121,6 +121,218 @@
             "format": "date-time"
           }
         }
+      },
+      "Session": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "device": {
+      "type": "string",
+      "nullable": true
+    },
+    "token": {
+      "type": "string",
+      "nullable": true
+    },
+    "otp": {
+      "type": "string",
+      "nullable": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+      },
+      "Shop": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "nullable": true
+    }
+  }
+      },
+      "Product": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "shopId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "nullable": true
+    },
+    "price": {
+      "type": "number",
+      "format": "decimal"
+    },
+    "discount": {
+      "type": "string",
+      "nullable": true
+    },
+    "category": {
+      "type": "string"
+    },
+    "expiryDate": {
+      "type": "string",
+      "format": "date-time",
+      "nullable": true
+    },
+    "expired": {
+      "type": "boolean"
+    },
+    "bonus": {
+      "type": "string",
+      "nullable": true
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quantity": {
+      "type": "integer"
+    },
+    "isAvailable": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+      },
+      "Order": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "shopId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "cartId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "paymentMethodId": {
+      "type": "integer"
+    },
+    "orderDate": {
+      "type": "string",
+      "format": "date-time",
+      "nullable": true
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+      },
+      "CartProduct": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "productId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "cartId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "quantity": {
+      "type": "integer",
+      "nullable": true
+    },
+    "discount": {
+      "type": "number",
+      "format": "float",
+      "nullable": true
+    },
+    "price": {
+      "type": "number",
+      "format": "float"
+    },
+    "totalPrice": {
+      "type": "number",
+      "format": "float"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+      },
+      "Cart": {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
       }
     },
     "securitySchemes": {
@@ -933,7 +1145,7 @@
         }
       }
     },
-    "/api/user/admin-update-role/{id}": {
+    "/api/user/admin-update-user-role/{id}": {
       "put": {
         "tags": [
           "Admin Routes"
@@ -1489,6 +1701,95 @@
         }
       }
     }
+  },
+  "/api/auth/enable-2f": {
+      "put": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Allow User to Enable  2FA",
+        "description": "Allow User to Enable  2FA",
+         "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                
+                  "is2FAEnabled": {
+                    "type": "boolean",
+                    "format": "is2FAEnabled",
+                    "example": true
+                  }
+                },
+                "required": [
+                  "is2FAEnabled"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "2FA Enabled successful"
+          },
+          "400": {
+            "description": "2FA Enabled Failed / Bad request"
+          }
+        }
+      }
+  },
+  "/api/auth/verify-otp/{id}": {
+      "post": {
+        "tags": [
+          "Authentication Routes"
+        ],
+        "summary": "Verify The OTP Sent",
+        "description": "The Verification of OTP Sent to SMS  ",
+         "parameters": [
+          {
+            "in":"path",
+            "name": "id",
+            "type": "string",
+            "description":"Pass the ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                
+                  "otp": {
+                    "type": "string",
+                    "format": "otp",
+                    "example": "otp"
+                  }
+                },
+                "required": [
+                  "OTP"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification of OTP  successful"
+          },
+          "400": {
+            "description": "Invalid Code / Bad request"
+          }
+        }
+      }
   }
   }
 }
