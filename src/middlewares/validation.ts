@@ -284,7 +284,7 @@ const verifyOtp = async (req: any, res: Response, next: NextFunction) => {
     if (!user) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: httpStatus.NOT_FOUND,
-        message: "User not Found.",
+        message: "User not Found."
       });
     }
 
@@ -296,14 +296,14 @@ const verifyOtp = async (req: any, res: Response, next: NextFunction) => {
     if (sessionData === null || sessionData.otp === null) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "Code expired.",
+        message: "Code expired."
       });
     }
 
     if (sessionData.otp !== req.body.otp) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "Invalid or expired code.",
+        message: "Invalid or expired code."
       });
     }
 
@@ -318,7 +318,7 @@ const verifyOtp = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      message: error.message
     });
   }
 };
