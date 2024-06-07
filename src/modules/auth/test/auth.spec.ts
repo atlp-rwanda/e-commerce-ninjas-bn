@@ -163,7 +163,7 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-  
+
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
@@ -195,7 +195,7 @@ describe("Authentication Test Cases", () => {
         done(err);
       });
   });
-  
+
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
@@ -571,7 +571,7 @@ describe("Passport Configuration", () => {
 
 describe("Google Authentication Strategy", () => {
   it("should call the strategy callback with correct parameters", () => {
-     });
+  });
 });
 
 function googleAuthenticationCallback(
@@ -634,69 +634,136 @@ describe("Google Authentication Strategy Callback", () => {
 });
 
 describe("Google Authentication", () => {
-    describe("Google Strategy", () => {
-      it("should call the done callback with user object", () => {
-        const requestMock: Partial<Request> = {};
-        const accessTokenMock = "mockAccessToken";
-        const refreshTokenMock = "mockRefreshToken";
-        const profileMock = {
-          id: "mockUserId",
-          emails: [{ value: "test@example.com" }],
-          name: { givenName: "John", familyName: "Doe" },
-          photos: [{ value: "https://example.com/profile.jpg" }]
-        };
-        const doneStub = sinon.stub();
-
-      
-        googleAuth.passport._strategies.google._verify(
-          requestMock as Request,
-          accessTokenMock,
-          refreshTokenMock,
-          profileMock,
-          doneStub
-        );
-
-        sinon.assert.calledWith(doneStub, null, {
-          userId: "mockUserId",
-          email: "test@example.com",
-          firstName: "John",
-          lastName: "Doe",
-          picture: "https://example.com/profile.jpg",
-          accToken: "mockAccessToken"
-        });
-      });
-    });
-  });
-
-  describe("authenticateViaGoogle", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
-    let resJsonSpy: sinon.SinonSpy;
-    let resStatusSpy: sinon.SinonStub;
-  
-    beforeEach(() => {
-      req = {};
-      res = {
-        json: sinon.spy(),
-        status: sinon.stub().returnsThis()
+  describe("Google Strategy", () => {
+    it("should call the done callback with user object", () => {
+      const requestMock: Partial<Request> = {};
+      const accessTokenMock = "mockAccessToken";
+      const refreshTokenMock = "mockRefreshToken";
+      const profileMock = {
+        id: "mockUserId",
+        emails: [{ value: "test@example.com" }],
+        name: { givenName: "John", familyName: "Doe" },
+        photos: [{ value: "https://example.com/profile.jpg" }]
       };
-      next = sinon.spy() as NextFunction;
-      resJsonSpy = res.json as sinon.SinonSpy;
-      resStatusSpy = res.status as sinon.SinonStub;
-    });
-  
-    it("should respond with 401 if authentication fails", async () => {
-      const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
-        callback(null, null); 
-        return (req: Request, res: Response) => { };
+      const doneStub = sinon.stub();
+
+
+      googleAuth.passport._strategies.google._verify(
+        requestMock as Request,
+        accessTokenMock,
+        refreshTokenMock,
+        profileMock,
+        doneStub
+      );
+
+      sinon.assert.calledWith(doneStub, null, {
+        userId: "mockUserId",
+        email: "test@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        picture: "https://example.com/profile.jpg",
+        accToken: "mockAccessToken"
       });
-  
-      await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
-  
-      expect(resStatusSpy.calledWith(401)).to.be.true;
-      expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
-  
-      authenticateStub.restore();
     });
   });
+});
+
+describe("authenticateViaGoogle", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+  let resJsonSpy: sinon.SinonSpy;
+  let resStatusSpy: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+    next = sinon.spy() as NextFunction;
+    resJsonSpy = res.json as sinon.SinonSpy;
+    resStatusSpy = res.status as sinon.SinonStub;
+  });
+
+  it("should respond with 401 if authentication fails", async () => {
+    const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
+      callback(null, null);
+      return (req: Request, res: Response) => { };
+    });
+
+    await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
+
+    expect(resStatusSpy.calledWith(401)).to.be.true;
+    expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
+
+    authenticateStub.restore();
+  });
+});
+
+
+
+describe("Verify user credentials", () => {
+  it("Should restrict unfound email", (done) => {
+    router().post("/api/auth/login")
+      .send({
+        "email": "login_test_email@gmail.com",
+        "password": "tes@PASS123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+  it("Should Create this account", (done) => {
+    router().post("/api/auth/register")
+      .send({
+        "email": "login_test_email@gmail.com",
+        "password": "tes@PASS123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+  it("Should Compare passwords", (done) => {
+    router().post("/api/auth/login")
+      .send({
+        "email": "login_test_email@gmail.com",
+        "password": "tes@PASS1234"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+  it("Should Check Login successfully", (done) => {
+    router().post("/api/auth/login")
+      .send({
+        "email": "login_test_email@gmail.com",
+        "password": "tes@PASS123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+  it("Should Check existing token", (done) => {
+    router().post("/api/auth/login")
+      .send({
+        "email": "login_test_email@gmail.com",
+        "password": "tes@PASS123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  });
+
+
+})
