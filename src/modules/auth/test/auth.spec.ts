@@ -164,7 +164,7 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-
+  
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
@@ -196,7 +196,7 @@ describe("Authentication Test Cases", () => {
         done(err);
       });
   });
-
+  
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
@@ -572,7 +572,7 @@ describe("Passport Configuration", () => {
 
 describe("Google Authentication Strategy", () => {
   it("should call the strategy callback with correct parameters", () => {
-  });
+     });
 });
 
 function googleAuthenticationCallback(
@@ -635,27 +635,27 @@ describe("Google Authentication Strategy Callback", () => {
 });
 
 describe("Google Authentication", () => {
-  describe("Google Strategy", () => {
-    it("should call the done callback with user object", () => {
-      const requestMock: Partial<Request> = {};
-      const accessTokenMock = "mockAccessToken";
-      const refreshTokenMock = "mockRefreshToken";
-      const profileMock = {
-        id: "mockUserId",
-        emails: [{ value: "test@example.com" }],
-        name: { givenName: "John", familyName: "Doe" },
-        photos: [{ value: "https://example.com/profile.jpg" }]
-      };
-      const doneStub = sinon.stub();
+    describe("Google Strategy", () => {
+      it("should call the done callback with user object", () => {
+        const requestMock: Partial<Request> = {};
+        const accessTokenMock = "mockAccessToken";
+        const refreshTokenMock = "mockRefreshToken";
+        const profileMock = {
+          id: "mockUserId",
+          emails: [{ value: "test@example.com" }],
+          name: { givenName: "John", familyName: "Doe" },
+          photos: [{ value: "https://example.com/profile.jpg" }]
+        };
+        const doneStub = sinon.stub();
 
-
-      googleAuth.passport._strategies.google._verify(
-        requestMock as Request,
-        accessTokenMock,
-        refreshTokenMock,
-        profileMock,
-        doneStub
-      );
+      
+        googleAuth.passport._strategies.google._verify(
+          requestMock as Request,
+          accessTokenMock,
+          refreshTokenMock,
+          profileMock,
+          doneStub
+        );
 
       sinon.assert.calledWith(doneStub, null, {
         userId: "mockUserId",
@@ -668,54 +668,6 @@ describe("Google Authentication", () => {
     });
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   describe("authenticateViaGoogle", () => {
     let req: Partial<Request>;
