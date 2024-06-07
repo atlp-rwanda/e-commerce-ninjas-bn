@@ -94,7 +94,7 @@ describe("Product and Shops API Tests", () => {
     });
   });
 
-  describe("POST /api/shop/seller-create-product", () => {
+  describe("POST /api/shop/seller-seller-create-product", () => {
     let productId:string;
     it("should create a product successfully", (done) => {
       router()

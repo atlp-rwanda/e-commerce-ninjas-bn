@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { usersAttributes } from "../databases/models/users";
@@ -266,24 +265,9 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
     req.body.images = files.map(file => file.path);
     next();
 };
-
-
-const getShopProducts = async (req: any, res: Response) => {
+const isShopExists = async (req: any, res: Response,next:NextFunction) => {
     try {
-        const user = req.user;
-
-        if (user.role !== "seller") {
-            return res.status(httpStatus.UNAUTHORIZED).json({ error: "Not authorized" });
-        }
-
-        const page = req.query.page;
-        const limit = req.query.limit;
-        if (!page || !limit) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
-        }
-        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
-        }
+        const user = req.user
         const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
         if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
