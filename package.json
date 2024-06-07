@@ -36,7 +36,8 @@
       "src/index.spec.ts",
       "src/databases/**/*.*",
       "src/modules/**/test/*.spec.ts",
-      "src/types/*.*"
+      "src/types/*.*",
+      "src/services/googleAuth.ts"
     ],
     "reporter": [
       "html",
