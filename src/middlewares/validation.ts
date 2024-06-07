@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
@@ -8,6 +7,7 @@ import { comparePassword, decodeToken } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
+import Joi from "joi";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
