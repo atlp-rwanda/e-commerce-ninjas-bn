@@ -235,4 +235,107 @@ const productsByCategory = async (req: Request, res: Response, next: NextFunctio
 }
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists,isUserVerified,isGoogleEnabled,isUserEnabled };
+
+
+const getShopProducts = async (req: any, res: Response) => {
+    try {
+        const user = req.user;
+
+        if (user.role !== "seller") {
+            return res.status(httpStatus.UNAUTHORIZED).json({ error: "Not authorized" });
+        }
+
+        const page = req.query.page;
+        const limit = req.query.limit;
+        if (!page || !limit) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
+        }
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
+
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
+        }
+        const allProducts = await productRepositories.getProductsByAttributes("shopId", shop.id);
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+const getBuyerProducts = async (req: any, res: Response) => {
+    try {
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const category = req.query.category
+        if (!page || !limit) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
+        }
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        let allProducts: any[]
+
+        if (category) {
+            allProducts = await productRepositories.getAvailableProductsByAttributes("category", category)
+
+        }
+        else {
+            allProducts = await productRepositories.getAvailableProducts();
+        }
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getBuyerProducts, getShopProducts };
