@@ -1417,7 +1417,7 @@
         }
       }
     },
-    "/api/shop/shop-products": {
+    "/api/shop/seller-get-shop-products": {
       "get": {
         "tags": [
           "Seller Routes"
@@ -1530,7 +1530,7 @@
         }
       }
     },
-    "/api/shop/all-products": {
+    "/api/shop/user-get-products": {
       "get": {
         "tags": [
           "User Routes"
