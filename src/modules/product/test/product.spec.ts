@@ -384,6 +384,9 @@ describe("Product Controller", () => {
     afterEach(() => {
       sinon.restore();
     });
+    afterEach(() => {
+      sinon.restore();
+    });
 
     it("should handle internal server error", async () => {
       sinon.stub(req.files, "map").throws(new Error("File upload error"));
