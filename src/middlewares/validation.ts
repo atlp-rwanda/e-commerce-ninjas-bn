@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import authRepositories from "../modules/auth/repository/authRepositories";
 import Users, { UsersAttributes } from "../databases/models/users";
@@ -254,88 +253,26 @@ const getShopProducts = async (req: any, res: Response) => {
             return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
         }
         const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
-
         if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
         }
-        const allProducts = await productRepositories.getProductsByAttributes("shopId", shop.id);
-
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-
-        const paginatedProducts = allProducts.slice(startIndex, endIndex);
-
-        let nextPage: { page: number; limit: number } | undefined;
-        let previousPage: { page: number; limit: number } | undefined;
-
-        if (endIndex < allProducts.length) {
-            nextPage = {
-                page: page + 1,
-                limit: limit
-            };
-        }
-
-        if (startIndex > 0) {
-            previousPage = {
-                page: page - 1,
-                limit: limit
-            };
-        }
-
-        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+        req.shop = shop;
+        return next()
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+
     }
-};
+}
 
 
-
-const getBuyerProducts = async (req: any, res: Response) => {
-    try {
-        const page = req.query.page;
-        const limit = req.query.limit;
-        const category = req.query.category
-        if (!page || !limit) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
-        }
-        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
-        }
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        let allProducts: any[]
-
-        if (category) {
-            allProducts = await productRepositories.getAvailableProductsByAttributes("category", category)
-
-        }
-        else {
-            allProducts = await productRepositories.getAvailableProducts();
-        }
-
-        const paginatedProducts = allProducts.slice(startIndex, endIndex);
-
-        let nextPage: { page: number; limit: number } | undefined;
-        let previousPage: { page: number; limit: number } | undefined;
-
-        if (endIndex < allProducts.length) {
-            nextPage = {
-                page: page + 1,
-                limit: limit
-            };
-        }
-
-        if (startIndex > 0) {
-            previousPage = {
-                page: page - 1,
-                limit: limit
-            };
-        }
-
-        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
+const productsByCategory = async (req: Request, res: Response, next: NextFunction) => {
+    const category = req.query.category
+    if (category) {
+        const products = await productRepositories.getAvailableProductsByAttributes("category", category)
+        return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products })
     }
-};
+    return next()
+}
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getBuyerProducts, getShopProducts };
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists };
