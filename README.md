@@ -38,6 +38,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Get User Profile Endpoint 
 - Seller create shop Endpoint
 - Seller create product Endpoint
+- Seller view products Endpoint
+- Buyer view available products Endpoint
 - Seller Delete Item Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
@@ -61,6 +63,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 14 | POST  | /api/shop/create-shop                   | 201 OK      | private | Create shop for products      |
 | 15 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
 | 16 | DELETE|/api/shop/delete-product/:id             | 200 OK      | private | Delete Item in Collection     |
+| 16 | GET  | /api/shop/shop-products                  | 200 OK      | private | Seller get products           |
+| 17 | GET  | /api/shop/all-products                   | 200 OK      | public  | Buyer get all products        |
 
 
 
