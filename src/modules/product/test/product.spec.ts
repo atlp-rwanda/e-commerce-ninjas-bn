@@ -84,6 +84,7 @@ describe("Product and Shops API Tests", () => {
   });
 
   describe("POST /api/shop/create-product", () => {
+    let productId:string;
     it("should create a product successfully", (done) => {
       router()
         .post("/api/shop/create-product")
@@ -104,6 +105,7 @@ describe("Product and Shops API Tests", () => {
           expect(res).to.have.status(httpStatus.CREATED);
           expect(res.body).to.have.property("message", "Product created successfully");
           expect(res.body.data.product).to.include({ name: "New Product", description: "A new product description" });
+          productId = res.body.data.product.id
           done();
         });
     });
@@ -127,6 +129,17 @@ describe("Product and Shops API Tests", () => {
           done();
         });
     });
+
+    it("should  delete items in collection", (done)=>{
+      router()
+      .delete(`/api/shop/seller-delete-product/${productId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((error,response)=>{
+        expect(response.status).to.be.equal(httpStatus.OK);
+        expect(response.body).to.have.property("message", "Product deleted successfully");
+        done(error);
+      })
+    })
   });
   describe("Multer Middleware", () => {
     it("should return an error if a non-image file is uploaded", (done) => {
