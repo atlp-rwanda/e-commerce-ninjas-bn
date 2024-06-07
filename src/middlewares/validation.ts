@@ -307,4 +307,4 @@ const productsByCategory = async (req: Request, res: Response, next: NextFunctio
 }
 
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists,isUserVerified,isGoogleEnabled,isUserEnabled };
