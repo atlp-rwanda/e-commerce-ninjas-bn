@@ -552,7 +552,7 @@ describe("Seller get Products test cases", () => {
       });
   });
 
-  const unique_username: string = `un_inque${Date.now()}_gp@gmait.com`;
+  const unique_username: string = `un_inque${Date.now()}_gp@gmail.com`;
   it("Should create a buyer", (done) => {
     router()
       .post("/api/auth/register")
