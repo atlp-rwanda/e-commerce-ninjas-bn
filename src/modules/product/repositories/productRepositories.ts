@@ -29,8 +29,9 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
     });
 }
 
-const deleteProductById = async (productId: string): Promise<void> => {
-    await Products.destroy({ where: { id: productId } });
+const deleteProductById = async (productId: string): Promise<void> => 
+{ 
+    await Products.destroy({ where: { id: productId } }); 
 };
 
 
@@ -74,7 +75,7 @@ const sellerGetProducts = async (shopId: string) => {
 export default { 
     createProduct, 
     createShop, 
-    findShopByAttributes,
+    findShopByAttributes, 
     findByModelsAndAttributes, 
     deleteProductById, 
     getOrdersPerTimeframe, 
@@ -84,4 +85,4 @@ export default {
     updateProductByAttributes,
     markProducts,
     sellerGetProducts
-};
+, getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
