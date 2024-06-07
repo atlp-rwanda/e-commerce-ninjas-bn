@@ -17,7 +17,8 @@ const userOne = {
     language: "english",
     currency: "USD",
     role: "admin",
-    status: "enabled"
+    status: "enabled",
+    isVerified: true
 };
 
 const userTwo = {
@@ -35,7 +36,8 @@ const userTwo = {
     language: "English",
     currency: "USD",
     role: "buyer",
-    status: "enabled"
+    status: "enabled",
+    isVerified: true
 };
 
 const userThree = {
@@ -53,7 +55,8 @@ const userThree = {
     language: "english",
     currency: "USD",
     role: "seller",
-    status: "enabled"
+    status: "enabled",
+    isVerified: true
 };
 
 const userFour = {
@@ -71,7 +74,8 @@ const userFour = {
     language: "english",
     currency: "USD",
     role: "seller",
-    status: "enabled"
+    status: "enabled",
+    isVerified: true
 };
 const userFive = {
     id: userFiveId,
@@ -88,7 +92,8 @@ const userFive = {
     language: "english",
     currency: "USD",
     role: "seller",
-    status: "enabled"
+    status: "enabled",
+    isVerified: true
 };
 
 export const up = async (queryInterface: QueryInterface) => {
