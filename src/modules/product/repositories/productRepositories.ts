@@ -2,9 +2,12 @@
 import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
+
 import Order from "../../../databases/models/orders";
 import Shop from "../../../databases/models/shops";
 import CartProduct from "../../../databases/models/cartProducts";
+
+const currentDate = new Date();
 
 const createProduct = async(body:any) => {
     return await Products.create(body);
@@ -28,6 +31,33 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
         }
     });
 }
+const getAllProducts = async (shopId: string) => {
+    return await Products.findAll({
+        where: { shopId }
+    });
+};
+
+const getProductsByAttributes = async (key: string, value: any) => {
+    return await Products.findAll({
+        where: { [key]: value }
+    });
+}
+const getAvailableProductsByAttributes = async (key: string, value: string) => {
+    return await Products.findAll({
+        where: { [key]: value }
+    })
+}
+const getAvailableProducts = async () => {
+    return await Products.findAll({
+        where: {
+            isAvailable: "available",
+            expiryDate: {
+                [Op.gte]: currentDate
+            }
+        }
+    });
+};
+
 
 const getProductsByAttributes = async (key: string, value: any) => {
     return await Products.findAll({
