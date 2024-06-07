@@ -868,7 +868,7 @@
         }
       }
     },
-    "/api/shop/create-shop": {
+    "/api/shop/seller-create-shop": {
       "post": {
         "tags": [
           "Seller Routes"
@@ -990,7 +990,7 @@
         }
       }
     },
-    "/api/shop/create-product": {
+    "/api/shop/seller-create-product": {
       "post": {
         "tags": [
           "Seller Routes"
@@ -1171,7 +1171,7 @@
         }
       }
     },
-    "/api/shop/shop-products": {
+    "/api/shop/seller-get-shop-products": {
       "get": {
         "tags": [
           "Seller Routes"
@@ -1284,7 +1284,7 @@
         }
       }
     },
-    "/api/shop/all-products": {
+    "/api/shop/user-get-products": {
       "get": {
         "tags": [
           "User Routes"
