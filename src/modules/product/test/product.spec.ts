@@ -423,9 +423,6 @@ describe("Product Controller", () => {
     afterEach(() => {
       sinon.restore();
     });
-    afterEach(() => {
-      sinon.restore();
-    });
 
     it("should handle internal server error", async () => {
       sinon.stub(req.files, "map").throws(new Error("File upload error"));
@@ -549,10 +546,10 @@ describe("Admin Controller", () => {
       delete req.file;
       await userControllers.updateUserProfile(req, res);
 
-  expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-});
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    });
 
-});
+  });
 })
 
 describe("Change Password Test Cases", () => {
