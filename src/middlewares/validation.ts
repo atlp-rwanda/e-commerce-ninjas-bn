@@ -118,7 +118,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -149,14 +149,14 @@ const verifyUserCredentials = async (
     }
 };
 
-const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
-        if(!shop){
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
+        if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -167,11 +167,11 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
 }
 
 
-const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
+const isShopExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
-        if(shop){
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (shop) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
         }
         return next();
     } catch (error) {
@@ -181,12 +181,114 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-      return res.status(400).json({ status: 400, message: "Images are required" });
+        return res.status(400).json({ status: 400, message: "Images are required" });
     }
-  
+
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();
-  };
+};
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody };
+
+const getShopProducts = async (req: any, res: Response) => {
+    try {
+        const user = req.user;
+
+        if (user.role !== "seller") {
+            return res.status(httpStatus.UNAUTHORIZED).json({ error: "Not authorized" });
+        }
+
+        const page = req.query.page;
+        const limit = req.query.limit;
+        if (!page || !limit) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
+        }
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
+
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
+        }
+        const allProducts = await productRepositories.getProductsByAttributes("shopId", shop.id);
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+const getBuyerProducts = async (req: any, res: Response) => {
+    try {
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const category = req.query.category
+        if (!page || !limit) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
+        }
+        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
+        }
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        let allProducts: any[]
+
+        if (category) {
+            allProducts = await productRepositories.getAvailableProductsByAttributes("category", category)
+
+        }
+        else {
+            allProducts = await productRepositories.getAvailableProducts();
+        }
+
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+        let nextPage: { page: number; limit: number } | undefined;
+        let previousPage: { page: number; limit: number } | undefined;
+
+        if (endIndex < allProducts.length) {
+            nextPage = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            previousPage = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        return res.status(httpStatus.OK).json({ nextPage, previousPage, data: paginatedProducts });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, getBuyerProducts, getShopProducts };
