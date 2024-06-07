@@ -839,7 +839,6 @@ describe("Seller get Products test cases", () => {
         expect(res).to.have.status(201);
         expect(res.body).to.have.property("message", "Shop created successfully");
         expect(res.body.data.shop).to.include({ name: "New Shops 1", description: "A new Shops description" });
-        shopId = res.body.data.shop.id
         done();
       });
   });
