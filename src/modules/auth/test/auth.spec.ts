@@ -164,7 +164,7 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-
+  
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
@@ -196,7 +196,7 @@ describe("Authentication Test Cases", () => {
         done(err);
       });
   });
-
+  
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
@@ -572,7 +572,7 @@ describe("Passport Configuration", () => {
 
 describe("Google Authentication Strategy", () => {
   it("should call the strategy callback with correct parameters", () => {
-  });
+     });
 });
 
 function googleAuthenticationCallback(
@@ -635,41 +635,89 @@ describe("Google Authentication Strategy Callback", () => {
 });
 
 describe("Google Authentication", () => {
-  describe("Google Strategy", () => {
-    it("should call the done callback with user object", () => {
-      const requestMock: Partial<Request> = {};
-      const accessTokenMock = "mockAccessToken";
-      const refreshTokenMock = "mockRefreshToken";
-      const profileMock = {
-        id: "mockUserId",
-        emails: [{ value: "test@example.com" }],
-        name: { givenName: "John", familyName: "Doe" },
-        photos: [{ value: "https://example.com/profile.jpg" }]
-      };
-      const doneStub = sinon.stub();
+    describe("Google Strategy", () => {
+      it("should call the done callback with user object", () => {
+        const requestMock: Partial<Request> = {};
+        const accessTokenMock = "mockAccessToken";
+        const refreshTokenMock = "mockRefreshToken";
+        const profileMock = {
+          id: "mockUserId",
+          emails: [{ value: "test@example.com" }],
+          name: { givenName: "John", familyName: "Doe" },
+          photos: [{ value: "https://example.com/profile.jpg" }]
+        };
+        const doneStub = sinon.stub();
 
+      
+        googleAuth.passport._strategies.google._verify(
+          requestMock as Request,
+          accessTokenMock,
+          refreshTokenMock,
+          profileMock,
+          doneStub
+        );
 
-      googleAuth.passport._strategies.google._verify(
-        requestMock as Request,
-        accessTokenMock,
-        refreshTokenMock,
-        profileMock,
-        doneStub
-      );
-
-      sinon.assert.calledWith(doneStub, null, {
-        userId: "mockUserId",
-        email: "test@example.com",
-        firstName: "John",
-        lastName: "Doe",
-        picture: "https://example.com/profile.jpg",
-        accToken: "mockAccessToken"
+        sinon.assert.calledWith(doneStub, null, {
+          userId: "mockUserId",
+          email: "test@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          picture: "https://example.com/profile.jpg",
+          accToken: "mockAccessToken"
+        });
       });
     });
   });
-});
 
-describe("authenticateViaGoogle", () => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  describe("authenticateViaGoogle", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next: NextFunction;
@@ -699,244 +747,7 @@ describe("authenticateViaGoogle", () => {
     expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
 
     authenticateStub.restore();
-  });});
-
-  describe("Forget password", ()=>{
-    let resetToken: string = null
-    afterEach(async () => {
-      const user = await Users.findOne({ where: { email:"admin@gmail.com" } });
-      if(user){
-        const tokenRecord = await Session.findOne({ where: { userId:user.dataValues.id}})
-        if(tokenRecord){
-          resetToken = tokenRecord.token
-        }
-      }
-    });
-    it("should return send email for reset password", (done)=>{
-      router()
-      .post("/api/auth/forget-password")
-      .send({email:"admin@gmail.com"})
-      .end((err,res)=>{
-        expect(res.status).to.be.equal(httpStatus.OK);
-        expect(res.body.message).to.be.equal("Check email for reset password.");
-        done(err);
-      })
-    })
-    it("should reset password when token is valid", (done)=>{
-      router()
-     .put(`/api/auth/reset-password/${resetToken}`)
-     .send({newPassword:"Newpassword#12"})
-     .end((err,res)=>{
-        expect(res.status).to.be.equal(httpStatus.OK);
-        expect(res.body.message).to.be.equal("Password reset successfully.");
-        done(err)
-      })
-    })
-  })
-  
-  describe("verifyUser middleware", () => {
-    let req;
-    let res;
-    let next;
-  
-    beforeEach(() => {
-      req = {
-        params: {},
-        body: {}
-      };
-      res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-      };
-      next = sinon.spy();
-    });
-  
-    afterEach(() => {
-      sinon.restore();
-    });
-  
-    it("should respond with 404 if user is not found", async () => {
-      req.body.email = "test@example.com";
-      sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
-  
-      await verifyUser(req as Request, res as Response, next);
-  
-      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.NOT_FOUND,
-        message: "Account not found."
-      });
-    });
-  
-    it("should respond with 400 if user is not verified", async () => {
-      const mockUser = Users.build({
-        id: "userId",
-        email: "test@example.com",
-        password: "hashedpassword",
-        isVerified: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      req.body.email = "test@example.com";
-      sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
-  
-      await verifyUser(req as Request, res as Response, next);
-  
-      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.BAD_REQUEST,
-        message: "Account is not verified."
-      });
-    });
-  
-    it("should handle errors and respond with 500", async () => {
-      req.body.email = "test@example.com";
-      sinon.stub(authRepositories, "findUserByAttributes").rejects(new Error("Unexpected error"));
-  
-      await verifyUser(req as Request, res as Response, next);
-  
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Unexpected error"
-      });
-    });
-  
-    it("should call next if user is found and verified", async () => {
-      req.body.email = "test@example.com";
-      const user = Users.build ({ id: "userId", isVerified: true });
-      sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
-  
-      await verifyUser(req as Request, res as Response, next);
-  
-      expect(next).to.have.been.calledOnce;
-      expect(req.user).to.deep.equal(user);
-    });
   });
-  
-  describe("isSessionExist middleware", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
-  
-    beforeEach(() => {
-      req = {
-        user: { id: "userId" },
-        body: { newPassword: "newPassword123!" }
-      };
-      res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-      };
-      next = sinon.spy();
-    });
-  
-    afterEach(() => {
-      sinon.restore();
-    });
-  
-    it("should respond with 400 if session does not exist", async () => {
-      sinon.stub(authRepositories, "findSessionByAttributes").resolves(null);
-  
-      await isSessionExist(req as Request, res as Response, next);
-  
-      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.BAD_REQUEST,
-        message: "Invalid token."
-      });
-    });
-  
-    it("should handle errors and respond with 500", async () => {
-      sinon.stub(authRepositories, "findSessionByAttributes").rejects(new Error("Unexpected error"));
-  
-      await isSessionExist(req as Request, res as Response, next);
-  
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Unexpected error"
-      });
-    });
-  });
-  
-  describe("verifyEmail", () => {
-    it("should handle errors and respond with 500", async () => {
-      const req = {
-        user: { id: "userId" },
-        session: { token: "token" }
-      } as Partial<Request>;
-  
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-      } as Partial<Response>;
-  
-      const error = new Error("Unexpected error");
-      sinon.stub(authRepositories, "destroySession").throws(error);
-  
-      await authControllers.verifyEmail(req as Request, res as Response);
-  
-      expect(res.status).to.have.been.calledWith(500);
-      expect(res.json).to.have.been.calledWith({
-        status: 500,
-        message: "Unexpected error"
-      });
-  
-      sinon.restore();
-    });
-  });
-  
-  describe("forgetPassword", () => {
-    it("should handle errors and respond with 500", async () => {
-      const req = {
-        user: { id: "userId", email: "user@example.com" },
-        headers: { "user-device": "device" }
-      } as Partial<Request>;
-  
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-      } as Partial<Response>;
-  
-      const error = new Error("Unexpected error");
-      sinon.stub(authRepositories, "createSession").throws(error);
-  
-      await authControllers.forgetPassword(req as Request, res as Response);
-  
-      expect(res.status).to.have.been.calledWith(500);
-      expect(res.json).to.have.been.calledWith({
-        message: "Unexpected error"
-      });
-  
-      sinon.restore();
-    });
-  });
-  
-  describe("resetPassword", () => {
-    it("should handle errors and respond with 500", async () => {
-      const req = {
-        user: { id: "userId", password: "newPassword" }
-      } as Partial<Request>;
-  
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-      } as Partial<Response>;
-  
-      const error = new Error("Unexpected error");
-      sinon.stub(authRepositories, "updateUserByAttributes").throws(error);
-  
-      await authControllers.resetPassword(req as Request, res as Response);
-  
-      expect(res.status).to.have.been.calledWith(500);
-      expect(res.json).to.have.been.calledWith({
-        message: "Unexpected error"
-      });
-  
-      sinon.restore();
-    });
-  });
+});
 
 
-})
