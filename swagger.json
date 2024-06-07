@@ -25,17 +25,12 @@
       "description": "Authentication Endpoint | POST Route"
     },
     {
-      "name": "Admin Routes",
-      "description": "Admmin Endpoint"
-    },
-    {
-      "name": "User Routes",
-      "description": "User Endpoint"
-     
-    },
-    {
       "name": "Seller Routes",
       "description": "Seller Endpoint"
+    },
+    {
+      "name": "Admin User Routes",
+      "description": ""
     }
   ],
   "schemes": [
@@ -868,13 +863,13 @@
         }
       }
     },
-    "/api/shop/create-shop": {
+    "/api/collection/create-collection": {
       "post": {
         "tags": [
           "Seller Routes"
         ],
-        "summary": "A seller should be able to Create new shop",
-        "description": "This endpoint allows seller to create new shop",
+        "summary": "A seller should be able to Create new collections",
+        "description": "This endpoint allows seller to create new collections",
         "requestBody": {
           "required": true,
           "content": {
@@ -902,7 +897,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Shop created successfully",
+            "description": "Collection created successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -952,7 +947,7 @@
             }
           },
           "404": {
-            "description": "Shop not found",
+            "description": "Collection not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -990,13 +985,24 @@
         }
       }
     },
-    "/api/shop/create-product": {
+    "/api/collection/create-product/{id}": {
       "post": {
         "tags": [
           "Seller Routes"
         ],
-        "summary": "A seller should be able to Create/Add a product with shop Id",
-        "description": "This endpoint allows seller to create/add a product with shop Id",
+        "summary": "A seller should be able to Create/Add a product with collection Id",
+        "description": "This endpoint allows seller to create/add a product with collection Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the collection to which the product belongs",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1071,7 +1077,7 @@
                         "id": {
                           "type": "integer"
                         },
-                        "shopId": {
+                        "collectionId": {
                           "type": "string"
                         },
                         "sellerId": {
@@ -1171,195 +1177,77 @@
         }
       }
     },
-    "/api/user/user-get-profile": {
-      "get": {
+    "/api/collection/delete-product/{productId}": {
+      "delete": {
         "tags": [
-          "User Routes"
+          "Seller Routes"
         ],
+        "summary": "Delete Item",
+        "description": "Deletes a specific item from a seller's collection.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "summary": " get user profile",
-        "description": "This endpoint allows user get  his/her data.",
-        "responses": {
-          "200": {
-            "description": "Get  user.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
-                },
-                "examples": {
-                  "success": {
-                    "summary": "user get data",
-                    "value": {
-                      "message": "user get data"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User doesn't exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "userNotFound": {
-                    "summary": "User Not Found",
-                    "value": {
-                      "error": "User not found."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "serverError": {
-                    "summary": "Internal Server Error",
-                    "value": {
-                      "message": "Internal Server error"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user/user-update-profile": {
-      "put": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Update a User Profile",
-        "description": "User should be able to update his/her profile",
-        "security": [
+        "parameters": [
           {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "data":{
-                      "type":"object",
-                      "$ref":"#/components/schemas/User"
-                    }
-                  }
-                }
-              }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the collection to which the product belongs",
+            "schema": {
+              "type": "string"
             }
           }
-        },
-        "requestBody": {
-          "required": false,
+        ]
+      },
+      "responses": {
+        "200": {
+          "description": "Item deleted successfully",
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "firstName": {
+                  "message": {
                     "type": "string",
-                    "description": "firstName",
-                    "in": "formData" 
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "description": "lastName",
-                    "in": "formData"
-                  },
-                  "phone": {
-                    "type": "number",
-                    "description": "Phone number",
-                    "in": "formData"
-                  },
-                  "profilePicture": {
-                    "type": "string",
-                    "description": "Profile picture",
-                    "in": "formData",
-                    "format": "binary"
-                  },
-                  "gender": {
-                    "type": "string",
-                    "description": "Gender",
-                    "in": "formData"
-                  },
-                  "birthDate": {
-                    "type": "string",
-                    "description": "Birth date",
-                    "in": "formData"
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "language",
-                    "in": "formData"
-                  },
-                  "currency": {
-                    "type": "string",
-                    "description": "currency",
-                    "in": "formData"
+                    "description": "Success message",
+                    "example": "Item deleted successfully"
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "400": {
-        "description": "Bad Request",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
                 },
-                "message": {
-                  "type": "string"
+                "401": {
+                  "description": "Unauthorized access (missing or invalid token)"
+                },
+                "403": {
+                  "description": "Forbidden access (non-seller user trying to delete)"
+                },
+                "404": {
+                  "description": "Item not found",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          " message": {
+                            "type": "string",
+                            "description": "Error message",
+                            "example": "Item not found"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request (e.g., missing or invalid itemId)"
+                },
+                "500": {
+                  "description": "Internal Server Error"
                 }
               }
             }
           }
+        
         }
       }
     }

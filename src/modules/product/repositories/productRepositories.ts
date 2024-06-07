@@ -26,4 +26,8 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
     });
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes};
+const deleteProduct = async (productId: string): Promise<void> => 
+{ 
+    await Products.destroy({ where: { id: productId } }); 
+};
+export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProduct};
