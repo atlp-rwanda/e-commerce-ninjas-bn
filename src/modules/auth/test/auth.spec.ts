@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable require-jsdoc */
+/* eslint-disable no-shadow */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import chai, { expect } from "chai";
@@ -10,24 +12,30 @@ import app from "../../..";
 import {
   isUserExist,
   verifyUserCredentials,
-  verifyOtp
+  verifyOtp,
 } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
 import {
   sendVerificationEmail,
-  transporter
+  transporter,
 } from "../../../services/sendEmail";
-import googleAuth from "../../../services/googleAuth";
-import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
+import googleAuth from "../../../services/googleAuth";
+import dotenv from "dotenv";
+import { VerifyCallback } from "passport-google-oauth2";
+import authControllers from "../controller/authControllers";
+import { IRequest } from "../../../types";
 import * as helpers from "../../../helpers/index";
+import * as services from "../../../services/sendEmail";
+import userControllers from "../../user/controller/userControllers";
 
+dotenv.config();
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
-let userId: string;
+let userId: number = 0;
 let verifyToken: string | null = null;
 
 describe("Authentication Test Cases", () => {
@@ -45,7 +53,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -84,7 +92,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword"
+        password: "userPassword",
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -99,7 +107,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -128,7 +136,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -163,7 +171,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -175,7 +183,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "user@example.com"
+        email: "user@example.com",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -189,7 +197,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "fakeemail@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -207,7 +215,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "fakePassword@123"
+        password: "fakePassword@123",
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -237,7 +245,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -255,7 +263,7 @@ describe("isUserExist Middleware", () => {
       password: "hashedPassword",
       isVerified: false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
@@ -264,7 +272,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -305,7 +313,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "userPassword@123",
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -349,7 +357,7 @@ describe("POST /auth/register - Error Handling", () => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
           status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error"
+          message: "Test error",
         });
         done(err);
       });
@@ -381,7 +389,7 @@ describe("isAccountVerified Middleware", () => {
       password: "hashedPassword",
       isVerified: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(mockUser);
     router()
@@ -481,54 +489,88 @@ describe("sendVerificationEmail", () => {
     }
   });
 });
-describe("verifyUserCredentials Middleware", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: NextFunction;
+
+describe("Authentication Test Cases", () => {
+  let findUserByAttributesStub: sinon.SinonStub;
+  let findSessionByUserIdStub: sinon.SinonStub;
 
   beforeEach(() => {
-    req = {
-      body: {
-        email: "user@example.com",
-        password: "Password@123"
-      },
-      headers: {}
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
+    findUserByAttributesStub = sinon.stub(
+      authRepositories,
+      "findUserByAttributes"
+    );
+    findSessionByUserIdStub = sinon.stub(
+      authRepositories,
+      "findSessionByAttributes"
+    );
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  it("should return 400 if the user is not found", async () => {
-    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+  it("should send a verification email successfully", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
 
-    await verifyUserCredentials(req as Request, res as Response, next);
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-    expect(res.json).to.have.been.calledWith({
-      message: "Invalid Email or Password"
-    });
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Verification email sent successfully."
+        );
+        done(err);
+      });
+  });
+  it("should return 400 if session is not found", (done) => {
+    const mockUser = { id: 1, email: "user@example.com", isVerified: false };
+    const mockSession = { token: "testToken" };
+
+    findUserByAttributesStub.resolves(mockUser);
+    findSessionByUserIdStub.resolves(mockSession);
+    findSessionByUserIdStub.resolves(null);
+    router()
+      .post("/api/auth/send-verify-email")
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
+        expect(res.body).to.have.property("message", "Invalid token.");
+        done(err);
+      });
   });
 
-  it("should return 500 if there is an internal server error", async () => {
-    sinon
-      .stub(authRepositories, "findUserByAttributes")
-      .throws(new Error("Internal Server Error"));
+  it("should return internal server error", (done) => {
+    findSessionByUserIdStub.resolves(null);
+    const token = "invalid token";
+    router()
+      .get(`/api/auth/verify-email/${token}`)
+      .send({ email: "user@example.com" })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.have.property("message");
+        done(err);
+      });
+  });
+});
 
-    await verifyUserCredentials(req as Request, res as Response, next);
+describe("sendVerificationEmail", () => {
+  afterEach(() => {
+    sinon.restore();
+  });
 
-    expect(res.status).to.have.been.calledWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(res.json).to.have.been.calledWith({
-      message: "Internal Server error",
-      data: "Internal Server Error"
-    });
+  it("should throw an error when sendMail fails", async () => {
+    sinon.stub(transporter, "sendMail").rejects(new Error("Network Error"));
+    try {
+      await sendVerificationEmail("email@example.com", "subject", "message");
+    } catch (error) {
+      expect(error).to.be.an("error");
+    }
   });
 });
 
@@ -559,7 +601,7 @@ function googleAuthenticationCallback(
   profile: any,
   done: VerifyCallback
 ) {
-  userId = profile.id;
+  const userId = profile.id;
   const email = profile.emails?.[0].value || null;
   const firstName = profile.name?.givenName || null;
   const lastName = profile.name?.familyName || null;
@@ -571,7 +613,7 @@ function googleAuthenticationCallback(
     firstName,
     lastName,
     picture,
-    accToken
+    accToken,
   };
   return done(null, user);
 }
@@ -582,7 +624,7 @@ describe("Google Authentication Strategy Callback", () => {
       id: "123",
       emails: [{ value: "test@example.com" }],
       name: { givenName: "John", familyName: "Doe" },
-      photos: [{ value: "https://example.com/profile.jpg" }]
+      photos: [{ value: "https://example.com/profile.jpg" }],
     };
 
     const request: Request = {} as Request;
@@ -597,7 +639,7 @@ describe("Google Authentication Strategy Callback", () => {
         firstName: "John",
         lastName: "Doe",
         picture: "https://example.com/profile.jpg",
-        accToken: "accessToken"
+        accToken: "accessToken",
       });
     };
 
@@ -621,7 +663,7 @@ describe("Google Authentication", () => {
         id: "mockUserId",
         emails: [{ value: "test@example.com" }],
         name: { givenName: "John", familyName: "Doe" },
-        photos: [{ value: "https://example.com/profile.jpg" }]
+        photos: [{ value: "https://example.com/profile.jpg" }],
       };
       const doneStub = sinon.stub();
 
@@ -639,7 +681,7 @@ describe("Google Authentication", () => {
         firstName: "John",
         lastName: "Doe",
         picture: "https://example.com/profile.jpg",
-        accToken: "mockAccessToken"
+        accToken: "mockAccessToken",
       });
     });
   });
@@ -656,7 +698,7 @@ describe("authenticateViaGoogle", () => {
     req = {};
     res = {
       json: sinon.spy(),
-      status: sinon.stub().returnsThis()
+      status: sinon.stub().returnsThis(),
     };
     next = sinon.spy() as NextFunction;
     resJsonSpy = res.json as sinon.SinonSpy;
@@ -668,7 +710,7 @@ describe("authenticateViaGoogle", () => {
       .stub(passport, "authenticate")
       .callsFake((strategy, callback) => {
         callback(null, null);
-        return (req: Request, res: Response) => {};
+        return (req: Request, res: Response, next: NextFunction) => {};
       });
 
     await googleAuth.authenticateWithGoogle(
@@ -685,6 +727,7 @@ describe("authenticateViaGoogle", () => {
   });
 });
 
+
 describe("updateUser2FA", () => {
   let req;
   let res;
@@ -694,7 +737,7 @@ describe("updateUser2FA", () => {
       .post("/api/auth/login")
       .send({
         email: "john.doe@example.com",
-        password: "$321!Pass!123$"
+        password: "$321!Pass!123$",
       })
       .end((error, response) => {
         token = response.body.data.token;
@@ -766,11 +809,11 @@ describe("verifyOtp", () => {
     );
     req = {
       params: { id: 1 },
-      body: { otp: 123456 }
+      body: { otp: 123456 },
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub()
+      json: sinon.stub(),
     };
     next = sinon.stub();
   });
@@ -790,7 +833,7 @@ describe("verifyOtp", () => {
     expect(
       res.json.calledWith({
         status: httpStatus.NOT_FOUND,
-        message: "User not Found."
+        message: "User not Found.",
       })
     ).to.be.true;
     expect(next.called).to.be.false;
@@ -812,7 +855,7 @@ describe("verifyOtp", () => {
     expect(
       res.json.calledWith({
         status: httpStatus.BAD_REQUEST,
-        message: "Invalid or expired code."
+        message: "Invalid or expired code.",
       })
     ).to.be.true;
     expect(next.called).to.be.false;
@@ -834,7 +877,7 @@ describe("verifyOtp", () => {
     expect(
       res.json.calledWith({
         status: httpStatus.BAD_REQUEST,
-        message: "Code expired."
+        message: "Code expired.",
       })
     ).to.be.true;
     expect(next.called).to.be.false;
@@ -852,7 +895,7 @@ describe("verifyOtp", () => {
     expect(
       res.json.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
+        message: errorMessage,
       })
     ).to.be.true;
     expect(next.called).to.be.false;
@@ -868,13 +911,13 @@ describe("verifyUserCredentials Middleware", () => {
     req = {
       body: {
         email: "user@example.com",
-        password: "Password@123"
+        password: "Password@123",
       },
-      headers: {}
+      headers: {},
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub()
+      json: sinon.stub(),
     };
     next = sinon.stub();
   });
@@ -890,7 +933,7 @@ describe("verifyUserCredentials Middleware", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
     expect(res.json).to.have.been.calledWith({
-      message: "Invalid Email or Password"
+      message: "Invalid Email or Password",
     });
     expect(next).not.to.have.been.called;
   });
@@ -899,7 +942,7 @@ describe("verifyUserCredentials Middleware", () => {
     const user: any = {
       id: 1,
       email: req.body.email,
-      password: "hashedPassword"
+      password: "hashedPassword",
     };
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
     sinon.stub(helpers, "comparePassword").resolves(false);
@@ -908,7 +951,7 @@ describe("verifyUserCredentials Middleware", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
     expect(res.json).to.have.been.calledWith({
-      message: "Invalid Email or Password"
+      message: "Invalid Email or Password",
     });
     expect(next).not.to.have.been.called;
   });
@@ -925,7 +968,7 @@ describe("verifyUserCredentials Middleware", () => {
     );
     expect(res.json).to.have.been.calledWith({
       message: "Internal Server error",
-      data: "Internal Server Error"
+      data: "Internal Server Error",
     });
     expect(next).not.to.have.been.called;
   });
@@ -934,7 +977,7 @@ describe("verifyUserCredentials Middleware", () => {
     const user: any = {
       id: 1,
       email: req.body.email,
-      password: "hashedPassword"
+      password: "hashedPassword",
     };
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
     sinon
@@ -948,7 +991,7 @@ describe("verifyUserCredentials Middleware", () => {
     );
     expect(res.json).to.have.been.calledWith({
       message: "Internal Server error",
-      data: "Comparison Error"
+      data: "Comparison Error",
     });
     expect(next).not.to.have.been.called;
   });
@@ -957,7 +1000,7 @@ describe("verifyUserCredentials Middleware", () => {
     const user: any = {
       id: 1,
       email: req.body.email,
-      password: "hashedPassword"
+      password: "hashedPassword",
     };
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
     sinon.stub(helpers, "comparePassword").resolves(true);
