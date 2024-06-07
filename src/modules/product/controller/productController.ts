@@ -28,24 +28,26 @@ const createProduct = async (req: ExtendRequest, res: Response) => {
 };
 
 const createShop = async (req: ExtendRequest, res: Response) => {
-    try {
-      const shopData = {
-        userId: req.user.id,
-        name: req.body.name,
-        description: req.body.description
-      };
-      const shop = await productRepositories.createShop(shopData);
-      res.status(httpStatus.CREATED).json({
-        message: "Shop created successfully",
-        data: {shop: shop}
-      });
-    } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
-      });
-    }
-  };
+  try {
+    const shopData = {
+      userId: req.user.id,
+      name: req.body.name,
+      description: req.body.description
+    };
+    const shop = await productRepositories.createShop(shopData);
+    res.status(httpStatus.CREATED).json({
+      message: "Shop created successfully",
+      data: { shop: shop }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+};
+
+
 
   const deleteProduct = async (req: ExtendRequest, res: Response) => { 
     try { 
