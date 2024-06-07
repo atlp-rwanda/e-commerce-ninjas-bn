@@ -119,7 +119,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -196,12 +196,12 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
         
 const isProductExist = async(req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
-        if(!shop){
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
+        if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -211,32 +211,12 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
     }
 }
 
-const credential = async (req: ExtendRequest, res: Response, next: NextFunction) => {
-    try {
-      let user: usersAttributes = null;
-      if (req.user.id) {
-        user = await authRepositories.findUserByAttributes("id", req.user.id);
-      }
-      const compareUserPassword = await comparePassword(req.body.oldPassword, user.password);
-      if (!compareUserPassword) {
-        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid password." });
-      }
-  
-      const hashedPassword = await hashPassword(req.body.newPassword);
-      user.password = hashedPassword;
-      req.user = user;
-      next();
-    } catch (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-    }
-  };  
-
 
 const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
-        if(shop){
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (shop) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
         }
         return next();
     } catch (error) {
@@ -259,9 +239,9 @@ const isSellerShopExist = async (req: any, res: Response, next: NextFunction) =>
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-      return res.status(400).json({ status: 400, message: "Images are required" });
+        return res.status(400).json({ status: 400, message: "Images are required" });
     }
-  
+
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();

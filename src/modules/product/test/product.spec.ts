@@ -427,7 +427,7 @@ describe("Product Controller", () => {
     it("should handle internal server error", async () => {
       sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-          await productController.sellerCreateProduct(req, res);
+      await productController.createProduct(req, res);
 
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
