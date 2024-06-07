@@ -2,7 +2,6 @@
 import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
-import OrderProduct from "../../../databases/models/cartProducts";
 import Order from "../../../databases/models/orders";
 import Shop from "../../../databases/models/shops";
 import CartProduct from "../../../databases/models/cartProducts";

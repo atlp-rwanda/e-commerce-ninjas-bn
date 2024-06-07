@@ -2,18 +2,13 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
-import Users from "../../../databases/models/users";
-import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
-import Products from "../../../databases/models/products";
-import Shops from "../../../databases/models/shops";
 import { fileFilter } from "../../../helpers/multer";
 import { isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
-import Session from "../../../databases/models/session";
 import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
@@ -29,7 +24,7 @@ describe("Product and Shops API Tests", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller@gmail.com", password: "Password@123" })
+      .send({ email: "dj@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
@@ -171,35 +166,69 @@ describe("transformFilesToBody Middleware", () => {
   });
 });
 
-describe("internal server error", () => {
-  let token: string = null;
+
+describe("Seller test cases", () => {
+
+  let token: string;
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "dj@gmail.com", password: "Password@123" })
+      .send({ email: "seller@gmail.com", password: "Password@123" })
+      .end((err, res) => {
+        token = res.body.data.token;
+        done(err);
+      })
+  });
+
+
+  it("should return statistics of Seller in specified timeframe", (done) => {
+    router()
+      .post("/api/product/statistics")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        startDate: "2024-01-01",
+        endDate: "2024-12-31"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
+  it("should catch server error during fetching statistics", (done) => {
+    sinon
+      .stub(productRepositories, "getOrdersPerTimeframe")
+      .throws(new Error("Database error"));
+    router()
+      .post("/api/product/statistics")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        startDate: "2024-01-01",
+        endDate: "2024-12-31"
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        done(err);
+      });
+  });
+
+});
+
+describe("internal server error", () => {
+  let token: string;
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({ email: "seller3@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
       })
   })
-  after(async () => {
-    await Users.destroy({
-      where: {
-        role: {
-          [Op.ne]: "admin"
-        }
-      }
-    });
-    await Products.destroy({
-      where: {}
-    });
-    await Shops.destroy({
-      where: {}
-    });
-    await Session.destroy({
-      where: {}
-    })
-  });
+
   it("should handle errors and return 500 status", (done) => {
     sinon.stub(productRepositories, "createShop").throws(new Error("Internal Server Error"))
     router()
@@ -470,54 +499,3 @@ it("should handle missing required parameter - file", async () => {
 
 });
 })
-
-
-describe("Seller test cases", () => {
-
-  let token: string;
-  before((done) => {
-    router()
-      .post("/api/auth/login")
-      .send({ email: "seller@gmail.com", password: "Password@123" })
-      .end((err, res) => {
-        token = res.body.data.token;
-        done(err);
-      })
-  });
-
-
-  it("should return statistics of Seller in specified timeframe", (done) => {
-    router()
-      .post("/api/product/statistics")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        startDate: "2024-01-01",
-        endDate: "2024-12-31"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        done(error);
-      });
-  });
-
-  it("should catch server error during fetching statistics", (done) => {
-    sinon
-      .stub(productRepositories, "getOrdersPerTimeframe")
-      .throws(new Error("Database error"));
-    router()
-      .post("/api/product/statistics")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        startDate: "2024-01-01",
-        endDate: "2024-12-31"
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        done(err);
-      });
-  });
-
-});

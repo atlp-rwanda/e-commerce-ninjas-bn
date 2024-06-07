@@ -38,6 +38,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Get User Profile Endpoint 
 - Seller create shop Endpoint
 - Seller create product Endpoint
+- Seller get statistics Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -59,6 +60,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 14 | PUT   | /api/user/user-update-profile           | 200 OK      | private | Update User Profile Endpoint  |
 | 15 | GET   | /api/user/user-get-profile              | 200 OK      | private | Get User Profile Endpoint     |
 | 15 | POST  | /api/auth/google                        | 200 OK	   | public	 | Login Via google account      |
+| 15 | POST  | /api/product/statistics                 | 200 OK	   | public	 | Get seller statistics per timeframe      |
 
 ## INSTALLATION
 

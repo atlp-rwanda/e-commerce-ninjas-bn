@@ -1,5 +1,4 @@
 import { Request } from "express";
-import { UsersAttributes } from "../databases/models/users";
 
 export interface IToken {
   userId: number;

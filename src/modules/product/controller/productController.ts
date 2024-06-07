@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from "express"
+import { Response } from "express"
 import httpStatus from "http-status";
 import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
@@ -61,8 +61,6 @@ const getSellerStatistics = async (req: ExtendRequest, res: Response): Promise<v
 
     await Promise.all(orders.map(async (order) => {
       totalOrders += 1;
-      // totalRevenue += order.amount;
-
       const allCartProducts = await productRepositories.getOrderProductsByCartId(order.cartId);
 
       await Promise.all(allCartProducts.map(async (cartProduct) => {
