@@ -1,8 +1,8 @@
 import {Router} from "express"
 import productController from "../modules/product/controller/productController";
 import { userAuthorization } from "../middlewares/authorization";
-import { validation, isProductExist, isShopExist, transformFilesToBody,isShopExists, productsByCategory } from "../middlewares/validation";
-import { shopSchema, productSchema, statisticsSchema } from "../modules/product/validation/productValidation";
+import { validation, isProductExist, isShopExist, transformFilesToBody } from "../middlewares/validation";
+import { shopSchema, productSchema} from "../modules/product/validation/productValidation";
 import upload from "../helpers/multer";
 
 const router: Router = Router()

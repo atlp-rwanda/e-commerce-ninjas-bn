@@ -549,10 +549,10 @@ describe("Admin Controller", () => {
       delete req.file;
       await userControllers.updateUserProfile(req, res);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    });
+  expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+});
 
-  });
+});
 })
 
 describe("Change Password Test Cases", () => {
