@@ -39,6 +39,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Seller create shop Endpoint
 - Seller create product Endpoint
 - Seller Delete Item Endpoint
+- Seller Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
