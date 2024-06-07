@@ -5,27 +5,27 @@ import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest } from "../../../types";
 
-const createProduct = async (req:ExtendRequest,res:Response) =>{
-    try {
-        const uploadPromises = req.files.map(file => uploadImages(file));
-        const images = await Promise.all(uploadPromises);
-        const productData = {
-          shopId: req.shop.id,
-          images: images.map(image => image.secure_url),
-          ...req.body
-        };    
-        const product = await productRepositories.createProduct(productData);
-        res.status(httpStatus.CREATED).json({
-          message: "Product created successfully",
-          data: { product: product }
-        });
-      } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          error: error.message
-        });
-      }
+const createProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    const uploadPromises = req.files.map(file => uploadImages(file));
+    const images = await Promise.all(uploadPromises);
+    const productData = {
+      shopId: req.shop.id,
+      images: images.map(image => image.secure_url),
+      ...req.body
     };
+    const product = await productRepositories.createProduct(productData);
+    res.status(httpStatus.CREATED).json({
+      message: "Product created successfully",
+      data: { product: product }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+};
 
 const createShop = async (req: ExtendRequest, res: Response) => {
     try {
