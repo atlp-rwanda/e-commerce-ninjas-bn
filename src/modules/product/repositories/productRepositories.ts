@@ -6,16 +6,15 @@ import Order from "../../../databases/models/orders";
 import Shop from "../../../databases/models/shops";
 import CartProduct from "../../../databases/models/cartProducts";
 
-
 const createProduct = async(body:any) => {
     return await Products.create(body);
 }
 
-const createShop = async(body:any) => {
+const createShop = async (body: any) => {
     return await Shops.create(body);
 }
 
-const findShopByAttributes = async(model:any,key:string,value:any) => {
+const findShopByAttributes = async (model: any, key: string, value: any) => {
     return await model.findOne({ where: { [key]: value } });
 }
 
@@ -29,6 +28,33 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
         }
     });
 }
+const getAllProducts = async (shopId: string) => {
+    return await Products.findAll({
+        where: { shopId }
+    });
+};
+
+const getProductsByAttributes = async (key: string, value: any) => {
+    return await Products.findAll({
+        where: { [key]: value }
+    });
+}
+const getAvailableProductsByAttributes = async (key: string, value: string) => {
+    return await Products.findAll({
+        where: { [key]: value }
+    })
+}
+const getAvailableProducts = async () => {
+    return await Products.findAll({
+        where: {
+            isAvailable: "available",
+            expiryDate: {
+                [Op.gte]: currentDate
+            }
+        }
+    });
+};
+
 
 const deleteProductById = async (productId: string): Promise<void> => 
 { 
@@ -52,4 +78,4 @@ const findShopByUserId = async(userId: number) => {
     return await Shop.findOne({ where: { userId }})
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId };
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId , getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
