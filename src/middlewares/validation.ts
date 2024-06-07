@@ -42,15 +42,19 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
       );
       if (userExists) {
         if (userExists.isVerified) {
-          return res.status(httpStatus.BAD_REQUEST).json({
-            status: httpStatus.BAD_REQUEST,
-            message: "Account already exists.",
-          });
+          return res
+            .status(httpStatus.BAD_REQUEST)
+            .json({
+              status: httpStatus.BAD_REQUEST,
+              message: "Account already exists."
+            });
         }
-        return res.status(httpStatus.BAD_REQUEST).json({
-          status: httpStatus.BAD_REQUEST,
-          message: "Account already exists. Please verify your account",
-        });
+        return res
+          .status(httpStatus.BAD_REQUEST)
+          .json({
+            status: httpStatus.BAD_REQUEST,
+            message: "Account already exists. Please verify your account"
+          });
       }
     }
 
@@ -73,7 +77,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: error.message
       });
   }
 };
@@ -146,7 +150,7 @@ const isAccountVerified = async (
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: error.message
       });
   }
 };
@@ -165,7 +169,7 @@ const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
       .status(httpStatus.UNAUTHORIZED)
       .json({
         status: httpStatus.UNAUTHORIZED,
-        message: "Your account is not verified yet",
+        message: "Your account is not verified yet"
       });
 
   req.user = user;
@@ -178,7 +182,7 @@ const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
       .status(httpStatus.UNAUTHORIZED)
       .json({
         status: httpStatus.UNAUTHORIZED,
-        message: "Your account is disabled",
+        message: "Your account is disabled"
       });
   return next();
 };
@@ -189,7 +193,7 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
       .status(httpStatus.UNAUTHORIZED)
       .json({
         status: httpStatus.UNAUTHORIZED,
-        message: "This is google account, please login with google",
+        message: "This is google account, please login with google"
       });
   return next();
 };
@@ -234,7 +238,7 @@ const verifyUserCredentials = async (
     if (isTokenExist) {
       return res.status(httpStatus.OK).json({
         message: "Logged in successfully",
-        data: { token: isTokenExist },
+        data: { token: isTokenExist }
       });
     }
     return next();
@@ -270,7 +274,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
         .status(httpStatus.BAD_REQUEST)
         .json({
           status: httpStatus.BAD_REQUEST,
-          message: "Please update the quantities.",
+          message: "Please update the quantities."
         });
     }
     req.shop = shop;
@@ -280,7 +284,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: error.message
       });
   }
 };
@@ -298,7 +302,7 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
         .json({
           status: httpStatus.BAD_REQUEST,
           message: "Already have a shop.",
-          data: { shop: shop },
+          data: { shop: shop }
         });
     }
     return next();
@@ -307,7 +311,7 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: error.message
       });
   }
 };
@@ -339,5 +343,5 @@ export {
   transformFilesToBody,
   isUserVerified,
   isUserEnabled,
-  isGoogleEnabled,
+  isGoogleEnabled
 };

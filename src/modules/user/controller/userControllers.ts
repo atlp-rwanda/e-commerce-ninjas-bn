@@ -49,14 +49,18 @@ const updateUserRole = async (req: Request, res: Response) => {
   }
 };
 
-
 const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId: string = req.params.id;
     const user = await authRepositories.updateUserByAttributes("status", req.body.status, "id", userId);
     res.status(httpStatus.OK).json({ message: "Status updated successfully.", data: {user: user} });
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message
+      });
   }
 };
 const getUserDetails = async (req: Request, res: Response) => {

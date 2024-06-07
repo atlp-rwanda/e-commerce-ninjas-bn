@@ -7,11 +7,11 @@ import {
   isUserEnabled,
   isGoogleEnabled,
   isUserVerified,
-  verifyUserCredentials,
+  verifyUserCredentials
 } from "../middlewares/validation";
 import {
   emailSchema,
-  credentialSchema,
+  credentialSchema
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
@@ -43,6 +43,11 @@ router.post(
   isGoogleEnabled,
   verifyUserCredentials,
   authControllers.loginUser
+);
+router.post(
+  "/logout",
+  userAuthorization(["buyer", "seller", "admin"]),
+  authControllers.logoutUser
 );
 
 router.post(

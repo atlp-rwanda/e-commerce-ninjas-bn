@@ -13,7 +13,6 @@ import authRepositories from "./modules/auth/repository/authRepositories";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
-
 const router = () => chai.request(app);
 
 describe("Initial configuration", () => {

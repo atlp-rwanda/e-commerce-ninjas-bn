@@ -41,17 +41,30 @@ const findTokenByDeviceIdAndUserId = async (device: string, userId: number)=>{
     return session.token;
 }
 
-const destroySession = async (userId: number, token:string) =>{
-    return await Session.destroy({ where: {userId, token } });
-}
+const destroySessionByAttribute = async (
+  destroyKey: string,
+  destroyValue: any,
+  key: string,
+  value: string
+) => {
+  return await Session.destroy({
+    where: { [destroyKey]: destroyValue, [key]: value },
+  });
+};
+
+const findSessionByUserIdOtp = async (userId: number, otp: number) => {
+  return await Session.findOne({ where: { userId: userId, otp: otp } });
+};
+
 
 export default {
   createUser,
   createSession,
   findUserByAttributes,
-  destroySession,
-  updateUserByAttributes,
   findSessionByAttributes,
   findSessionByUserIdAndToken,
   findTokenByDeviceIdAndUserId,
+  updateUserByAttributes,
+  destroySessionByAttribute,
+  findSessionByUserIdOtp
 };

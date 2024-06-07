@@ -7,7 +7,10 @@ import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isUserExist, verifyUserCredentials } from "../../../middlewares/validation";
+import {
+  isUserExist,
+  verifyUserCredentials
+} from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
@@ -163,7 +166,6 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-  
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
@@ -184,7 +186,7 @@ describe("Authentication Test Cases", () => {
 
   it("Should return error on logout", (done) => {
     sinon
-      .stub(authRepositories, "destroySession")
+      .stub(authRepositories, "destroySessionByAttribute")
       .throws(new Error("Database Error"));
     router()
       .post("/api/auth/logout")
@@ -195,7 +197,7 @@ describe("Authentication Test Cases", () => {
         done(err);
       });
   });
-  
+
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
@@ -506,23 +508,6 @@ describe("sendVerificationEmail", () => {
     }
   });
 });
-
-describe("Passport Configuration", () => {
-  it("should serialize and deserialize user correctly", () => {
-    const user = { id: "123", username: "testuser" };
-    const doneSerialize = (err: any, serializedUser: any) => {
-      expect(err).to.be.null;
-      expect(serializedUser).to.deep.equal(user);
-    };
-    const doneDeserialize = (err: any, deserializedUser: any) => {
-      expect(err).to.be.null;
-      expect(deserializedUser).to.deep.equal(user);
-    };
-    googleAuth.passport.serializeUser(user, doneSerialize);
-    googleAuth.passport.deserializeUser(user, doneDeserialize);
-  });
-});
-
 describe("verifyUserCredentials Middleware", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -558,11 +543,15 @@ describe("verifyUserCredentials Middleware", () => {
   });
 
   it("should return 500 if there is an internal server error", async () => {
-    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
+    sinon
+      .stub(authRepositories, "findUserByAttributes")
+      .throws(new Error("Internal Server Error"));
 
     await verifyUserCredentials(req as Request, res as Response, next);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
     expect(res.json).to.have.been.calledWith({
       message: "Internal Server error",
       data: "Internal Server Error"
@@ -570,9 +559,24 @@ describe("verifyUserCredentials Middleware", () => {
   });
 });
 
+describe("Passport Configuration", () => {
+  it("should serialize and deserialize user correctly", () => {
+    const user = { id: "123", username: "testuser" };
+    const doneSerialize = (err: any, serializedUser: any) => {
+      expect(err).to.be.null;
+      expect(serializedUser).to.deep.equal(user);
+    };
+    const doneDeserialize = (err: any, deserializedUser: any) => {
+      expect(err).to.be.null;
+      expect(deserializedUser).to.deep.equal(user);
+    };
+    googleAuth.passport.serializeUser(user, doneSerialize);
+    googleAuth.passport.deserializeUser(user, doneDeserialize);
+  });
+});
+
 describe("Google Authentication Strategy", () => {
-  it("should call the strategy callback with correct parameters", () => {
-     });
+  it("should call the strategy callback with correct parameters", () => {});
 });
 
 function googleAuthenticationCallback(
@@ -635,72 +639,75 @@ describe("Google Authentication Strategy Callback", () => {
 });
 
 describe("Google Authentication", () => {
-    describe("Google Strategy", () => {
-      it("should call the done callback with user object", () => {
-        const requestMock: Partial<Request> = {};
-        const accessTokenMock = "mockAccessToken";
-        const refreshTokenMock = "mockRefreshToken";
-        const profileMock = {
-          id: "mockUserId",
-          emails: [{ value: "test@example.com" }],
-          name: { givenName: "John", familyName: "Doe" },
-          photos: [{ value: "https://example.com/profile.jpg" }]
-        };
-        const doneStub = sinon.stub();
-
-      
-        googleAuth.passport._strategies.google._verify(
-          requestMock as Request,
-          accessTokenMock,
-          refreshTokenMock,
-          profileMock,
-          doneStub
-        );
-
-        sinon.assert.calledWith(doneStub, null, {
-          userId: "mockUserId",
-          email: "test@example.com",
-          firstName: "John",
-          lastName: "Doe",
-          picture: "https://example.com/profile.jpg",
-          accToken: "mockAccessToken"
-        });
-      });
-    });
-  });
-
-  describe("authenticateViaGoogle", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
-    let resJsonSpy: sinon.SinonSpy;
-    let resStatusSpy: sinon.SinonStub;
-  
-    beforeEach(() => {
-      req = {};
-      res = {
-        json: sinon.spy(),
-        status: sinon.stub().returnsThis()
+  describe("Google Strategy", () => {
+    it("should call the done callback with user object", () => {
+      const requestMock: Partial<Request> = {};
+      const accessTokenMock = "mockAccessToken";
+      const refreshTokenMock = "mockRefreshToken";
+      const profileMock = {
+        id: "mockUserId",
+        emails: [{ value: "test@example.com" }],
+        name: { givenName: "John", familyName: "Doe" },
+        photos: [{ value: "https://example.com/profile.jpg" }]
       };
-      next = sinon.spy() as NextFunction;
-      resJsonSpy = res.json as sinon.SinonSpy;
-      resStatusSpy = res.status as sinon.SinonStub;
-    });
-  
-    it("should respond with 401 if authentication fails", async () => {
-      const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
-        callback(null, null); 
-        return (req: Request, res: Response) => { };
-      });
+      const doneStub = sinon.stub();
 
-  
-      await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
-  
-      expect(resStatusSpy.calledWith(401)).to.be.true;
-      expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
-  
-      authenticateStub.restore();
+      googleAuth.passport._strategies.google._verify(
+        requestMock as Request,
+        accessTokenMock,
+        refreshTokenMock,
+        profileMock,
+        doneStub
+      );
+
+      sinon.assert.calledWith(doneStub, null, {
+        userId: "mockUserId",
+        email: "test@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        picture: "https://example.com/profile.jpg",
+        accToken: "mockAccessToken"
+      });
     });
   });
+});
 
-    
+describe("authenticateViaGoogle", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+  let resJsonSpy: sinon.SinonSpy;
+  let resStatusSpy: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+    next = sinon.spy() as NextFunction;
+    resJsonSpy = res.json as sinon.SinonSpy;
+    resStatusSpy = res.status as sinon.SinonStub;
+  });
+
+  it("should respond with 401 if authentication fails", async () => {
+    const authenticateStub = sinon
+      .stub(passport, "authenticate")
+      .callsFake((strategy, callback) => {
+        callback(null, null);
+        return (req: Request, res: Response) => {};
+      });
+
+    await googleAuth.authenticateWithGoogle(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(resStatusSpy.calledWith(401)).to.be.true;
+    expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be
+      .true;
+
+    authenticateStub.restore();
+  });
+});
