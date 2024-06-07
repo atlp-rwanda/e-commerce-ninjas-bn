@@ -46,4 +46,13 @@ const createShop = async (req: ExtendRequest, res: Response) => {
       });
     }
   };
-export default { createProduct, createShop }
+
+  const deleteProduct = async (req: ExtendRequest, res: Response) => { 
+    try { 
+    await productRepositories.deleteProductById(req.params.id); 
+    res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
+    catch (error) { res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message }); 
+    } 
+    };
+
+export default { createProduct, createShop, deleteProduct }
