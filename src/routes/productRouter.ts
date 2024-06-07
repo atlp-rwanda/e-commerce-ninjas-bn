@@ -9,6 +9,7 @@ const router: Router = Router()
 
 router.post("/create-product", userAuthorization(["seller"]), upload.array("images"), transformFilesToBody,validation(productSchema), isProductExist, productController.createProduct);
 router.post("/create-shop", userAuthorization(["seller"]), validation(shopSchema), isShopExist, productController.createShop)
+router.delete("/seller-delete-product/:id",userAuthorization(["seller"]), isProductExist, productController.deleteProduct)
 router.post("/statistics", validation(statisticsSchema), userAuthorization(["seller"]), productController.getSellerStatistics)
 
 export default router;

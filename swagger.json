@@ -384,7 +384,6 @@
         }
       }
     },
-
     "/api/auth/google": {
       "get": {
         "tags": [
@@ -420,6 +419,198 @@
           },
           "500": {
             "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/user/user-get-profile": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": " get user profile",
+        "description": "This endpoint allows user get  his/her data.",
+        "responses": {
+          "200": {
+            "description": "Get  user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "user get data",
+                    "value": {
+                      "message": "user get data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User Not Found",
+                    "value": {
+                      "error": "User not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Internal Server Error",
+                    "value": {
+                      "message": "Internal Server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/user-update-profile": {
+      "put": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Update a User Profile",
+        "description": "User should be able to update his/her profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "data":{
+                      "type":"object",
+                      "$ref":"#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "firstName",
+                    "in": "formData" 
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "lastName",
+                    "in": "formData"
+                  },
+                  "phone": {
+                    "type": "number",
+                    "description": "Phone number",
+                    "in": "formData"
+                  },
+                  "profilePicture": {
+                    "type": "string",
+                    "description": "Profile picture",
+                    "in": "formData",
+                    "format": "binary"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "description": "Gender",
+                    "in": "formData"
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "description": "Birth date",
+                    "in": "formData"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "language",
+                    "in": "formData"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "currency",
+                    "in": "formData"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1171,195 +1362,76 @@
         }
       }
     },
-    "/api/user/user-get-profile": {
-      "get": {
+    "/api/shop/seller-delete-product/{id}": {
+      "delete": {
         "tags": [
-          "User Routes"
+          "Seller Routes"
         ],
+        "summary": "Delete Item",
+        "description": "Deletes a specific item from a seller's shop.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "summary": " get user profile",
-        "description": "This endpoint allows user get  his/her data.",
-        "responses": {
-          "200": {
-            "description": "Get  user.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
-                },
-                "examples": {
-                  "success": {
-                    "summary": "user get data",
-                    "value": {
-                      "message": "user get data"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User doesn't exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "userNotFound": {
-                    "summary": "User Not Found",
-                    "value": {
-                      "error": "User not found."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "serverError": {
-                    "summary": "Internal Server Error",
-                    "value": {
-                      "message": "Internal Server error"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user/user-update-profile": {
-      "put": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Update a User Profile",
-        "description": "User should be able to update his/her profile",
-        "security": [
+        "parameters": [
           {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "data":{
-                      "type":"object",
-                      "$ref":"#/components/schemas/User"
-                    }
-                  }
-                }
-              }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the shop to which the product belongs",
+            "schema": {
+              "type": "string"
             }
           }
-        },
-        "requestBody": {
-          "required": false,
+        ],
+      "responses": {
+        "200": {
+          "description": "Item deleted successfully",
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "firstName": {
+                  "message": {
                     "type": "string",
-                    "description": "firstName",
-                    "in": "formData" 
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "description": "lastName",
-                    "in": "formData"
-                  },
-                  "phone": {
-                    "type": "number",
-                    "description": "Phone number",
-                    "in": "formData"
-                  },
-                  "profilePicture": {
-                    "type": "string",
-                    "description": "Profile picture",
-                    "in": "formData",
-                    "format": "binary"
-                  },
-                  "gender": {
-                    "type": "string",
-                    "description": "Gender",
-                    "in": "formData"
-                  },
-                  "birthDate": {
-                    "type": "string",
-                    "description": "Birth date",
-                    "in": "formData"
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "language",
-                    "in": "formData"
-                  },
-                  "currency": {
-                    "type": "string",
-                    "description": "currency",
-                    "in": "formData"
+                    "description": "Success message",
+                    "example": "Item deleted successfully"
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "400": {
-        "description": "Bad Request",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
                 },
-                "message": {
-                  "type": "string"
+                "401": {
+                  "description": "Unauthorized access (missing or invalid token)"
+                },
+                "403": {
+                  "description": "Forbidden access (non-seller user trying to delete)"
+                },
+                "404": {
+                  "description": "Item not found",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          " message": {
+                            "type": "string",
+                            "description": "Error message",
+                            "example": "Item not found"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request (e.g., missing or invalid itemId)"
+                },
+                "500": {
+                  "description": "Internal Server Error"
                 }
               }
             }
           }
+        
         }
       }
     },
@@ -1417,5 +1489,60 @@
         }
       }
     }
+   },
+   "/api/product/statistics": {
+    "post": {
+      "tags": [
+        "Seller Routes"
+      ],
+      "summary": "Seller Statistics",
+      "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "startDate": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2024-01-01"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2024-12-31"
+                }
+              },
+              "required": [
+                "startDate",
+                "endDate"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Seller Statistics"
+        },
+        "400": {
+          "description": "Invalid dates"
+        },
+        "401": {
+          "description": "Not logged in"
+        },
+        "500": {
+          "description": "Internal Server error"
+        }
+      }
+    }
+  }
   }
 }

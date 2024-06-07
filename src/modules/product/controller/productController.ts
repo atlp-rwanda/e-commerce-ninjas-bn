@@ -47,6 +47,15 @@ const createShop = async (req: ExtendRequest, res: Response) => {
     }
   };
 
+  const deleteProduct = async (req: ExtendRequest, res: Response) => { 
+    try { 
+    await productRepositories.deleteProductById(req.params.id); 
+    res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
+    catch (error) { res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message }); 
+    } 
+    };
+
+
   
 const getSellerStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
   try {
@@ -97,4 +106,4 @@ const getSellerStatistics = async (req: ExtendRequest, res: Response): Promise<v
 
 
 
-export default { createProduct, createShop, getSellerStatistics }
+export default { createProduct, createShop, deleteProduct, getSellerStatistics }

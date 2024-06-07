@@ -30,6 +30,12 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
     });
 }
 
+const deleteProductById = async (productId: string): Promise<void> => 
+{ 
+    await Products.destroy({ where: { id: productId } }); 
+};
+
+
 const getOrdersPerTimeframe = async (shopId: number, startDate: Date, endDate: Date) => {
     return await Order.findAll({ where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId }});
 };
@@ -46,4 +52,4 @@ const findShopByUserId = async(userId: number) => {
     return await Shop.findOne({ where: { userId }})
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId};
+export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId};
