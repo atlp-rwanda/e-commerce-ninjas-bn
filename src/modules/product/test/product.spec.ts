@@ -228,142 +228,142 @@ describe("internal server error", () => {
         done(err);
       });
   });
- 
+
 })
 
 describe("Product Middleware", () => {
 
   describe("isProductExist", () => {
-      let req, res, next;
+    let req, res, next;
 
-      beforeEach(() => {
-          req = {
-              user: { id: 1 },
-              body: { name: "Product1" }
-          };
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          };
-          next = sinon.stub();
-      });
+    beforeEach(() => {
+      req = {
+        user: { id: 1 },
+        body: { name: "Product1" }
+      };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
+      next = sinon.stub();
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should return 404 if no shop is found", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").resolves(null);
+    it("should return 404 if no shop is found", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").resolves(null);
 
-          await isProductExist(req, res, next);
+      await isProductExist(req, res, next);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
+    });
 
-      it("should return 400 if the product already exists", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
-          sinon.stub(productRepositories, "findByModelsAndAttributes").resolves(true);
+    it("should return 400 if the product already exists", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
+      sinon.stub(productRepositories, "findByModelsAndAttributes").resolves(true);
 
-          await isProductExist(req, res, next);
+      await isProductExist(req, res, next);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
+    });
 
-      it("should call next if product does not exist", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
-          sinon.stub(productRepositories, "findByModelsAndAttributes").resolves(false);
+    it("should call next if product does not exist", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
+      sinon.stub(productRepositories, "findByModelsAndAttributes").resolves(false);
 
-          await isProductExist(req, res, next);
+      await isProductExist(req, res, next);
 
-          expect(req.shop).to.deep.equal({ id: 1 });
-          expect(next).to.have.been.called;
-      });
+      expect(req.shop).to.deep.equal({ id: 1 });
+      expect(next).to.have.been.called;
+    });
 
-      it("should return 500 on error", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").throws(new Error("Internal Server Error"));
+    it("should return 500 on error", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").throws(new Error("Internal Server Error"));
 
-          await isProductExist(req, res, next);
+      await isProductExist(req, res, next);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
+    });
   });
 
   describe("isShopExist", () => {
-      let req, res, next;
+    let req, res, next;
 
-      beforeEach(() => {
-          req = { user: { id: 1 } };
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          };
-          next = sinon.stub();
-      });
+    beforeEach(() => {
+      req = { user: { id: 1 } };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
+      next = sinon.stub();
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should call next if no shop is found", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").resolves(null);
+    it("should call next if no shop is found", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").resolves(null);
 
-          await isShopExist(req, res, next);
+      await isShopExist(req, res, next);
 
-          expect(next).to.have.been.called;
-      });
+      expect(next).to.have.been.called;
+    });
 
-      it("should return 400 if a shop already exists", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
+    it("should return 400 if a shop already exists", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").resolves({ id: 1 });
 
-          await isShopExist(req, res, next);
+      await isShopExist(req, res, next);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: { id: 1 } } });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: { id: 1 } } });
+    });
 
-      it("should return 500 on error", async () => {
-          sinon.stub(productRepositories, "findShopByAttributes").throws(new Error("Internal Server Error"));
+    it("should return 500 on error", async () => {
+      sinon.stub(productRepositories, "findShopByAttributes").throws(new Error("Internal Server Error"));
 
-          await isShopExist(req, res, next);
+      await isShopExist(req, res, next);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
+    });
   });
 });
 
 describe("Product Controller", () => {
 
   describe("createProduct", () => {
-      let req, res;
+    let req, res;
 
-      beforeEach(() => {
-          req = {
-              shop: { id: 1 },
-              files: [{ filename: "image1.jpg" }, { filename: "image2.jpg" }],
-              body: { name: "Product1" }
-          };
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          }
-      });
+    beforeEach(() => {
+      req = {
+        shop: { id: 1 },
+        files: [{ filename: "image1.jpg" }, { filename: "image2.jpg" }],
+        body: { name: "Product1" }
+      };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      }
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should handle internal server error", async () => {
-          sinon.stub(req.files, "map").throws(new Error("File upload error"));
+    it("should handle internal server error", async () => {
+      sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-          await productController.createProduct(req, res);
+      await productController.createProduct(req, res);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
+    });
   });
 
 });
@@ -371,115 +371,384 @@ describe("Product Controller", () => {
 describe("Admin Controller", () => {
 
   describe("adminGetUsers", () => {
-      let req, res;
+    let req, res;
 
-      beforeEach(() => {
-          req = {};
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          };
-      });
+    beforeEach(() => {
+      req = {};
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should handle internal server error", async () => {
-          sinon.stub(userRepositories, "getAllUsers").throws(new Error("Internal Server Error"));
+    it("should handle internal server error", async () => {
+      sinon.stub(userRepositories, "getAllUsers").throws(new Error("Internal Server Error"));
 
-          await userControllers.adminGetUsers(req, res);
+      await userControllers.adminGetUsers(req, res);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
+    });
   });
 
   describe("adminGetUser", () => {
-      let req, res;
+    let req, res;
 
-      beforeEach(() => {
-          req = { params: { id: 1 } };
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          };
-      });
+    beforeEach(() => {
+      req = { params: { id: 1 } };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should handle internal server error", async () => {
-          sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
+    it("should handle internal server error", async () => {
+      sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
 
-          await userControllers.adminGetUser(req, res);
+      await userControllers.adminGetUser(req, res);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
+    });
   });
 
   describe("getUserDetails", () => {
-      let req, res;
+    let req, res;
 
-      beforeEach(() => {
-          req = { user: { id: 1 } };
-          res = {
-              status: sinon.stub().returnsThis(),
-              json: sinon.stub().returnsThis()
-          };
-      });
+    beforeEach(() => {
+      req = { user: { id: 1 } };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
+    });
 
-      afterEach(() => {
-          sinon.restore();
-      });
+    afterEach(() => {
+      sinon.restore();
+    });
 
-      it("should handle internal server error", async () => {
-          sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
+    it("should handle internal server error", async () => {
+      sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
 
-          await userControllers.getUserDetails(req, res);
+      await userControllers.getUserDetails(req, res);
 
-          expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
-      });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" });
+    });
   });
 
   describe("updateUserProfile", () => {
     let req, res;
 
     beforeEach(() => {
-        req = { 
-            user: { id: 1 }, 
-            file: { 
-                path: "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg",
-                filename: "69180880-2138-11eb-8b06-03db3ef1abad.jpeg" 
-            }, 
-            body: { name: "John Doe" } 
-        };
-        res = {
-            status: sinon.stub().returnsThis(),
-            json: sinon.stub().returnsThis()
-        };
+      req = {
+        user: { id: 1 },
+        file: {
+          path: "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg",
+          filename: "69180880-2138-11eb-8b06-03db3ef1abad.jpeg"
+        },
+        body: { name: "John Doe" }
+      };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub().returnsThis()
+      };
     });
 
     afterEach(() => {
-        sinon.restore();
+      sinon.restore();
     });
 
     it("should handle internal server error", async () => {
-        sinon.stub(userRepositories, "updateUserProfile").throws(new Error("Internal Server Error"));
+      sinon.stub(userRepositories, "updateUserProfile").throws(new Error("Internal Server Error"));
 
-        await userControllers.updateUserProfile(req, res);
+      await userControllers.updateUserProfile(req, res);
 
-        expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);    
-});
-it("should handle missing required parameter - file", async () => {
-  delete req.file;
-  await userControllers.updateUserProfile(req, res);
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    });
+    it("should handle missing required parameter - file", async () => {
+      delete req.file;
+      await userControllers.updateUserProfile(req, res);
 
-  expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-});
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    });
 
-});
+  });
 })
+
+
+describe("Buyer get products - test cases", () => {
+  let getAvailableProductsStub;
+
+  afterEach(() => {
+    if (getAvailableProductsStub) {
+      getAvailableProductsStub.restore();
+    }
+  });
+
+  it("Should notify if Limit or page not provided", (done) => {
+    router().get("/api/shop/all-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Page and limit are required");
+        done(error);
+      });
+  });
+
+  it("Should notify if Limit or page is invalid", (done) => {
+    router().get("/api/shop/all-products?limit=a&page=-18")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Page and limit must be positive numbers");
+        done(error);
+      });
+  });
+
+  it("Should return Category related products if Category provided", (done) => {
+    router().get("/api/shop/all-products?limit=1&page=18&category=Fashion")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.data).to.be.an("array");
+        done(error);
+      });
+  });
+
+  it("Should return products when data is ok", (done) => {
+    router().get("/api/shop/all-products?limit=1&page=18")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.data).to.be.an("array");
+
+        const nextPage = response.body.nextPage;
+        const previousPage = response.body.previousPage;
+
+        if (nextPage) {
+          expect(+nextPage.page).to.be.a("number");
+          expect(+nextPage.limit).to.be.a("number");
+        }
+        if (previousPage) {
+          expect(+previousPage.page).to.be.a("number");
+          expect(+previousPage.limit).to.be.a("number");
+        }
+
+        done(error);
+      });
+  });
+
+
+  it("Should return an internal server error for testing", (done) => {
+    getAvailableProductsStub = sinon.stub(productRepositories, "getAvailableProducts").throws(new Error("Internal Server Error for testing"));
+
+    router().get("/api/shop/all-products?limit=1&page=1")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Internal Server Error for testing");
+        done(error);
+      });
+  });
+});
+
+
+
+describe("Seller get Products test cases", () => {
+  let token: string = null;
+  let sellerToken: string = null
+  let buyerId: string = null
+  it("Should be able to login an admin", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "admin@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+
+
+  it("Should create a buyer", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "seller_test_bon@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        buyerId = response.body.data.user.id
+        done(error);
+      });
+  })
+  it("Should login buyer", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "seller_test_bon@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        sellerToken = response.body.data.token
+        console.log(sellerToken)
+        done(error);
+      });
+  })
+
+
+
+  it("Should restrict buyer from accessing", (done) => {
+    router()
+      .get("/api/shop/shop-products")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  })
+  it("Should update User and return updated user", (done) => {
+    router()
+      .put(`/api/user/admin-update-role/${buyerId}`)
+      .send({ role: "seller" })
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        done(err);
+      });
+  });
+
+  it("Should notify if Limit or page not provided", (done) => {
+    router().get("/api/shop/shop-products")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Page and limit are required");
+        done(error);
+      });
+  });
+
+  it("Should notify if Limit or page is invalid", (done) => {
+    router().get("/api/shop/shop-products?limit=a&page=-18")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Page and limit must be positive numbers");
+        done(error);
+      });
+  });
+
+  it("Should notify if No shop for the seller", (done) => {
+    router().get("/api/shop/shop-products?limit=1&page=10")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.NOT_FOUND);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Shop doesn't exists");
+        done(error);
+      });
+  });
+
+  it("should create a Shop successfully", (done) => {
+    router()
+      .post("/api/shop/create-shop")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .send({
+        name: "New Shops 1",
+        description: "A new Shops description"
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.have.property("message", "Shop created successfully");
+        expect(res.body.data.shop).to.include({ name: "New Shops 1", description: "A new Shops description" });
+        shopId = res.body.data.shop.id
+        done();
+      });
+  });
+
+
+  it("Should return data successfully", (done) => {
+    router().get("/api/shop/shop-products?limit=1&page=10")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+  it("Should return paginated data based on page and limit", (done) => {
+    router().get("/api/shop/shop-products?limit=1&page=1")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        const nextPage = response.body.nextPage;
+        const previousPage = response.body.previousPage;
+
+        if (nextPage) {
+          expect(+nextPage.page).to.be.a("number");
+          expect(+nextPage.limit).to.be.a("number");
+        }
+        if (previousPage) {
+          expect(+previousPage.page).to.be.a("number");
+          expect(+previousPage.limit).to.be.a("number");
+        }
+        done(error);
+      });
+  });
+
+  it("Should handle database errors gracefully", (done) => {
+    sinon.stub(productRepositories, "getProductsByAttributes").throws(new Error("Database error"));
+
+    router().get("/api/shop/shop-products?limit=1&page=1")
+      .set("Authorization", `Bearer ${sellerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error");
+        done();
+      });
+  });
+
+})
+
+
+
+
+
+
+
+
