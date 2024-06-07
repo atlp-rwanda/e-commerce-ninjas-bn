@@ -3,12 +3,6 @@ import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 
-import Order from "../../../databases/models/orders";
-import Shop from "../../../databases/models/shops";
-import CartProduct from "../../../databases/models/cartProducts";
-
-const currentDate = new Date();
-
 const createProduct = async(body:any) => {
     return await Products.create(body);
 }
