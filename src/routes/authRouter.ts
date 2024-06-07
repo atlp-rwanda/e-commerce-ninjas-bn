@@ -4,7 +4,10 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials
+  verifyUserCredentials,
+  isUserEnabled,
+  isGoogleEnabled,
+  isUserVerified
 } from "../middlewares/validation";
 import {
   emailSchema,
@@ -36,6 +39,9 @@ router.post(
 router.post(
   "/login",
   validation(credentialSchema),
+  isUserVerified,
+  isUserEnabled,
+  isGoogleEnabled,
   verifyUserCredentials,
   authControllers.loginUser
 );

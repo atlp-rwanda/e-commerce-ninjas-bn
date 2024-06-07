@@ -95,6 +95,28 @@ const isAccountVerified = async (req: any, res: Response, next: NextFunction) =>
     }
 }
 
+const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
+    const user: UsersAttributes = await authRepositories.findUserByAttributes(
+        "email",
+        req.body.email
+    );
+    if (!user) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password" });
+    if (user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
+    
+    req.user = user;
+    return next();
+}
+
+const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.status !== "enabled") return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
+    return next();
+}
+
+const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
+    return next();
+}
+
 const verifyUserCredentials = async (
     req: any,
     res: Response,
@@ -118,7 +140,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -128,20 +150,19 @@ const verifyUserCredentials = async (
             return next();
         }
 
-        const existingToken = await authRepositories.findTokenByDeviceIdAndUserId(
+        const isTokenExist = await authRepositories.findTokenByDeviceIdAndUserId(
             device,
             user.id
         );
-        if (existingToken) {
+        if (isTokenExist) {
             return res
                 .status(httpStatus.OK)
                 .json({
                     message: "Logged in successfully",
-                    data: { token: existingToken }
+                    data: { token: isTokenExist }
                 });
-        } else {
-            return next();
         }
+        return next();
     } catch (error) {
         return res
             .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -149,14 +170,14 @@ const verifyUserCredentials = async (
     }
 };
 
-const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
-        if(!shop){
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
+        if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -167,11 +188,11 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
 }
 
 
-const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
+const isShopExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
-        if(shop){
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (shop) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
         }
         return next();
     } catch (error) {
@@ -181,12 +202,12 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-      return res.status(400).json({ status: 400, message: "Images are required" });
+        return res.status(400).json({ status: 400, message: "Images are required" });
     }
-  
+
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();
-  };
+};
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled, isGoogleEnabled };

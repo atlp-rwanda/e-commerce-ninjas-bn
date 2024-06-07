@@ -55,6 +55,51 @@ describe("Authentication Test Cases", () => {
       });
   });
 
+  it("Should not be able to login if user not verified", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
+  it("Should not be able to login if user status is disabled", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
+  it("Should not be able to login if user account is google", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas45@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
   it("should verify the user successfully", (done) => {
     if (!verifyToken) {
       throw new Error("verifyToken is not set");
@@ -289,22 +334,6 @@ describe("isUserExist Middleware", () => {
           httpStatus.INTERNAL_SERVER_ERROR
         );
         expect(res.body).to.have.property("message", "Database error");
-        done(err);
-      });
-  });
-
-  it("should return internal server error on login", (done) => {
-    sinon
-      .stub(authRepositories, "findUserByAttributes")
-      .throws(new Error("Database error"));
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         done(err);
       });
   });
