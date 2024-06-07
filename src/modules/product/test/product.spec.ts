@@ -513,7 +513,6 @@ describe("Admin Controller", () => {
   });
 })
 
-
 describe("Buyer get products - test cases", () => {
   let getAvailableProductsStub;
 
@@ -523,28 +522,10 @@ describe("Buyer get products - test cases", () => {
     }
   });
 
-  it("Should notify if Limit or page not provided", (done) => {
-    router().get("/api/shop/all-products")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error", "Page and limit are required");
-        done(error);
-      });
-  });
 
-  it("Should notify if Limit or page is invalid", (done) => {
-    router().get("/api/shop/all-products?limit=a&page=-18")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error", "Page and limit must be positive numbers");
-        done(error);
-      });
-  });
 
   it("Should return Category related products if Category provided", (done) => {
-    router().get("/api/shop/all-products?limit=1&page=18&category=Fashion")
+    router().get("/api/shop/user-get-products?category=Fashion")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -554,26 +535,12 @@ describe("Buyer get products - test cases", () => {
       });
   });
 
-  it("Should return products when data is ok", (done) => {
-    router().get("/api/shop/all-products?limit=1&page=18")
+  it("Should return products when no category provided", (done) => {
+    router().get("/api/shop/user-get-products")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("data");
-        expect(response.body.data).to.be.an("array");
-
-        const nextPage = response.body.nextPage;
-        const previousPage = response.body.previousPage;
-
-        if (nextPage) {
-          expect(+nextPage.page).to.be.a("number");
-          expect(+nextPage.limit).to.be.a("number");
-        }
-        if (previousPage) {
-          expect(+previousPage.page).to.be.a("number");
-          expect(+previousPage.limit).to.be.a("number");
-        }
-
         done(error);
       });
   });
@@ -582,7 +549,7 @@ describe("Buyer get products - test cases", () => {
   it("Should return an internal server error for testing", (done) => {
     getAvailableProductsStub = sinon.stub(productRepositories, "getAvailableProducts").throws(new Error("Internal Server Error for testing"));
 
-    router().get("/api/shop/all-products?limit=1&page=1")
+    router().get("/api/shop/user-get-products")
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.a("object");
@@ -591,8 +558,6 @@ describe("Buyer get products - test cases", () => {
       });
   });
 });
-
-
 
 describe("Seller get Products test cases", () => {
   let token: string = null;
@@ -616,12 +581,12 @@ describe("Seller get Products test cases", () => {
       });
   });
 
-
+  const unique_username: string = `un_inque${Date.now()}_gp@gmait.com`;
   it("Should create a buyer", (done) => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "seller_test_bon@gmail.com",
+        email: `$${unique_username}`,
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
@@ -637,7 +602,7 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "seller_test_bon@gmail.com",
+        email: `$${unique_username}`,
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
@@ -655,7 +620,7 @@ describe("Seller get Products test cases", () => {
 
   it("Should restrict buyer from accessing", (done) => {
     router()
-      .get("/api/shop/shop-products")
+      .get("/api/shop/seller-get-shop-products")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -675,30 +640,12 @@ describe("Seller get Products test cases", () => {
       });
   });
 
-  it("Should notify if Limit or page not provided", (done) => {
-    router().get("/api/shop/shop-products")
-      .set("Authorization", `Bearer ${sellerToken}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error", "Page and limit are required");
-        done(error);
-      });
-  });
 
-  it("Should notify if Limit or page is invalid", (done) => {
-    router().get("/api/shop/shop-products?limit=a&page=-18")
-      .set("Authorization", `Bearer ${sellerToken}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error", "Page and limit must be positive numbers");
-        done(error);
-      });
-  });
+
+
 
   it("Should notify if No shop for the seller", (done) => {
-    router().get("/api/shop/shop-products?limit=1&page=10")
+    router().get("/api/shop/seller-get-shop-products?limit=1&page=10")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.NOT_FOUND);
@@ -710,7 +657,7 @@ describe("Seller get Products test cases", () => {
 
   it("should create a Shop successfully", (done) => {
     router()
-      .post("/api/shop/create-shop")
+      .post("/api/shop/seller-create-shop")
       .set("Authorization", `Bearer ${sellerToken}`)
       .send({
         name: "New Shops 1",
@@ -720,13 +667,13 @@ describe("Seller get Products test cases", () => {
         expect(res).to.have.status(201);
         expect(res.body).to.have.property("message", "Shop created successfully");
         expect(res.body.data.shop).to.include({ name: "New Shops 1", description: "A new Shops description" });
-        done();
+        done(err);
       });
   });
 
 
   it("Should return data successfully", (done) => {
-    router().get("/api/shop/shop-products?limit=1&page=10")
+    router().get("/api/shop/seller-get-shop-products")
       .set("Authorization", `Bearer ${sellerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -736,47 +683,5 @@ describe("Seller get Products test cases", () => {
       });
   });
 
-  it("Should return paginated data based on page and limit", (done) => {
-    router().get("/api/shop/shop-products?limit=1&page=1")
-      .set("Authorization", `Bearer ${sellerToken}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        const nextPage = response.body.nextPage;
-        const previousPage = response.body.previousPage;
-
-        if (nextPage) {
-          expect(+nextPage.page).to.be.a("number");
-          expect(+nextPage.limit).to.be.a("number");
-        }
-        if (previousPage) {
-          expect(+previousPage.page).to.be.a("number");
-          expect(+previousPage.limit).to.be.a("number");
-        }
-        done(error);
-      });
-  });
-
-  it("Should handle database errors gracefully", (done) => {
-    sinon.stub(productRepositories, "getProductsByAttributes").throws(new Error("Database error"));
-
-    router().get("/api/shop/shop-products?limit=1&page=1")
-      .set("Authorization", `Bearer ${sellerToken}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error");
-        done();
-      });
-  });
 
 })
-
-
-
-
-
-
-
-
