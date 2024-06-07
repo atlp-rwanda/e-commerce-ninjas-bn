@@ -9,7 +9,6 @@ import productRepositories from "../modules/product/repositories/productReposito
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
 
-
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
   async (req: Request, res: Response, next: NextFunction) => {
@@ -45,12 +44,12 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
         if (userExists.isVerified) {
           return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
-            message: "Account already exists."
+            message: "Account already exists.",
           });
         }
         return res.status(httpStatus.BAD_REQUEST).json({
           status: httpStatus.BAD_REQUEST,
-          message: "Account already exists. Please verify your account"
+          message: "Account already exists. Please verify your account",
         });
       }
     }
@@ -68,169 +67,277 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
         .json({ status: httpStatus.NOT_FOUND, message: "User not found" });
     }
 
-        return next();
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-    }
+    return next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
+  }
 };
 
-const isUsersExist = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userCount = await Users.count();
-        if (userCount === 0) {
-            return res.status(httpStatus.NOT_FOUND).json({ error: "No users found in the database." });
-        }
-        next();
-    } catch (err) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: "Internet Server error." });
+const isUsersExist = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userCount = await Users.count();
+    if (userCount === 0) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ error: "No users found in the database." });
     }
+    next();
+  } catch (err) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internet Server error." });
+  }
 };
 
-const isAccountVerified = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        let user: any = null;
-        if (req?.params?.token) {
-            const decodedToken = await decodeToken(req.params.token);
-            user = await authRepositories.findUserByAttributes("id", decodedToken.id);
-        }
-        if (req?.body?.email) {
-            user = await authRepositories.findUserByAttributes("email", req.body.email);
-        }
-
-        if (!user) {
-            return res.status(httpStatus.NOT_FOUND).json({ message: "Account not found." });
-        }
-
-        if (user.isVerified) {
-            return res.status(httpStatus.BAD_REQUEST).json({ message: "Account already verified." });
-        }
-
-        const session = await authRepositories.findSessionByAttributes("userId", user.id);
-        if (!session) {
-            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid token." });
-        }
-
-        req.session = session;
-        req.user = user;
-        next();
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+const isAccountVerified = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let user: any = null;
+    if (req?.params?.token) {
+      const decodedToken = await decodeToken(req.params.token);
+      user = await authRepositories.findUserByAttributes("id", decodedToken.id);
     }
-}
-
-const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
-    const user: UsersAttributes = await authRepositories.findUserByAttributes(
+    if (req?.body?.email) {
+      user = await authRepositories.findUserByAttributes(
         "email",
         req.body.email
+      );
+    }
+
+    if (!user) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "Account not found." });
+    }
+
+    if (user.isVerified) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Account already verified." });
+    }
+
+    const session = await authRepositories.findSessionByAttributes(
+      "userId",
+      user.id
     );
-    if (!user) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password" });
-    if (user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
-    
+    if (!session) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Invalid token." });
+    }
+
+    req.session = session;
     req.user = user;
-    return next();
-}
+    next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
+  }
+};
+
+const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
+  const user: UsersAttributes = await authRepositories.findUserByAttributes(
+    "email",
+    req.body.email
+  );
+  if (!user)
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ message: "Invalid Email or Password" });
+  if (user.isVerified === false)
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({
+        status: httpStatus.UNAUTHORIZED,
+        message: "Your account is not verified yet",
+      });
+
+  req.user = user;
+  return next();
+};
 
 const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
-    if (req.user.status !== "enabled") return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
-    return next();
-}
+  if (req.user.status !== "enabled")
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({
+        status: httpStatus.UNAUTHORIZED,
+        message: "Your account is disabled",
+      });
+  return next();
+};
 
 const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
-    if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
-    return next();
-}
+  if (req.user.isGoogleAccount)
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({
+        status: httpStatus.UNAUTHORIZED,
+        message: "This is google account, please login with google",
+      });
+  return next();
+};
 
 const verifyUserCredentials = async (
-    req: any,
-    res: Response,
-    next: NextFunction
+  req: any,
+  res: Response,
+  next: NextFunction
 ) => {
-    try {
-        const user: UsersAttributes = await authRepositories.findUserByAttributes(
-            "email",
-            req.body.email
-        );
-        if (!user) {
-            return res
-                .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password" });
-        }
-
-        const passwordMatches = await comparePassword(
-            req.body.password,
-            user.password
-        );
-        if (!passwordMatches) {
-            return res
-                .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password" });
-        }
-
-        req.user = user;
-
-        const device = req.headers["user-device"];
-        if (!device) {
-            return next();
-        }
-
-        const isTokenExist = await authRepositories.findTokenByDeviceIdAndUserId(
-            device,
-            user.id
-        );
-        if (isTokenExist) {
-            return res
-                .status(httpStatus.OK)
-                .json({
-                    message: "Logged in successfully",
-                    data: { token: isTokenExist }
-                });
-        }
-        return next();
-    } catch (error) {
-        return res
-            .status(httpStatus.INTERNAL_SERVER_ERROR)
-            .json({ message: "Internal Server error", data: error.message });
+  try {
+    const user: UsersAttributes = await authRepositories.findUserByAttributes(
+      "email",
+      req.body.email
+    );
+    if (!user) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Invalid Email or Password" });
     }
+
+    const passwordMatches = await comparePassword(
+      req.body.password,
+      user.password
+    );
+    if (!passwordMatches) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Invalid Email or Password" });
+    }
+
+    req.user = user;
+
+    const device = req.headers["user-device"];
+    if (!device) {
+      return next();
+    }
+
+    const isTokenExist = await authRepositories.findTokenByDeviceIdAndUserId(
+      device,
+      user.id
+    );
+    if (isTokenExist) {
+      return res.status(httpStatus.OK).json({
+        message: "Logged in successfully",
+        data: { token: isTokenExist },
+      });
+    }
+    return next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal Server error", data: error.message });
+  }
 };
 
 const isProductExist = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
-        if (!shop) {
-            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
-        }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
-        if (isProductAvailable) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
-        }
-        req.shop = shop;
-        next();
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  try {
+    const shop = await productRepositories.findShopByAttributes(
+      Shops,
+      "userId",
+      req.user.id
+    );
+    if (!shop) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
     }
-}
-
-
-const isShopExist = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
-        if (shop) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
-        }
-        return next();
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    const isProductAvailable =
+      await productRepositories.findByModelsAndAttributes(
+        Products,
+        "name",
+        "shopId",
+        req.body.name,
+        shop.id
+      );
+    if (isProductAvailable) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Please update the quantities.",
+        });
     }
-}
-
-const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.files) {
-        return res.status(400).json({ status: 400, message: "Images are required" });
-    }
-
-    const files = req.files as Express.Multer.File[];
-    req.body.images = files.map(file => file.path);
+    req.shop = shop;
     next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
+  }
 };
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, isUserVerified, isUserEnabled, isGoogleEnabled };
+const isShopExist = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const shop = await productRepositories.findShopByAttributes(
+      Shops,
+      "userId",
+      req.user.id
+    );
+    if (shop) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Already have a shop.",
+          data: { shop: shop },
+        });
+    }
+    return next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
+  }
+};
+
+const transformFilesToBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.files) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Images are required" });
+  }
+
+  const files = req.files as Express.Multer.File[];
+  req.body.images = files.map((file) => file.path);
+  next();
+};
+
+export {
+  validation,
+  isUserExist,
+  isAccountVerified,
+  verifyUserCredentials,
+  isUsersExist,
+  isProductExist,
+  isShopExist,
+  transformFilesToBody,
+  isUserVerified,
+  isUserEnabled,
+  isGoogleEnabled,
+};

@@ -4,18 +4,17 @@ import {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials,
   isUserEnabled,
   isGoogleEnabled,
-  isUserVerified
+  isUserVerified,
+  verifyUserCredentials,
 } from "../middlewares/validation";
 import {
   emailSchema,
-  credentialSchema
+  credentialSchema,
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
-
 
 const router: Router = Router();
 
@@ -53,9 +52,6 @@ router.post(
 );
 
 router.get("/google", googleAuth.googleVerify);
-router.get(
-  "/google/callback",
-  googleAuth.authenticateWithGoogle);
-
+router.get("/google/callback", googleAuth.authenticateWithGoogle);
 
 export default router;
