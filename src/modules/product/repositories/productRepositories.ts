@@ -38,9 +38,15 @@ const getProductsByAttributes = async (key: string, value: any) => {
         where: { [key]: value }
     });
 }
-const getAvailableProductsByAttributes = async (key: string, value: string) => {
+const getAvailableProductsByAttributes = async (key, value) => {
     return await Products.findAll({
-        where: { [key]: value }
+        where: {
+            [key]: value,
+            isAvailable: "available",
+            expiryDate: {
+                [Op.gte]: currentDate
+            }
+        }
     })
 }
 const getAvailableProducts = async () => {
