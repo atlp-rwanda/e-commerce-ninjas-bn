@@ -3,34 +3,36 @@
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
-export interface OrderAttributes {
+export interface CartProductAttributes {
     id: number;
-    shopId: number;
     cartId: number;
-    paymentMethodId: number;
-    orderDate: Date;
-    status: string;
+    productId: number;
+    quantity: number;
+    price: number;
+    discount: number;
+    totalPrice: number;
     createdAt: Date;
     updatedAt: Date;
 }
 
-class Order extends Model<OrderAttributes> implements OrderAttributes {
+class CartProduct extends Model<CartProductAttributes> implements CartProductAttributes {
     declare id: number;
+    declare productId: number;
     declare cartId: number;
-    declare shopId: number;
-    declare paymentMethodId: number;
-    declare orderDate: Date;
-    declare status: string;
+    declare quantity: number;
+    declare discount: number;
+    declare price: number;
+    declare totalPrice: number;
     declare createdAt: Date;
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Order.belongsTo(models.Shop, { foreignKey: "shopId", as: "shop" });
-        Order.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
+        CartProduct.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
+        CartProduct.belongsTo(models.Product, { foreignKey: "productId", as: "Products" });
     }
 }
 
-Order.init(
+CartProduct.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -38,7 +40,7 @@ Order.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
           },
-        shopId: {
+        productId: {
             type: new DataTypes.UUID,
             allowNull: false
         },
@@ -46,17 +48,20 @@ Order.init(
             type: new DataTypes.UUID,
             allowNull: false
         },
-        paymentMethodId: {
+        quantity: {
             type: new DataTypes.INTEGER,
+            allowNull: true
+        },
+        discount: {
+            type: new DataTypes.FLOAT,
+            allowNull: true
+        },
+        price: {
+            type: new DataTypes.FLOAT,
             allowNull: false
         },
-        orderDate: {
-            type: new DataTypes.DATE,
-            allowNull: true,
-            defaultValue: DataTypes.NOW
-        },
-        status: {
-            type: new DataTypes.STRING,
+        totalPrice: {
+            type: new DataTypes.FLOAT,
             allowNull: false
         },
         createdAt: {
@@ -74,10 +79,10 @@ Order.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "orders",
+        tableName: "cart_products",
         timestamps: true,
-        modelName: "Order"
+        modelName: "CartProduct"
     }
 );
 
-export default Order;
+export default CartProduct;

@@ -1,4 +1,5 @@
 import { QueryInterface, DataTypes } from "sequelize";
+
 export default {
   up: async (queryInterface: QueryInterface) => {
     await queryInterface.createTable("sessions", {
@@ -9,8 +10,14 @@ export default {
         primaryKey: true
       },
       userId: {
-        type: new DataTypes.UUID,
-        allowNull: false
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       device: {
         type: new DataTypes.STRING(280),
@@ -25,15 +32,13 @@ export default {
         allowNull: true
       },
       createdAt: {
-        field: "createdAt",
-        type: DataTypes.DATE,
         allowNull: false,
+        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
       },
       updatedAt: {
-        field: "updatedAt",
-        type: DataTypes.DATE,
         allowNull: false,
+        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
       }
     });

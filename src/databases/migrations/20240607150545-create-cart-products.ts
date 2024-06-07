@@ -2,7 +2,7 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 export = {
   up: async (queryInterface: QueryInterface) => {
-    await queryInterface.createTable("order_products", {
+    await queryInterface.createTable("cart_products", {
       id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -19,11 +19,11 @@ export = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      orderId: {
+      cartId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "orders",
+          model: "carts",
           key: "id"
         },
         onUpdate: "CASCADE",
@@ -37,7 +37,11 @@ export = {
         type: DataTypes.FLOAT,
         allowNull: true
       },
-      unitPrice: {
+      price: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      totalPrice: {
         type: DataTypes.FLOAT,
         allowNull: false
       },
@@ -55,6 +59,6 @@ export = {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("order_products");
+    await queryInterface.dropTable("cart_products");
   }
 };

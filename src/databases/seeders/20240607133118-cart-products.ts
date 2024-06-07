@@ -1,46 +1,50 @@
 import { QueryInterface } from "sequelize";
-import { orderOneId, orderProductFourId, orderProductThreeId, orderTwoId, productOneId, productTwoId } from "../../types/uuid";
+import { cartOneId, cartTwoId, orderOneId, orderProductFourId, orderProductThreeId, orderTwoId, productOneId, productTwoId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
-    await queryInterface.bulkInsert("order_products", [
+    await queryInterface.bulkInsert("cart_products", [
       {
         id: orderOneId,
         productId: productOneId,
-        orderId: orderOneId,
+        cartId: cartOneId,
         quantity: 5,
         discount: 10.0,
-        unitPrice: 30.0,
+        price: 30.0,
+        totalPrice: 30.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         id: orderTwoId,
         productId: productTwoId,
-        orderId: orderOneId,
+        cartId: cartOneId,
         quantity: 19,
         discount: 5.0,
-        unitPrice: 100.0,
+        price: 100.0,
+        totalPrice: 100.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         id: orderProductThreeId,
         productId: productOneId,
-        orderId: orderTwoId,
+        cartId: cartTwoId,
         quantity: 23,
         discount: 0.0,
-        unitPrice: 30.0,
+        price: 30.0,
+        totalPrice: 30.0,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         id: orderProductFourId,
         productId: productTwoId,
-        orderId: orderTwoId,
+        cartId: cartTwoId,
         quantity: 40,
         discount: 15.0,
-        unitPrice: 100.0,
+        price: 100.0,
+        totalPrice: 100.0,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -48,6 +52,6 @@ module.exports = {
   },
 
   async down(queryInterface: QueryInterface) {
-    await queryInterface.bulkDelete("order_products", null, {});
+    await queryInterface.bulkDelete("cart_products", null, {});
   }
 };

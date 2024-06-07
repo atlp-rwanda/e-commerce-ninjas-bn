@@ -1,15 +1,14 @@
 import { QueryInterface } from "sequelize";
-import { orderOneId, orderTwoId, shopOneId, userOneId, userTwoId } from "../../types/uuid";
+import { cartOneId, orderOneId, orderTwoId, shopOneId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
     await queryInterface.bulkInsert("orders", [
       {
         id: orderOneId,
-        userId: userOneId,
         shopId: shopOneId,
+        cartId: cartOneId,
         paymentMethodId: 1,
-        amount: 150.0,
         orderDate: new Date("2024-01-01"),
         status: "completed",
         createdAt: new Date(),
@@ -17,12 +16,11 @@ module.exports = {
       },
       {
         id: orderTwoId,
-        userId: userTwoId,
         shopId: shopOneId,
+        cartId: cartOneId,
         paymentMethodId: 2,
-        amount: 200.0,
         orderDate: new Date("2024-01-15"),
-        status: "pending",
+        status: "completed",
         createdAt: new Date(),
         updatedAt: new Date()
       }

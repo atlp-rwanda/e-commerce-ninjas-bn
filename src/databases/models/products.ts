@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
-    declare id: number;
-    declare shopId: number;
+    declare id: string;
+    declare shopId: string;
     declare name: string;
     declare description?: string;
     declare price: number;
@@ -17,24 +18,29 @@ class Products extends Model<IProduct> {
     declare images: string[];
     declare quantity: number;
     declare isAvailable: string;
-    declare readonly createdAt: Date;
-    declare readonly updatedAt: Date;
+    declare createdAt: Date;
+    declare updatedAt: Date;
+
+    static associate(models: any) {
+        Products.belongsTo(models.Users, { foreignKey: "userId", as: "user" });
+        Products.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
+    }
 }
 
 Products.init(
     {
         id: {
-            type: DataTypes.UUID,
-            allowNull: false,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
-          },
-        
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+            defaultValue: DataTypes.UUIDV4
+
+        },
         shopId: {
             allowNull: false,
             type: DataTypes.UUID,
             references: {
-                model: "shops",
+                model: "Shops",
                 key: "id"
             },
             onDelete: "CASCADE"
@@ -70,7 +76,8 @@ Products.init(
             type: DataTypes.STRING
         },
         images: {
-            type: DataTypes.ARRAY(DataTypes.STRING)
+            type: DataTypes.ARRAY(DataTypes.STRING),
+            allowNull: false
         },
         quantity: {
             allowNull: false,

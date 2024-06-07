@@ -3,34 +3,27 @@
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
-export interface OrderProductAttributes {
+export interface CartAttributes {
     id: number;
-    productId: number;
-    orderId: number;
-    quantity: number;
-    discount: number;
-    unitPrice: number;
+    userId: number;
+    status: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-class OrderProduct extends Model<OrderProductAttributes> implements OrderProductAttributes {
+class Cart extends Model<CartAttributes> implements CartAttributes {
     declare id: number;
-    declare productId: number;
-    declare orderId: number;
-    declare quantity: number;
-    declare discount: number;
-    declare unitPrice: number;
+    declare userId: number;
+    declare status: string;
     declare createdAt: Date;
     declare updatedAt: Date;
 
     static associate(models: any) {
-        OrderProduct.belongsTo(models.Order, { foreignKey: "orderId", as: "order" });
-        OrderProduct.belongsTo(models.Product, { foreignKey: "productId", as: "Products" });
+        Cart.belongsTo(models.User, { foreignKey: "userId", as: "user" });
     }
 }
 
-OrderProduct.init(
+Cart.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -38,24 +31,12 @@ OrderProduct.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
           },
-        productId: {
+        userId: {
             type: new DataTypes.UUID,
             allowNull: false
         },
-        orderId: {
-            type: new DataTypes.UUID,
-            allowNull: false
-        },
-        quantity: {
-            type: new DataTypes.INTEGER,
-            allowNull: true
-        },
-        discount: {
-            type: new DataTypes.FLOAT,
-            allowNull: true
-        },
-        unitPrice: {
-            type: new DataTypes.FLOAT,
+        status: {
+            type: new DataTypes.STRING,
             allowNull: false
         },
         createdAt: {
@@ -73,10 +54,10 @@ OrderProduct.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "order_products",
+        tableName: "carts",
         timestamps: true,
-        modelName: "OrderProduct"
+        modelName: "Cart"
     }
 );
 
-export default OrderProduct;
+export default Cart;

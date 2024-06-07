@@ -2,67 +2,51 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-export interface ShopAttributes {
-    id: number;
-    userId: number;
-    name: string;
-    description: string;
-    createdAt: Date;
-    updatedAt: Date;
+import { IShops } from "../../types";
+
+class Shops extends Model<IShops> {
+    declare id: number;
+    declare userId: number;
+    declare name: string;
+    declare description?: string;
+
+    static associate(models: any) {
+        Shops.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
+        Shops.hasMany(models.Products, { foreignKey: "shopId", as: "products" });
+    }
 }
 
-    class Shop extends Model<ShopAttributes> implements ShopAttributes {
-        declare id: number;
-        declare userId: number;
-        declare name: string;
-        declare description: string;
-        declare createdAt: Date;
-        declare updatedAt: Date;
-
-        static associate(models: any) {
-            Shop.belongsTo(models.Users, { foreignKey: "userId",as: "user" });
-        }
-    }
-
-    Shop.init(
-        {
-            id: {
-                type: DataTypes.UUID,
-                allowNull: false,
-                defaultValue: DataTypes.UUIDV4,
-                primaryKey: true
-              },
-            userId: {
-                type: new DataTypes.UUID,
-                allowNull: false
-            },
-            name: {
-                type: new DataTypes.STRING(280),
-                allowNull: true
-            },
-            description: {
-                type: new DataTypes.STRING(560),
-                allowNull: true
-            },
-            createdAt: {
-                field: "createdAt",
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
-            },
-            updatedAt: {
-                field: "updatedAt",
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
-            }
+Shops.init(
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            defaultValue: DataTypes.UUIDV4
         },
-        {
-            sequelize: sequelizeConnection,
-            tableName: "shops",
-            timestamps: true,
-            modelName:"Shops"
+        userId: {
+            allowNull: false,
+            type: DataTypes.INTEGER,
+            references: {
+                model: "users",
+                key: "id"
+            },
+            onDelete: "CASCADE"
+        },
+        name: {
+            allowNull: false,
+            type: DataTypes.STRING
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
-    );
+    },
+    {
+        sequelize: sequelizeConnection,
+        tableName: "shops",
+        modelName: "Shops"
+    }
+);
 
-export default Shop;
+export default Shops;
