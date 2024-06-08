@@ -31,7 +31,6 @@
     {
       "name": "User Routes",
       "description": "User Endpoint"
-     
     },
     {
       "name": "Seller Routes",
@@ -384,7 +383,6 @@
         }
       }
     },
-
     "/api/auth/google": {
       "get": {
         "tags": [
@@ -1178,28 +1176,6 @@
         ],
         "summary": "A seller should be able to view products",
         "description": "This endpoint allow a seller to view all products available",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "example": 1
-            },
-            "description": "The page number."
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "example": 10
-            },
-            "description": "The number of items per page."
-          }
-        ],
         "security": [
           {
             "bearerAuth": []
@@ -1294,23 +1270,13 @@
         "parameters": [
           {
             "in": "query",
-            "name": "page",
+            "name": "category",
             "required": false,
             "schema": {
-              "type": "integer",
-              "example": 1
+              "type": "string",
+              "example": "Fashion"
             },
-            "description": "The page number."
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "example": 10
-            },
-            "description": "The number of items per page."
+            "description": "Products by category"
           }
         ],
         "responses": {
@@ -1471,9 +1437,9 @@
                     "status": {
                       "type": "integer"
                     },
-                    "data":{
-                      "type":"object",
-                      "$ref":"#/components/schemas/User"
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/User"
                     }
                   }
                 }
@@ -1491,7 +1457,7 @@
                   "firstName": {
                     "type": "string",
                     "description": "firstName",
-                    "in": "formData" 
+                    "in": "formData"
                   },
                   "lastName": {
                     "type": "string",
