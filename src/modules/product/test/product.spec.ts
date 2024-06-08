@@ -22,6 +22,7 @@ chai.use(chaiHttp);
 const router = () => chai.request(app);
 const imagePath = path.join(__dirname, "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg");
 const imageBuffer = fs.readFileSync(imagePath)
+
 describe("Product and Shops API Tests", () => {
 
   let token: string;
@@ -680,9 +681,18 @@ describe("Buyer get products - test cases", () => {
 });
 
 describe("Seller get Products test cases", () => {
-  let token: string = null;
-  let sellerToken: string = null
-  let buyerId: string = null
+  const sellerToken: string = null
+  let buyerToken: string = null
+  let  adminToken;
+  let userId: string = null;
+  let verifyToken: string | null = null;
+
+  afterEach(async () => {
+    const tokenRecord = await Session.findOne({ where: { userId } });
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.token;
+    }
+  });
   it("Should be able to login an admin", (done) => {
     router()
       .post("/api/auth/login")
@@ -696,66 +706,49 @@ describe("Seller get Products test cases", () => {
         expect(response.body).to.have.property("data");
         expect(response.body.message).to.be.a("string");
         expect(response.body.data).to.have.property("token");
-        token = response.body.data.token;
+        adminToken = response.body.data.token;
         done(error);
       });
   });
 
-  const unique_username: string = `un_inque${Date.now()}_gp@gmail.com`;
-  it("Should create a buyer", (done) => {
+
+
+
+  it("should register a new user", (done) => {
     router()
       .post("/api/auth/register")
       .send({
-        email: `$${unique_username}`,
-        password: "$321!Pass!123$"
+        email: "ecommerceninjas456@gmail.com",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
-        expect(response.body).to.be.a("object");
+        expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        buyerId = response.body.data.user.id
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
-  })
-  it("Should login buyer", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: `$${unique_username}`,
-        password: "$321!Pass!123$"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        sellerToken = response.body.data.token
-        console.log(sellerToken)
-        done(error);
-      });
-  })
+  });
 
+  it("should verify the user successfully", (done) => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
 
-
-  it("Should restrict buyer from accessing", (done) => {
     router()
-      .get("/api/shop/seller-get-shop-products")
-      .set("Authorization", `Bearer ${sellerToken}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
-        expect(response.body).to.be.a("object");
-        done(error);
-      });
-  })
-  it("Should update User and return updated user", (done) => {
-    router()
-      .put(`/api/user/admin-update-role/${buyerId}`)
-      .send({ role: "seller" })
-      .set("Authorization", `Bearer ${token}`)
+      .get(`/api/auth/verify-email/${verifyToken}`)
       .end((err, res) => {
-        expect(res).to.have.status(httpStatus.OK);
+        expect(res.status).to.equal(httpStatus.OK);
         expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
         done(err);
       });
   });
@@ -763,10 +756,51 @@ describe("Seller get Products test cases", () => {
 
 
 
+  it("Should login buyer", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas456@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        buyerToken = response.body.data.token
+        console.log(sellerToken)
+        done(error);
+      });
+  })
+
+  it("Should restrict buyer from accessing", (done) => {
+    router()
+      .get("/api/shop/seller-get-shop-products")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  })
+
+  it("Should update User and return updated user", (done) => {
+    router()
+      .put(`/api/user/admin-update-role/${userId}`)
+      .send({ role: "seller" })
+      .set("authorization", `Bearer ${adminToken}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "User role updated successfully");
+        done(err);
+      });
+  });
 
   it("Should notify if No shop for the seller", (done) => {
-    router().get("/api/shop/seller-get-shop-products?limit=1&page=10")
-      .set("Authorization", `Bearer ${sellerToken}`)
+    router().get("/api/shop/seller-get-shop-products")
+      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.NOT_FOUND);
         expect(response.body).to.be.a("object");
@@ -778,7 +812,7 @@ describe("Seller get Products test cases", () => {
   it("should create a Shop successfully", (done) => {
     router()
       .post("/api/shop/seller-create-shop")
-      .set("Authorization", `Bearer ${sellerToken}`)
+      .set("Authorization", `Bearer ${buyerToken}`)
       .send({
         name: "New Shops 1",
         description: "A new Shops description"
@@ -794,7 +828,7 @@ describe("Seller get Products test cases", () => {
 
   it("Should return data successfully", (done) => {
     router().get("/api/shop/seller-get-shop-products")
-      .set("Authorization", `Bearer ${sellerToken}`)
+      .set("Authorization", `Bearer ${buyerToken}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body).to.be.a("object");
