@@ -106,6 +106,40 @@ const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<v
   }
 };
 
+const updateProductStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+      const data = await productRepositories.updateProductByAttributes("status", req.body.status, "id", req.params.id);
+      res.status(httpStatus.OK).json({ message: "Status updated successfully.", data });
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
+        status: httpStatus.INTERNAL_SERVER_ERROR, 
+         error: error.message });
+  }
+};
+
+const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
+try {
+    await productRepositories.markProducts(req.shop.id);
+    const products = await productRepositories.sellerGetProducts(req.shop.id);
+    res.status(httpStatus.OK).json({
+        message: "All products fetched successfully.",
+        products
+    });
+} catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+    });
+}
+};
 
 
-export default { sellerCreateProduct, sellerCreateShop, sellerDeleteProduct, sellerGetStatistics }
+
+export default { 
+  sellerCreateProduct, 
+  sellerCreateShop, 
+  sellerDeleteProduct, 
+  sellerGetStatistics,
+  updateProductStatus,
+  sellerGetProducts 
+}

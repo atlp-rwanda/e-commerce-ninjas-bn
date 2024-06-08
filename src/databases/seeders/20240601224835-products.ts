@@ -1,110 +1,64 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable require-jsdoc */
-import { Model, DataTypes, Sequelize } from "sequelize";
-import sequelizeConnection from "../config/db.config";
-import { IProduct } from "../../types";
+import { QueryInterface } from "sequelize";
+import { productOneId, productTwoId, productThreeId, shopOneId, shopTwoId } from "../../types/uuid";
 
-class Products extends Model<IProduct> {
-    declare id: string;
-    declare shopId: string;
-    declare name: string;
-    declare description?: string;
-    declare price: number;
-    declare discount?: string;
-    declare category: string;
-    declare expiryDate?: Date;
-    declare expired: boolean;
-    declare bonus?: string;
-    declare images: string[];
-    declare quantity: number;
-    declare isAvailable: string;
-    declare createdAt: Date;
-    declare updatedAt: Date;
-
-    static associate(models: any) {
-        Products.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
-    }
+const productOne = {
+  id: productOneId,
+  shopId: shopOneId,
+  name: "Pizza",
+  description: "Description for product 1",
+  price: 19.99,
+  discount: "10%",
+  category: "Category 1",
+  expiryDate: new Date("2023-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: ["image1.jpg", "image2.jpg"],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date()
 }
 
-Products.init(
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            defaultValue: DataTypes.UUIDV4
+const productTwo = {
+  id: productTwoId,
+  shopId: shopTwoId,
+  name: "Bugger",
+  description: "Description for product 2",
+  price: 19.99,
+  discount: "10%",
+  category: "Category 1",
+  expiryDate: new Date("2023-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: ["image1.jpg", "image2.jpg"],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date()
+}
 
-        },
-        shopId: {
-            allowNull: false,
-            type: DataTypes.UUID,
-            references: {
-                model: "Shops",
-                key: "id"
-            },
-            onDelete: "CASCADE"
-        },
-        name: {
-            allowNull: false,
-            type: DataTypes.STRING
-        },
-        description: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        price: {
-            allowNull: false,
-            type: DataTypes.DECIMAL(10, 2)
-        },
-        discount: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        category: {
-            allowNull: false,
-            type: DataTypes.STRING
-        },
-        expiryDate: {
-            type: DataTypes.DATE
-        },
-        expired: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        bonus: {
-            type: DataTypes.STRING
-        },
-        images: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: false
-        },
-        quantity: {
-            allowNull: false,
-            type: DataTypes.INTEGER,
-            defaultValue: 0
-        },
-        isAvailable: {
-            type: DataTypes.STRING(128),
-            allowNull: false,
-            defaultValue: "available"
-        },
-        createdAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
-        },
-        updatedAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
-        }
-    },
-    {
-        sequelize: sequelizeConnection,
-        tableName: "Products",
-        modelName: "Products",
-        timestamps: true
-    }
-);
+const productThree = {
+  id: productThreeId,
+  shopId: shopTwoId,
+  name: "Chipps",
+  description: "Description for product 3",
+  price: 19.99,
+  discount: "10%",
+  category: "Category 1",
+  expiryDate: new Date("2023-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: ["image1.jpg", "image2.jpg"],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date()
+}
 
-export default Products;
+export const up = async (queryInterface: QueryInterface) => {
+  await queryInterface.bulkInsert("products", [productOne, productTwo, productThree]);
+};
+
+export const down = async (queryInterface: QueryInterface) => {
+  await queryInterface.bulkDelete("products", {});
+};

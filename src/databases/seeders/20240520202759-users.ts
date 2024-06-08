@@ -1,6 +1,6 @@
 import { QueryInterface } from "sequelize";
 import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId } from "../../types/uuid";
+import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId, userSevenId } from "../../types/uuid";
 
 const userOne = {
   id: userOneId,
@@ -115,7 +115,26 @@ const userSix = {
   isVerified: true
 };
 
-export const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour, userFive, userSix])
+const userSeven = {
+  id: userSevenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  firstName: "F Seller4",
+  lastName: "L Seller4",
+  email: "seller4@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767899,
+  profilePicture: "",
+  gender: "female",
+  birthDate: "2014-02-02",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled",
+  isVerified: true
+};
+
+export const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour, userFive, userSix, userSeven])
 
 export const down = async (queryInterface: QueryInterface) => {
     await queryInterface.bulkDelete("users", {});
