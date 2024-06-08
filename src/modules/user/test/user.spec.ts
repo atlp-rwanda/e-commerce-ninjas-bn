@@ -193,8 +193,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "ecommerceninjas47@gmail.com",
-        password: "userPassword@123"
+        email: "nda12345@gmail.com",
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);

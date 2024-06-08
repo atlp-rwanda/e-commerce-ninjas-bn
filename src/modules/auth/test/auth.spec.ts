@@ -41,7 +41,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -61,7 +61,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -76,7 +76,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -91,7 +91,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -125,7 +125,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -140,7 +140,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -170,7 +170,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -205,7 +205,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -231,7 +231,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "fakeemail@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -279,7 +279,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -306,7 +306,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword@123"
+        password: "_REMOVED123"
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
