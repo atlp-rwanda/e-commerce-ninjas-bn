@@ -30,7 +30,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/register")
       .send({
         email: "nda1234@gmail.com",
-        password: "_REMOVED123"
+        password: "$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
