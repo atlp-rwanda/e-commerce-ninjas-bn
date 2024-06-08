@@ -28,11 +28,6 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
         }
     });
 }
-const getAllProducts = async (shopId: string) => {
-    return await Products.findAll({
-        where: { shopId }
-    });
-};
 
 const getProductsByAttributes = async (key: string, value: any) => {
     return await Products.findAll({
