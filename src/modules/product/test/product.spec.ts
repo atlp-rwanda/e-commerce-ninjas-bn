@@ -233,7 +233,7 @@ describe("Seller test cases", () => {
 
 });
 
-describe("internal server error", () => {
+describe("internal server, error", () => {
   let token: string;
   before((done) => {
     router()
