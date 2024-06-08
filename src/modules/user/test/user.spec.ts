@@ -23,7 +23,24 @@ const router = () => chai.request(app);
 describe("Update User Status test case ", () => {
   let userId = "10000000-0000-0000-0000-000000000000";
   const unknownId = "10000000-0000-0000-0000-000000000000";
-  let token: string;
+  let token;
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "nda1234@gmail.com",
+        password: "_REMOVED123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        done(error);
+      });
+  });
 
   it("Should be able to login admin", (done) => {
     router()
@@ -184,8 +201,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "ecommerceninjas47@gmail.com",
-        password: "userPassword@123"
+        email: "nda12345@gmail.com",
+        password: "_REMOVED123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
