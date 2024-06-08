@@ -49,7 +49,6 @@ class Users extends Model<usersAttributes, UsersCreationAttributes> implements u
     static associate(models: any) {
         Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
         Users.hasOne(models.Shops, { foreignKey: "sellerId", as: "shops" });
-        Users.hasMany(models.Products, { foreignKey: "sellerId", as: "products" });
     }
 }
 
@@ -115,7 +114,7 @@ Users.init(
             defaultValue: false
         },
         isGoogleAccount: {
-          type: new DataTypes.BOOLEAN(),
+          type: DataTypes.BOOLEAN,
           allowNull: true,
           defaultValue: false
         },

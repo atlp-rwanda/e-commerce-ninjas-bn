@@ -6,7 +6,7 @@ import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
 
-const adminGetUsers = async (req:Request, res:Response) =>{
+const adminGetUsers = async (req: Request, res: Response) => {
   try {
     const user = await userRepositories.getAllUsers()
     return res.status(httpStatus.OK).json({
@@ -21,7 +21,7 @@ const adminGetUsers = async (req:Request, res:Response) =>{
   }
 }
 
-const adminGetUser = async (req:Request, res:Response) =>{
+const adminGetUser = async (req: Request, res: Response) => {
   try {
     const user = await authRepositories.findUserByAttributes("id", req.params.id)
     return res.status(httpStatus.OK).json({
@@ -60,7 +60,7 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
-const getUserDetails = async(req:Request,res:Response)=>{
+const getUserDetails = async (req: Request, res: Response) => {
   try {
       const user = await authRepositories.findUserByAttributes("id", req.user.id);
       res.status(httpStatus.OK).json({status: httpStatus.OK, data:{user:user}});
@@ -82,7 +82,6 @@ const updateUserProfile = async (req: Request, res: Response) => {
 
 const changePassword = async (req: any , res: Response) => {
   try {
-       console.log(req.user.password)
        const user = await authRepositories.updateUserByAttributes("password",req.user.password, "id", req.user.id) ;
        return res.status(httpStatus.OK).json({ message: "Password updated successfully", data: {user:user}});
   } catch (error) {

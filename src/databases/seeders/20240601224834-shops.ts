@@ -1,12 +1,12 @@
 import { QueryInterface } from "sequelize";
-import { shopOneId, userThreeId } from "../../types/uuid";
+import { shopOneId, userFourId } from "../../types/uuid";
 
 export const up = async (queryInterface: QueryInterface) => {
     await queryInterface.bulkInsert("shops", [
         {
             id: shopOneId,
             name: "Shoes",
-            userId: userThreeId,
+            userId: userFourId,
             description: "Shoes",
             createdAt: new Date(),
             updatedAt: new Date()

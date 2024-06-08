@@ -1114,7 +1114,7 @@
         }
       }
     },
-    "/api/shop/create-shop": {
+    "/api/shop/seller-create-shop": {
       "post": {
         "tags": [
           "Seller Routes"
@@ -1236,7 +1236,7 @@
         }
       }
     },
-    "/api/shop/create-product": {
+    "/api/shop/seller-create-product": {
       "post": {
         "tags": [
           "Seller Routes"
@@ -1696,6 +1696,60 @@
           }
         }
       }
+    },
+   "/api/shop/seller-statistics": {
+    "post": {
+      "tags": [
+        "Seller Routes"
+      ],
+      "summary": "Seller Statistics",
+      "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "startDate": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2024-01-01"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2024-12-31"
+                }
+              },
+              "required": [
+                "startDate",
+                "endDate"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Seller Statistics"
+        },
+        "400": {
+          "description": "Invalid dates"
+        },
+        "401": {
+          "description": "Not logged in"
+        },
+        "500": {
+          "description": "Internal Server error"
+        }
+      }
     }
+  }
   }
 }

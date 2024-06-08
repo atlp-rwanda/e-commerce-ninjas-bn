@@ -255,15 +255,25 @@ const transformFilesToBody = (req: Request, res: Response, next: NextFunction) =
 };
 
 
-const loginCredentials = async (req: Request, res: Response,next:NextFunction) => {
+const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
     const user: usersAttributes = await authRepositories.findUserByAttributes(
         "email",
         req.body.email
     );
     if (!user) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password" });
     if (user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
-    if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
+    
     req.user = user;
     return next();
 }
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,loginCredentials };
+
+const isUserEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.status !== "enabled") return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is disabled" })
+    return next();
+}
+
+const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
+    if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
+    return next();
+}
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,isGoogleEnabled,isUserEnabled,isUserVerified };

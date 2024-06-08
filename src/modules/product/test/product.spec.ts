@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
@@ -6,14 +7,11 @@ import Users, { usersAttributes } from "../../../databases/models/users";
 import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
-import Products from "../../../databases/models/products";
-import Shops from "../../../databases/models/shops";
 import { fileFilter } from "../../../helpers/multer";
 import { credential, isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
-import Session from "../../../databases/models/session";
 import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
@@ -30,17 +28,17 @@ describe("Product and Shops API Tests", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "paccy5090@gmail.com", password: "$321!Pass!123$" })
+      .send({ email: "dj@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
       })
   });
 
-  describe("POST /api/shop/create-shop", () => {
+  describe("POST /api/shop/seller-create-shop", () => {
     it("should create a Shop successfully", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({
           name: "New Shops",
@@ -56,7 +54,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should return a validation error when name is missing", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({ description: "A new Shops description" })
         .end((err, res) => {
@@ -69,7 +67,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should Already have a shop", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({
           name: "New Shops",
@@ -84,11 +82,11 @@ describe("Product and Shops API Tests", () => {
     });
   });
 
-  describe("POST /api/shop/create-product", () => {
+  describe("POST /api/shop/seller-create-product", () => {
     let productId:string;
     it("should create a product successfully", (done) => {
       router()
-        .post("/api/shop/create-product")
+        .post("/api/shop/seller-create-product")
         .set("Authorization", `Bearer ${token}`)
         .field("name", "New Product")
         .field("description", "A new product description")
@@ -113,7 +111,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should return a validation error when images are missing", (done) => {
       router()
-        .post("/api/shop/create-product")
+        .post("/api/shop/seller-create-product")
         .set("Authorization", `Bearer ${token}`)
         .field("name", "New Product")
         .field("description", "A new product description")
@@ -185,39 +183,73 @@ describe("transformFilesToBody Middleware", () => {
   });
 });
 
-describe("internal server error", () => {
-  let token: string = null;
+
+describe("Seller test cases", () => {
+
+  let token: string;
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "dj@gmail.com", password: "$321!Pass!123$" })
+      .send({ email: "seller@gmail.com", password: "Password@123" })
+      .end((err, res) => {
+        token = res.body.data.token;
+        done(err);
+      })
+  });
+
+
+  it("should return statistics of Seller in specified timeframe", (done) => {
+    router()
+      .post("/api/shop/seller-statistics")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        startDate: "2024-01-01",
+        endDate: "2024-12-31"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        done(error);
+      });
+  });
+
+  it("should catch server error during fetching statistics", (done) => {
+    sinon
+      .stub(productRepositories, "getOrdersPerTimeframe")
+      .throws(new Error("Database error"));
+    router()
+      .post("/api/shop/seller-statistics")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        startDate: "2024-01-01",
+        endDate: "2024-12-31"
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        done(err);
+      });
+  });
+
+});
+
+describe("internal server error", () => {
+  let token: string;
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({ email: "seller3@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
       })
   })
-  after(async () => {
-    await Users.destroy({
-      where: {
-        role: {
-          [Op.ne]: "admin"
-        }
-      }
-    });
-    await Products.destroy({
-      where: {}
-    });
-    await Shops.destroy({
-      where: {}
-    });
-    await Session.destroy({
-      where: {}
-    })
-  });
+
   it("should handle errors and return 500 status", (done) => {
     sinon.stub(productRepositories, "createShop").throws(new Error("Internal Server Error"))
     router()
-      .post("/api/shop/create-shop")
+      .post("/api/shop/seller-create-shop")
       .set("Authorization", `Bearer ${token}`)
       .send({
         name: "International Server Error",
@@ -338,7 +370,7 @@ describe("Product Middleware", () => {
 
 describe("Product Controller", () => {
 
-  describe("createProduct", () => {
+  describe("sellerCreateProduct", () => {
       let req, res;
 
       beforeEach(() => {
@@ -360,7 +392,7 @@ describe("Product Controller", () => {
       it("should handle internal server error", async () => {
           sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-          await productController.createProduct(req, res);
+          await productController.sellerCreateProduct(req, res);
 
           expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
           expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
