@@ -1,0 +1,3 @@
+secrets:
+  ignore_paths:
+    - "**/*.spec.ts"
