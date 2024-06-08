@@ -2,8 +2,12 @@
 import Shops from "../../../databases/models/shops";
 import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
+import Order from "../../../databases/models/orders";
+import CartProduct from "../../../databases/models/cartProducts";
 
-const createProduct = async(body:any) => {
+const currentDate = new Date();
+
+const createProduct = async (body: any) => {
     return await Products.create(body);
 }
 
@@ -25,33 +29,6 @@ const findByModelsAndAttributes = async (model: any, keyOne: string, keyTwo: str
         }
     });
 }
-
-const getProductsByAttributes = async (key: string, value: any) => {
-    return await Products.findAll({
-        where: { [key]: value }
-    });
-}
-const getAvailableProductsByAttributes = async (key, value) => {
-    return await Products.findAll({
-        where: {
-            [key]: value,
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    })
-}
-const getAvailableProducts = async () => {
-    return await Products.findAll({
-        where: {
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    });
-};
 
 
 const getProductsByAttributes = async (key: string, value: any) => {
@@ -83,9 +60,9 @@ const getAvailableProducts = async () => {
 
 
 const deleteProductById = async (productId: string): Promise<void> => 
-{ 
-    await Products.destroy({ where: { id: productId } }); 
-};
+    { 
+        await Products.destroy({ where: { id: productId } }); 
+    };
 
 
 const getOrdersPerTimeframe = async (shopId: number, startDate: Date, endDate: Date) => {
@@ -101,7 +78,7 @@ const findProductById = (id: number) => {
 }
 
 const findShopByUserId = async(userId: number) => {
-    return await Shop.findOne({ where: { userId }})
+    return await Shops.findOne({ where: { userId }})
 }
 
-export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId , getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId , getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };

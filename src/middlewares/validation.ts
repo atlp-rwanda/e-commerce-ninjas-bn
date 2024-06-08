@@ -8,7 +8,6 @@ import { comparePassword, decodeToken } from "../helpers";
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
-import Joi from "joi";
 
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -236,45 +235,4 @@ const productsByCategory = async (req: Request, res: Response, next: NextFunctio
 }
 
 
-
-
-const getShopProducts = async (req: any, res: Response) => {
-    try {
-        const user = req.user;
-
-        if (user.role !== "seller") {
-            return res.status(httpStatus.UNAUTHORIZED).json({ error: "Not authorized" });
-        }
-
-        const page = req.query.page;
-        const limit = req.query.limit;
-        if (!page || !limit) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit are required" });
-        }
-        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Page and limit must be positive numbers" });
-        }
-        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
-        if (!shop) {
-            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
-        }
-        req.shop = shop;
-        return next()
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-
-    }
-}
-
-
-const productsByCategory = async (req: Request, res: Response, next: NextFunction) => {
-    const category = req.query.category
-    if (category) {
-        const products = await productRepositories.getAvailableProductsByAttributes("category", category)
-        return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products })
-    }
-    return next()
-}
-
-
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists,isUserVerified,isGoogleEnabled,isUserEnabled };

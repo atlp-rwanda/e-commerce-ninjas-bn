@@ -13,11 +13,11 @@ import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
+import Session from "../../../databases/models/session";
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 const imagePath = path.join(__dirname, "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg");
 const imageBuffer = fs.readFileSync(imagePath)
-
 describe("Product and Shops API Tests", () => {
 
   let token: string;
@@ -79,7 +79,7 @@ describe("Product and Shops API Tests", () => {
   });
 
   describe("POST /api/shop/seller-create-product", () => {
-    let productId:string;
+    let productId: string;
     it("should create a product successfully", (done) => {
       router()
         .post("/api/shop/seller-create-product")
@@ -125,15 +125,15 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
-    it("should  delete items in collection", (done)=>{
+    it("should  delete items in collection", (done) => {
       router()
-      .delete(`/api/shop/seller-delete-product/${productId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .end((error,response)=>{
-        expect(response.status).to.be.equal(httpStatus.OK);
-        expect(response.body).to.have.property("message", "Product deleted successfully");
-        done(error);
-      })
+        .delete(`/api/shop/seller-delete-product/${productId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .end((error, response) => {
+          expect(response.status).to.be.equal(httpStatus.OK);
+          expect(response.body).to.have.property("message", "Product deleted successfully");
+          done(error);
+        })
     })
   });
   describe("Multer Middleware", () => {
@@ -367,7 +367,7 @@ describe("Product Middleware", () => {
 describe("Product Controller", () => {
 
   describe("sellerCreateProduct", () => {
-      let req, res;
+    let req, res;
 
     beforeEach(() => {
       req = {
@@ -384,14 +384,11 @@ describe("Product Controller", () => {
     afterEach(() => {
       sinon.restore();
     });
-    afterEach(() => {
-      sinon.restore();
-    });
 
     it("should handle internal server error", async () => {
       sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-          await productController.sellerCreateProduct(req, res);
+      await productController.sellerCreateProduct(req, res);
 
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
@@ -516,6 +513,9 @@ describe("Admin Controller", () => {
   });
 })
 
+
+
+
 describe("Buyer get products - test cases", () => {
   let getAvailableProductsStub;
 
@@ -565,7 +565,7 @@ describe("Buyer get products - test cases", () => {
 describe("Seller get Products test cases", () => {
   const sellerToken: string = null
   let buyerToken: string = null
-  let  adminToken;
+  let adminToken;
   let userId: string = null;
   let verifyToken: string | null = null;
 
@@ -579,8 +579,8 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "$321!Pass!123$"
+       email:"admin@gmail.com",
+        password:"Password@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);

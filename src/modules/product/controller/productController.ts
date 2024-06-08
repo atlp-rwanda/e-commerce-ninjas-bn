@@ -5,7 +5,7 @@ import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 
-const createProduct = async (req: ExtendRequest, res: Response) => {
+const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
   try {
     const uploadPromises = req.files.map(file => uploadImages(file));
     const images = await Promise.all(uploadPromises);
@@ -27,7 +27,7 @@ const createProduct = async (req: ExtendRequest, res: Response) => {
   }
 };
 
-const createShop = async (req: ExtendRequest, res: Response) => {
+const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
   try {
     const shopData = {
       userId: req.user.id,
@@ -125,4 +125,4 @@ const getShopProducts = async (req: ExtendRequest, res: Response) => {
   }
 }
 
-export default { createProduct, createShop, getAvailableProducts, getShopProducts,sellerDeleteProduct }
+export default { sellerCreateProduct, sellerCreateShop, getAvailableProducts, getShopProducts,sellerDeleteProduct ,sellerGetStatistics}
