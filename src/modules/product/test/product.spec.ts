@@ -16,7 +16,6 @@ import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
-import { ExtendRequest } from "../../../types";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -718,7 +717,7 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "ecommerceninjas456@gmail.com",
+        email: `$${unique_username}`,
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
@@ -760,7 +759,7 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas456@gmail.com",
+        email: `$${unique_username}`,
         password: "$321!Pass!123$"
       })
       .end((error, response) => {
