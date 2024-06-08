@@ -3,9 +3,9 @@ import { Response } from "express"
 import httpStatus from "http-status";
 import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
-import { ExtendRequest } from "../../../types";
+import { ExtendRequest, IProductSold } from "../../../types";
 
-const createProduct = async (req:ExtendRequest,res:Response) =>{
+const sellerCreateProduct = async (req:ExtendRequest,res:Response) =>{
     try {
         const uploadPromises = req.files.map(file => uploadImages(file));
         const images = await Promise.all(uploadPromises);
@@ -27,7 +27,7 @@ const createProduct = async (req:ExtendRequest,res:Response) =>{
       }
     };
 
-const createShop = async (req: ExtendRequest, res: Response) => {
+const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
     try {
       const shopData = {
         userId: req.user.id,
@@ -47,7 +47,7 @@ const createShop = async (req: ExtendRequest, res: Response) => {
     }
   };
 
-  const deleteProduct = async (req: ExtendRequest, res: Response) => { 
+  const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => { 
     try { 
     await productRepositories.deleteProductById(req.params.id); 
     res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
@@ -55,4 +55,55 @@ const createShop = async (req: ExtendRequest, res: Response) => {
     } 
     };
 
-export default { createProduct, createShop, deleteProduct }
+
+  
+const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
+  try {
+    const { startDate, endDate } = req.body;
+    const shop = await productRepositories.findShopByUserId(req.user.id);
+    const orders = await productRepositories.getOrdersPerTimeframe(shop.id, new Date(startDate), new Date(endDate));
+
+    let totalOrders = 0;
+    let totalRevenue = 0;
+    let totalProducts = 0;
+    const productsSoldMap = new Map<number | string, IProductSold>();
+
+    await Promise.all(orders.map(async (order) => {
+      totalOrders += 1;
+      const allCartProducts = await productRepositories.getOrderProductsByCartId(order.cartId);
+
+      await Promise.all(allCartProducts.map(async (cartProduct) => {
+        totalRevenue += cartProduct.totalPrice;
+        const product = await productRepositories.findProductById(cartProduct.productId);
+        if (productsSoldMap.has(cartProduct.productId)) {
+          productsSoldMap.get(cartProduct.productId)!.quantity += cartProduct.quantity;
+        } else {
+          totalProducts += 1;
+          productsSoldMap.set(cartProduct.productId, { id: product.id, name: product.name, price: product.price, quantity: cartProduct.quantity });
+        }
+      }));
+
+    }));
+
+    const productsSold = Array.from(productsSoldMap.values());
+
+    const sortedProductSales = productsSold
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+
+    const data = {
+      totalOrders,
+      totalRevenue,
+      totalProducts,
+      bestSellingProducts: sortedProductSales
+    };
+
+    res.status(httpStatus.OK).json({ message: `Seller's statistics from ${startDate} to ${endDate}`, data });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+};
+
+
+
+export default { sellerCreateProduct, sellerCreateShop, sellerDeleteProduct, sellerGetStatistics }

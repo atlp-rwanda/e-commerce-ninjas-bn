@@ -35,6 +35,13 @@ export interface IProduct{
     updatedAt: Date;
 }
 
+export interface IProductSold {
+  id: number | string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export interface IShops{
     id: number;
     userId: number;
