@@ -49,7 +49,6 @@ class Users extends Model<UsersAttributes, UsersCreationAttributes> implements U
     static associate(models: any) {
         Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
         Users.hasOne(models.Shops, { foreignKey: "sellerId", as: "shops" });
-        Users.hasMany(models.Products, { foreignKey: "sellerId", as: "products" });
     }
 }
 

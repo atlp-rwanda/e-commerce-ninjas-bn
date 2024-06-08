@@ -5,7 +5,7 @@ import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 
-const createProduct = async (req:ExtendRequest,res:Response) =>{
+const sellerCreateProduct = async (req:ExtendRequest,res:Response) =>{
     try {
         const uploadPromises = req.files.map(file => uploadImages(file));
         const images = await Promise.all(uploadPromises);
@@ -27,7 +27,7 @@ const createProduct = async (req:ExtendRequest,res:Response) =>{
       }
     };
 
-const createShop = async (req: ExtendRequest, res: Response) => {
+const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
     try {
       const shopData = {
         userId: req.user.id,
@@ -47,7 +47,7 @@ const createShop = async (req: ExtendRequest, res: Response) => {
     }
   };
 
-  const deleteProduct = async (req: ExtendRequest, res: Response) => { 
+  const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => { 
     try { 
     await productRepositories.deleteProductById(req.params.id); 
     res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
@@ -57,7 +57,7 @@ const createShop = async (req: ExtendRequest, res: Response) => {
 
 
   
-const getSellerStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
+const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
   try {
     const { startDate, endDate } = req.body;
     const shop = await productRepositories.findShopByUserId(req.user.id);
@@ -106,4 +106,4 @@ const getSellerStatistics = async (req: ExtendRequest, res: Response): Promise<v
 
 
 
-export default { createProduct, createShop, deleteProduct, getSellerStatistics }
+export default { sellerCreateProduct, sellerCreateShop, sellerDeleteProduct, sellerGetStatistics }

@@ -59,10 +59,10 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 11 | PUT   | /api/user/admin-update-role/:id         | 200 OK      | private | Admin Update role   Endpoint  |
 | 12 | GET   | /api/user/admin-get-users               | 200 OK      | private | Admin get all users Endpoint  |
 | 13 | GET   | /api/user/admin-get-users/:id           | 200 OK      | private | Admin get one user Endpoint   |
-| 14 | POST  | /api/shop/create-shop                   | 201 OK      | private | Create shop for products      |
-| 15 | POST  | /api/shop/create-product                | 201 OK      | private | create product in shop        |
+| 14 | POST  | /api/shop/seller-create-shop                   | 201 OK      | private | Create shop for products      |
+| 15 | POST  | /api/shop/seller-create-product                | 201 OK      | private | create product in shop        |
 | 16 | DELETE|/api/shop/delete-product/:id             | 200 OK      | private | Delete Item in Collection     |
-| 17 | POST  | /api/product/statistics                 | 200 OK	   | public	 | Get seller statistics per timeframe      |
+| 17 | POST  | /api/product/seller-statistics                 | 200 OK	   | public	 | Get seller statistics per timeframe      |
 
 
 

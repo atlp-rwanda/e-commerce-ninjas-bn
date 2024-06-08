@@ -52,4 +52,4 @@ const findShopByUserId = async(userId: number) => {
     return await Shop.findOne({ where: { userId }})
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId};
+export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId };

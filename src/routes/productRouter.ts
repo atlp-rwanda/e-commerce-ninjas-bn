@@ -7,9 +7,9 @@ import upload from "../helpers/multer";
 
 const router: Router = Router()
 
-router.post("/create-product", userAuthorization(["seller"]), upload.array("images"), transformFilesToBody,validation(productSchema), isProductExist, productController.createProduct);
-router.post("/create-shop", userAuthorization(["seller"]), validation(shopSchema), isShopExist, productController.createShop)
-router.delete("/seller-delete-product/:id",userAuthorization(["seller"]), isProductExist, productController.deleteProduct)
-router.post("/statistics", validation(statisticsSchema), userAuthorization(["seller"]), productController.getSellerStatistics)
+router.post("/seller-create-product", userAuthorization(["seller"]), upload.array("images"), transformFilesToBody,validation(productSchema), isProductExist, productController.sellerCreateProduct);
+router.post("/seller-create-shop", userAuthorization(["seller"]), validation(shopSchema), isShopExist, productController.sellerCreateShop)
+router.delete("/seller-delete-product/:id",userAuthorization(["seller"]), isProductExist, productController.sellerDeleteProduct)
+router.post("/seller-statistics", validation(statisticsSchema), userAuthorization(["seller"]), productController.sellerGetStatistics)
 
 export default router;

@@ -22,7 +22,6 @@ class Products extends Model<IProduct> {
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Products.belongsTo(models.Users, { foreignKey: "userId", as: "user" });
         Products.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
     }
 }

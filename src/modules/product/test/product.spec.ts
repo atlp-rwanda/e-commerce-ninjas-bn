@@ -31,10 +31,10 @@ describe("Product and Shops API Tests", () => {
       })
   });
 
-  describe("POST /api/shop/create-shop", () => {
+  describe("POST /api/shop/seller-create-shop", () => {
     it("should create a Shop successfully", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({
           name: "New Shops",
@@ -50,7 +50,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should return a validation error when name is missing", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({ description: "A new Shops description" })
         .end((err, res) => {
@@ -63,7 +63,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should Already have a shop", (done) => {
       router()
-        .post("/api/shop/create-shop")
+        .post("/api/shop/seller-create-shop")
         .set("Authorization", `Bearer ${token}`)
         .send({
           name: "New Shops",
@@ -78,11 +78,11 @@ describe("Product and Shops API Tests", () => {
     });
   });
 
-  describe("POST /api/shop/create-product", () => {
+  describe("POST /api/shop/seller-create-product", () => {
     let productId:string;
     it("should create a product successfully", (done) => {
       router()
-        .post("/api/shop/create-product")
+        .post("/api/shop/seller-create-product")
         .set("Authorization", `Bearer ${token}`)
         .field("name", "New Product")
         .field("description", "A new product description")
@@ -107,7 +107,7 @@ describe("Product and Shops API Tests", () => {
 
     it("should return a validation error when images are missing", (done) => {
       router()
-        .post("/api/shop/create-product")
+        .post("/api/shop/seller-create-product")
         .set("Authorization", `Bearer ${token}`)
         .field("name", "New Product")
         .field("description", "A new product description")
@@ -196,7 +196,7 @@ describe("Seller test cases", () => {
 
   it("should return statistics of Seller in specified timeframe", (done) => {
     router()
-      .post("/api/product/statistics")
+      .post("/api/product/seller-statistics")
       .set("Authorization", `Bearer ${token}`)
       .send({
         startDate: "2024-01-01",
@@ -216,7 +216,7 @@ describe("Seller test cases", () => {
       .stub(productRepositories, "getOrdersPerTimeframe")
       .throws(new Error("Database error"));
     router()
-      .post("/api/product/statistics")
+      .post("/api/product/seller-statistics")
       .set("Authorization", `Bearer ${token}`)
       .send({
         startDate: "2024-01-01",
@@ -245,7 +245,7 @@ describe("internal server error", () => {
   it("should handle errors and return 500 status", (done) => {
     sinon.stub(productRepositories, "createShop").throws(new Error("Internal Server Error"))
     router()
-      .post("/api/shop/create-shop")
+      .post("/api/shop/seller-create-shop")
       .set("Authorization", `Bearer ${token}`)
       .send({
         name: "International Server Error",
@@ -366,7 +366,7 @@ describe("Product Middleware", () => {
 
 describe("Product Controller", () => {
 
-  describe("createProduct", () => {
+  describe("sellerCreateProduct", () => {
       let req, res;
 
       beforeEach(() => {
@@ -388,7 +388,7 @@ describe("Product Controller", () => {
       it("should handle internal server error", async () => {
           sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-          await productController.createProduct(req, res);
+          await productController.sellerCreateProduct(req, res);
 
           expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
           expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
