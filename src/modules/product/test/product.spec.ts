@@ -601,7 +601,7 @@ describe("Seller get Products test cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas456@gmail.com",
-        password: "_REMOVED123"
+        password: "$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -643,7 +643,7 @@ describe("Seller get Products test cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas456@gmail.com",
-        password: "_REMOVED123"
+        password: "$321!Pass!123$"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
