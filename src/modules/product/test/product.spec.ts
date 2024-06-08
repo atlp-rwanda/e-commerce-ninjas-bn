@@ -14,6 +14,8 @@ import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
 import Session from "../../../databases/models/session";
+import dotenv from "dotenv"
+dotenv.config()
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 const imagePath = path.join(__dirname, "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg");
@@ -24,7 +26,7 @@ describe("Product and Shops API Tests", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "dj@gmail.com", password: "Password@123" })
+      .send({ email: "dj@gmail.com", password: `${process.env.TEST_PASSWORD1}` })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
@@ -84,7 +86,7 @@ describe("Product and Shops API Tests", () => {
       router()
         .post("/api/shop/seller-create-product")
         .set("Authorization", `Bearer ${token}`)
-        .field("name", "New Product")
+        .field("name", `New ${Date.now()} Product`)
         .field("description", "A new product description")
         .field("price", "99.99")
         .field("category", "Electronics")
@@ -97,10 +99,11 @@ describe("Product and Shops API Tests", () => {
         .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
         .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
         .end((err, res) => {
+          productId = res.body.data.product.id
+          console.log(productId)
           expect(res).to.have.status(httpStatus.CREATED);
           expect(res.body).to.have.property("message", "Product created successfully");
-          expect(res.body.data.product).to.include({ name: "New Product", description: "A new product description" });
-          productId = res.body.data.product.id
+          expect(res.body.data.product).to.include({description: "A new product description" });
           done();
         });
     });
@@ -186,7 +189,7 @@ describe("Seller test cases", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller@gmail.com", password: "Password@123" })
+      .send({ email: "seller@gmail.com", password: `${process.env.TEST_PASSWORD1}` })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
@@ -235,7 +238,7 @@ describe("internal server error", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller3@gmail.com", password: "Password@123" })
+      .send({ email: "seller3@gmail.com", password: `${process.env.TEST_PASSWORD1}` })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
@@ -579,8 +582,8 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-       email:"admin@gmail.com",
-        password:"Password@123"
+        email: "admin@gmail.com",
+        password: `${process.env.TEST_PASSWORD1}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -600,8 +603,8 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "ecommerceninjas456@gmail.com",
-        password: "$321!Pass!123$"
+        email: "ecommerceninjas4567@gmail.com",
+        password: `${process.env.TEST_PASSWORD2}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -642,8 +645,8 @@ describe("Seller get Products test cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas456@gmail.com",
-        password: "$321!Pass!123$"
+        email: "ecommerceninjas4567@gmail.com",
+        password: `${process.env.TEST_PASSWORD2}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);

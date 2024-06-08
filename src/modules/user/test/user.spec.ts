@@ -13,6 +13,10 @@ import { isUsersExist } from "../../../middlewares/validation";
 import path from "path";
 import fs from 'fs'
 import userRepositories from "../repository/userRepositories";
+import dotenv from "dotenv"
+dotenv.config()
+
+
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath)
 
@@ -30,7 +34,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "Password@123"
+        password: `${process.env.TEST_PASSWORD1}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -48,7 +52,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas46@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -185,7 +189,7 @@ describe("Admin update User roles", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas47@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -205,7 +209,7 @@ describe("Admin update User roles", () => {
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"Password@123"
+        password: `${process.env.TEST_PASSWORD1}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -347,7 +351,7 @@ describe("Admin Controllers", () => {
     .post("/api/auth/login")
     .send({
       email:"admin@gmail.com",
-      password:"Password@123"
+      password:`${process.env.TEST_PASSWORD1}`
     })
     .end((error, response) => {
       token = response.body.data.token;

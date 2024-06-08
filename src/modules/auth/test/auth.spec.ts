@@ -11,13 +11,12 @@ import { isUserExist, verifyUserCredentials } from "../../../middlewares/validat
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
-import {
-  sendVerificationEmail,
-  transporter
-} from "../../../services/sendEmail";
+import { sendVerificationEmail, transporter } from "../../../services/sendEmail";
 import googleAuth from "../../../services/googleAuth";
 import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
+import dotenv from "dotenv"
+dotenv.config()
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -40,7 +39,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -60,7 +59,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -75,7 +74,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -90,7 +89,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
@@ -124,7 +123,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword"
+        password: `${process.env.TEST_PASSWORD4}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -139,7 +138,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -163,13 +162,13 @@ describe("Authentication Test Cases", () => {
       });
   });
 
-  
+
   it("Should be able to login a registered user", (done) => {
     router()
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -195,7 +194,7 @@ describe("Authentication Test Cases", () => {
         done(err);
       });
   });
-  
+
   it("should return internal server error on login", (done) => {
     sinon
       .stub(authRepositories, "createSession")
@@ -204,7 +203,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
@@ -230,7 +229,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "fakeemail@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -248,7 +247,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/login")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "fakePassword@123"
+        password: `${process.env.TEST_PASSWORD5}`
       })
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.BAD_REQUEST);
@@ -278,7 +277,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -293,7 +292,7 @@ describe("isUserExist Middleware", () => {
     const mockUser = Users.build({
       id: 1,
       email: "user@example.com",
-      password: "hashedPassword",
+      password: `${process.env.TEST_PASSWORD6}`,
       isVerified: false,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -305,7 +304,7 @@ describe("isUserExist Middleware", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "userPassword@123"
+        password: `${process.env.TEST_PASSWORD3}`
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.BAD_REQUEST);
@@ -369,7 +368,7 @@ describe("POST /auth/register - Error Handling", () => {
   it("should return 500 and error message when an error occurs", (done) => {
     router()
       .post("/api/auth/register")
-      .send({ email: "test@example.com", password: "Password@123" })
+      .send({ email: "test@example.com", password: `${process.env.TEST_PASSWORD1}` })
       .end((err, res) => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
@@ -403,7 +402,7 @@ describe("isAccountVerified Middleware", () => {
     const mockUser = Users.build({
       id: 1,
       email: "user@example.com",
-      password: "hashedPassword",
+      password: `${process.env.TEST_PASSWORD6}`,
       isVerified: true,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -515,7 +514,7 @@ describe("verifyUserCredentials Middleware", () => {
     req = {
       body: {
         email: "user@example.com",
-        password: "Password@123"
+        password: `${process.env.TEST_PASSWORD1}`
       },
       headers: {}
     };
@@ -571,7 +570,7 @@ describe("Passport Configuration", () => {
 
 describe("Google Authentication Strategy", () => {
   it("should call the strategy callback with correct parameters", () => {
-     });
+  });
 });
 
 function googleAuthenticationCallback(
@@ -634,69 +633,69 @@ describe("Google Authentication Strategy Callback", () => {
 });
 
 describe("Google Authentication", () => {
-    describe("Google Strategy", () => {
-      it("should call the done callback with user object", () => {
-        const requestMock: Partial<Request> = {};
-        const accessTokenMock = "mockAccessToken";
-        const refreshTokenMock = "mockRefreshToken";
-        const profileMock = {
-          id: "mockUserId",
-          emails: [{ value: "test@example.com" }],
-          name: { givenName: "John", familyName: "Doe" },
-          photos: [{ value: "https://example.com/profile.jpg" }]
-        };
-        const doneStub = sinon.stub();
-
-      
-        googleAuth.passport._strategies.google._verify(
-          requestMock as Request,
-          accessTokenMock,
-          refreshTokenMock,
-          profileMock,
-          doneStub
-        );
-
-        sinon.assert.calledWith(doneStub, null, {
-          userId: "mockUserId",
-          email: "test@example.com",
-          firstName: "John",
-          lastName: "Doe",
-          picture: "https://example.com/profile.jpg",
-          accToken: "mockAccessToken"
-        });
-      });
-    });
-  });
-
-  describe("authenticateViaGoogle", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
-    let resJsonSpy: sinon.SinonSpy;
-    let resStatusSpy: sinon.SinonStub;
-  
-    beforeEach(() => {
-      req = {};
-      res = {
-        json: sinon.spy(),
-        status: sinon.stub().returnsThis()
+  describe("Google Strategy", () => {
+    it("should call the done callback with user object", () => {
+      const requestMock: Partial<Request> = {};
+      const accessTokenMock = "mockAccessToken";
+      const refreshTokenMock = "mockRefreshToken";
+      const profileMock = {
+        id: "mockUserId",
+        emails: [{ value: "test@example.com" }],
+        name: { givenName: "John", familyName: "Doe" },
+        photos: [{ value: "https://example.com/profile.jpg" }]
       };
-      next = sinon.spy() as NextFunction;
-      resJsonSpy = res.json as sinon.SinonSpy;
-      resStatusSpy = res.status as sinon.SinonStub;
-    });
-  
-    it("should respond with 401 if authentication fails", async () => {
-      const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
-        callback(null, null); 
-        return (req: Request, res: Response) => { };
+      const doneStub = sinon.stub();
+
+
+      googleAuth.passport._strategies.google._verify(
+        requestMock as Request,
+        accessTokenMock,
+        refreshTokenMock,
+        profileMock,
+        doneStub
+      );
+
+      sinon.assert.calledWith(doneStub, null, {
+        userId: "mockUserId",
+        email: "test@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        picture: "https://example.com/profile.jpg",
+        accToken: "mockAccessToken"
       });
-  
-      await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
-  
-      expect(resStatusSpy.calledWith(401)).to.be.true;
-      expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
-  
-      authenticateStub.restore();
     });
   });
+});
+
+describe("authenticateViaGoogle", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+  let resJsonSpy: sinon.SinonSpy;
+  let resStatusSpy: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+    next = sinon.spy() as NextFunction;
+    resJsonSpy = res.json as sinon.SinonSpy;
+    resStatusSpy = res.status as sinon.SinonStub;
+  });
+
+  it("should respond with 401 if authentication fails", async () => {
+    const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
+      callback(null, null);
+      return (req: Request, res: Response) => { };
+    });
+
+    await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
+
+    expect(resStatusSpy.calledWith(401)).to.be.true;
+    expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
+
+    authenticateStub.restore();
+  });
+});
