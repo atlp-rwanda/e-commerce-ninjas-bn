@@ -11,4 +11,6 @@ const updateUser =  await Users.findOne({where:{id}})
     return updateUser;
 }
 
-export default { getAllUsers,updateUserProfile}
+
+
+export default { getAllUsers,updateUserProfile }

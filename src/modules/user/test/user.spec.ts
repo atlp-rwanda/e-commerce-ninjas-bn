@@ -4,17 +4,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import sinon, { SinonStub } from "sinon";
+import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../../index";
 import Users from "../../../databases/models/users";
 import authRepositories from "../../auth/repository/authRepositories"
 import { isUsersExist } from "../../../middlewares/validation";
-import { Op } from "sequelize";
 import path from "path";
 import fs from 'fs'
-import uploadImages from "../../../helpers/uploadImage";
-import { v2 as cloudinary } from "cloudinary";
 import userRepositories from "../repository/userRepositories";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath)
@@ -24,35 +21,16 @@ chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("Update User Status test case ", () => {
-  let getUserStub;
-  let updateUserStub;
-  let userId = null;
+  let userId = "10000000-0000-0000-0000-000000000000";
   const unknownId = "10000000-0000-0000-0000-000000000000";
-  let token;
-
-  it("should register a new user", (done) => {
-    router()
-      .post("/api/auth/register")
-      .send({
-        email: "nda1234@gmail.com",
-        password: "userPassword@123"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.CREATED);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("data");
-        userId = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
-        done(error);
-      });
-  });
+  let token: string;
 
   it("Should be able to login admin", (done) => {
     router()
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "$321!Pass!123$"
+        password: "Password@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -61,6 +39,26 @@ describe("Update User Status test case ", () => {
         expect(response.body.message).to.be.a("string");
         expect(response.body.data).to.have.property("token");
         token = response.body.data.token;
+        done(error);
+      });
+  });
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "ecommerceninjas46@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
   });
@@ -178,16 +176,15 @@ describe("User Repository Functions", () => {
 
 
 describe("Admin update User roles", () => {
-  let userIdd: number ;
+  let userIdd: number | string ;
   let token = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
-
 
   it("should register a new user", (done) => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "nda12345@gmail.com",
+        email: "ecommerceninjas47@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -195,7 +192,10 @@ describe("Admin update User roles", () => {
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
         userIdd = response.body.data.user.id;
-        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
         done(error);
       });
   });
@@ -205,7 +205,7 @@ describe("Admin update User roles", () => {
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"$321!Pass!123$"
+        password:"Password@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -347,7 +347,7 @@ describe("Admin Controllers", () => {
     .post("/api/auth/login")
     .send({
       email:"admin@gmail.com",
-      password:"$321!Pass!123$"
+      password:"Password@123"
     })
     .end((error, response) => {
       token = response.body.data.token;
