@@ -61,4 +61,4 @@ const deleteProductById = async (productId: string): Promise<void> =>
     await Products.destroy({ where: { id: productId } }); 
 };
 
-export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById, getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
+export default { createProduct, createShop, findShopByAttributes, findByModelsAndAttributes, deleteProductById, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
