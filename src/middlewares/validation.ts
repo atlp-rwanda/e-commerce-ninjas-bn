@@ -119,7 +119,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password" });
+                .json({ message: "Invalid Email or Password"});
         }
 
         req.user = user;
@@ -196,12 +196,30 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
         
 const isProductExist = async(req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
-        if (!shop) {
+        const session = await authRepositories.findSessionByAttributes("userId", req.user.id);
+        if (!session) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid token." });
+        }
+        const destroy = await authRepositories.destroySession(req.user.id, session.token);
+        if(destroy) {
+            const hashedPassword = await hashPassword(req.body.newPassword);
+            req.user.password = hashedPassword;
+            next()
+        } 
+        
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
+        
+const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+    try {
+        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
+        if(!shop){
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
-        if (isProductAvailable) {
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
+        if(isProductAvailable){
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -214,9 +232,9 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
 
 const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
-        if (shop) {
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
+        if(shop){
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
         }
         return next();
     } catch (error) {
@@ -239,9 +257,9 @@ const isSellerShopExist = async (req: any, res: Response, next: NextFunction) =>
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-        return res.status(400).json({ status: 400, message: "Images are required" });
+      return res.status(400).json({ status: 400, message: "Images are required" });
     }
-
+  
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();
@@ -335,6 +353,4 @@ const productsByCategory = async (req: Request, res: Response, next: NextFunctio
     }
     return next()
 }
-
-
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, productsByCategory, isShopExists,isUserVerified,isGoogleEnabled,isUserEnabled };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,isGoogleEnabled,isUserEnabled,isUserVerified };
