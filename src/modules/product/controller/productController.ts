@@ -5,7 +5,7 @@ import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 
-const createProduct = async (req: ExtendRequest, res: Response) => {
+const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
   try {
     const uploadPromises = req.files.map(file => uploadImages(file));
     const images = await Promise.all(uploadPromises);
@@ -133,14 +133,8 @@ try {
 }
 };
 
-  const deleteProduct = async (req: ExtendRequest, res: Response) => { 
-    try { 
-    await productRepositories.deleteProductById(req.params.id); 
-    res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
-    catch (error) { res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message }); 
-    } 
-    };
-const getAvailableProducts = async (req: ExtendRequest, res: Response) => {
+
+const userGetAvailableProducts = async (req: ExtendRequest, res: Response) => {
   try {
     const products = await productRepositories.getAvailableProducts();
     return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: { products: products } });
@@ -149,34 +143,15 @@ const getAvailableProducts = async (req: ExtendRequest, res: Response) => {
   }
 }
 
-const getShopProducts = async (req: ExtendRequest, res: Response) => {
-  try {
-    const shop = req.shop
-    const products = await productRepositories.getProductsByAttributes("shopId", shop.id);
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
 
-export default { createProduct, createShop, deleteProduct, getAvailableProducts, getShopProducts }
-const getAvailableProducts = async (req: ExtendRequest, res: Response) => {
-  try {
-    const products = await productRepositories.getAvailableProducts();
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: { products: products } });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
 
-const getShopProducts = async (req: ExtendRequest, res: Response) => {
-  try {
-    const shop = req.shop
-    const products = await productRepositories.getProductsByAttributes("shopId", shop.id);
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
 
-export default { createProduct, createShop, getAvailableProducts, getShopProducts }
+export default { 
+  sellerCreateProduct, 
+  sellerCreateShop, 
+  sellerDeleteProduct, 
+  sellerGetStatistics,
+  updateProductStatus,
+  sellerGetProducts ,
+  userGetAvailableProducts
+}

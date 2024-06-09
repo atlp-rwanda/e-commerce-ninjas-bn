@@ -1,6 +1,6 @@
 import { QueryInterface } from "sequelize";
 import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId } from "../../types/uuid";
+import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId, userSevenId } from "../../types/uuid";
 
 const userOne = {
   id: userOneId,

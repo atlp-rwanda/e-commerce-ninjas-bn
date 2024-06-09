@@ -1694,59 +1694,59 @@
         }
       }
     },
-   "/api/shop/seller-statistics": {
-    "post": {
-      "tags": [
-        "Seller Routes"
-      ],
-      "summary": "Seller Statistics",
-      "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "startDate": {
-                  "type": "string",
-                  "format": "date",
-                  "example": "2024-01-01"
+    "/api/shop/seller-statistics": {
+      "post": {
+        "tags": [
+          "Seller Routes"
+        ],
+        "summary": "Seller Statistics",
+        "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-01-01"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-12-31"
+                  }
                 },
-                "endDate": {
-                  "type": "string",
-                  "format": "date",
-                  "example": "2024-12-31"
-                }
-              },
-              "required": [
-                "startDate",
-                "endDate"
-              ]
+                "required": [
+                  "startDate",
+                  "endDate"
+                ]
+              }
             }
           }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Seller Statistics"
         },
-        "400": {
-          "description": "Invalid dates"
-        },
-        "401": {
-          "description": "Not logged in"
-        },
-        "500": {
-          "description": "Internal Server error"
+        "responses": {
+          "200": {
+            "description": "Seller Statistics"
+          },
+          "400": {
+            "description": "Invalid dates"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
         }
       }
-    }
     },
     "/api/shop/seller-update-product-status/{id}": {
       "put": {
@@ -1778,7 +1778,7 @@
                   }
                 },
                 "required": [
-                  "isAvailable"
+                  "status"
                 ]
               }
             }
@@ -1918,6 +1918,74 @@
                     "status": {
                       "type": "integer"
                     },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shop/user-get-products": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "A buyer should be able to view products",
+        "description": "This endpoint allow a buyer to view all products available",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Fashion"
+            },
+            "description": "Products by category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
                     "error": {
                       "type": "string"
                     }

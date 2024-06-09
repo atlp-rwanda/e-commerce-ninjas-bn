@@ -30,7 +30,7 @@ describe("Update User Status test case ", () => {
       .post("/api/auth/register")
       .send({
         email: "nda1234@gmail.com",
-        password: "$321!Pass!123$"
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -193,8 +193,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "nda12345@gmail.com",
-        password: "$321!Pass!123$"
+        email: "ecommerceninjas47@gmail.com",
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);

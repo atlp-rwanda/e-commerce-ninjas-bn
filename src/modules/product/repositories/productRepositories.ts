@@ -6,8 +6,6 @@ import { Op } from "sequelize";
 import Order from "../../../databases/models/orders";
 import CartProduct from "../../../databases/models/cartProducts";
 
-const currentDate = new Date();
-
 
 const createProduct = async (body: any) => {
     return await Products.create(body);
@@ -41,84 +39,23 @@ const getAvailableProductsByAttributes = async (key, value) => {
     return await Products.findAll({
         where: {
             [key]: value,
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
+            status: "available",
+            expired: false
         }
     })
 }
 const getAvailableProducts = async () => {
     return await Products.findAll({
         where: {
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
+            status: "available",
+            expired: false
         }
     });
 };
 
 
-const getProductsByAttributes = async (key: string, value: any) => {
-    return await Products.findAll({
-        where: { [key]: value }
-    });
-}
-const getAvailableProductsByAttributes = async (key, value) => {
-    return await Products.findAll({
-        where: {
-            [key]: value,
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    })
-}
-const getAvailableProducts = async () => {
-    return await Products.findAll({
-        where: {
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    });
-};
-
-
-const getProductsByAttributes = async (key: string, value: any) => {
-    return await Products.findAll({
-        where: { [key]: value }
-    });
-}
-const getAvailableProductsByAttributes = async (key, value) => {
-    return await Products.findAll({
-        where: {
-            [key]: value,
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    })
-}
-const getAvailableProducts = async () => {
-    return await Products.findAll({
-        where: {
-            isAvailable: "available",
-            expiryDate: {
-                [Op.gte]: currentDate
-            }
-        }
-    });
-};
-
-
-const deleteProductById = async (productId: string): Promise<void> => 
-{ 
-    await Products.destroy({ where: { id: productId } }); 
+const deleteProductById = async (productId: string): Promise<void> => {
+    await Products.destroy({ where: { id: productId } });
 };
 
 
@@ -138,10 +75,10 @@ const findShopByUserId = async (userId: string) => {
     return await Shops.findOne({ where: { userId } })
 }
 
-const updateProductByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
-    await Products.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
-    return await findShopByAttributes(Products ,whereKey, whereValue);
- }
+const updateProductByAttributes = async (updatedKey: string, updatedValue: any, whereKey: string, whereValue: any) => {
+    await Products.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue } });
+    return await findShopByAttributes(Products, whereKey, whereValue);
+}
 
 const markProducts = async (shopId: string) => {
     const now = new Date();
@@ -156,20 +93,19 @@ const markProducts = async (shopId: string) => {
 };
 
 const sellerGetProducts = async (shopId: string) => {
-    return await Products.findAll({ where:{ shopId } });
+    return await Products.findAll({ where: { shopId } });
 };
 
-export default { 
-    createProduct, 
-    createShop, 
-    findShopByAttributes, 
-     findByModelsAndAttributes, 
-    deleteProductById, getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes , 
-    getOrdersPerTimeframe, 
-    getOrderProductsByCartId, 
-    findProductById, 
+export default {
+    createProduct,
+    createShop,
+    findShopByAttributes,
+    findByModelsAndAttributes,
+    deleteProductById, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes,
+    getOrdersPerTimeframe,
+    getOrderProductsByCartId,
+    findProductById,
     findShopByUserId,
     updateProductByAttributes,
     markProducts,
-    sellerGetProducts
-, getAllProducts, getAvailableProducts, getAvailableProductsByAttributes, getProductsByAttributes };
+    sellerGetProducts};

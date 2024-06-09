@@ -41,7 +41,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "ecommerceninjas45@gmail.com",
-        password: "$321!Pass!123$"
+        password: "userPassword@123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.CREATED);
@@ -125,7 +125,7 @@ describe("Authentication Test Cases", () => {
       .post("/api/auth/register")
       .send({
         email: "user@example.com",
-        password: "_REMOVED123"
+        password: "userPassword"
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);

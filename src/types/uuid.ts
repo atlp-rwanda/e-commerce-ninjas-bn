@@ -6,6 +6,7 @@ export const userThreeId = uuidv4();
 export const userFourId = uuidv4();
 export const userFiveId = uuidv4();
 export const userSixId = uuidv4();
+export const userSevenId = uuidv4();
 
 export const shopOneId = uuidv4();
 export const shopTwoId = uuidv4();

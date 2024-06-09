@@ -16,15 +16,12 @@ import productController from "../controller/productController";
 import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
-
 import { ExtendRequest } from "../../../types";
-import Session from "../../../databases/models/session";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 const imagePath = path.join(__dirname, "../test/69180880-2138-11eb-8b06-03db3ef1abad.jpeg");
 const imageBuffer = fs.readFileSync(imagePath)
-
 describe("Product and Shops API Tests", () => {
 
   let token: string;
@@ -96,7 +93,7 @@ describe("Product and Shops API Tests", () => {
     });
   });
 
-  describe("POST /api/shop/seller-seller-create-product", () => {
+  describe("POST /api/shop/seller-create-product", () => {
     let productId:string;
     it("should create a product successfully", (done) => {
       router()
@@ -429,7 +426,7 @@ describe("Product Controller", () => {
       it("should handle internal server error", async () => {
           sinon.stub(req.files, "map").throws(new Error("File upload error"));
 
-      await productController.createProduct(req, res);
+          await productController.sellerCreateProduct(req, res);
 
           expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
           expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "File upload error" });
@@ -636,6 +633,9 @@ describe("credential middleware", () => {
 });
 
 
+
+
+
 describe("Buyer get products - test cases", () => {
   let getAvailableProductsStub;
 
@@ -681,165 +681,3 @@ describe("Buyer get products - test cases", () => {
       });
   });
 });
-
-describe("Seller get Products test cases", () => {
-  const sellerToken: string = null
-  let buyerToken: string = null
-  let  adminToken;
-  let userId: string = null;
-  let verifyToken: string | null = null;
-
-  afterEach(async () => {
-    const tokenRecord = await Session.findOne({ where: { userId } });
-    if (tokenRecord) {
-      verifyToken = tokenRecord.dataValues.token;
-    }
-  });
-  it("Should be able to login an admin", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "admin@gmail.com",
-        password: "$321!Pass!123$"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        expect(response.body.data).to.have.property("token");
-        adminToken = response.body.data.token;
-        done(error);
-      });
-  });
-
-
-
-
-  it("should register a new user", (done) => {
-    router()
-      .post("/api/auth/register")
-      .send({
-        email: `$${unique_username}`,
-        password: "$321!Pass!123$"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.CREATED);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("data");
-        userId = response.body.data.user.id;
-        expect(response.body).to.have.property(
-          "message",
-          "Account created successfully. Please check email to verify account."
-        );
-        done(error);
-      });
-  });
-
-  it("should verify the user successfully", (done) => {
-    if (!verifyToken) {
-      throw new Error("verifyToken is not set");
-    }
-
-    router()
-      .get(`/api/auth/verify-email/${verifyToken}`)
-      .end((err, res) => {
-        expect(res.status).to.equal(httpStatus.OK);
-        expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("status", httpStatus.OK);
-        expect(res.body).to.have.property(
-          "message",
-          "Account verified successfully, now login."
-        );
-        done(err);
-      });
-  });
-
-
-
-
-  it("Should login buyer", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: `$${unique_username}`,
-        password: "$321!Pass!123$"
-      })
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.message).to.be.a("string");
-        buyerToken = response.body.data.token
-        console.log(sellerToken)
-        done(error);
-      });
-  })
-  it("should change the password when the user changes the password", (done) => {
-  router()
-  .put("/api/user/change-password")
-  .set("authorization", `Bearer ${token}`)
-  .send({
-     oldPassword: "Newpassword#12",
-     newPassword: "NewPassword!123",
-     confirmPassword: "NewPassword!123"
-   })
-   .end((err, res) => {
-     expect(res).to.have.status(httpStatus.OK);
-     expect(res.body).to.be.an("object");
-     expect(res.body).to.have.property("message", "Password updated successfully");
-     done(err)
-   })
-})
-it("should return an error if the password is invalid", (done)=>{
-  router()
- .put("/api/user/change-password")
- .set("authorization", `Bearer ${token}`)
- .send({
-    oldPassword: "Newpassword#12",
-    newPassword: "NewPassword!123",
-    confirmPassword: "NewPassword!123"
-  })
-  .end((err, res) => {
-    expect(res).to.have.status(httpStatus.BAD_REQUEST);
-    expect(res.body).to.be.an("object");
-    expect(res.body).to.have.property("message", "Invalid password.");
-    done(err)
-  })
-})
-})
-
-describe("credential middleware", () => {
-  let req, res, next;
-
-  beforeEach(() => {
-    req = {
-      body: {},
-      user: null
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
-    };
-    next = sinon.spy();
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should handle errors and respond with 500", async () => {
-    req.user = { id: "userId" } as usersAttributes;
-    sinon.stub(authRepositories, "findUserByAttributes").rejects(new Error("Unexpected error"));
-
-    await credential(req as ExtendRequest, res as any, next);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
-    });
-  });
-
-
-})
