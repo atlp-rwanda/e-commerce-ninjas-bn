@@ -50,4 +50,38 @@ const findShopByUserId = async(userId: string) => {
     return await Shops.findOne({ where: { userId }})
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId };
+const updateProductByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{
+    await Products.update({ [updatedKey]: updatedValue }, { where: { [whereKey]: whereValue} });
+    return await findShopByAttributes(Products ,whereKey, whereValue);
+ }
+
+const markProducts = async (shopId: string) => {
+    const now = new Date();
+    await Products.update(
+        { expired: true },
+        { where: { shopId, expiryDate: { [Op.lt]: now }, expired: false } }
+    );
+    await Products.update(
+        { status: "unavailable" },
+        { where: { shopId, quantity: { [Op.lte]: 1 } } }
+    );
+};
+
+const sellerGetProducts = async (shopId: string) => {
+    return await Products.findAll({ where:{ shopId } });
+};
+
+export default { 
+    createProduct, 
+    createShop, 
+    findShopByAttributes,
+    findByModelsAndAttributes, 
+    deleteProductById, 
+    getOrdersPerTimeframe, 
+    getOrderProductsByCartId, 
+    findProductById, 
+    findShopByUserId,
+    updateProductByAttributes,
+    markProducts,
+    sellerGetProducts
+};

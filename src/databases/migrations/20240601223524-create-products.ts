@@ -3,7 +3,7 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 export default {
   up: async (queryInterface: QueryInterface, Sequelize: any) => {
-    await queryInterface.createTable("Products", {
+    await queryInterface.createTable("products", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -57,7 +57,7 @@ export default {
         type: DataTypes.INTEGER,
         defaultValue: 0
       },
-      isAvailable: {
+      status: {
         type: DataTypes.STRING(128),
         allowNull: false,
         defaultValue: "available"
@@ -76,6 +76,6 @@ export default {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("Products");
+    await queryInterface.dropTable("products");
   }
 };
