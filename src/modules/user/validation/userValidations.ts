@@ -28,7 +28,7 @@ export const roleSchema = Joi.object({
       "any.only": "Only admin, buyer and seller are allowed."
   })
 });
-const userSchema = Joi.object<User>({
+export const userSchema = Joi.object<User>({
   firstName: Joi.string().messages({
       "string.base": "firstName should be a type of text",
       "string.empty": "firstName cannot be an empty field",
@@ -73,4 +73,23 @@ const userSchema = Joi.object<User>({
       "any.required": "role is required"
   })
 });
-export {userSchema};
+
+export const changePasswordSchema = Joi.object({
+  oldPassword: Joi.string().pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")).required().messages({
+    "string.base": "Old password should be a type of text",
+    "string.empty": "Old password cannot be an empty field",
+    "string.pattern.base": "Old password must contain both letters, special character and numbers",
+    "any.required": "Old password is required"
+  }),
+  newPassword: Joi.string().min(8).pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")).required().messages({
+    "string.base": "New password should be a type of text",
+    "string.empty": "New password cannot be an empty field",
+    "string.min": "New password should have a minimum length of 8",
+    "string.pattern.base": "New password must contain both letters and numbers",
+    "any.required": "New password is required"
+}),
+  confirmPassword: Joi.string().valid(Joi.ref("newPassword")).required().messages({
+    "any.only": "Confirm password must match new password",
+    "any.required": "Confirm password is required"
+  })
+});

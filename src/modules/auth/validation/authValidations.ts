@@ -32,4 +32,16 @@ const emailSchema = Joi.object<User>({
 });
 
 
-export { credentialSchema, emailSchema };
+const resetPasswordSchema = Joi.object({
+    newPassword: Joi.string().min(8).pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")).required().messages({
+        "string.base": "password should be a type of text",
+        "string.empty": "password cannot be an empty field",
+        "string.min": "password should have a minimum length of 8",
+        "string.pattern.base": "password must contain at least uppercase letter,lowercase letter, number, and special character",
+        "any.required": "password is required"
+    })
+});
+
+
+
+export { credentialSchema, emailSchema, resetPasswordSchema  };
