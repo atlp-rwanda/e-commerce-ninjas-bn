@@ -1,6 +1,6 @@
 import { QueryInterface } from "sequelize";
 import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId } from "../../types/uuid";
+import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId, userSevenId } from "../../types/uuid";
 
 const userOne = {
   id: userOneId,
@@ -18,7 +18,8 @@ const userOne = {
   currency: "USD",
   role: "admin",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: false
 }
 const userTwo = {
   id: userTwoId,
@@ -36,7 +37,8 @@ const userTwo = {
   currency: "USD",
   role: "buyer",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: false
 }
 
 const userThree = {
@@ -55,7 +57,8 @@ const userThree = {
   currency: "USD",
   role: "buyer",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: true
 }
 
 const userFour = {
@@ -74,7 +77,8 @@ const userFour = {
   currency: "USD",
   role: "seller",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: false
 }
 
 const userFive = {
@@ -93,7 +97,8 @@ const userFive = {
   currency: "USD",
   role: "seller",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: false
 };
 
 const userSix = {
@@ -112,10 +117,31 @@ const userSix = {
   currency: "USD",
   role: "seller",
   status: "enabled",
-  isVerified: true
+  isVerified: true,
+  is2FAEnabled: false
 };
 
-export const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour, userFive, userSix])
+const userSeven = {
+  id: userSevenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  firstName: "F Seller4",
+  lastName: "L Seller4",
+  email: "seller4@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767899,
+  profilePicture: "",
+  gender: "female",
+  birthDate: "2014-02-02",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false
+};
+
+export const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour, userFive, userSix, userSeven])
 
 export const down = async (queryInterface: QueryInterface) => {
     await queryInterface.bulkDelete("users", {});

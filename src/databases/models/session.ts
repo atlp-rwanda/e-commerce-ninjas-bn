@@ -4,21 +4,23 @@ import { Model, DataTypes} from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
 export interface SessionAttributes {
-    id: number;
-    userId: number;
+    id: string;
+    userId: string;
     device: string;
     token: string;
     otp: string;
+    otpExpiration: Date;
     createdAt: Date;
     updatedAt: Date;
 }
 
 class Session extends Model<SessionAttributes> implements SessionAttributes {
-    declare id: number;
-    declare userId: number;
+    declare id: string;
+    declare userId: string;
     declare device: string;
     declare token: string;
     declare otp: string;
+    declare otpExpiration: Date;
     declare createdAt: Date;
     declare updatedAt: Date;
 
@@ -30,13 +32,13 @@ class Session extends Model<SessionAttributes> implements SessionAttributes {
 Session.init(
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             autoIncrement: true,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
         userId: {
-            type: new DataTypes.INTEGER,
+            type: new DataTypes.UUID,
             allowNull: false
         },
         device: {
@@ -51,6 +53,10 @@ Session.init(
             type: new DataTypes.STRING(280),
             allowNull: true
         },
+        otpExpiration: {
+            type: DataTypes.DATE,
+            allowNull: true
+          },
         createdAt: {
             field: "createdAt",
             type: DataTypes.DATE,

@@ -4,9 +4,9 @@ import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
 export interface OrderAttributes {
-    id: number;
-    shopId: number;
-    cartId: number;
+    id: string;
+    shopId: string;
+    cartId: string;
     paymentMethodId: number;
     orderDate: Date;
     status: string;
@@ -15,9 +15,9 @@ export interface OrderAttributes {
 }
 
 class Order extends Model<OrderAttributes> implements OrderAttributes {
-    declare id: number;
-    declare cartId: number;
-    declare shopId: number;
+    declare id: string;
+    declare cartId: string;
+    declare shopId: string;
     declare paymentMethodId: number;
     declare orderDate: Date;
     declare status: string;

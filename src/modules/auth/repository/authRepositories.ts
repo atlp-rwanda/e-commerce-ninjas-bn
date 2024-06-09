@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
+import { Op } from "sequelize";
 
 const createUser = async (body: any) => { 
   return await Users.create({ ...body, role:"buyer" });
@@ -32,11 +33,11 @@ const findSessionByAttributes = async( key:string, value: any ) => {
     return await Session.findOne({ where: { [key]:value } });
 }
 
-const findSessionByUserIdAndToken = async (userId: number, token: string) => {
+const findSessionByUserIdAndToken = async (userId: string, token: string) => {
   return await Session.findOne({ where: { token, userId } });
 };
 
-const findTokenByDeviceIdAndUserId = async (device: string, userId: number)=>{
+const findTokenByDeviceIdAndUserId = async (device: string, userId: string)=>{
     const session = await Session.findOne({ where: {device, userId} });
     return session.token;
 }
@@ -52,9 +53,15 @@ const destroySessionByAttribute = async (
   });
 };
 
-const findSessionByUserIdOtp = async (userId: number, otp: number) => {
-  return await Session.findOne({ where: { userId: userId, otp: otp } });
-};
+const findSessionByUserIdOtp = async (userId:string, otp:string) => {
+    return await Session.findOne({
+      where: {
+        userId: userId,
+        otp: otp,
+        otpExpiration: { [Op.gt]: new Date() }
+      }
+    });
+  }
 
 
 export default {

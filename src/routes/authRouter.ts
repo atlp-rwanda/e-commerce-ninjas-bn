@@ -5,16 +5,19 @@ import {
   isUserExist,
   isAccountVerified,
   isUserEnabled,
+  verifyUser,
+  isSessionExist,
   isGoogleEnabled,
   isUserVerified,
-  verifyUserCredentials,
-  verifyOtp
+  verifyOtp,
+  verifyUserCredentials
 } from "../middlewares/validation";
 import {
   emailSchema,
   credentialSchema,
   otpSchema,
-  is2FAenabledSchema
+  is2FAenabledSchema,
+  resetPasswordSchema 
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
@@ -47,15 +50,10 @@ router.post(
   verifyUserCredentials,
   authControllers.loginUser
 );
-router.post(
-  "/logout",
-  userAuthorization(["buyer", "seller", "admin"]),
-  authControllers.logoutUser
-);
 
 router.post(
   "/logout",
-  userAuthorization(["buyer", "seller", "admin"]),
+  userAuthorization(["admin", "buyer", "seller"]),
   authControllers.logoutUser
 );
 
@@ -74,5 +72,7 @@ router.put(
   userAuthorization(["admin", "buyer", "seller"]),
   authControllers.updateUser2FA
 );
+router.post("/forget-password", validation(emailSchema), verifyUser, authControllers.forgetPassword);
+router.put("/reset-password/:token", validation(resetPasswordSchema), verifyUser, isSessionExist, authControllers.resetPassword);
 
 export default router;

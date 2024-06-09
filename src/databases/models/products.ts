@@ -29,11 +29,10 @@ class Products extends Model<IProduct> {
 Products.init(
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             primaryKey: true,
             autoIncrement: true,
             defaultValue: DataTypes.UUIDV4
-
         },
         shopId: {
             allowNull: false,
@@ -83,7 +82,7 @@ Products.init(
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
-        isAvailable: {
+        status: {
             type: DataTypes.STRING(128),
             allowNull: false,
             defaultValue: "available"
@@ -101,7 +100,7 @@ Products.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "Products",
+        tableName: "products",
         modelName: "Products",
         timestamps: true
     }

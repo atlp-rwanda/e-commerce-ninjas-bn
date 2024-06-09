@@ -4,9 +4,9 @@ import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
 export interface CartProductAttributes {
-    id: number;
-    cartId: number;
-    productId: number;
+    id: string;
+    cartId: string;
+    productId: string;
     quantity: number;
     price: number;
     discount: number;
@@ -16,9 +16,9 @@ export interface CartProductAttributes {
 }
 
 class CartProduct extends Model<CartProductAttributes> implements CartProductAttributes {
-    declare id: number;
-    declare productId: number;
-    declare cartId: number;
+    declare id: string;
+    declare productId: string;
+    declare cartId: string;
     declare quantity: number;
     declare discount: number;
     declare price: number;
@@ -28,7 +28,7 @@ class CartProduct extends Model<CartProductAttributes> implements CartProductAtt
 
     static associate(models: any) {
         CartProduct.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
-        CartProduct.belongsTo(models.Product, { foreignKey: "productId", as: "Products" });
+        CartProduct.belongsTo(models.Product, { foreignKey: "productId", as: "products" });
     }
 }
 

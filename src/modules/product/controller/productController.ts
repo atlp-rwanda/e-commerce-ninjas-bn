@@ -5,58 +5,60 @@ import productRepositories from "../repositories/productRepositories"
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 
-const sellerCreateProduct = async (req:ExtendRequest,res:Response) =>{
-    try {
-        const uploadPromises = req.files.map(file => uploadImages(file));
-        const images = await Promise.all(uploadPromises);
-        const productData = {
-          shopId: req.shop.id,
-          images: images.map(image => image.secure_url),
-          ...req.body
-        };    
-        const product = await productRepositories.createProduct(productData);
-        res.status(httpStatus.CREATED).json({
-          message: "Product created successfully",
-          data: { product: product }
-        });
-      } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          error: error.message
-        });
-      }
+const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    const uploadPromises = req.files.map(file => uploadImages(file));
+    const images = await Promise.all(uploadPromises);
+    const productData = {
+      shopId: req.shop.id,
+      images: images.map(image => image.secure_url),
+      ...req.body
     };
+    const product = await productRepositories.createProduct(productData);
+    res.status(httpStatus.CREATED).json({
+      message: "Product created successfully",
+      data: { product: product }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+};
 
 const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
-    try {
-      const shopData = {
-        userId: req.user.id,
-        name: req.body.name,
-        description: req.body.description
-      };
-      const shop = await productRepositories.createShop(shopData);
-      res.status(httpStatus.CREATED).json({
-        message: "Shop created successfully",
-        data: {shop: shop}
-      });
-    } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
-      });
-    }
-  };
-
-  const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => { 
-    try { 
-    await productRepositories.deleteProductById(req.params.id); 
-    res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
-    catch (error) { res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message }); 
-    } 
+  try {
+    const shopData = {
+      userId: req.user.id,
+      name: req.body.name,
+      description: req.body.description
     };
+    const shop = await productRepositories.createShop(shopData);
+    res.status(httpStatus.CREATED).json({
+      message: "Shop created successfully",
+      data: { shop: shop }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+};
+
+const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    await productRepositories.deleteProductById(req.params.id);
+    res.status(httpStatus.OK).json({ message: "Product deleted successfully" });
+  }
+  catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 
-  
+
 const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
   try {
     const { startDate, endDate } = req.body;
@@ -104,6 +106,40 @@ const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<v
   }
 };
 
+const updateProductStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+      const data = await productRepositories.updateProductByAttributes("status", req.body.status, "id", req.params.id);
+      res.status(httpStatus.OK).json({ message: "Status updated successfully.", data });
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
+        status: httpStatus.INTERNAL_SERVER_ERROR, 
+         error: error.message });
+  }
+};
+
+const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
+try {
+    await productRepositories.markProducts(req.shop.id);
+    const products = await productRepositories.sellerGetProducts(req.shop.id);
+    res.status(httpStatus.OK).json({
+        message: "All products fetched successfully.",
+        products
+    });
+} catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+    });
+}
+};
 
 
-export default { sellerCreateProduct, sellerCreateShop, sellerDeleteProduct, sellerGetStatistics }
+
+export default { 
+  sellerCreateProduct, 
+  sellerCreateShop, 
+  sellerDeleteProduct, 
+  sellerGetStatistics,
+  updateProductStatus,
+  sellerGetProducts 
+}

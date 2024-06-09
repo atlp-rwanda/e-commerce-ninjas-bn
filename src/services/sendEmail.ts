@@ -14,23 +14,20 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const sendVerificationEmail = async (
-  email: string,
-  subject: string,
-  message: string
-) => {
-  try {
-    const mailOptionsVerify: SendMailOptions = {
-      from: process.env.MAIL_ID,
-      to: email,
-      subject: subject,
-      text: message
-    };
-
-    await transporter.sendMail(mailOptionsVerify);
-  } catch (error) {
-    throw new Error(error);
-  }
+const sendEmail = async(email: string, subject: string, message: string) => {
+    try {
+        const mailOptionsVerify: SendMailOptions = {
+            from: process.env.MAIL_ID,
+            to: email,
+            subject: subject,
+            text: message
+        };
+    
+        await transporter.sendMail(mailOptionsVerify);
+    } catch (error) {
+        throw new Error(error);
+    }
 };
 
-export { sendVerificationEmail, transporter };
+
+export {  sendEmail, transporter };
