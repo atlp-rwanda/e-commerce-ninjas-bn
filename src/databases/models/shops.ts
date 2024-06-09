@@ -5,8 +5,8 @@ import sequelizeConnection from "../config/db.config";
 import { IShops } from "../../types";
 
 class Shops extends Model<IShops> {
-    declare id: number;
-    declare userId: number;
+    declare id: string;
+    declare userId: string;
     declare name: string;
     declare description?: string;
 
@@ -19,14 +19,14 @@ class Shops extends Model<IShops> {
 Shops.init(
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             autoIncrement: true,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
         userId: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
                 model: "users",
                 key: "id"

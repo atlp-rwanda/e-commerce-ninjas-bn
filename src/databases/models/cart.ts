@@ -4,16 +4,16 @@ import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 
 export interface CartAttributes {
-    id: number;
-    userId: number;
+    id: string;
+    userId: string;
     status: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
 class Cart extends Model<CartAttributes> implements CartAttributes {
-    declare id: number;
-    declare userId: number;
+    declare id: string;
+    declare userId: string;
     declare status: string;
     declare createdAt: Date;
     declare updatedAt: Date;

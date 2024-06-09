@@ -32,16 +32,16 @@ const findSessionByAttributes = async( key:string, value: any ) => {
     return await Session.findOne({ where: { [key]:value } });
 }
 
-const findSessionByUserIdAndToken = async (userId: number, token: string) => {
+const findSessionByUserIdAndToken = async (userId: string, token: string) => {
   return await Session.findOne({ where: { token, userId } });
 };
 
-const findTokenByDeviceIdAndUserId = async (device: string, userId: number)=>{
+const findTokenByDeviceIdAndUserId = async (device: string, userId: string)=>{
     const session = await Session.findOne({ where: {device, userId} });
     return session.token;
 }
 
-const destroySession = async (userId: number, token:string) =>{
+const destroySession = async (userId: string, token:string) =>{
     return await Session.destroy({ where: {userId, token } });
 }
 
