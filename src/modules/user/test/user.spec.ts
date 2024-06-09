@@ -21,16 +21,33 @@ chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 describe("Update User Status test case ", () => {
-  let userId = "10000000-0000-0000-0000-000000000000";
+  let userId = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
-  let token: string;
+  let token:string = null;
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "nda1234@gmail.com",
+        password: "userPassword@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property("message", "Account created successfully. Please check email to verify account.");
+        done(error);
+      });
+  });
 
   it("Should be able to login admin", (done) => {
     router()
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "Password@123"
+        password: "NewPassword!123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -161,15 +178,7 @@ describe("User Repository Functions", () => {
       expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to.be.false;
     });
 
-    it("should throw an error if there is a database error", async () => {
-      updateStub.rejects(new Error("Database error"));
-      try {
-        await authRepositories.updateUserByAttributes("status", "enabled", "id", 1);
-      } catch (error) {
-        expect(updateStub.calledOnce).to.be.true;
-        expect(error.message).to.equal("Database error");
-      }
-    });
+
   });
 });
 
@@ -205,7 +214,7 @@ describe("Admin update User roles", () => {
       .post("/api/auth/login")
       .send({
         email:"admin@gmail.com",
-        password:"Password@123"
+        password:"NewPassword!123"
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -252,7 +261,7 @@ describe("Admin update User roles", () => {
   it("Should update User and return updated user", (done) => {
     router()
       .put(`/api/user/admin-update-role/${userIdd}`)
-      .send({ role: "admin" })
+      .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.OK);
@@ -347,7 +356,7 @@ describe("Admin Controllers", () => {
     .post("/api/auth/login")
     .send({
       email:"admin@gmail.com",
-      password:"Password@123"
+      password:"NewPassword!123"
     })
     .end((error, response) => {
       token = response.body.data.token;

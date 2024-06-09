@@ -47,16 +47,18 @@ const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
   }
 };
 
-  const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => { 
-    try { 
-    await productRepositories.deleteProductById(req.params.id); 
-    res.status(httpStatus.OK).json({ message: "Product deleted successfully" }); } 
-    catch (error) { res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message }); 
-    } 
-    };
+const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    await productRepositories.deleteProductById(req.params.id);
+    res.status(httpStatus.OK).json({ message: "Product deleted successfully" });
+  }
+  catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 
-  
+
 const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<void> => {
   try {
     const { startDate, endDate } = req.body;
@@ -106,23 +108,4 @@ const sellerGetStatistics = async (req: ExtendRequest, res: Response): Promise<v
 
 
 
-const getAvailableProducts = async (req: ExtendRequest, res: Response) => {
-  try {
-    const products = await productRepositories.getAvailableProducts();
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: { products: products } });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
-
-const getShopProducts = async (req: ExtendRequest, res: Response) => {
-  try {
-    const shop = req.shop
-    const products = await productRepositories.getProductsByAttributes("shopId", shop.id);
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
-
-export default { sellerCreateProduct, sellerCreateShop, getAvailableProducts, getShopProducts,sellerDeleteProduct ,sellerGetStatistics}
+export default { sellerCreateProduct, sellerCreateShop, sellerDeleteProduct, sellerGetStatistics }

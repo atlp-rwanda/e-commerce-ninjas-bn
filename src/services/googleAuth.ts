@@ -15,7 +15,6 @@ import dotenv from "dotenv";
 import { userInfo } from "../types";
 import { generateToken } from "../helpers";
 import authRepositories from "../modules/auth/repository/authRepositories";
-import { UsersAttributes } from "../databases/models/users";
 
 
 dotenv.config();

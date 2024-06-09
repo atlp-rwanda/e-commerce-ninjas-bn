@@ -1,14 +1,14 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from "express";
-import { UsersAttributes } from "../databases/models/users";
+import { usersAttributes } from "../databases/models/users";
 import authRepository from "../modules/auth/repository/authRepositories";
 import httpStatus from "http-status";
 import { decodeToken } from "../helpers";
 import Session from "../databases/models/session";
 
 interface ExtendedRequest extends Request {
-  user: UsersAttributes;
+  user: usersAttributes;
   session: Session;
 }
 
@@ -35,7 +35,6 @@ export const userAuthorization = function (roles: string[]) {
       }
 
       const user = await authRepository.findUserByAttributes("id", decoded.id);
-
       if (!user) {
         return res
           .status(httpStatus.UNAUTHORIZED)
@@ -43,7 +42,7 @@ export const userAuthorization = function (roles: string[]) {
       }
 
       if (!roles.includes(user.role)) {
-        return res
+        res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
