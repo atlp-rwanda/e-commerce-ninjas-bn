@@ -4,6 +4,7 @@ import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 import Order from "../../../databases/models/orders";
 import CartProduct from "../../../databases/models/cartProducts";
+const currentDate = new Date();
 
 
 const createProduct = async (body: any) => {
@@ -35,19 +36,58 @@ const deleteProductById = async (productId: string): Promise<void> => {
 
 
 const getOrdersPerTimeframe = async (shopId: string, startDate: Date, endDate: Date) => {
-    return await Order.findAll({ where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId }});
+    return await Order.findAll({ where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId } });
 };
 
-const getOrderProductsByCartId = async(cartId: string) => {
-    return await CartProduct.findAll({where: {cartId}});
+const getOrderProductsByCartId = async (cartId: string) => {
+    return await CartProduct.findAll({ where: { cartId } });
 }
 
 const findProductById = async (id: string) => {
-    return await Products.findOne({where: {id}});
+    return await Products.findOne({ where: { id } });
 }
 
-const findShopByUserId = async(userId: string) => {
-    return await Shops.findOne({ where: { userId }})
+const findShopByUserId = async (userId: string) => {
+    return await Shops.findOne({ where: { userId } })
 }
 
-export default { createProduct, createShop, findShopByAttributes,findByModelsAndAttributes, deleteProductById, getOrdersPerTimeframe, getOrderProductsByCartId, findProductById, findShopByUserId };
+
+
+
+const getAvailableProductsByAttributes = async (key, value) => {
+    return await Products.findAll({
+        where: {
+            [key]: value,
+            status: "available",
+            expiryDate: {
+                [Op.gte]: currentDate
+            }
+        }
+    })
+}
+
+const getAvailableProducts = async () => {
+    return await Products.findAll({
+        where: {
+            status: "available",
+            expired: false
+        }
+    });
+};
+
+const getProductsByAttributes = async (key: string, value: any) => {
+    return await Products.findAll({
+        where: { [key]: value }
+    });
+}
+export default {
+    getAvailableProducts,
+    getAvailableProductsByAttributes,
+    getProductsByAttributes,
+    createProduct, createShop,
+    findShopByAttributes,
+    findByModelsAndAttributes,
+    deleteProductById,
+    getOrdersPerTimeframe,
+    getOrderProductsByCartId, findProductById, findShopByUserId
+};

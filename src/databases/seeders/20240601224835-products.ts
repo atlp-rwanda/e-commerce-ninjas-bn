@@ -17,7 +17,7 @@ module.exports = {
         shopId: shopOneId,
         images: ["image1.jpg", "image2.jpg"],
         quantity: 300,
-        isAvailable: "available",
+        status: "available",
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -34,7 +34,7 @@ module.exports = {
         shopId:shopOneId,
         images: ["image3.jpg", "image4.jpg"],
         quantity: 200,
-        isAvailable: "available",
+        status: "available",
         createdAt: new Date(),
         updatedAt: new Date()
       }

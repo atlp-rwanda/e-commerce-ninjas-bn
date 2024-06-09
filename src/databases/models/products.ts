@@ -17,7 +17,7 @@ class Products extends Model<IProduct> {
     declare bonus?: string;
     declare images: string[];
     declare quantity: number;
-    declare isAvailable: string;
+    declare status: string;
     declare createdAt: Date;
     declare updatedAt: Date;
 
@@ -82,7 +82,7 @@ Products.init(
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
-        isAvailable: {
+        status: {
             type: DataTypes.STRING(128),
             allowNull: false,
             defaultValue: "available"

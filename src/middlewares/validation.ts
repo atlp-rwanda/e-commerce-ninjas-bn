@@ -11,6 +11,7 @@ import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
 import { ExtendRequest } from "../types";
 
+
 const validation = (schema: Joi.ObjectSchema | Joi.ArraySchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { error } = schema.validate(req.body, { abortEarly: false });
@@ -119,7 +120,7 @@ const verifyUserCredentials = async (
         if (!passwordMatches) {
             return res
                 .status(httpStatus.BAD_REQUEST)
-                .json({ message: "Invalid Email or Password"});
+                .json({ message: "Invalid Email or Password" });
         }
 
         req.user = user;
@@ -166,9 +167,9 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
         }
         if (!user.isVerified) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Account is not verified." });
-        }    
-         
-        req.user = user;  
+        }
+
+        req.user = user;
         next();
 
     } catch (error) {
@@ -183,25 +184,25 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid token." });
         }
         const destroy = await authRepositories.destroySession(req.user.id, session.token);
-        if(destroy) {
+        if (destroy) {
             const hashedPassword = await hashPassword(req.body.newPassword);
             req.user.password = hashedPassword;
             next()
-        } 
-        
+        }
+
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
 }
-        
-const isProductExist = async(req: any, res: Response, next: NextFunction) => {
+
+const isProductExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops,"userId", req.user.id);
-        if(!shop){
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id);
+        if (!shop) {
             return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
         }
-        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products,"name","shopId", req.body.name,shop.id);
-        if(isProductAvailable){
+        const isProductAvailable = await productRepositories.findByModelsAndAttributes(Products, "name", "shopId", req.body.name, shop.id);
+        if (isProductAvailable) {
             return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Please update the quantities." });
         }
         req.shop = shop;
@@ -213,42 +214,42 @@ const isProductExist = async(req: any, res: Response, next: NextFunction) => {
 
 const credential = async (req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
-      let user: usersAttributes = null;
-      if (req.user.id) {
-        user = await authRepositories.findUserByAttributes("id", req.user.id);
-      }
-      const compareUserPassword = await comparePassword(req.body.oldPassword, user.password);
-      if (!compareUserPassword) {
-        return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid password." });
-      }
-  
-      const hashedPassword = await hashPassword(req.body.newPassword);
-      user.password = hashedPassword;
-      req.user = user;
-      next();
+        let user: usersAttributes = null;
+        if (req.user.id) {
+            user = await authRepositories.findUserByAttributes("id", req.user.id);
+        }
+        const compareUserPassword = await comparePassword(req.body.oldPassword, user.password);
+        if (!compareUserPassword) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Invalid password." });
+        }
+
+        const hashedPassword = await hashPassword(req.body.newPassword);
+        user.password = hashedPassword;
+        req.user = user;
+        next();
     } catch (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-  };  
+};
 
 
-const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
+const isShopExist = async (req: any, res: Response, next: NextFunction) => {
     try {
-        const shop = await productRepositories.findShopByAttributes(Shops, "userId",req.user.id)
-        if(shop){
-            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop}});
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (shop) {
+            return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
         }
         return next();
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-} 
+}
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
-      return res.status(400).json({ status: 400, message: "Images are required" });
+        return res.status(400).json({ status: 400, message: "Images are required" });
     }
-  
+
     const files = req.files as Express.Multer.File[];
     req.body.images = files.map(file => file.path);
     next();
@@ -262,7 +263,7 @@ const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
     );
     if (!user) return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password" });
     if (user.isVerified === false) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "Your account is not verified yet" })
-    
+
     req.user = user;
     return next();
 }
@@ -276,4 +277,43 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
     if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
     return next();
 }
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,isGoogleEnabled,isUserEnabled,isUserVerified };
+const productsByCategory = async (req: Request, res: Response, next: NextFunction) => {
+    const category = req.query.category
+    if (category) {
+        const products = await productRepositories.getAvailableProductsByAttributes("category", category)
+        return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products })
+    }
+    return next()
+}
+const sellersShop = async (req: any, res: Response,next:NextFunction) => {
+    try {
+        const user = req.user
+        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
+        }
+        req.shop = shop;
+        return next()
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+
+    }
+}
+
+
+export {
+    validation,
+    isUserExist,
+    isAccountVerified,
+    verifyUserCredentials,
+    isUsersExist,
+    isProductExist,
+    isShopExist,
+    transformFilesToBody,
+    credential,
+    isSessionExist,
+    verifyUser, isGoogleEnabled,
+    isUserEnabled,
+    isUserVerified,
+    productsByCategory,sellersShop
+};

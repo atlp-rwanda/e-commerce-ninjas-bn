@@ -57,7 +57,7 @@ export default {
         type: DataTypes.INTEGER,
         defaultValue: 0
       },
-      isAvailable: {
+      status: {
         type: DataTypes.STRING(128),
         allowNull: false,
         defaultValue: "available"

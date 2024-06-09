@@ -17,6 +17,7 @@ import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
 import { ExtendRequest } from "../../../types";
+import Session from "../../../databases/models/session";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -597,3 +598,213 @@ describe("credential middleware", () => {
     });
   });
 });
+
+
+
+
+
+describe("Buyer get products - test cases", () => {
+  let getAvailableProductsStub;
+
+  afterEach(() => {
+    if (getAvailableProductsStub) {
+      getAvailableProductsStub.restore();
+    }
+  });
+
+
+
+  it("Should return Category related products if Category provided", (done) => {
+    router().get("/api/shop/user-get-products?category=Fashion")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.data).to.be.an("array");
+        done(error);
+      });
+  });
+
+  it("Should return products when no category provided", (done) => {
+    router().get("/api/shop/user-get-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+
+  it("Should return an internal server error for testing", (done) => {
+    getAvailableProductsStub = sinon.stub(productRepositories, "getAvailableProducts").throws(new Error("Internal Server Error for testing"));
+
+    router().get("/api/shop/user-get-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Internal Server Error for testing");
+        done(error);
+      });
+  });
+});
+
+describe("Seller get Products test cases", () => {
+  const sellerToken: string = null
+  let buyerToken: string = null
+  let adminToken;
+  let userId: string = null;
+  let verifyToken: string | null = null;
+
+  afterEach(async () => {
+    const tokenRecord = await Session.findOne({ where: { userId } });
+    if (tokenRecord) {
+      verifyToken = tokenRecord.dataValues.token;
+    }
+  });
+  it("Should be able to login an admin", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+       email:"admin@gmail.com",
+        password:"Password@123"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        expect(response.body.data).to.have.property("token");
+        adminToken = response.body.data.token;
+        done(error);
+      });
+  });
+
+
+
+
+  it("should register a new user", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({
+        email: "ecommerceninjas456@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.CREATED);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("data");
+        userId = response.body.data.user.id;
+        expect(response.body).to.have.property(
+          "message",
+          "Account created successfully. Please check email to verify account."
+        );
+        done(error);
+      });
+  });
+
+  it("should verify the user successfully", (done) => {
+    if (!verifyToken) {
+      throw new Error("verifyToken is not set");
+    }
+
+    router()
+      .get(`/api/auth/verify-email/${verifyToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("status", httpStatus.OK);
+        expect(res.body).to.have.property(
+          "message",
+          "Account verified successfully, now login."
+        );
+        done(err);
+      });
+  });
+
+
+
+
+  it("Should login buyer", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "ecommerceninjas456@gmail.com",
+        password: "$321!Pass!123$"
+      })
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        expect(response.body.message).to.be.a("string");
+        buyerToken = response.body.data.token
+        console.log(sellerToken)
+        done(error);
+      });
+  })
+
+  it("Should restrict buyer from accessing", (done) => {
+    router()
+      .get("/api/shop/seller-get-shop-products")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.UNAUTHORIZED);
+        expect(response.body).to.be.a("object");
+        done(error);
+      });
+  })
+
+  it("Should update User and return updated user", (done) => {
+    router()
+      .put(`/api/user/admin-update-role/${userId}`)
+      .send({ role: "seller" })
+      .set("authorization", `Bearer ${adminToken}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("message", "User role updated successfully");
+        done(err);
+      });
+  });
+
+  it("Should notify if No shop for the seller", (done) => {
+    router().get("/api/shop/seller-get-shop-products")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.NOT_FOUND);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("error", "Shop doesn't exists");
+        done(error);
+      });
+  });
+
+  it("should create a Shop successfully", (done) => {
+    router()
+      .post("/api/shop/seller-create-shop")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .send({
+        name: "New Shops 1",
+        description: "A new Shops description"
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.have.property("message", "Shop created successfully");
+        expect(res.body.data.shop).to.include({ name: "New Shops 1", description: "A new Shops description" });
+        done(err);
+      });
+  });
+
+
+  it("Should return data successfully", (done) => {
+    router().get("/api/shop/seller-get-shop-products")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+
+})
