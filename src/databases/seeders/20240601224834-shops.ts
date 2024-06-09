@@ -1,19 +1,28 @@
 import { QueryInterface } from "sequelize";
-import { shopOneId, userFourId } from "../../types/uuid";
+import { shopOneId, shopTwoId, userFourId, userSevenId } from "../../types/uuid";
+
+const shopOne = {
+    id: shopOneId,
+    name: "Paccy Shop 250",
+    userId: userFourId,
+    description: "Selling",
+    createdAt: new Date(),
+    updatedAt: new Date()
+}
+
+const shopTwo = {
+    id: shopTwoId,
+    name: "Paccy Shop 509",
+    userId: userSevenId,
+    description: "Selling",
+    createdAt: new Date(),
+    updatedAt: new Date()
+}
 
 export const up = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkInsert("shops", [
-        {
-            id: shopOneId,
-            name: "Shoes",
-            userId: userFourId,
-            description: "Shoes",
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-    ]);
+    await queryInterface.bulkInsert("shops", [shopOne, shopTwo]);
 };
 
 export const down = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete("shops", null, {});
+    await queryInterface.bulkDelete("shops", {});
 };
