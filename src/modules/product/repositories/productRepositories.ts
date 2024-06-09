@@ -123,19 +123,19 @@ const deleteProductById = async (productId: string): Promise<void> =>
 
 
 const getOrdersPerTimeframe = async (shopId: string, startDate: Date, endDate: Date) => {
-    return await Order.findAll({ where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId }});
+    return await Order.findAll({ where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId } });
 };
 
-const getOrderProductsByCartId = async(cartId: string) => {
-    return await CartProduct.findAll({where: {cartId}});
+const getOrderProductsByCartId = async (cartId: string) => {
+    return await CartProduct.findAll({ where: { cartId } });
 }
 
 const findProductById = async (id: string) => {
-    return await Products.findOne({where: {id}});
+    return await Products.findOne({ where: { id } });
 }
 
-const findShopByUserId = async(userId: string) => {
-    return await Shops.findOne({ where: { userId }})
+const findShopByUserId = async (userId: string) => {
+    return await Shops.findOne({ where: { userId } })
 }
 
 const updateProductByAttributes = async (updatedKey:string, updatedValue:any, whereKey:string, whereValue:any) =>{

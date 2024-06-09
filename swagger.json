@@ -161,7 +161,7 @@
             "type": "string",
             "format": "uri"
           },
-          "isAvailable": {
+          "status": {
             "type": "string"
           },
           "status": {

@@ -18,6 +18,7 @@ import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
 
 import { ExtendRequest } from "../../../types";
+import Session from "../../../databases/models/session";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
