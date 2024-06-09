@@ -162,9 +162,6 @@
             "format": "uri"
           },
           "status": {
-            "type": "string"
-          },
-          "status": {
             "type": "boolean"
           },
           "createdAt": {
