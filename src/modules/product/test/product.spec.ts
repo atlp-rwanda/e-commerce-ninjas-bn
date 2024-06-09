@@ -635,7 +635,6 @@ describe("credential middleware", () => {
 
 
 
-
 describe("Buyer get products - test cases", () => {
   let getAvailableProductsStub;
 
