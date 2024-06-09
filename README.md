@@ -43,6 +43,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Forget Password Endpoint
 - Reset Password Endpoint
 - Change Password Endpoint
+- Seller update product status Endpoint
+- Seller get products Endpoint
 
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
@@ -70,6 +72,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 18 | POST  | /api/shop/seller-create-product         | 201 OK      | private | create product in shop              |
 | 19 | DELETE| /api/shop/delete-product/:id            | 200 OK      | private | Delete Item in Collection           |
 | 20 | POST  | /api/shop/seller-statistics             | 200 OK	   | public	 | Get seller statistics per timeframe |
+| 21 | PUT   |	/api/shop/seller-update-product-status/:id | 200 OK   | private | Seller update product status        |
+| 22 | GET   |	/api/shop/seller-get-products           | 200 OK      | private |	Seller get products                 |
 
 
 

@@ -63,6 +63,14 @@ const statisticsSchema = Joi.object({
       "any.required": "End date is required",
       "date.greater": "End date must be greater than start date"
     })
-  });
+});
 
-export { productSchema , shopSchema, statisticsSchema};
+const statusSchema = Joi.object({
+    status: Joi.string().valid("available", "unavailable").required().messages({
+        "string.base": "status must be a string",
+        "any.required": "status is required",
+        "any.only": "status must be either 'available' or 'unavailable'"
+    })
+});
+
+export { productSchema , shopSchema, statisticsSchema, statusSchema };

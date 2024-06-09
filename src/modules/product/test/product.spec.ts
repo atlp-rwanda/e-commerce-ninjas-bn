@@ -36,6 +36,17 @@ describe("Product and Shops API Tests", () => {
   });
 
   describe("POST /api/shop/seller-create-shop", () => {
+
+    it("should give an error", (done) => {
+      router()
+          .get("/api/shop/seller-get-products")
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+              expect(res).to.have.status(404);
+              done();
+          });
+  });
+
     it("should create a Shop successfully", (done) => {
       router()
         .post("/api/shop/seller-create-shop")
@@ -108,6 +119,29 @@ describe("Product and Shops API Tests", () => {
           done();
         });
     });
+
+    it("should update product status to unavailable", (done) => {
+      router()
+          .put(`/api/shop/seller-update-product-status/${productId}`)
+          .set("Authorization", `Bearer ${token}`)
+          .send({ status: "unavailable" })
+          .end((err, res) => {
+              expect(res).to.have.status(200);
+              expect(res.body).to.have.property("message", "Status updated successfully.");
+              done();
+          });
+  });
+
+  it("should get all products", (done) => {
+    router()
+        .get("/api/shop/seller-get-products")
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+            expect(res).to.have.status(200);
+            expect(res.body).to.have.property("message", "All products fetched successfully.");
+            done();
+        });
+  });
 
     it("should return a validation error when images are missing", (done) => {
       router()

@@ -30,7 +30,7 @@ export interface IProduct{
     bonus?: string;
     images: string[];
     quantity: number;
-    isAvailable: string;
+    status: string;
     createdAt: Date;
     updatedAt: Date;
 }

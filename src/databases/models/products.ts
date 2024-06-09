@@ -82,7 +82,7 @@ Products.init(
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
-        isAvailable: {
+        status: {
             type: DataTypes.STRING(128),
             allowNull: false,
             defaultValue: "available"
@@ -100,7 +100,7 @@ Products.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "Products",
+        tableName: "products",
         modelName: "Products",
         timestamps: true
     }

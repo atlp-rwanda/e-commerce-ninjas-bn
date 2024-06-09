@@ -242,7 +242,20 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) =>{
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
     }
-} 
+}
+
+const isSellerShopExist = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+        if (!shop) {
+            return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Shop not found"});
+        }
+        req.shop = shop;
+        return next();
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    }
+}
 
 const transformFilesToBody = (req: Request, res: Response, next: NextFunction) => {
     if (!req.files) {
@@ -276,4 +289,4 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
     if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
     return next();
 }
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,isGoogleEnabled,isUserEnabled,isUserVerified };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser,isGoogleEnabled,isUserEnabled,isUserVerified, isSellerShopExist };
