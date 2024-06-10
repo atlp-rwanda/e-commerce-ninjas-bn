@@ -1,3 +1,5 @@
+/* eslint-disable curly */
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Joi from "joi";
@@ -14,25 +16,24 @@ import { sendEmail } from "../services/sendEmail";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const { error } = schema.validate(req.body, { abortEarly: false });
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { error } = schema.validate(req.body, { abortEarly: false });
 
-        if (error) {
-          throw new Error(
-            error.details
-              .map((detail) => detail.message.replace(/"/g, ""))
-              .join(", ")
-          );
-        }
-
-        return next();
-      } catch (error) {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .json({ status: httpStatus.BAD_REQUEST, message: error.message });
+      if (error) {
+        throw new Error(
+          error.details
+            .map((detail) => detail.message.replace(/"/g, ""))
+            .join(", ")
+        );
       }
-    };
+      return next();
+    } catch (error) {
+      res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
+    }
+  };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -45,19 +46,15 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
       );
       if (userExists) {
         if (userExists.isVerified) {
-          return res
-            .status(httpStatus.BAD_REQUEST)
-            .json({
-              status: httpStatus.BAD_REQUEST,
-              message: "Account already exists."
-            });
-        }
-        return res
-          .status(httpStatus.BAD_REQUEST)
-          .json({
+          return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
-            message: "Account already exists. Please verify your account"
+            message: "Account already exists.",
           });
+        }
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Account already exists. Please verify your account",
+        });
       }
     }
 
@@ -76,12 +73,10 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
 
     return next();
   } catch (error) {
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message
-      });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
   }
 };
 
@@ -149,12 +144,10 @@ const isAccountVerified = async (
     req.user = user;
     next();
   } catch (error) {
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message
-      });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
   }
 };
 
@@ -331,7 +324,6 @@ const transformFilesToBody = (
 const verifyOtp = async (req:ExtendRequest, res:Response, next:NextFunction) => {
   try {
     const user = await authRepositories.findUserByAttributes("id", req.params.id);
-    console.log(user);
     if (!user) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: httpStatus.NOT_FOUND,

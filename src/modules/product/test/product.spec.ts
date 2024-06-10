@@ -120,6 +120,33 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
+  it("should update a product successfully", (done) => {
+   router()
+    .put(`/api/shop/seller-update-product/${productId}`)
+    .set("Authorization", `Bearer ${token}`)
+    .field("name", "Updated Product")
+    .field("description", "An updated product description")
+    .field("price", "88.44")
+    .field("category", "Electronics")
+    .field("quantity", "15")
+    .field("bonus", "15%")
+    .field("discount", "11%")
+    .field("expiryDate", "2040-11-12")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .end((err, res) => {
+      expect(res).to.have.status(httpStatus.OK);
+      expect(res.body).to.have.property(
+        "message",
+        "Product updated successfully"
+      );
+      done();
+    });
+});
+
+
     it("should update product status to unavailable", (done) => {
       router()
           .put(`/api/shop/seller-update-product-status/${productId}`)
