@@ -7,7 +7,7 @@ import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isSessionExist, isUserExist, verifyUser, verifyUserCredentials } from "../../../middlewares/validation";
+import { isSessionExist, isUserExist, verifyOtp, verifyUser, verifyUserCredentials } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
@@ -19,12 +19,14 @@ import googleAuth from "../../../services/googleAuth";
 import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
 import authControllers from "../controller/authControllers";
+import * as helpers from "../../../helpers"
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
 
 let userId: string;
 let verifyToken: string | null = null;
+let otp: string | null = null;
 
 describe("Authentication Test Cases", () => {
   let token;
@@ -185,7 +187,7 @@ describe("Authentication Test Cases", () => {
 
   it("Should return error on logout", (done) => {
     sinon
-      .stub(authRepositories, "destroySession")
+      .stub(authRepositories, "destroySessionByAttribute")
       .throws(new Error("Database Error"));
     router()
       .post("/api/auth/logout")
@@ -505,52 +507,6 @@ describe("sendVerificationEmail", () => {
     } catch (error) {
       expect(error).to.be.an("error");
     }
-  });
-});
-describe("verifyUserCredentials Middleware", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: NextFunction;
-
-  beforeEach(() => {
-    req = {
-      body: {
-        email: "user@example.com",
-        password: "Password@123"
-      },
-      headers: {}
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub()
-    };
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should return 400 if the user is not found", async () => {
-    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
-
-    await verifyUserCredentials(req as Request, res as Response, next);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-    expect(res.json).to.have.been.calledWith({
-      message: "Invalid Email or Password"
-    });
-  });
-
-  it("should return 500 if there is an internal server error", async () => {
-    sinon.stub(authRepositories, "findUserByAttributes").throws(new Error("Internal Server Error"));
-
-    await verifyUserCredentials(req as Request, res as Response, next);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({
-      message: "Internal Server error",
-      data: "Internal Server Error"
-    });
   });
 });
 
@@ -874,7 +830,7 @@ describe("Google Authentication", () => {
       } as Partial<Response>;
   
       const error = new Error("Unexpected error");
-      sinon.stub(authRepositories, "destroySession").throws(error);
+      sinon.stub(authRepositories, "destroySessionByAttribute").throws(error);
   
       await authControllers.verifyEmail(req as Request, res as Response);
   
@@ -938,3 +894,226 @@ describe("Google Authentication", () => {
       sinon.restore();
     });
   });
+
+  describe("updateUser2FA", () => {
+    let req;
+    let res;
+    let token: string = null;
+    before((done) => {
+      router()
+        .post("/api/auth/login")
+        .send({
+          email: "buyer@gmail.com",
+          password:"Password@123"
+        })
+        .end((error, response) => {
+          token = response.body.data.token;
+          done(error);
+        });
+    });
+  
+    afterEach(() => {
+      sinon.restore();
+    });
+  
+    it("should enable 2FA for the user and return success message", (done) => {
+      router()
+        .put("/api/auth/enable-2f")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ is2FAEnabled: true })
+        .end((error, response) => {
+          expect(response.body).to.have.property("status", httpStatus.OK);
+          expect(response.body).to.have.property(
+            "message",
+            "2FA enabled successfully."
+          );
+          expect(response.body).to.have.property("data");
+          done(error);
+        });
+    });
+  
+    it("should return internal server error message if updating 2FA fails", (done) => {
+      const errorMessage = "Failed to enable 2FA";
+      sinon
+        .stub(authRepositories, "updateUserByAttributes")
+        .throws(new Error(errorMessage));
+      router()
+        .put("/api/auth/enable-2f")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ is2FAEnabled: true })
+        .end((error, response) => {
+         expect(response.body).to.have.property(
+            "status",
+            httpStatus.INTERNAL_SERVER_ERROR
+          );
+          expect(response.body).to.have.property("message", errorMessage);
+          done(error);
+        });
+    });
+  });
+  
+  describe("verifyUserCredentials Middleware", () => {
+    let req;
+    let res;
+    let next;
+  
+    beforeEach(() => {
+      req = {
+        body: {
+          email: "user@example.com",
+          password: "Password@123"
+        },
+        headers: {}
+      };
+      res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      };
+      next = sinon.stub();
+    });
+  
+    afterEach(() => {
+      sinon.restore();
+    });
+  
+    it("should return 400 if the user is not found", (done) => {
+      sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+      router()
+      .post("/api/auth/login")
+        .send({
+          email: "example@gmail.com",
+          password:"Password@123"
+        })
+        .end((error, response) => {
+          expect(response.status).to.equal(400);
+          expect(response.body.message).to.equal("Invalid Email or Password");
+          done(error)
+        })
+    });
+  
+    it("should return 400 if the password does not match", async () => {
+      const user: any = {
+        id: 1,
+        email: req.body.email,
+        password: "hashedPassword",
+        is2FAEnabled: false
+      };
+      sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+      sinon.stub(helpers, "comparePassword").resolves(false);
+  
+      await verifyUserCredentials(req, res, next);
+  
+      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+      expect(res.json).to.have.been.calledWith({
+        message: "Invalid Email or Password"
+      });
+      expect(next).not.to.have.been.called;
+    });
+  
+  it("should send OTP email if 2FA is enabled", (done) => {
+   router()
+   .post("/api/auth/login")
+        .send({
+          email: "buyer@gmail.com",
+          password:"Password@123"
+        })
+        .end((error, response) => {
+          expect(response.status).to.equal(httpStatus.OK);
+          expect(response.body.message).to.equal("Check your Email for OTP Confirmation");
+          userId = response.body.UserId.userId
+          done(error)
+        })
+  }); 
+
+})
+
+describe("verifyOtp", () => {
+  const validUUID = "123e4567-e89b-12d3-a456-426614174000";
+  let findUserStub, findSessionStub, destroySessionStub;
+  afterEach(async() => {
+    if (findUserStub) findUserStub.restore();
+    if (findSessionStub) findSessionStub.restore();
+    if (destroySessionStub) destroySessionStub.restore();
+    const otpRecord = await Session.findOne({ where: {userId}})
+    if (otpRecord) {
+      otp=otpRecord.dataValues.otp
+    }
+  });
+  it("should send otp when user is has enabled 2FA", (done) => {
+    router()
+    .post("/api/auth/login")
+    .send({
+      email: "buyer1@gmail.com",
+      password:"Password@123"
+    })
+    .end((error, response) => {
+      expect(response.status).to.equal(httpStatus.OK);
+      expect(response.body.message).to.equal("Check your Email for OTP Confirmation");
+      userId = response.body.UserId.userId
+      done(error);
+    });
+  })
+  it("should return 400 if sessionData is null or has no OTP", async () => {
+    const user = Users.build({ id: validUUID });
+     findUserStub = sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+     findSessionStub = sinon.stub(authRepositories, "findSessionByUserIdOtp").resolves(null); // Simulate no session data
+
+    const res = await chai.request(app)
+      .post(`/api/auth/verify-otp/${validUUID}`)
+      .send({ otp: "123456" });
+    
+    expect(res).to.have.status(httpStatus.BAD_REQUEST);
+    expect(res.body.message).to.equal("Invalid or expired code.");
+  });
+
+  it("should return 400 if OTP is expired", async () => {
+    const user = Users.build({ id: validUUID });
+    const sessionData = Session.build({ otp: "123456", otpExpiration: new Date(Date.now() - 1000) });
+     findUserStub = sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+     findSessionStub = sinon.stub(authRepositories, "findSessionByUserIdOtp").resolves(sessionData);
+     destroySessionStub = sinon.stub(authRepositories, "destroySessionByAttribute").resolves();
+
+    const res = await chai.request(app)
+      .post(`/api/auth/verify-otp/${validUUID}`)
+      .send({ otp: "123456" });
+    expect(res).to.have.status(httpStatus.BAD_REQUEST);
+    expect(res.body.message).to.equal("OTP expired.");
+  });
+
+  it("should return 200 and proceed if OTP is valid and not expired", (done) => {
+  
+    router()
+      .post(`/api/auth/verify-otp/${userId}`)
+      .send({ otp: otp })
+      .end((error, response)=>{
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.an("object");
+        done(error);
+      })
+  });
+  
+
+  it("should return 404 if user is not found", async () => {
+     findUserStub = sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    const res = await chai.request(app)
+      .post(`/api/auth/verify-otp/${validUUID}`)
+      .send({ otp: "123456" });
+
+    expect(res).to.have.status(httpStatus.NOT_FOUND);
+    expect(res.body.message).to.equal("User not found.");
+
+  });
+
+  it("should return 500 if there is a server error", async () => {
+     findUserStub = sinon.stub(authRepositories, "findUserByAttributes").rejects(new Error("Internal Server Error"));
+
+    const res = await chai.request(app)
+      .post(`/api/auth/verify-otp/${validUUID}`)
+      .send({ otp: "123456" });
+
+    expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.body.message).to.equal("Internal Server Error");
+
+  });
+});

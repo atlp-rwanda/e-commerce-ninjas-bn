@@ -22,4 +22,14 @@ const hashPassword = (password: string)=>{
   return bcrypt.hashSync(password, 10);
 }
 
-export { generateToken, decodeToken, comparePassword, hashPassword }
+const generateRandomCode = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const generateOTP = () => {
+  const otp = generateRandomCode();
+  const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
+  return { otp, expirationTime };
+};
+
+  export { generateToken, decodeToken, comparePassword, hashPassword, generateRandomCode,generateOTP }

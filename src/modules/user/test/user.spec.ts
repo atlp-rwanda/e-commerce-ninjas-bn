@@ -221,7 +221,7 @@ describe("Admin update User roles", () => {
       });
   });
 
-  it("Should be able to login a registered user", (done) => {
+  it("Should login admin", (done) => {
     router()
       .post("/api/auth/login")
       .send({
@@ -239,13 +239,17 @@ describe("Admin update User roles", () => {
       });
   });
 
-  it("Should notify if no role is specified", async () => {
-    const response = await router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
-      .set("authorization", `Bearer ${token}`);
+  it("Should notify if no role is specified", (done) => {
 
-    expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    expect(response.body).to.have.property("message");
+    router()
+      .put(`/api/user/admin-update-role/${userIdd}`)
+      .set("authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("message", "The 'role' parameter is required.");
+        done(error);
+      });
   });
 
   it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {

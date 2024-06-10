@@ -31,6 +31,10 @@ export default {
         type: new DataTypes.STRING(280),
         allowNull: true
       },
+      otpExpiration: {
+        type: DataTypes.DATE,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

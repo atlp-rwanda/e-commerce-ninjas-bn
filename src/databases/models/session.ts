@@ -9,6 +9,7 @@ export interface SessionAttributes {
     device: string;
     token: string;
     otp: string;
+    otpExpiration: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -19,6 +20,7 @@ class Session extends Model<SessionAttributes> implements SessionAttributes {
     declare device: string;
     declare token: string;
     declare otp: string;
+    declare otpExpiration: Date;
     declare createdAt: Date;
     declare updatedAt: Date;
 
@@ -51,6 +53,10 @@ Session.init(
             type: new DataTypes.STRING(280),
             allowNull: true
         },
+        otpExpiration: {
+            type: DataTypes.DATE,
+            allowNull: true
+          },
         createdAt: {
             field: "createdAt",
             type: DataTypes.DATE,

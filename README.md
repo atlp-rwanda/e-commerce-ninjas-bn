@@ -37,8 +37,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Admin get users Endpoint
 - Admin get user Endpoint
 - Logout Endpoint
+- Update User Profile Endpoint
 - Get User Profile Endpoint
-- User Update Profile Endpoint
 - Seller create shop Endpoint
 - Seller create product Endpoint
 - Seller update product Endpoint

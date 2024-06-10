@@ -8,7 +8,6 @@ import Document from "../swagger.json";
 import router from "./routes";
 import httpStatus from "http-status";
 
-
 dotenv.config();
 const app: Express = express();
 
@@ -24,7 +23,10 @@ app.use("/api", router);
 app.get("**", (req: Request, res: Response) => {
   res
     .status(httpStatus.OK)
-    .json({ status: true, message: "Welcome to the e-Commerce Ninjas BackEnd." });
+    .json({
+      status: true,
+      message: "Welcome to the e-Commerce Ninjas BackEnd."
+    });
 });
 
 app.listen(PORT, () => {
