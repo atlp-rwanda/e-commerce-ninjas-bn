@@ -9,7 +9,8 @@ import {
   transformFilesToBody,
   isSellerShopExist,
   isPaginated,
-  isSearchFiltered
+  isSearchFiltered,
+  isProductExistById
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -70,6 +71,9 @@ router.get("/seller-get-products", userAuthorization(["seller"]), isSellerShopEx
 router.get("/user-get-products", isPaginated, productController.userGetProducts);
 
 router.get("/user-search-products", isSearchFiltered, isPaginated, productController.userSearchProducts)
+
+router.get("/user-get-product/:id",isProductExistById,productController.userGetProduct);
+router.get("/seller-get-product/:id",userAuthorization(["seller"]),isSellerShopExist,isProductExistById,productController.sellerGetProduct)
 
 
 export default router;
