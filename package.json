@@ -16,7 +16,7 @@
     "createAllSeeders": "tsc && npx sequelize db:seed:all",
     "deleteAllTables": "tsc && npx sequelize db:migrate:undo:all",
     "deleteAllSeeders": "tsc && npx sequelize db:seed:undo:all",
-    "start": "src/index.ts",
+    "start": "nodemon src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "test-local": "cross-env NODE_ENV=development npm run deleteAllTables && cross-env NODE_ENV=development npm run createAllTables && cross-env NODE_ENV=development npm run createAllSeeders && nyc cross-env NODE_ENV=development mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
