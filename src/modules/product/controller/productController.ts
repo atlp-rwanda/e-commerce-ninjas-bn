@@ -131,7 +131,7 @@ try {
         error: error.message
     });
 }
-};
+};  
 
 
 const userGetAvailableProducts = async (req: ExtendRequest, res: Response) => {
