@@ -59,14 +59,18 @@ const sendVerifyEmail = async (req: any, res: Response) => {
 
 const verifyEmail = async (req: any, res: Response) => {
   try {
-    await authRepositories.destroySession(req.user.id, req.session.token)
+    await authRepositories.destroySessionByAttribute(
+      "userId",
+      req.user.id,
+      "token",
+      req.session.token
+    );
     await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 }
-
 
 const loginUser = async (req: any, res: Response) => {
   try {
@@ -90,8 +94,13 @@ const loginUser = async (req: any, res: Response) => {
 
 const logoutUser = async (req: any, res: Response) => {
   try {
-    await authRepositories.destroySession(req.user.id, req.session.token)
-    res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Successfully logged out" });
+    await authRepositories.destroySessionByAttribute(
+      "userId",
+      req.user.id,
+      "token",
+      req.session.token
+    );
+    res.status(httpStatus.OK).json({ message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -127,6 +136,26 @@ const resetPassword = async (req: any, res: Response): Promise<void> => {
   }
 };
 
+const updateUser2FA = async (req: any, res: Response) => {
+  try {
+    const user = await authRepositories.updateUserByAttributes(
+      "is2FAEnabled",
+      true,
+      "id",
+      req.user.id
+    );
+    res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "2FA enabled successfully.",
+      data: { user: user }
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+};
 export default {
   registerUser,
   sendVerifyEmail,
@@ -134,5 +163,6 @@ export default {
   loginUser,
   forgetPassword,
   resetPassword,
-  logoutUser
+  logoutUser,
+  updateUser2FA
 };
