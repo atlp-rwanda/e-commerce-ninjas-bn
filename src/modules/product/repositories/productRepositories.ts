@@ -106,6 +106,31 @@ const findProductByIdAndShopId = async (id: string, shopId: string) => {
   return await Products.findOne({ where: { id, shopId } });
 };
 
+const currentDate = new Date();
+
+const getAvailableProductsByAttributes = async (key, value) => {
+  return await Products.findAll({
+      where: {
+          [key]: value,
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      }
+  })
+}
+
+const getAvailableProducts = async () => {
+  return await Products.findAll({
+      where: {
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      }
+  });
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -121,4 +146,6 @@ export default {
   updateProductByAttributes,
   markProducts,
   sellerGetProducts,
+  getAvailableProductsByAttributes,
+  getAvailableProducts
 };

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/session";
+import { Op } from "sequelize";
 
 const createUser = async (body: any) => { 
   return await Users.create({ ...body, role:"buyer" });
@@ -41,17 +42,36 @@ const findTokenByDeviceIdAndUserId = async (device: string, userId: string)=>{
     return session.token;
 }
 
-const destroySession = async (userId: string, token:string) =>{
-    return await Session.destroy({ where: {userId, token } });
-}
+const destroySessionByAttribute = async (
+  destroyKey: string,
+  destroyValue: any,
+  key: string,
+  value: string
+) => {
+  return await Session.destroy({
+    where: { [destroyKey]: destroyValue, [key]: value },
+  });
+};
+
+const findSessionByUserIdOtp = async (userId:string, otp:string) => {
+    return await Session.findOne({
+      where: {
+        userId: userId,
+        otp: otp,
+        otpExpiration: { [Op.gt]: new Date() }
+      }
+    });
+  }
+
 
 export default {
   createUser,
   createSession,
   findUserByAttributes,
-  destroySession,
-  updateUserByAttributes,
   findSessionByAttributes,
   findSessionByUserIdAndToken,
   findTokenByDeviceIdAndUserId,
+  updateUserByAttributes,
+  destroySessionByAttribute,
+  findSessionByUserIdOtp
 };

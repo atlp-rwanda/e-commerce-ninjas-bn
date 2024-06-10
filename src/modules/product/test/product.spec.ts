@@ -8,7 +8,7 @@ import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { credential, isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
+import { checkAvailableProducts, credential, isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -120,6 +120,26 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
+    it("should get available products successfully", (done) => {
+      router()
+        .get("/api/shop/user-get-products")
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("status", httpStatus.OK);
+          done();
+        });
+    });
+
+    it("should get available products successfully", (done) => {
+      router()
+        .get("/api/shop/user-get-products?category=Fashion")
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("status", httpStatus.OK);
+          done();
+        });
+    });
+
   it("should update a product successfully", (done) => {
    router()
     .put(`/api/shop/seller-update-product/${productId}`)
@@ -157,6 +177,15 @@ describe("Product and Shops API Tests", () => {
               expect(res.body).to.have.property("message", "Status updated successfully.");
               done();
           });
+  });
+  it("should give an error for getting available products", (done) => {
+    router()
+      .get("/api/shop/user-get-products")
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.NOT_FOUND);
+        expect(res.body).to.have.property("status", httpStatus.NOT_FOUND);
+        done();
+      });
   });
 
   it("should get all products", (done) => {
@@ -430,6 +459,70 @@ describe("Product Middleware", () => {
 });
 
 describe("Product Controller", () => {
+
+  let token: string;
+
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({ email: "seller3@gmail.com", password: "Password@123" })
+      .end((err, res) => {
+        token = res.body.data.token;
+        done(err);
+      });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  let req: any, res: any, next: any;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return 500 if an error occurs in checkAvailableProducts", async () => {
+    const error = new Error("Internal server error");
+    sinon.stub(productRepositories, "getAvailableProducts").throws(error);
+
+    await checkAvailableProducts(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  });
+
+  it("should return 500 if an error occurs in updateProductStatus", async () => {
+    const error = new Error("Internal server error");
+    sinon.stub(productRepositories, "updateProductByAttributes").throws(error);
+
+    req.body = { status: "available" };
+    req.params = { id: "123" };
+
+    await productController.updateProductStatus(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  });
+
+  it("should return 500 if an error occurs in userGetAvailableProducts", async () => {
+    const error = new Error("Internal server error");
+    sinon.stub(productRepositories, "getAvailableProducts").throws(error);
+
+    await productController.userGetAvailableProducts(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  });
 
   describe("sellerCreateProduct", () => {
       let req, res;

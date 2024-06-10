@@ -8,6 +8,8 @@ import {
   isShopExist,
   transformFilesToBody,
   isSellerShopExist,
+  checkAvailableProducts,
+  isProductsByCategorySelected
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -69,5 +71,7 @@ router.get(
   isSellerShopExist,
   productController.sellerGetProducts
 );
+
+router.get("/user-get-products", checkAvailableProducts, isProductsByCategorySelected, productController.userGetAvailableProducts);
 
 export default router;
