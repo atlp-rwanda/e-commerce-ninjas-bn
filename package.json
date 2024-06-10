@@ -16,7 +16,7 @@
     "createAllSeeders": "tsc && npx sequelize db:seed:all",
     "deleteAllTables": "tsc && npx sequelize db:migrate:undo:all",
     "deleteAllSeeders": "tsc && npx sequelize db:seed:undo:all",
-    "start": "src/index.ts",
+    "start": "nodemon src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "cross-env NODE_ENV=test npm run deleteAllTables && cross-env NODE_ENV=test npm run createAllTables && cross-env NODE_ENV=test npm run createAllSeeders && nyc cross-env NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
     "test-local": "cross-env NODE_ENV=development npm run deleteAllTables && cross-env NODE_ENV=development npm run createAllTables && cross-env NODE_ENV=development npm run createAllSeeders && nyc cross-env NODE_ENV=development mocha --require ts-node/register 'src/**/*.spec.ts' --timeout 600000 --exit",
@@ -77,7 +77,6 @@
     "mocha": "^10.4.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
     "nyc": "^15.1.0",
@@ -89,6 +88,7 @@
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
     "sinon": "^18.0.0",
+    "sinon-chai": "^3.7.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.2",
@@ -107,8 +107,6 @@
     "@types/nodemailer": "^6.4.15",
     "@types/pg": "^8.11.6",
     "@types/sequelize": "^4.28.20",
-    "@types/sinon-chai": "^3.2.12",
-    "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.8",
@@ -116,7 +114,6 @@
     "@typescript-eslint/parser": "^7.10.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
-    "lint-staged": "^15.2.2",
-    "sinon-chai": "^3.7.0"
+    "lint-staged": "^15.2.2"
   }
 }

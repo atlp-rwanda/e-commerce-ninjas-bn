@@ -1,16 +1,25 @@
+/* eslint-disable comma-dangle */
 import { QueryInterface } from "sequelize";
 import { hashPassword } from "../../helpers";
-import { userOneId, userTwoId, userThreeId, userFourId, userFiveId, userSixId, userSevenId } from "../../types/uuid";
+import {
+  userOneId,
+  userTwoId,
+  userThreeId,
+  userFourId,
+  userFiveId,
+  userSixId,
+  userSevenId,
+} from "../../types/uuid";
 
 const userOne = {
   id: userOneId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"F Admin",
+  firstName: "F Admin",
   lastName: "L Admin",
-  email:"admin@gmail.com",
+  email: "admin@gmail.com",
   password: hashPassword("Password@123"),
-  phone:25089767899,
+  phone: 25089767899,
   profilePicture: "",
   gender: "female",
   birthDate: "2-2-2014",
@@ -45,11 +54,11 @@ const userThree = {
   id: userThreeId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"F Buyer1",
-  lastName:"L Buyer1",
-  email:"buyer1@gmail.com",
+  firstName: "F Buyer1",
+  lastName: "L Buyer1",
+  email: "buyer1@gmail.com",
   password: hashPassword("Password@123"),
-  phone:25089767899,
+  phone: 25089767899,
   profilePicture: "",
   gender: "female",
   birthDate: "2-2-2014",
@@ -65,11 +74,11 @@ const userFour = {
   id: userFourId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  firstName:"F Seller",
-  lastName:"L Seller",
-  email:"seller@gmail.com",
+  firstName: "F Seller",
+  lastName: "L Seller",
+  email: "seller@gmail.com",
   password: hashPassword("Password@123"),
-  phone:25089767099,
+  phone: 25089767099,
   profilePicture: "",
   gender: "male",
   birthDate: "2-2-2014",
@@ -141,8 +150,17 @@ const userSeven = {
   is2FAEnabled: false
 };
 
-export const up = (queryInterface: QueryInterface) => queryInterface.bulkInsert("users",[userOne, userTwo, userThree, userFour, userFive, userSix, userSeven])
+export const up = (queryInterface: QueryInterface) =>
+  queryInterface.bulkInsert("users", [
+    userOne,
+    userTwo,
+    userThree,
+    userFour,
+    userFive,
+    userSix,
+    userSeven,
+  ]);
 
 export const down = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete("users", {});
+  await queryInterface.bulkDelete("users", {});
 };
