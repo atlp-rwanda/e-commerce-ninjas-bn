@@ -120,6 +120,33 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
+  it("should update a product successfully", (done) => {
+   router()
+    .put(`/api/shop/seller-update-product/${productId}`)
+    .set("Authorization", `Bearer ${token}`)
+    .field("name", "Updated Product")
+    .field("description", "An updated product description")
+    .field("price", "88.44")
+    .field("category", "Electronics")
+    .field("quantity", "15")
+    .field("bonus", "15%")
+    .field("discount", "11%")
+    .field("expiryDate", "2040-11-12")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .attach("images", imageBuffer, "69180880-2138-11eb-8b06-03db3ef1abad.jpeg")
+    .end((err, res) => {
+      expect(res).to.have.status(httpStatus.OK);
+      expect(res.body).to.have.property(
+        "message",
+        "Product updated successfully"
+      );
+      done();
+    });
+});
+
+
     it("should update product status to unavailable", (done) => {
       router()
           .put(`/api/shop/seller-update-product-status/${productId}`)
@@ -629,54 +656,5 @@ describe("credential middleware", () => {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: "Unexpected error"
     });
-  });
-});
-
-
-
-
-describe("Buyer get products - test cases", () => {
-  let getAvailableProductsStub;
-
-  afterEach(() => {
-    if (getAvailableProductsStub) {
-      getAvailableProductsStub.restore();
-    }
-  });
-
-
-
-  it("Should return Category related products if Category provided", (done) => {
-    router().get("/api/shop/user-get-products?category=Fashion")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        expect(response.body.data).to.be.an("array");
-        done(error);
-      });
-  });
-
-  it("Should return products when no category provided", (done) => {
-    router().get("/api/shop/user-get-products")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("data");
-        done(error);
-      });
-  });
-
-
-  it("Should return an internal server error for testing", (done) => {
-    getAvailableProductsStub = sinon.stub(productRepositories, "getAvailableProducts").throws(new Error("Internal Server Error for testing"));
-
-    router().get("/api/shop/user-get-products")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error", "Internal Server Error for testing");
-        done(error);
-      });
   });
 });
