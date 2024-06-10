@@ -277,28 +277,6 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
     if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
     return next();
 }
-const productsByCategory = async (req: Request, res: Response, next: NextFunction) => {
-    const category = req.query.category
-    if (category) {
-        const products = await productRepositories.getAvailableProductsByAttributes("category", category)
-        return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: products })
-    }
-    return next()
-}
-const sellersShop = async (req: any, res: Response, next: NextFunction) => {
-    try {
-        const user = req.user
-        const shop = await productRepositories.findByModelsAndAttributes(Shops, "userId", "userId", user.id, user.id);
-        if (!shop) {
-            return res.status(httpStatus.NOT_FOUND).json({ error: "Shop doesn't exists" });
-        }
-        req.shop = shop;
-        return next()
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-
-    }
-}
 
 
 const isSellerShopExist = async (req: any, res: Response, next: NextFunction) => {
@@ -321,7 +299,6 @@ const isProductsByCategorySelected = async (req: Request, res: Response, next: N
     }
     return next()
 }
-
 export {
     validation,
     isUserExist,
@@ -333,10 +310,10 @@ export {
     transformFilesToBody,
     credential,
     isSessionExist,
-    verifyUser, isGoogleEnabled,
+    verifyUser,
+    isGoogleEnabled,
     isUserEnabled,
     isUserVerified,
-    productsByCategory, sellersShop,
     isSellerShopExist,
     isProductsByCategorySelected
 };

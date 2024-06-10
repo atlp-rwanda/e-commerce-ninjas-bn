@@ -73,7 +73,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 20 | POST  | /api/shop/seller-statistics             | 200 OK	   | public	 | Get seller statistics per timeframe |
 | 21 | PUT   |	/api/shop/seller-update-product-status/:id | 200 OK   | private | Seller update product status        |
 | 22 | GET   |	/api/shop/seller-get-products           | 200 OK      | private |	Seller get products                 |
-|23|GET|/api/shop/user-get-all-products|200 OK |public |	User Get all products|
+|23|GET|/api/shop/user-get-products|200 OK |public |	User Get all products|
 
 ## INSTALLATION
 
