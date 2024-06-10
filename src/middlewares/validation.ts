@@ -384,7 +384,7 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 
 const checkAvailableProducts = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
-    const products = await productRepositories.getAvailableProducts();
+    const products = await productRepositories.userGetProducts();
     if (products.length > 0) {
       next();
     } else {
@@ -404,4 +404,4 @@ const isProductsByCategorySelected = async (req: Request, res: Response, next: N
   return next()
 }
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser, isGoogleEnabled, isUserEnabled, isUserVerified, isSellerShopExist, verifyOtp,  checkAvailableProducts, isProductsByCategorySelected };
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser, isGoogleEnabled, isUserEnabled, isUserVerified, isSellerShopExist, verifyOtp, checkAvailableProducts, isProductsByCategorySelected };

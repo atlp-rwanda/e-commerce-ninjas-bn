@@ -204,9 +204,9 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
   }
 };
 
-const userGetAvailableProducts = async (req: ExtendRequest, res: Response) => {
+const userGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
-    const products = await productRepositories.getAvailableProducts();
+    const products = await productRepositories.userGetProducts();
     return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: { products: products } });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
@@ -221,5 +221,5 @@ export default {
   sellerGetStatistics,
   updateProductStatus,
   sellerGetProducts,
-  userGetAvailableProducts
+  userGetProducts
 };

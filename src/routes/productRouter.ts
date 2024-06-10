@@ -72,6 +72,6 @@ router.get(
   productController.sellerGetProducts
 );
 
-router.get("/user-get-products", checkAvailableProducts, isProductsByCategorySelected, productController.userGetAvailableProducts);
+router.get("/user-get-products", checkAvailableProducts, isProductsByCategorySelected, productController.userGetProducts);
 
 export default router;

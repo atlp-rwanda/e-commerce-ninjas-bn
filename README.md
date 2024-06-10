@@ -64,7 +64,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 8   | POST   | /api/auth/google                           | 200 OK      | public  | Login Via google account            |
 | 9   | POST   | /api/auth/logout                           | 200 OK      | private | Logout user                         |
 | 10   | POST   | /api/auth/forget-password                  | 200 OK      | public  | Forget Password                     |
-| 11   | POST   | /api/auth/reset-password/:token            | 200 OK      | public  | Reset Password                      |
+| 11   | PUT    | /api/auth/reset-password/:token            | 200 OK      | public  | Reset Password                      |
 | 12  | GET    | /api/user/change-password                  | 200 OK      | private | User Update password                |
 | 13  | PUT    | /api/user/user-update-profile              | 200 OK      | private | Update User Profile Endpoint        |
 | 14  | GET    | /api/user/user-get-profile                 | 200 OK      | private | Get User Profile Endpoint           |

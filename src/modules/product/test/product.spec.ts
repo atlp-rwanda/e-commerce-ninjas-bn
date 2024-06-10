@@ -493,7 +493,7 @@ describe("Product Controller", () => {
 
   it("should return 500 if an error occurs in checkAvailableProducts", async () => {
     const error = new Error("Internal server error");
-    sinon.stub(productRepositories, "getAvailableProducts").throws(error);
+    sinon.stub(productRepositories, "userGetProducts").throws(error);
 
     await checkAvailableProducts(req, res, next);
 
@@ -516,9 +516,9 @@ describe("Product Controller", () => {
 
   it("should return 500 if an error occurs in userGetAvailableProducts", async () => {
     const error = new Error("Internal server error");
-    sinon.stub(productRepositories, "getAvailableProducts").throws(error);
+    sinon.stub(productRepositories, "userGetProducts").throws(error);
 
-    await productController.userGetAvailableProducts(req, res);
+    await productController.userGetProducts(req, res);
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });

@@ -120,7 +120,7 @@ const getAvailableProductsByAttributes = async (key, value) => {
   })
 }
 
-const getAvailableProducts = async () => {
+const userGetProducts = async () => {
   return await Products.findAll({
       where: {
           status: "available",
@@ -147,5 +147,5 @@ export default {
   markProducts,
   sellerGetProducts,
   getAvailableProductsByAttributes,
-  getAvailableProducts
+  userGetProducts
 };

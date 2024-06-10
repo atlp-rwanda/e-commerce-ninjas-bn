@@ -708,7 +708,7 @@
       }
     },
     "/api/auth/reset-password/{token}": {
-      "post": {
+      "put": {
         "summary": "Reset password",
         "description": "Resets the user's password using the provided token and new password.",
         "tags": [

@@ -221,7 +221,7 @@ describe("Admin update User roles", () => {
       });
   });
 
-  it("Should be able to login a registered user", (done) => {
+  it("Should login admin", (done) => {
     router()
       .post("/api/auth/login")
       .send({
@@ -239,18 +239,22 @@ describe("Admin update User roles", () => {
       });
   });
 
-  it("Should notify if no role is specified", async () => {
-    const response = await router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
-      .set("authorization", `Bearer ${token}`);
+  it("Should notify if no role is specified", (done) => {
 
-    expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    expect(response.body).to.have.property("message");
+    router()
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
+      .set("authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.an("object");
+        expect(response.body).to.have.property("message", "The 'role' parameter is required.");
+        done(error);
+      });
   });
 
   it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {
     const response = await router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "Hello" })
       .set("authorization", `Bearer ${token}`);
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
@@ -262,7 +266,7 @@ describe("Admin update User roles", () => {
 
   it("Should return error when invalid Id is passed", async () => {
     const response = await router()
-      .put("/api/user/admin-update-role/invalid-id")
+      .put("/api/user/admin-update-user-role/invalid-id")
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`);
 
@@ -275,7 +279,7 @@ describe("Admin update User roles", () => {
 
   it("Should update User and return updated user", (done) => {
     router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -291,7 +295,7 @@ describe("Admin update User roles", () => {
 
   it("Should return 404 if user is not found", (done) => {
     router()
-      .put(`/api/user/admin-update-role/${unknownId}`)
+      .put(`/api/user/admin-update-user-role/${unknownId}`)
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -308,7 +312,7 @@ describe("Admin update User roles", () => {
       .throws(new Error("Internal server error"));
 
     router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
