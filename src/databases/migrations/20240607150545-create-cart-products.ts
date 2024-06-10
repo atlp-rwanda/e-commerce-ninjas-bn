@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import { QueryInterface, DataTypes } from "sequelize";
 
 export = {
@@ -7,58 +8,58 @@ export = {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
+        primaryKey: true,
       },
       productId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "products",
-          key: "id"
+          key: "id",
         },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       },
       cartId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "carts",
-          key: "id"
+          key: "id",
         },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       },
       quantity: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: true,
       },
       discount: {
         type: DataTypes.FLOAT,
-        allowNull: true
+        allowNull: true,
       },
       price: {
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: false,
       },
       totalPrice: {
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: false,
       },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
       },
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
-      }
+        defaultValue: DataTypes.NOW,
+      },
     });
   },
 
   down: async (queryInterface: QueryInterface) => {
     await queryInterface.dropTable("cart_products");
-  }
+  },
 };

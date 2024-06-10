@@ -1,5 +1,12 @@
+/* eslint-disable comma-dangle */
 import { QueryInterface } from "sequelize";
-import { productOneId, productTwoId, productThreeId, shopOneId, shopTwoId } from "../../types/uuid";
+import {
+  productOneId,
+  productTwoId,
+  productThreeId,
+  shopOneId,
+  shopTwoId,
+} from "../../types/uuid";
 
 const productOne = {
   id: productOneId,
@@ -16,8 +23,8 @@ const productOne = {
   quantity: 50,
   status: "available",
   createdAt: new Date(),
-  updatedAt: new Date()
-}
+  updatedAt: new Date(),
+};
 
 const productTwo = {
   id: productTwoId,
@@ -34,8 +41,8 @@ const productTwo = {
   quantity: 50,
   status: "available",
   createdAt: new Date(),
-  updatedAt: new Date()
-}
+  updatedAt: new Date(),
+};
 
 const productThree = {
   id: productThreeId,
@@ -52,11 +59,15 @@ const productThree = {
   quantity: 50,
   status: "available",
   createdAt: new Date(),
-  updatedAt: new Date()
-}
+  updatedAt: new Date(),
+};
 
 export const up = async (queryInterface: QueryInterface) => {
-  await queryInterface.bulkInsert("products", [productOne, productTwo, productThree]);
+  await queryInterface.bulkInsert("products", [
+    productOne,
+    productTwo,
+    productThree,
+  ]);
 };
 
 export const down = async (queryInterface: QueryInterface) => {
