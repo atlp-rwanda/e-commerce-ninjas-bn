@@ -82,9 +82,17 @@ const markProducts = async (shopId: string) => {
   );
 };
 
-const sellerGetProducts = async (shopId: string, limit: number, offset: number) => {
-  const { rows, count } = await db.Products.findAndCountAll({ where: { shopId }, limit, offset });
-  return { rows, count }
+const sellerGetProducts = async (
+  shopId: string,
+  limit: number,
+  offset: number
+) => {
+  const { rows, count } = await db.Products.findAndCountAll({
+    where: { shopId },
+    limit,
+    offset,
+  });
+  return { rows, count };
 };
 
 const updateProduct = async (
@@ -106,45 +114,49 @@ const userGetProducts = async (limit, offset) => {
     where: {
       status: "available",
       expiryDate: {
-        [Op.gte]: currentDate
-      }
+        [Op.gte]: currentDate,
+      },
     },
     limit: limit,
-    offset: offset
+    offset: offset,
   });
-  return { rows, count }
-}
+  return { rows, count };
+};
 const userSearchProducts = async (searchQuery: any, limit, offset) => {
   return await db.Products.findAndCountAll({
     ...searchQuery,
-    limit, offset
-  })
-}
-
-const sellerGetProductById = async (shopId: string,productId: string) => {
-  return await db.Products.findAll({
-    where: { shopId, id: productId } 
+    limit,
+    offset,
   });
 };
 
-const findProductfromWishList = async (productId:string, userId: string) => {
-  return await db.wishLists.findOne({ where: { productId ,userId} });
-}
-const addProductToWishList = async (body:any)=>{
+const sellerGetProductById = async (shopId: string, productId: string) => {
+  return await db.Products.findAll({
+    where: { shopId, id: productId },
+  });
+};
+
+const findProductfromWishList = async (productId: string, userId: string) => {
+  return await db.wishLists.findOne({ where: { productId, userId } });
+};
+const addProductToWishList = async (body: any) => {
   return await db.wishLists.create(body);
-}
+};
 
-const findProductFromWishListByUserId = async(userId:string)=>{
-   return await db.wishLists.findAll({where: {userId:userId}} );
-}
+const findProductFromWishListByUserId = async (userId: string) => {
+  return await db.wishLists.findAll({ where: { userId: userId } });
+};
 
-const deleteAllWishListByUserId = async (userId:string) => {
-return await db.wishLists.destroy({ where: { userId: userId } });
-}
+const deleteAllWishListByUserId = async (userId: string) => {
+  return await db.wishLists.destroy({ where: { userId: userId } });
+};
 
-const deleteProductFromWishListById = async (productId:string, userId: string) => {
-  return await db.wishLists.destroy({ where: { productId ,userId} });
-}
+const deleteProductFromWishListById = async (
+  productId: string,
+  userId: string
+) => {
+  return await db.wishLists.destroy({ where: { productId, userId } });
+};
 
 export default {
   createProduct,
@@ -167,5 +179,5 @@ export default {
   addProductToWishList,
   findProductFromWishListByUserId,
   deleteAllWishListByUserId,
-  deleteProductFromWishListById
+  deleteProductFromWishListById,
 };
