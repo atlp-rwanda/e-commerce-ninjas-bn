@@ -37,9 +37,16 @@
       "description": "Seller Endpoint"
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "components": {
     "schemas": {
       "User": {
@@ -72,7 +79,10 @@
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"],
+            "enum": [
+              "male",
+              "female"
+            ],
             "nullable": true
           },
           "birthDate": {
@@ -165,7 +175,7 @@
         }
       },
       "Shop": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -179,10 +189,10 @@
           "description": {
             "type": "string"
           }
-        } 
+        }
       },
       "Cart": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -193,10 +203,10 @@
           "status": {
             "type": "string"
           }
-        } 
+        }
       },
       "CartProducts": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -219,10 +229,10 @@
           "totalPrice": {
             "type": "number"
           }
-        } 
+        }
       },
       "Orders": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -242,7 +252,7 @@
           "status": {
             "type": "string"
           }
-        } 
+        }
       }
     },
     "securitySchemes": {
@@ -256,7 +266,9 @@
   "paths": {
     "/": {
       "get": {
-        "tags": ["Initial Route"],
+        "tags": [
+          "Initial Route"
+        ],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -268,7 +280,9 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -288,7 +302,10 @@
                     "format": "password"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -336,7 +353,9 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -352,7 +371,9 @@
                     "format": "email"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -399,7 +420,9 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -452,7 +475,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -473,7 +498,10 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -490,7 +518,9 @@
     },
     "/api/auth/google": {
       "get": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Login User via Google",
         "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-platform-backend.onrender.com/api/auth/google)",
         "responses": {
@@ -502,7 +532,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -822,6 +854,9 @@
         "tags": [
           "User Routes"
         ],
+        "tags": [
+          "User Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -905,7 +940,9 @@
     },
     "/api/user/user-update-profile": {
       "put": {
-        "tags": ["User Routes"],
+        "tags": [
+          "User Routes"
+        ],
         "summary": "Update a User Profile",
         "description": "User should be able to update his/her profile",
         "security": [
@@ -1009,7 +1046,9 @@
     },
     "/api/user/admin-get-users": {
       "get": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1093,7 +1132,9 @@
     },
     "/api/user/admin-get-user/{id}": {
       "get": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1185,7 +1226,9 @@
     },
     "/api/user/admin-update-user-status/{id}": {
       "put": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1216,7 +1259,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -1318,413 +1363,246 @@
       }
     },
     "/api/user/admin-update-user-role/{id}": {
-      "put": {
-        "tags": ["Admin Routes"],
-        "summary": "Update user role",
-        "description": "This endpoint allows admin to update a user's role",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "type": "string",
-            "description": "Pass the ID",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "User role update details",
-          "required": true,
-          "content": {
-            "application/json": {
+      "/api/user/admin-update-user-role/{id}": {
+        "put": {
+          "tags": [
+            "Admin Routes"
+          ],
+          "summary": "Update user role",
+          "description": "This endpoint allows admin to update a user's role",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "string",
+              "description": "Pass the ID",
               "schema": {
-                "type": "object",
-                "properties": {
-                  "role": {
-                    "type": "string",
-                    "enum": ["Admin", "Buyer", "Seller"]
-                  }
-                },
-                "required": ["role"]
+                "type": "string"
               }
             }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User role updated successfully",
+          ],
+          "requestBody": {
+            "description": "User role update details",
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "message": {
-                      "type": "string"
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "Admin",
+                        "Buyer",
+                        "Seller"
+                      ]
                     }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/shop/seller-create-shop": {
-      "post": {
-        "tags": ["Seller Routes"],
-        "summary": "A seller should be able to Create new shop",
-        "description": "This endpoint allows seller to create new shop",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the product"
                   },
-                  "description": {
-                    "type": "string",
-                    "description": "Description of the product"
-                  }
+                  "required": [
+                    "role"
+                  ]
                 }
               }
             }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Shop created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "sellerId": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User role updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string"
                       }
                     }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad Request - Missing required parameter",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Shop not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
-      }
-    },
-    "/api/shop/seller-create-product": {
-      "post": {
-        "tags": ["Seller Routes"],
-        "summary": "A seller should be able to Create/Add a product with shop Id",
-        "description": "This endpoint allows seller to create/add a product with shop Id",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "images": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    },
-                    "description": "Array of product images"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the product"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Description of the product"
-                  },
-                  "price": {
-                    "type": "number",
-                    "description": "Price of the product"
-                  },
-                  "bonus": {
-                    "type": "integer",
-                    "description": "bonus of the product"
-                  },
-                  "discount": {
-                    "type": "string",
-                    "description": "discount of the product"
-                  },
-                  "category": {
-                    "type": "string",
-                    "description": "category of the product"
-                  },
-                  "expiryDate": {
-                    "type": "string",
-                    "description": "expiry date of the product"
-                  },
-                  "quantity": {
-                    "type": "number",
-                    "description": "quantity of the product"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Product created successfully",
+      },
+      "/api/shop/seller-create-shop": {
+        "post": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "A seller should be able to Create new shop",
+          "description": "This endpoint allows seller to create new shop",
+          "requestBody": {
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string"
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the product"
                     },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "shopId": {
-                          "type": "string"
-                        },
-                        "sellerId": {
-                          "type": "string"
-                        },
-                        "images": {
-                          "type": "array",
-                          "items": {
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Shop created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "sellerId": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
                             "type": "string"
                           }
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "price": {
-                          "type": "number"
-                        },
-                        "bonus": {
-                          "type": "integer"
-                        },
-                        "discount": {
-                          "type": "string"
-                        },
-                        "category": {
-                          "type": "string"
-                        },
-                        "expiryDate": {
-                          "type": "date"
-                        },
-                        "quantity": {
-                          "type": "number"
                         }
                       }
                     }
                   }
                 }
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Missing required parameter",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+            },
+            "400": {
+              "description": "Bad Request - Missing required parameter",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "404": {
-            "description": "Collection not found or Product already exists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
+            },
+            "404": {
+              "description": "Shop not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -1732,186 +1610,180 @@
             }
           }
         }
-      }
-    },
-    "/api/shop/seller-update-product/{id}": {
-      "put": {
-        "tags": ["Seller Routes"],
-        "summary": "A seller should be able to Update/Modify a product with Id",
-        "description": "This endpoint allows seller to update/modify a product with Id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
+      },
+      "/api/shop/seller-create-product": {
+        "post": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "A seller should be able to Create/Add a product with shop Id",
+          "description": "This endpoint allows seller to create/add a product with shop Id",
+          "requestBody": {
             "required": true,
-            "description": "ID of the product to update",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "images": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "binary"
+                      },
+                      "description": "Array of product images"
                     },
-                    "description": "Array of product images"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the product"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Description of the product"
-                  },
-                  "price": {
-                    "type": "number",
-                    "description": "Price of the product"
-                  },
-                  "bonus": {
-                    "type": "integer",
-                    "description": "bonus of the product"
-                  },
-                  "discount": {
-                    "type": "string",
-                    "description": "discount of the product"
-                  },
-                  "category": {
-                    "type": "string",
-                    "description": "category of the product"
-                  },
-                  "expiryDate": {
-                    "type": "string",
-                    "description": "expiry date of the product"
-                  },
-                  "quantity": {
-                    "type": "number",
-                    "description": "quantity of the product"
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the product"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the product"
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Price of the product"
+                    },
+                    "bonus": {
+                      "type": "integer",
+                      "description": "bonus of the product"
+                    },
+                    "discount": {
+                      "type": "string",
+                      "description": "discount of the product"
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "category of the product"
+                    },
+                    "expiryDate": {
+                      "type": "string",
+                      "description": "expiry date of the product"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "quantity of the product"
+                    }
                   }
                 }
               }
             }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Product updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "shopId": {
-                          "type": "string"
-                        },
-                        "images": {
-                          "type": "array",
-                          "items": {
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Product created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "shopId": {
                             "type": "string"
+                          },
+                          "sellerId": {
+                            "type": "string"
+                          },
+                          "images": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "number"
+                          },
+                          "bonus": {
+                            "type": "integer"
+                          },
+                          "discount": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "expiryDate": {
+                            "type": "date"
+                          },
+                          "quantity": {
+                            "type": "number"
                           }
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "price": {
-                          "type": "number"
-                        },
-                        "bonus": {
-                          "type": "integer"
-                        },
-                        "discount": {
-                          "type": "string"
-                        },
-                        "category": {
-                          "type": "string"
-                        },
-                        "expiryDate": {
-                          "type": "date"
-                        },
-                        "quantity": {
-                          "type": "number"
                         }
                       }
                     }
                   }
                 }
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Missing required parameter",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+            },
+            "400": {
+              "description": "Bad Request - Missing required parameter",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "404": {
-            "description": "Product not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
+            },
+            "404": {
+              "description": "Collection not found or Product already exists",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -1919,217 +1791,411 @@
             }
           }
         }
-      }
-    },
-    "/api/shop/seller-delete-product/{id}": {
-      "delete": {
-        "tags": ["Seller Routes"],
-        "summary": "Delete Item",
-        "description": "Deletes a specific item from a seller's shop.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the shop to which the product belongs",
-            "schema": {
-              "type": "string"
+      },
+      "/api/shop/seller-update-product/{id}": {
+        "put": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "A seller should be able to Update/Modify a product with Id",
+          "description": "This endpoint allows seller to update/modify a product with Id",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the product to update",
+              "schema": {
+                "type": "string"
+              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Item deleted successfully",
+          ],
+          "requestBody": {
+            "required": true,
             "content": {
-              "application/json": {
+              "multipart/form-data": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "binary"
+                      },
+                      "description": "Array of product images"
+                    },
+                    "name": {
                       "type": "string",
-                      "description": "Success message",
-                      "example": "Item deleted successfully"
+                      "description": "Name of the product"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the product"
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Price of the product"
+                    },
+                    "bonus": {
+                      "type": "integer",
+                      "description": "bonus of the product"
+                    },
+                    "discount": {
+                      "type": "string",
+                      "description": "discount of the product"
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "category of the product"
+                    },
+                    "expiryDate": {
+                      "type": "string",
+                      "description": "expiry date of the product"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "quantity of the product"
                     }
-                  },
-                  "401": {
-                    "description": "Unauthorized access (missing or invalid token)"
-                  },
-                  "403": {
-                    "description": "Forbidden access (non-seller user trying to delete)"
-                  },
-                  "404": {
-                    "description": "Item not found",
-                    "content": {
-                      "application/json": {
-                        "schema": {
-                          "type": "object",
-                          "properties": {
-                            " message": {
-                              "type": "string",
-                              "description": "Error message",
-                              "example": "Item not found"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Product updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "shopId": {
+                            "type": "string"
+                          },
+                          "images": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "number"
+                          },
+                          "bonus": {
+                            "type": "integer"
+                          },
+                          "discount": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "expiryDate": {
+                            "type": "date"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Missing required parameter",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Product not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/shop/seller-delete-product/{id}": {
+        "delete": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "Delete Item",
+          "description": "Deletes a specific item from a seller's shop.",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the shop to which the product belongs",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Item deleted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "Success message",
+                        "example": "Item deleted successfully"
+                      }
+                    },
+                    "401": {
+                      "description": "Unauthorized access (missing or invalid token)"
+                    },
+                    "403": {
+                      "description": "Forbidden access (non-seller user trying to delete)"
+                    },
+                    "404": {
+                      "description": "Item not found",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object",
+                            "properties": {
+                              " message": {
+                                "type": "string",
+                                "description": "Error message",
+                                "example": "Item not found"
+                              }
                             }
                           }
                         }
                       }
+                    },
+                    "400": {
+                      "description": "Bad request (e.g., missing or invalid itemId)"
+                    },
+                    "500": {
+                      "description": "Internal Server Error"
                     }
-                  },
-                  "400": {
-                    "description": "Bad request (e.g., missing or invalid itemId)"
-                  },
-                  "500": {
-                    "description": "Internal Server Error"
                   }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/api/shop/seller-statistics": {
-      "post": {
-        "tags": [
-          "Seller Routes"
-        ],
-        "summary": "Seller Statistics",
-        "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "startDate": {
-                    "type": "string",
-                    "format": "date",
-                    "example": "2024-01-01"
-                  },
-                  "endDate": {
-                    "type": "string",
-                    "format": "date",
-                    "example": "2024-12-31"
-                  }
-                },
-                "required": [
-                  "startDate",
-                  "endDate"
-                ]
-              }
+      },
+      "/api/shop/seller-statistics": {
+        "post": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "Seller Statistics",
+          "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
+          "security": [
+            {
+              "bearerAuth": []
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Seller Statistics"
-          },
-          "400": {
-            "description": "Invalid dates"
-          },
-          "401": {
-            "description": "Not logged in"
-          },
-          "500": {
-            "description": "Internal Server error"
-          }
-        }
-      }
-    },
-
-    "/api/shop/seller-update-product-status/{id}": {
-      "put": {
-        "tags": ["Seller Routes"],
-        "summary": "A seller should be able to update product status manually",
-        "description": "This endpoint allows a seller to update the availability status of a product",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
+          ],
+          "requestBody": {
             "required": true,
-            "description": "ID of the product",
-            "schema": {
-              "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "startDate": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2024-01-01"
+                    },
+                    "endDate": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2024-12-31"
+                    }
+                  },
+                  "required": [
+                    "startDate",
+                    "endDate"
+                  ]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Seller Statistics"
+            },
+            "400": {
+              "description": "Invalid dates"
+            },
+            "401": {
+              "description": "Not logged in"
+            },
+            "500": {
+              "description": "Internal Server error"
             }
           }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
+        }
+      },
+      "/api/shop/seller-update-product-status/{id}": {
+        "put": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "A seller should be able to update product status manually",
+          "description": "This endpoint allows a seller to update the availability status of a product",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the product",
               "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string"
-                  }
-                },
-                "required": ["isAvailable"]
+                "type": "string"
               }
             }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Product availability updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid request parameters",
+          ],
+          "requestBody": {
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "status": {
-                      "type": "integer"
-                    },
-                    "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "isAvailable"
+                  ]
                 }
               }
             }
           },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Product availability updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid request parameters",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -2137,82 +2203,84 @@
             }
           }
         }
-      }
-    },
-    "/api/shop/seller-get-products": {
-      "get": {
-        "tags": ["Seller Routes"],
-        "summary": "A seller should be able to get all products",
-        "description": "This endpoint allows a seller to get all products",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All products fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
+      },
+      "/api/shop/seller-get-products": {
+        "get": {
+          "tags": [
+            "Seller Routes"
+          ],
+          "summary": "A seller should be able to get all products",
+          "description": "This endpoint allows a seller to get all products",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "All products fetched successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "404": {
-            "description": "Not shop found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
+            },
+            "404": {
+              "description": "Not shop found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
               }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "error": {
-                      "type": "string"
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
                     }
                   }
                 }

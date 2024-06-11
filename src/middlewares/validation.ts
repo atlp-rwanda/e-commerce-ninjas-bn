@@ -284,11 +284,11 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
   try {
     const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
     if (shop) {
-       res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
+      return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
     }
     return next();
   } catch (error) {
-     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 }
 
