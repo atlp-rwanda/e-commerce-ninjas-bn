@@ -120,7 +120,7 @@ const getAvailableProductsByAttributes = async (key, value) => {
       }
   })
 }
-const userGetProductsPaginated = async(limit,offset)=> {
+const userGetProducts = async(limit,offset)=> {
   const {rows,count} = await Products.findAndCountAll({
       where: {
           status: "available",
@@ -134,16 +134,6 @@ const userGetProductsPaginated = async(limit,offset)=> {
   return {rows,count}
 }
 
-const userGetProducts = async () => {
-  return await Products.findAll({
-      where: {
-          status: "available",
-          expiryDate: {
-              [Op.gte]: currentDate
-          }
-      }
-  });
-};
 
 export default {
   createProduct,
@@ -161,5 +151,5 @@ export default {
   markProducts,
   sellerGetProducts,
   getAvailableProductsByAttributes,
-  userGetProducts,userGetProductsPaginated
+  userGetProducts
 };

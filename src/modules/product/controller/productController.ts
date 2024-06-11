@@ -212,7 +212,7 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
 const userGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
     const { limit, page, offset } = req.pagination
-    const products = await productRepositories.userGetProductsPaginated(limit, offset);
+    const products = await productRepositories.userGetProducts(limit, offset);
     const totalPages = Math.ceil(products.count / limit);
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;

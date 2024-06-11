@@ -382,18 +382,6 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
   return next();
 }
 
-const isProductsExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
-  try {
-    const products = await productRepositories.userGetProducts();
-    if (products.length > 0) {
-      next();
-    } else {
-      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, error: "No products are available" });
-    }
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-};
 
 const isPaginationSelected = (req: any, res: Response, next: NextFunction) => {
   const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
@@ -418,6 +406,6 @@ export {
   transformFilesToBody, credential,
   isSessionExist, verifyUser, isGoogleEnabled,
   isUserEnabled, isUserVerified, isSellerShopExist,
-  verifyOtp, isProductsExist,
+  verifyOtp,
   isPaginationSelected
 };

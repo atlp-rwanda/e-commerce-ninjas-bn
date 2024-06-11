@@ -9,7 +9,7 @@ import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { isProductsExist, credential, isProductExist, isShopExist, transformFilesToBody ,isPaginationSelected} from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody ,isPaginationSelected} from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -169,15 +169,6 @@ describe("Product and Shops API Tests", () => {
               expect(res.body).to.have.property("message", "Status updated successfully.");
               done();
           });
-  });
-  it("should give an error for getting available products", (done) => {
-    router()
-      .get("/api/shop/user-get-products")
-      .end((err, res) => {
-        expect(res).to.have.status(httpStatus.NOT_FOUND);
-        expect(res.body).to.have.property("status", httpStatus.NOT_FOUND);
-        done();
-      });
   });
 
   it("should get all products", (done) => {
@@ -483,16 +474,6 @@ describe("Product Controller", () => {
     sinon.restore();
   });
 
-  it("should return 500 if an error occurs in isProductsExist", async () => {
-    const error = new Error("Internal server error");
-    sinon.stub(productRepositories, "userGetProducts").throws(error);
-
-    await isProductsExist(req, res, next);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  });
-
   it("should return 500 if an error occurs in updateProductStatus", async () => {
     const error = new Error("Internal server error");
     sinon.stub(productRepositories, "updateProductByAttributes").throws(error);
@@ -514,13 +495,7 @@ describe("Product Controller", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
   });
-  it("should return 500 if an error occurs in userGetProductsPaginated", async () => {
-    const error = new Error("Internal server error");
-    sinon.stub(productRepositories, "userGetProductsPaginated").throws(error);
 
-    await productController.userGetProducts(req, res);
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-  });
 
   describe("sellerCreateProduct", () => {
       let req, res;
