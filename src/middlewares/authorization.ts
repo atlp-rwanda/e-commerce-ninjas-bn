@@ -41,16 +41,17 @@ export const userAuthorization = function (roles: string[]) {
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
       }
 
-      if (!roles.includes(user.role)) {
-        res
-          .status(httpStatus.UNAUTHORIZED)
-          .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
-      }
-
       if (user.status !== "enabled") {
         return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
+      }
+
+      if (!roles.includes(user.role)) {
+        res
+          .status(httpStatus.UNAUTHORIZED)
+          .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
+          return;
       }
 
       req.user = user;

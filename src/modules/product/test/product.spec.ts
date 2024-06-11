@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request,Response,NextFunction } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
@@ -8,7 +9,7 @@ import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { credential, isProductExist, isShopExist, transformFilesToBody } from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody ,isPaginated} from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -34,7 +35,6 @@ describe("Product and Shops API Tests", () => {
         done(err);
       })
   });
-
   describe("POST /api/shop/seller-create-shop", () => {
 
     it("should give an error", (done) => {
@@ -119,6 +119,18 @@ describe("Product and Shops API Tests", () => {
           done();
         });
     });
+
+    it("should get available products successfully", (done) => {
+      router()
+        .get("/api/shop/user-get-products")
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("status", httpStatus.OK);
+          done();
+        });
+    });
+
+   
 
   it("should update a product successfully", (done) => {
    router()
@@ -431,6 +443,60 @@ describe("Product Middleware", () => {
 
 describe("Product Controller", () => {
 
+  let token: string;
+
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({ email: "seller3@gmail.com", password: "Password@123" })
+      .end((err, res) => {
+        token = res.body.data.token;
+        done(err);
+      });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  let req: any, res: any, next: any;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return 500 if an error occurs in updateProductStatus", async () => {
+    const error = new Error("Internal server error");
+    sinon.stub(productRepositories, "updateProductByAttributes").throws(error);
+
+    req.body = { status: "available" };
+    req.params = { id: "123" };
+
+    await productController.updateProductStatus(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  });
+
+  it("should return 500 if an error occurs in userGetAvailableProducts", async () => {
+    const error = new Error("Internal server error");
+    sinon.stub(productRepositories, "userGetProducts").throws(error);
+
+    await productController.userGetProducts(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+
   describe("sellerCreateProduct", () => {
       let req, res;
 
@@ -626,35 +692,65 @@ it("should return an error if the password is invalid", (done)=>{
 })
 })
 
-describe("credential middleware", () => {
-  let req, res, next;
+
+describe("isPaginated middleware", () => {
+  let req: Partial<ExtendRequest>;
+  let res: Partial<Response>;
+  let nextCalled: boolean;
 
   beforeEach(() => {
     req = {
-      body: {},
-      user: null
+      query: {},
+      pagination: {
+        limit: undefined,
+        page: undefined,
+        offset: undefined
+      }
     };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
-    };
-    next = sinon.spy();
+    res = {};
+    nextCalled = false;
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
+  const next: NextFunction = () => {
+    nextCalled = true;
+  };
 
-  it("should handle errors and respond with 500", async () => {
-    req.user = { id: "userId" } as usersAttributes;
-    sinon.stub(authRepositories, "findUserByAttributes").rejects(new Error("Unexpected error"));
+  it("should set limit and page parameters if provided in the request query", () => {
+    req.query.limit = "10";
+    req.query.page = "1";
 
-    await credential(req as ExtendRequest, res as any, next);
+    isPaginated(req as Request, res as Response, next);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
+    expect(req.pagination).to.deep.equal({
+      limit: 10,
+      page: 1,
+      offset: 0
     });
+    expect(nextCalled).to.be.true; 
+  });
+
+  it("should set limit and page as undefined if not provided in the request query", () => {
+    isPaginated(req as Request, res as Response, next);
+
+    expect(req.pagination).to.deep.equal({
+      limit: undefined,
+      page: undefined,
+      offset: undefined
+    });
+    expect(nextCalled).to.be.true;
+  });
+
+  it("should calculate offset if both limit and page are provided in the request query", () => {
+    req.query.limit = "10";
+    req.query.page = "2";
+
+    isPaginated(req as Request, res as Response, next);
+
+    expect(req.pagination).to.deep.equal({
+      limit: 10,
+      page: 2,
+      offset: 10
+    });
+    expect(nextCalled).to.be.true; 
   });
 });
