@@ -383,7 +383,7 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 }
 
 
-const isPaginationSelected = (req: any, res: Response, next: NextFunction) => {
+const isPaginated = (req: any, res: Response, next: NextFunction) => {
   const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
   const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
 
@@ -407,5 +407,5 @@ export {
   isSessionExist, verifyUser, isGoogleEnabled,
   isUserEnabled, isUserVerified, isSellerShopExist,
   verifyOtp,
-  isPaginationSelected
+  isPaginated
 };

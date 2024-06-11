@@ -9,7 +9,7 @@ import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { credential, isProductExist, isShopExist, transformFilesToBody ,isPaginationSelected} from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody ,isPaginated} from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -693,7 +693,7 @@ it("should return an error if the password is invalid", (done)=>{
 })
 
 
-describe("isPaginationSelected middleware", () => {
+describe("isPaginated middleware", () => {
   let req: Partial<ExtendRequest>;
   let res: Partial<Response>;
   let nextCalled: boolean;
@@ -719,7 +719,7 @@ describe("isPaginationSelected middleware", () => {
     req.query.limit = "10";
     req.query.page = "1";
 
-    isPaginationSelected(req as Request, res as Response, next);
+    isPaginated(req as Request, res as Response, next);
 
     expect(req.pagination).to.deep.equal({
       limit: 10,
@@ -730,7 +730,7 @@ describe("isPaginationSelected middleware", () => {
   });
 
   it("should set limit and page as undefined if not provided in the request query", () => {
-    isPaginationSelected(req as Request, res as Response, next);
+    isPaginated(req as Request, res as Response, next);
 
     expect(req.pagination).to.deep.equal({
       limit: undefined,
@@ -744,7 +744,7 @@ describe("isPaginationSelected middleware", () => {
     req.query.limit = "10";
     req.query.page = "2";
 
-    isPaginationSelected(req as Request, res as Response, next);
+    isPaginated(req as Request, res as Response, next);
 
     expect(req.pagination).to.deep.equal({
       limit: 10,

@@ -8,7 +8,7 @@ import {
   isShopExist,
   transformFilesToBody,
   isSellerShopExist,
-  isPaginationSelected
+  isPaginated
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -64,9 +64,9 @@ router.put(
   validation(statusSchema),
   productController.updateProductStatus
 );
-router.get("/seller-get-products",userAuthorization(["seller"]),isSellerShopExist,isPaginationSelected,productController.sellerGetProducts
+router.get("/seller-get-products",userAuthorization(["seller"]),isSellerShopExist,isPaginated,productController.sellerGetProducts
 );
 
-router.get("/user-get-products",isPaginationSelected, productController.userGetProducts);
+router.get("/user-get-products",isPaginated, productController.userGetProducts);
 
 export default router;
