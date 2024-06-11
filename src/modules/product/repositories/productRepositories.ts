@@ -5,6 +5,7 @@ import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
 import Order from "../../../databases/models/orders";
 import CartProduct from "../../../databases/models/cartProducts";
+import Cart from "../../../databases/models/cart";
 
 const createProduct = async (body: any) => {
   return await Products.create(body);
@@ -106,6 +107,16 @@ const findProductByIdAndShopId = async (id: string, shopId: string) => {
   return await Products.findOne({ where: { id, shopId } });
 };
 
+const getCartByUserId = async (userId: string) => {
+  return await Cart.findAll({ where: { userId, status: 'pending' } })
+}
+
+const getCartProductsByCartId = async (cartId: string) => {
+  return await CartProduct.findAll({
+    where: { cartId }
+  });
+}
+
 export default {
   createProduct,
   updateProduct,
@@ -121,4 +132,6 @@ export default {
   updateProductByAttributes,
   markProducts,
   sellerGetProducts,
+  getCartByUserId,
+  getCartProductsByCartId
 };

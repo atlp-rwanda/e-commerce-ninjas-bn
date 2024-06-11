@@ -381,4 +381,11 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
   if (req.user.isGoogleAccount) return res.status(httpStatus.UNAUTHORIZED).json({ status: httpStatus.UNAUTHORIZED, message: "This is google account, please login with google" })
   return next();
 }
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser, isGoogleEnabled, isUserEnabled, isUserVerified, isSellerShopExist, verifyOtp };
+
+const hasAnyCart = async (req: any, res: Response, next: NextFunction) => {
+  const carts = await productRepositories.getCartByUserId(req.user.id);
+  if(carts.length < 1) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  return next();
+}
+
+export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser, isGoogleEnabled, isUserEnabled, isUserVerified, isSellerShopExist, verifyOtp, hasAnyCart };

@@ -204,6 +204,61 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
   }
 };
 
+const buyerGetCart = async (req: ExtendRequest, res: Response) => {
+  try {
+    const carts = await productRepositories.getCartByUserId(req.user.id);
+
+    if (carts.length < 1) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No cart found for this user.",
+      });
+    }
+
+    const cart = carts[0];
+    const cartProducts = await productRepositories.getCartProductsByCartId(cart.id);
+    
+    let cartTotal = 0;
+
+    const productsDetails = await Promise.all(
+      cartProducts.map(async (cartProduct) => {
+        const product = await productRepositories.findProductById(cartProduct.productId);
+        const totalPrice = cartProduct.quantity * product.price;
+        cartTotal += totalPrice;
+
+        return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.images[0], // Assuming the first image is the main image
+          quantity: cartProduct.quantity,
+          totalPrice: totalPrice,
+        };
+      })
+    );
+
+    res.status(httpStatus.OK).json({
+      message: "Cart retrieved successfully.",
+      data: {
+        cart: {
+          id: cart.id,
+          userId: cart.userId,
+          status: cart.status,
+          createdAt: cart.createdAt,
+          updatedAt: cart.updatedAt,
+          products: productsDetails,
+          total: cartTotal,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+
 export default {
   sellerCreateProduct,
   sellerCreateShop,
@@ -212,4 +267,5 @@ export default {
   sellerGetStatistics,
   updateProductStatus,
   sellerGetProducts,
+  buyerGetCart
 };
