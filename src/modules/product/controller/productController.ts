@@ -153,11 +153,16 @@ const updateProductStatus = async (req: ExtendRequest, res: Response) => {
 
 const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
+    const { limit, page, offset } = req.pagination
     await productRepositories.markProducts(req.shop.id);
-    const products = await productRepositories.sellerGetProducts(req.shop.id);
+    const products = await productRepositories.sellerGetProducts(req.shop.id,limit,offset);
+    const totalPages = Math.ceil(products.count / limit);
+    const nextPage = page && page < totalPages ? page + 1 : undefined;
+    const previousPage = page && page > 1 ? page - 1 : undefined;
     res.status(httpStatus.OK).json({
       message: "All products fetched successfully.",
-      products,
+      previousPage,currentPage:page,nextPage,
+      data: products.rows,
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -206,8 +211,12 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
 
 const userGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
-    const products = await productRepositories.userGetProducts();
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, data: { products: products } });
+    const { limit, page, offset } = req.pagination
+    const products = await productRepositories.userGetProductsPaginated(limit, offset);
+    const totalPages = Math.ceil(products.count / limit);
+    const nextPage = page && page < totalPages ? page + 1 : undefined;
+    const previousPage = page && page > 1 ? page - 1 : undefined;
+    return res.status(httpStatus.OK).json({ status: httpStatus.OK, nextPage,currentPage: page, previousPage, data: products.rows });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }

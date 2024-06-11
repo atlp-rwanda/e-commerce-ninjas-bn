@@ -2144,6 +2144,28 @@
         "tags": ["Seller Routes"],
         "summary": "A seller should be able to get all products",
         "description": "This endpoint allows a seller to get all products",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Page number"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -2232,13 +2254,23 @@
         "parameters": [
           {
             "in": "query",
-            "name": "category",
+            "name": "limit",
             "required": false,
             "schema": {
-              "type": "string",
-              "example": "Fashion"
+              "type": "number",
+              "example": "1"
             },
-            "description": "Products by category"
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Page number"
           }
         ],
         "responses": {

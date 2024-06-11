@@ -86,8 +86,9 @@ const markProducts = async (shopId: string) => {
   );
 };
 
-const sellerGetProducts = async (shopId: string) => {
-  return await Products.findAll({ where: { shopId } });
+const sellerGetProducts = async (shopId: string,limit:number,offset:number) => {
+  const {rows,count}=await Products.findAndCountAll({ where: { shopId } ,limit,offset});
+  return {rows,count}
 };
 
 const updateProduct = async (
@@ -119,6 +120,19 @@ const getAvailableProductsByAttributes = async (key, value) => {
       }
   })
 }
+const userGetProductsPaginated = async(limit,offset)=> {
+  const {rows,count} = await Products.findAndCountAll({
+      where: {
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      },
+      limit: limit,
+      offset: offset
+  });
+  return {rows,count}
+}
 
 const userGetProducts = async () => {
   return await Products.findAll({
@@ -147,5 +161,5 @@ export default {
   markProducts,
   sellerGetProducts,
   getAvailableProductsByAttributes,
-  userGetProducts
+  userGetProducts,userGetProductsPaginated
 };
