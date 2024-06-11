@@ -16,24 +16,24 @@ import { sendEmail } from "../services/sendEmail";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = schema.validate(req.body, { abortEarly: false });
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { error } = schema.validate(req.body, { abortEarly: false });
 
-      if (error) {
-        throw new Error(
-          error.details
-            .map((detail) => detail.message.replace(/"/g, ""))
-            .join(", ")
-        );
+        if (error) {
+          throw new Error(
+            error.details
+              .map((detail) => detail.message.replace(/"/g, ""))
+              .join(", ")
+          );
+        }
+        return next();
+      } catch (error) {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ status: httpStatus.BAD_REQUEST, message: error.message });
       }
-      return next();
-    } catch (error) {
-      res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
-    }
-  };
+    };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -158,7 +158,7 @@ const verifyUserCredentials = async (req: ExtendRequest, res: Response, next: Ne
       return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Email or Password" });
     }
     if (user.is2FAEnabled) {
-      const {otp,expirationTime} = generateOTP();
+      const { otp, expirationTime } = generateOTP();
       const device: any = req.headers["user-device"] || null;
 
       const session = {
@@ -321,7 +321,7 @@ const transformFilesToBody = (
   next();
 };
 
-const verifyOtp = async (req:ExtendRequest, res:Response, next:NextFunction) => {
+const verifyOtp = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
     const user = await authRepositories.findUserByAttributes("id", req.params.id);
     if (!user) {
@@ -388,4 +388,30 @@ const hasAnyCart = async (req: any, res: Response, next: NextFunction) => {
   return next();
 }
 
-export { validation, isUserExist, isAccountVerified, verifyUserCredentials, isUsersExist, isProductExist, isShopExist, transformFilesToBody, credential, isSessionExist, verifyUser, isGoogleEnabled, isUserEnabled, isUserVerified, isSellerShopExist, verifyOtp, hasAnyCart };
+const isPaginated = (req: any, res: Response, next: NextFunction) => {
+  const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
+  const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+
+  req.pagination = {
+    limit,
+    page,
+    offset: limit && page ? (page - 1) * limit : undefined,
+  };
+
+  next();
+};
+
+
+export {
+  validation,
+  isUserExist,
+  isAccountVerified,
+  verifyUserCredentials, isUsersExist,
+  isProductExist, isShopExist,
+  transformFilesToBody, credential,
+  isSessionExist, verifyUser, isGoogleEnabled,
+  isUserEnabled, isUserVerified, isSellerShopExist,
+  verifyOtp,
+  isPaginated,
+  hasAnyCart
+};

@@ -87,8 +87,9 @@ const markProducts = async (shopId: string) => {
   );
 };
 
-const sellerGetProducts = async (shopId: string) => {
-  return await Products.findAll({ where: { shopId } });
+const sellerGetProducts = async (shopId: string,limit:number,offset:number) => {
+  const {rows,count}=await Products.findAndCountAll({ where: { shopId } ,limit,offset});
+  return {rows,count}
 };
 
 const updateProduct = async (
@@ -117,6 +118,34 @@ const getCartProductsByCartId = async (cartId: string) => {
   });
 }
 
+const currentDate = new Date();
+
+const getAvailableProductsByAttributes = async (key, value) => {
+  return await Products.findAll({
+      where: {
+          [key]: value,
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      }
+  })
+}
+const userGetProducts = async(limit,offset)=> {
+  const {rows,count} = await Products.findAndCountAll({
+      where: {
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      },
+      limit: limit,
+      offset: offset
+  });
+  return {rows,count}
+}
+
+
 export default {
   createProduct,
   updateProduct,
@@ -132,6 +161,8 @@ export default {
   updateProductByAttributes,
   markProducts,
   sellerGetProducts,
+  getAvailableProductsByAttributes,
+  userGetProducts,
   getCartByUserId,
   getCartProductsByCartId
 };

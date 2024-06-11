@@ -15,6 +15,11 @@ export interface ExtendRequest extends Request {
   files: Express.Multer.File[];
   user?: user;
   shop?: Shops;
+  pagination?: {
+    limit: number;
+    page: number;
+    offset: number;
+  };
 }
 
 export interface IProduct {

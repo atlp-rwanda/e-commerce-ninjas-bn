@@ -712,7 +712,7 @@
       }
     },
     "/api/auth/reset-password/{token}": {
-      "post": {
+      "put": {
         "summary": "Reset password",
         "description": "Resets the user's password using the provided token and new password.",
         "tags": [
@@ -2148,6 +2148,28 @@
         "tags": ["Seller Routes"],
         "summary": "A seller should be able to get all products",
         "description": "This endpoint allows a seller to get all products",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Page number"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -2215,6 +2237,84 @@
                     "status": {
                       "type": "integer"
                     },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shop/user-get-products": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "A buyer should be able to view products",
+        "description": "This endpoint allow a buyer to view all products available",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "1"
+            },
+            "description": "Page number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
                     "error": {
                       "type": "string"
                     }

@@ -28,6 +28,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Verification Email Endpoint
 - Resend verification Endpoint
 - Login Endpoint
+- Verify OTP Endpoint
+- 2FA Endpoint
 - login vie google Endpoint
 - Forget Password Endpoint
 - Reset Password Endpoint
@@ -46,6 +48,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Seller get statistics Endpoint
 - Seller update product status Endpoint
 - Seller get products Endpoint
+- User get product Endpoint
+- Buyer get cart Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -56,24 +60,28 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 3   | GET    | /api/auth/verify-email/:token              | 200 OK      | public  | Verifying email                     |
 | 4   | POST   | /api/auth/send-verify-email                | 200 OK      | public  | Resend verification email           |
 | 5   | POST   | /api/auth/login                            | 200 OK      | public  | Login with Email and Password       |
-| 6   | POST   | /api/auth/google                           | 200 OK      | public  | Login Via google account            |
-| 7   | POST   | /api/auth/logout                           | 200 OK      | private | Logout user                         |
-| 8   | POST   | /api/auth/forget-password                  | 200 OK      | public  | Forget Password                     |
-| 9   | POST   | /api/auth/reset-password/:token            | 200 OK      | public  | Reset Password                      |
-| 10  | PUT    | /api/user/user-update-profile              | 200 OK      | private | Update User Profile Endpoint        |
-| 11  | GET    | /api/user/user-get-profile                 | 200 OK      | private | Get User Profile Endpoint           |
+| 6   | POST   | /api/auth/verify-otp/:id                            | 200 OK      | public  | Verify OTP                 |
+| 7   | PUT    | /api/auth/enable-2f                           | 200 OK      | private  | 2FA Endpoint                    |
+| 8   | POST   | /api/auth/google                           | 200 OK      | public  | Login Via google account            |
+| 9   | POST   | /api/auth/logout                           | 200 OK      | private | Logout user                         |
+| 10   | POST   | /api/auth/forget-password                  | 200 OK      | public  | Forget Password                     |
+| 11   | PUT    | /api/auth/reset-password/:token            | 200 OK      | public  | Reset Password                      |
 | 12  | GET    | /api/user/change-password                  | 200 OK      | private | User Update password                |
-| 13  | PUT    | /api/user/admin-update-user-status/:id     | 200 OK      | private | Admin Update Status Endpoint        |
-| 14  | PUT    | /api/user/admin-update-role/:id            | 200 OK      | private | Admin Update role Endpoint          |
-| 15  | GET    | /api/user/admin-get-users                  | 200 OK      | private | Admin get all users Endpoint        |
-| 16  | GET    | /api/user/admin-get-user/:id               | 200 OK      | private | Admin get one user Endpoint         |
-| 17  | POST   | /api/shop/seller-create-shop               | 201 OK      | private | Create shop for products            |
-| 18  | POST   | /api/shop/seller-create-product            | 201 OK      | private | create product in shop              |
-| 19  | PUT    | /api/shop/seller-update-product/:id        | 200 OK      | private | update product in shop              |
-| 20  | DELETE | /api/shop/delete-product/:id               | 200 OK      | private | Delete Item in Collection           |
-| 21  | POST   | /api/shop/seller-statistics                | 200 OK      | private | Get seller statistics per timeframe |
-| 22  | PUT    | /api/shop/seller-update-product-status/:id | 200 OK      | private | Seller update product status        |
-| 23  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
+| 13  | PUT    | /api/user/user-update-profile              | 200 OK      | private | Update User Profile Endpoint        |
+| 14  | GET    | /api/user/user-get-profile                 | 200 OK      | private | Get User Profile Endpoint           |
+| 15  | PUT    | /api/user/admin-update-user-status/:id     | 200 OK      | private | Admin Update Status Endpoint        |
+| 16  | PUT    | /api/user/admin-update-role/:id            | 200 OK      | private | Admin Update role Endpoint          |
+| 17  | GET    | /api/user/admin-get-users                  | 200 OK      | private | Admin get all users Endpoint        |
+| 18  | GET    | /api/user/admin-get-user/:id               | 200 OK      | private | Admin get one user Endpoint         |
+| 19  | POST   | /api/shop/seller-create-shop               | 201 OK      | private | Create shop for products            |
+| 20  | POST   | /api/shop/seller-create-product            | 201 OK      | private | create product in shop              |
+| 21  | PUT    | /api/shop/seller-update-product/:id        | 200 OK      | private | update product in shop              |
+| 22  | DELETE | /api/shop/delete-product/:id               | 200 OK      | private | Delete Item in Collection           |
+| 23  | POST   | /api/shop/seller-statistics                | 200 OK      | private | Get seller statistics per timeframe |
+| 24  | PUT    | /api/shop/seller-update-product-status/:id | 200 OK      | private | Seller update product status        |
+| 25  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
+| 26  | GET    | /api/shop/user-get-products                | 200 OK      | public  | User get product                    |
+| 27  | GET    | /api/shop/buyer-get-cart                   | 200 OK      | private | Buyer get cart                      |
 
 ## INSTALLATION
 
