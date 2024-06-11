@@ -1,11 +1,9 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Shops from "../../../databases/models/shops";
-import Products from "../../../databases/models/products";
+import db from "../../../databases/models";
 import { Op } from "sequelize";
-import Order from "../../../databases/models/orders";
-import CartProduct from "../../../databases/models/cartProducts";
 
+const {Shops, Products, Order, CartProduct} = db
 const createProduct = async (body: any) => {
   return await Products.create(body);
 };
@@ -86,8 +84,9 @@ const markProducts = async (shopId: string) => {
   );
 };
 
-const sellerGetProducts = async (shopId: string) => {
-  return await Products.findAll({ where: { shopId } });
+const sellerGetProducts = async (shopId: string,limit:number,offset:number) => {
+  const {rows,count}=await Products.findAndCountAll({ where: { shopId } ,limit,offset});
+  return {rows,count}
 };
 
 const updateProduct = async (
@@ -106,6 +105,34 @@ const findProductByIdAndShopId = async (id: string, shopId: string) => {
   return await Products.findOne({ where: { id, shopId } });
 };
 
+const currentDate = new Date();
+
+const getAvailableProductsByAttributes = async (key, value) => {
+  return await Products.findAll({
+      where: {
+          [key]: value,
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      }
+  })
+}
+const userGetProducts = async(limit,offset)=> {
+  const {rows,count} = await Products.findAndCountAll({
+      where: {
+          status: "available",
+          expiryDate: {
+              [Op.gte]: currentDate
+          }
+      },
+      limit: limit,
+      offset: offset
+  });
+  return {rows,count}
+}
+
+
 export default {
   createProduct,
   updateProduct,
@@ -121,4 +148,6 @@ export default {
   updateProductByAttributes,
   markProducts,
   sellerGetProducts,
+  getAvailableProductsByAttributes,
+  userGetProducts
 };

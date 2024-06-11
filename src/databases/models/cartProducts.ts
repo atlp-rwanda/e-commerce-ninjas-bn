@@ -28,7 +28,7 @@ class CartProduct extends Model<CartProductAttributes> implements CartProductAtt
 
     static associate(models: any) {
         CartProduct.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
-        CartProduct.belongsTo(models.Product, { foreignKey: "productId", as: "products" });
+        CartProduct.belongsTo(models.Products, { foreignKey: "productId", as: "products" });
     }
 }
 

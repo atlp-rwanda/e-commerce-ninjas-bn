@@ -14,7 +14,7 @@ export interface SessionAttributes {
     updatedAt: Date;
 }
 
-class Session extends Model<SessionAttributes> implements SessionAttributes {
+class Sessions extends Model<SessionAttributes> implements SessionAttributes {
     declare id: string;
     declare userId: string;
     declare device: string;
@@ -25,11 +25,11 @@ class Session extends Model<SessionAttributes> implements SessionAttributes {
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Session.belongsTo(models.Users, { foreignKey: "userId", as: "user" });
+        Sessions.belongsTo(models.Users, { foreignKey: "userId", as: "user" });
     }
 }
 
-Session.init(
+Sessions.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -78,4 +78,4 @@ Session.init(
     }
 );
 
-export default Session;
+export default Sessions;

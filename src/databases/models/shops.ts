@@ -11,7 +11,7 @@ class Shops extends Model<IShops> {
     declare description?: string;
 
     static associate(models: any) {
-        Shops.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
+        Shops.belongsTo(models.Users, { foreignKey: "userId", as: "seller" });
         Shops.hasMany(models.Products, { foreignKey: "shopId", as: "products" });
     }
 }

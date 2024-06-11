@@ -52,8 +52,9 @@ class Users
   declare updatedAt?: Date;
 
   static associate(models: any) {
-    Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
-    Users.hasOne(models.Shops, { foreignKey: "sellerId", as: "shops" });
+    Users.hasOne(models.Sessions, { foreignKey: "userId", as: "session" });
+    Users.hasOne(models.Shops, { foreignKey: "userId", as: "shops" });
+    Users.hasMany(models.Chats,{ foreignKey: "userId", as: "chats" });
   }
 }
 

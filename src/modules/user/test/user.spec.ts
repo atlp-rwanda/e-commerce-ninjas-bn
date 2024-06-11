@@ -2,7 +2,7 @@
 /* eslint quotes: "off" */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import chai, { expect } from "chai";
+import chai, { expect, should } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
@@ -13,8 +13,12 @@ import { isUsersExist } from "../../../middlewares/validation";
 import path from "path";
 import fs from "fs";
 import userRepositories from "../repository/userRepositories";
+import initializeSocket from "../../../services/sockets";
+import request from 'supertest';
+import express from 'express';
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
+const { io } = initializeSocket(app)
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -242,7 +246,7 @@ describe("Admin update User roles", () => {
   it("Should notify if no role is specified", (done) => {
 
     router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .set("authorization", `Bearer ${token}`)
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
@@ -254,7 +258,7 @@ describe("Admin update User roles", () => {
 
   it("Should notify if the role is other than ['admin', 'buyer', 'seller']", async () => {
     const response = await router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "Hello" })
       .set("authorization", `Bearer ${token}`);
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
@@ -266,7 +270,7 @@ describe("Admin update User roles", () => {
 
   it("Should return error when invalid Id is passed", async () => {
     const response = await router()
-      .put("/api/user/admin-update-role/invalid-id")
+      .put("/api/user/admin-update-user-role/invalid-id")
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`);
 
@@ -279,7 +283,7 @@ describe("Admin update User roles", () => {
 
   it("Should update User and return updated user", (done) => {
     router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "seller" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -295,7 +299,7 @@ describe("Admin update User roles", () => {
 
   it("Should return 404 if user is not found", (done) => {
     router()
-      .put(`/api/user/admin-update-role/${unknownId}`)
+      .put(`/api/user/admin-update-user-role/${unknownId}`)
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -312,7 +316,7 @@ describe("Admin update User roles", () => {
       .throws(new Error("Internal server error"));
 
     router()
-      .put(`/api/user/admin-update-role/${userIdd}`)
+      .put(`/api/user/admin-update-user-role/${userIdd}`)
       .send({ role: "admin" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
@@ -373,7 +377,7 @@ describe("Middleware: isUsersExist", () => {
   });
 });
 
-describe("Admin Controllers", () => {
+describe.only("Admin Controllers", () => {
   let token: string = null;
   let userId: string;
   before((done) => {
@@ -381,7 +385,7 @@ describe("Admin Controllers", () => {
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "NewPassword!123",
+        password: "Password@123",
       })
       .end((error, response) => {
         token = response.body.data.token;
@@ -475,5 +479,51 @@ describe("Admin Controllers", () => {
         );
         done(error);
       });
+  });
+  describe('Chat Controller', () => {
+    afterEach(() => {
+      sinon.restore();
+    })
+    it('should handle errors', (done) => {
+      const mockError = new Error('Database error');
+      sinon.stub(userRepositories, 'postChatMessage').rejects(mockError);
+  
+      router()
+        .post('/api/user/chats')
+        .send({ message: 'Hello' })
+        .set("authorization", `Bearer ${token}`)
+        .end((error, response) => {
+          expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+          expect(response.body).to.deep.equal({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            error: mockError.message,
+          })
+          done(error);
+        });
+    });
+    it('should return a list of chats', (done) => {
+      router()
+        .get('/api/user/chats')
+        .set("authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(httpStatus.OK);
+          done(err);
+        });
+    });
+    it('should handle errors', (done) => {
+      const mockError = new Error('Internal server error');
+      sinon.stub(userRepositories, 'getAllChats').rejects(mockError);
+      router()
+        .get('/api/user/chats')
+        .set("authorization", `Bearer ${token}`)
+        .end((err, response) => {
+          expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+          expect(response.body).to.deep.equal({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            error: mockError.message,
+          });
+          done(err);
+        })
+    });
   });
 });

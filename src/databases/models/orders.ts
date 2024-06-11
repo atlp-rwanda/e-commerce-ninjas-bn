@@ -25,7 +25,7 @@ class Order extends Model<OrderAttributes> implements OrderAttributes {
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Order.belongsTo(models.Shop, { foreignKey: "shopId", as: "shop" });
+        Order.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
         Order.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
     }
 }

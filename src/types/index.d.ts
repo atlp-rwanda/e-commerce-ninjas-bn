@@ -15,6 +15,11 @@ export interface ExtendRequest extends Request {
   files: Express.Multer.File[];
   user?: user;
   shop?: Shops;
+  pagination?: {
+    limit: number;
+    page: number;
+    offset: number;
+  };
 }
 
 export interface IProduct {
@@ -55,4 +60,12 @@ export interface userInfo {
   lastName: string;
   picture: string;
   accToken: string;
+}
+
+export interface chatsAttributes {
+  id: string;
+  userId?: string;
+  message?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

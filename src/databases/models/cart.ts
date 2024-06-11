@@ -19,7 +19,7 @@ class Cart extends Model<CartAttributes> implements CartAttributes {
     declare updatedAt: Date;
 
     static associate(models: any) {
-        Cart.belongsTo(models.User, { foreignKey: "userId", as: "buyer" });
+        Cart.belongsTo(models.Users, { foreignKey: "userId", as: "buyer" });
     }
 }
 

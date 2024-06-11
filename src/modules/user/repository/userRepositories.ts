@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Users from "../../../databases/models/users";
+import db from "../../../databases/models";
+const { Users, Chats } = db
 
 const getAllUsers = async () => {
   return Users.findAll();
@@ -11,4 +12,30 @@ const updateUserProfile = async (user: any, id: string) => {
   return updateUser;
 };
 
-export default { getAllUsers, updateUserProfile };
+const getAllChats = async () => {
+  const chats = await Chats.findAll({
+    include: [
+      {
+        model: Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email"]
+      }
+    ]
+  });
+  return chats;
+}
+
+const postChatMessage = async (userId: string, message: any) => {
+ const chat = await Chats.create({ userId, message });
+  return await Chats.findOne({
+    where: { id: chat.id },
+    include: [
+      {
+        model: Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email"]
+      }
+    ]
+  });
+}
+export default { getAllUsers, updateUserProfile, getAllChats, postChatMessage };
