@@ -161,7 +161,7 @@ const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
     const previousPage = page && page > 1 ? page - 1 : undefined;
     res.status(httpStatus.OK).json({
       message: "All products fetched successfully.",
-      previousPage,currentPage:page,nextPage,
+      previousPage,currentPage:page,nextPage,limit,
       data: products.rows,
     });
   } catch (error) {
@@ -216,7 +216,7 @@ const userGetProducts = async (req: ExtendRequest, res: Response) => {
     const totalPages = Math.ceil(products.count / limit);
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, nextPage,currentPage: page, previousPage, data: products.rows });
+    return res.status(httpStatus.OK).json({ status: httpStatus.OK, nextPage,currentPage: page, previousPage,limit, data: products.rows });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
