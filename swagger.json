@@ -2332,7 +2332,7 @@
           "Buyer Routes"
         ],
         "summary": "Buyer view cart",
-        "description": "View Buyer's cart products.",
+        "description": "View Buyer's cart details & products",
         "security": [
           {
             "bearerAuth": []
