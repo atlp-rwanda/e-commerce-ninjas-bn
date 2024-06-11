@@ -108,7 +108,7 @@ const findProductByIdAndShopId = async (id: string, shopId: string) => {
 };
 
 const getCartByUserId = async (userId: string) => {
-  return await Cart.findAll({ where: { userId, status: 'pending' } })
+  return await Cart.findOne({ where: { userId, status: "pending" } })
 }
 
 const getCartProductsByCartId = async (cartId: string) => {

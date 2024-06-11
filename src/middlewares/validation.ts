@@ -383,8 +383,8 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 }
 
 const hasAnyCart = async (req: any, res: Response, next: NextFunction) => {
-  const carts = await productRepositories.getCartByUserId(req.user.id);
-  if(carts.length < 1) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  const cart = await productRepositories.getCartByUserId(req.user.id);
+  if(!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
   return next();
 }
 
