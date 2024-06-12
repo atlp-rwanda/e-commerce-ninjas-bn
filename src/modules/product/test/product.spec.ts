@@ -7,7 +7,7 @@ import app from "../../..";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { isProductExist, isShopExist, transformFilesToBody, isPaginated } from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody, isPaginated } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -751,3 +751,47 @@ describe("isPaginated middleware", () => {
     expect(nextCalled).to.be.true;
   });
 });
+
+
+
+
+
+
+describe("User filter products", () => {
+  it("Should reject if no search parameter provided", (done) => {
+    router().get("/api/shop/user-search-products")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.an("object")
+        expect(response.body).to.have.property("message")
+        done(error)
+      })
+  })
+  it("Should reject if one of Min and Max Price Provided without other", (done) => {
+    router().get("/api/shop/user-search-products?minprice=1")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.an("object")
+        expect(response.body).to.have.property("message")
+        done(error)
+      })
+  })
+  it("Should reject if min price is greater than max price", (done) => {
+    router().get("/api/shop/user-search-products?minprice=10&maxprice=1")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
+        expect(response.body).to.be.an("object")
+        expect(response.body).to.have.property("message")
+        done(error)
+      })
+  })
+  it("Should return data if data are provided", (done) => {
+    router().get("/api/shop/user-search-products?minprice=10&maxprice=100&category=Cosmetics&name=l")
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.be.an("object")
+        expect(response.body).to.have.property("data")
+        done(error)
+      })
+  })
+})

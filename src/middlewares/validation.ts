@@ -13,6 +13,11 @@ import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
 import { ExtendRequest } from "../types";
 import { sendEmail } from "../services/sendEmail";
+import { Op } from "sequelize";
+
+
+const currentDate = new Date();
+
 import cartRepositories from "../modules/cart/repositories/cartRepositories";
 import db from "../databases/models";
 
@@ -404,16 +409,61 @@ const isPaginated = (req: any, res: Response, next: NextFunction) => {
 };
 
 
+const isSearchFiltered = (req: ExtendRequest, res: Response, next: NextFunction) => {
+  const name = req.query.name || undefined;
+  const category = req.query.category || undefined;
+  const description = req.query.description || undefined;
+  const minPrice = req.query.minprice || undefined;
+  const maxPrice = req.query.maxprice|| undefined;
+
+  if (!minPrice && !maxPrice && !category && !description && !name) {
+    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Search parameters required" });
+  }
+  if ((minPrice && !maxPrice) || (!minPrice && maxPrice)) {
+    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Minimum and maximum price are required" });
+  }
+  if (Number(minPrice)> Number(maxPrice)) {
+    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Minimum Price must be less than Maximum price" });
+  }
+
+  const searchQuery: any = { where: {} };
+
+  if (name !== undefined) searchQuery.where.name = { [Op.iLike]: `%${name}%` };
+  if (category !== undefined) searchQuery.where.category = category;
+  if (description !== undefined) searchQuery.where.description = { [Op.iLike]: `%${description}%` };
+  if (minPrice !== undefined && maxPrice !== undefined) {
+    searchQuery.where.price = {
+      [Op.gte]: minPrice,
+      [Op.lte]: maxPrice
+    };
+  }
+  searchQuery.where.status = "available";
+  searchQuery.where.expiryDate = {
+    [Op.gte]: currentDate
+  };
+
+  req.searchQuery = searchQuery;
+  return next();
+};
+
 export {
   validation,
   isUserExist,
   isAccountVerified,
-  verifyUserCredentials, isUsersExist,
-  isProductExist, isShopExist,
-  transformFilesToBody, credential,
-  isSessionExist, verifyUser, isGoogleEnabled,
-  isUserEnabled, isUserVerified, isSellerShopExist,
+  verifyUserCredentials,
+  isUsersExist,
+  isProductExist,
+  isShopExist,
+  transformFilesToBody,
+  credential,
+  isSessionExist,
+  verifyUser,
+  isGoogleEnabled,
+  isUserEnabled,
+  isUserVerified,
+  isSellerShopExist,
   verifyOtp,
   isPaginated,
+  isSearchFiltered,
   isCartExist
 };
