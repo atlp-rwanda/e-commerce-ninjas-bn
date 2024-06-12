@@ -65,8 +65,7 @@ router.put(
   validation(statusSchema),
   productController.updateProductStatus
 );
-router.get("/seller-get-products", userAuthorization(["seller"]), isSellerShopExist, isPaginated, productController.sellerGetProducts
-);
+router.get("/seller-get-products", userAuthorization(["seller"]), isSellerShopExist, isPaginated, productController.sellerGetProducts);
 
 router.get("/user-get-products", isPaginated, productController.userGetProducts);
 
