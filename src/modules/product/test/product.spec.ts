@@ -4,12 +4,10 @@ import { Request, Response, NextFunction } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../..";
-import Users, { usersAttributes } from "../../../databases/models/users";
-import { Op } from "sequelize";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { credential, isProductExist, isShopExist, transformFilesToBody, isPaginated } from "../../../middlewares/validation";
+import { isProductExist, isShopExist, transformFilesToBody, isPaginated } from "../../../middlewares/validation";
 import sinon from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -233,57 +231,6 @@ describe("Product and Shops API Tests", () => {
       fileFilter(req, file, cb);
     });
   });
-})
-
-describe("Buyer Test cases", () => {
-  let buyerWithCartToken: string;
-  let buyerWithoutCartToken: string;
-  before((done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "buyer@gmail.com",
-        password: "Password@123"
-      })
-      .end((error, response) => {
-        if (error) done(error);
-        buyerWithCartToken = response.body.data.token;
-        router()
-          .post("/api/auth/login")
-          .send({
-            email: "buyer2@gmail.com",
-            password: "Password@123"
-          })
-          .end((err, res) => {
-            if (err) done(err);
-            buyerWithoutCartToken = res.body.data.token;
-            done();
-          })
-      })
-  })
-  it("Should return 'No cart' when buyer have no cart.", (done) => {
-    router().get("/api/shop/buyer-get-cart")
-      .set("Authorization", `Bearer ${buyerWithoutCartToken}`)
-      .end((err, response) => {
-        if (err) done(err);
-        expect(response).to.have.status(httpStatus.NOT_FOUND);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("message").that.is.a("string");
-        done()
-      })
-  })
-  it("Should return Cart details when buyer have pending cart.", (done) => {
-    router().get("/api/shop/buyer-get-cart")
-      .set("Authorization", `Bearer ${buyerWithCartToken}`)
-      .end((err, response) => {
-        if (err) done(err);
-        expect(response).to.have.status(httpStatus.OK);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("message").that.is.a("string");
-        expect(response.body).to.have.property("data").that.is.an("object");
-        done()
-      })
-  })
 })
 
 describe("transformFilesToBody Middleware", () => {
@@ -742,7 +689,6 @@ describe("Change Password Test Cases", () => {
       })
   })
 })
-
 
 describe("isPaginated middleware", () => {
   let req: Partial<ExtendRequest>;

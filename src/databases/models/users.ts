@@ -4,6 +4,8 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { hashPassword } from "../../helpers";
+import Sessions from "./sessions";
+import Shops from "./shops";
 export interface usersAttributes {
   id: string;
   firstName?: string;
@@ -51,9 +53,9 @@ class Users
   declare createdAt?: Date;
   declare updatedAt?: Date;
 
-  static associate(models: any) {
-    Users.hasOne(models.Session, { foreignKey: "userId", as: "session" });
-    Users.hasOne(models.Shops, { foreignKey: "sellerId", as: "shops" });
+  static associate() {
+    Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions" });
+    Users.hasOne(Shops, { foreignKey: "userId", as: "shops" });
   }
 }
 

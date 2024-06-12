@@ -209,45 +209,6 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
   }
 };
 
-const buyerGetCart = async (req: ExtendRequest, res: Response) => {
-  try {
-    const cart = await productRepositories.getCartByUserId(req.user.id);
-    const cartProducts = await productRepositories.getCartProductsByCartId(cart.id);
-    let cartTotal = 0;
-    
-    const productsDetails = await Promise.all(
-      cartProducts.map(async (cartProduct) => {
-        const product = await productRepositories.findProductById(cartProduct.productId);
-        const totalPrice = cartProduct.quantity * product.price;
-        cartTotal += totalPrice;
-
-        return {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          image: product.images[0],
-          quantity: cartProduct.quantity,
-          totalPrice: totalPrice,
-        };
-      })
-    );
-
-    return res.status(httpStatus.OK).json({
-      message: "Cart retrieved successfully.",
-      data: {
-        cartId: cart.id,
-        products: productsDetails,
-        total: cartTotal,
-      },
-    });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
-  }
-};
-
 const userGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
     const { limit, page, offset } = req.pagination
@@ -269,6 +230,5 @@ export default {
   sellerGetStatistics,
   updateProductStatus,
   sellerGetProducts,
-  userGetProducts,
-  buyerGetCart
+  userGetProducts
 };

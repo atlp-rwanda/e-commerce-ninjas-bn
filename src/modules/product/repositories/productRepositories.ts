@@ -1,18 +1,13 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Shops from "../../../databases/models/shops";
-import Products from "../../../databases/models/products";
 import { Op } from "sequelize";
-import Order from "../../../databases/models/orders";
-import CartProduct from "../../../databases/models/cartProducts";
-import Cart from "../../../databases/models/cart";
-
+import db from "../../../databases/models";
 const createProduct = async (body: any) => {
-  return await Products.create(body);
+  return await db.Products.create(body);
 };
 
 const createShop = async (body: any) => {
-  return await Shops.create(body);
+  return await db.Shops.create(body);
 };
 
 const findShopByAttributes = async (model: any, key: string, value: any) => {
@@ -37,7 +32,7 @@ const findByModelsAndAttributes = async (
 };
 
 const deleteProductById = async (productId: string): Promise<void> => {
-  await Products.destroy({ where: { id: productId } });
+  await db.Products.destroy({ where: { id: productId } });
 };
 
 const getOrdersPerTimeframe = async (
@@ -45,21 +40,21 @@ const getOrdersPerTimeframe = async (
   startDate: Date,
   endDate: Date
 ) => {
-  return await Order.findAll({
+  return await db.Orders.findAll({
     where: { orderDate: { [Op.gte]: startDate, [Op.lte]: endDate }, shopId },
   });
 };
 
 const getOrderProductsByCartId = async (cartId: string) => {
-  return await CartProduct.findAll({ where: { cartId } });
+  return await db.CartProducts.findAll({ where: { cartId } });
 };
 
 const findProductById = async (id: string) => {
-  return await Products.findOne({ where: { id } });
+  return await db.Products.findOne({ where: { id } });
 };
 
 const findShopByUserId = async (userId: string) => {
-  return await Shops.findOne({ where: { userId } });
+  return await db.Shops.findOne({ where: { userId } });
 };
 
 const updateProductByAttributes = async (
@@ -68,28 +63,28 @@ const updateProductByAttributes = async (
   whereKey: string,
   whereValue: any
 ) => {
-  await Products.update(
+  await db.Products.update(
     { [updatedKey]: updatedValue },
     { where: { [whereKey]: whereValue } }
   );
-  return await findShopByAttributes(Products, whereKey, whereValue);
+  return await findShopByAttributes(db.Products, whereKey, whereValue);
 };
 
 const markProducts = async (shopId: string) => {
   const now = new Date();
-  await Products.update(
+  await db.Products.update(
     { expired: true },
     { where: { shopId, expiryDate: { [Op.lt]: now }, expired: false } }
   );
-  await Products.update(
+  await db.Products.update(
     { status: "unavailable" },
     { where: { shopId, quantity: { [Op.lte]: 1 } } }
   );
 };
 
-const sellerGetProducts = async (shopId: string,limit:number,offset:number) => {
-  const {rows,count}=await Products.findAndCountAll({ where: { shopId } ,limit,offset});
-  return {rows,count}
+const sellerGetProducts = async (shopId: string, limit: number, offset: number) => {
+  const { rows, count } = await db.Products.findAndCountAll({ where: { shopId }, limit, offset });
+  return { rows, count }
 };
 
 const updateProduct = async (
@@ -105,44 +100,34 @@ const updateProduct = async (
 };
 
 const findProductByIdAndShopId = async (id: string, shopId: string) => {
-  return await Products.findOne({ where: { id, shopId } });
+  return await db.Products.findOne({ where: { id, shopId } });
 };
-
-const getCartByUserId = async (userId: string) => {
-  return await Cart.findOne({ where: { userId, status: "pending" } })
-}
-
-const getCartProductsByCartId = async (cartId: string) => {
-  return await CartProduct.findAll({
-    where: { cartId }
-  });
-}
 
 const currentDate = new Date();
 
 const getAvailableProductsByAttributes = async (key, value) => {
-  return await Products.findAll({
-      where: {
-          [key]: value,
-          status: "available",
-          expiryDate: {
-              [Op.gte]: currentDate
-          }
+  return await db.Products.findAll({
+    where: {
+      [key]: value,
+      status: "available",
+      expiryDate: {
+        [Op.gte]: currentDate
       }
+    }
   })
 }
-const userGetProducts = async(limit,offset)=> {
-  const {rows,count} = await Products.findAndCountAll({
-      where: {
-          status: "available",
-          expiryDate: {
-              [Op.gte]: currentDate
-          }
-      },
-      limit: limit,
-      offset: offset
+const userGetProducts = async (limit, offset) => {
+  const { rows, count } = await db.Products.findAndCountAll({
+    where: {
+      status: "available",
+      expiryDate: {
+        [Op.gte]: currentDate
+      }
+    },
+    limit: limit,
+    offset: offset
   });
-  return {rows,count}
+  return { rows, count }
 }
 
 
@@ -162,7 +147,5 @@ export default {
   markProducts,
   sellerGetProducts,
   getAvailableProductsByAttributes,
-  userGetProducts,
-  getCartByUserId,
-  getCartProductsByCartId
+  userGetProducts
 };

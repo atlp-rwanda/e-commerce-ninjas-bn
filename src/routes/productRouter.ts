@@ -9,7 +9,6 @@ import {
   transformFilesToBody,
   isSellerShopExist,
   isPaginated,
-  hasAnyCart,
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -69,12 +68,5 @@ router.get("/seller-get-products",userAuthorization(["seller"]),isSellerShopExis
 );
 
 router.get("/user-get-products",isPaginated, productController.userGetProducts);
-
-router.get(
-  "/buyer-get-cart",
-  userAuthorization(["buyer"]),
-  hasAnyCart,
-  productController.buyerGetCart
-);
 
 export default router;

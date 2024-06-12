@@ -2326,7 +2326,7 @@
         }
       }
     },
-    "/api/shop/buyer-get-cart": {
+    "/api/cart/buyer-get-cart": {
       "get": {
         "tags": [
           "Buyer Routes"
