@@ -50,55 +50,60 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Seller get products Endpoint
 - User get product Endpoint
 - User search products Endpoint
-- buyer  get specific product Endpoint
+- buyer get specific product Endpoint
 - seller get specific product Endpoint
 - Buyer get carts Endpoint
 - Buyer get single cart Endpoint
+- Buyer clear carts Endpoint
+- Buyer clear cart Endpoint
+- Buyer clear cart product Endpoint
 - Buyer create-update cart Endpoint
-- buyer add  product to wish list Endpoint
+- buyer add product to wish list Endpoint
 - buyer delete products from wishlist
-- buyer delete product from wishlist 
+- buyer delete product from wishlist
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
-| No  | VERBS  | ENDPOINTS                                  | STATUS      | ACCESS  | DESCRIPTION                         |
-| --- | ------ | ------------------------------------------ | ----------- | ------- | ----------------------------------- |
-| 1   | GET    | /                                          | 200 OK      | public  | Show welcome message                |
-| 2   | POST   | /api/auth/register                         | 201 CREATED | public  | create user account                 |
-| 3   | GET    | /api/auth/verify-email/:token              | 200 OK      | public  | Verifying email                     |
-| 4   | POST   | /api/auth/send-verify-email                | 200 OK      | public  | Resend verification email           |
-| 5   | POST   | /api/auth/login                            | 200 OK      | public  | Login with Email and Password       |
-| 6   | POST   | /api/auth/verify-otp/:id                   | 200 OK      | public  | Verify OTP                          |
-| 7   | PUT    | /api/auth/enable-2f                        | 200 OK      | private | 2FA Endpoint                        |
-| 8   | POST   | /api/auth/google                           | 200 OK      | public  | Login Via google account            |
-| 9   | POST   | /api/auth/logout                           | 200 OK      | private | Logout user                         |
-| 10  | POST   | /api/auth/forget-password                  | 200 OK      | public  | Forget Password                     |
-| 11  | PUT    | /api/auth/reset-password/:token            | 200 OK      | public  | Reset Password                      |
-| 12  | GET    | /api/user/change-password                  | 200 OK      | private | User Update password                |
-| 13  | PUT    | /api/user/user-update-profile              | 200 OK      | private | Update User Profile Endpoint        |
-| 14  | GET    | /api/user/user-get-profile                 | 200 OK      | private | Get User Profile Endpoint           |
-| 15  | PUT    | /api/user/admin-update-user-status/:id     | 200 OK      | private | Admin Update Status Endpoint        |
-| 16  | PUT    | /api/user/admin-update-role/:id            | 200 OK      | private | Admin Update role Endpoint          |
-| 17  | GET    | /api/user/admin-get-users                  | 200 OK      | private | Admin get all users Endpoint        |
-| 18  | GET    | /api/user/admin-get-user/:id               | 200 OK      | private | Admin get one user Endpoint         |
-| 19  | POST   | /api/shop/seller-create-shop               | 201 OK      | private | Create shop for products            |
-| 20  | POST   | /api/shop/seller-create-product            | 201 OK      | private | create product in shop              |
-| 21  | PUT    | /api/shop/seller-update-product/:id        | 200 OK      | private | update product in shop              |
-| 22  | DELETE | /api/shop/delete-product/:id               | 200 OK      | private | Delete Item in Collection           |
-| 23  | POST   | /api/shop/seller-statistics                | 200 OK      | private | Get seller statistics per timeframe |
-| 24  | PUT    | /api/shop/seller-update-product-status/:id | 200 OK      | private | Seller update product status        |
-| 25  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
-| 26  | GET    | /api/shop/user-get-products                | 200 OK      | public  | User get product                    |
-| 27  | GET    | /api/shop/user-search-products             | 200 OK      | public  | User search products                |
-| 28  | GET    | /api/shop/user-get-product/:id             | 200 OK      | public  | Buyer get  specific products        |
-| 29  | GET    | /api/shop/seller-get-product/:id           | 200 OK      | private | seller get  specific products       |
-| 30  | GET    | /api/cart/buyer-get-carts                  | 200 OK      | private | Buyer get carts                     |
-| 31  | GET    | /api/cart/buyer-get-cart/:cartId           | 200 OK      | private | Buyer get cart details              |
-| 32  | POST   | /api/cart/create-update-cart               | 201 CREATED | private | Buyer create-update cart            |
-| 33  | POST   | /api/shop/buyer-add-product-wishList/:id   | 200 OK      | private | buyer add product to wish list      |
-| 34  | delete | /api/shop/delete-whishlist-products        | 200 OK      | private | buyer delete products from wishlist |
-| 35  | delete | /api/shop/delete-whishlist-product:id      | 200 OK      | private | buyer delete product from wishlist  |
-
+| No  | VERBS  | ENDPOINTS                                             | STATUS      | ACCESS  | DESCRIPTION                         |
+| --- | ------ | ----------------------------------------------------- | ----------- | ------- | ----------------------------------- |
+| 1   | GET    | /                                                     | 200 OK      | public  | Show welcome message                |
+| 2   | POST   | /api/auth/register                                    | 201 CREATED | public  | create user account                 |
+| 3   | GET    | /api/auth/verify-email/:token                         | 200 OK      | public  | Verifying email                     |
+| 4   | POST   | /api/auth/send-verify-email                           | 200 OK      | public  | Resend verification email           |
+| 5   | POST   | /api/auth/login                                       | 200 OK      | public  | Login with Email and Password       |
+| 6   | POST   | /api/auth/verify-otp/:id                              | 200 OK      | public  | Verify OTP                          |
+| 7   | PUT    | /api/auth/enable-2f                                   | 200 OK      | private | 2FA Endpoint                        |
+| 8   | POST   | /api/auth/google                                      | 200 OK      | public  | Login Via google account            |
+| 9   | POST   | /api/auth/logout                                      | 200 OK      | private | Logout user                         |
+| 10  | POST   | /api/auth/forget-password                             | 200 OK      | public  | Forget Password                     |
+| 11  | PUT    | /api/auth/reset-password/:token                       | 200 OK      | public  | Reset Password                      |
+| 12  | GET    | /api/user/change-password                             | 200 OK      | private | User Update password                |
+| 13  | PUT    | /api/user/user-update-profile                         | 200 OK      | private | Update User Profile Endpoint        |
+| 14  | GET    | /api/user/user-get-profile                            | 200 OK      | private | Get User Profile Endpoint           |
+| 15  | PUT    | /api/user/admin-update-user-status/:id                | 200 OK      | private | Admin Update Status Endpoint        |
+| 16  | PUT    | /api/user/admin-update-role/:id                       | 200 OK      | private | Admin Update role Endpoint          |
+| 17  | GET    | /api/user/admin-get-users                             | 200 OK      | private | Admin get all users Endpoint        |
+| 18  | GET    | /api/user/admin-get-user/:id                          | 200 OK      | private | Admin get one user Endpoint         |
+| 19  | POST   | /api/shop/seller-create-shop                          | 201 OK      | private | Create shop for products            |
+| 20  | POST   | /api/shop/seller-create-product                       | 201 OK      | private | create product in shop              |
+| 21  | PUT    | /api/shop/seller-update-product/:id                   | 200 OK      | private | update product in shop              |
+| 22  | DELETE | /api/shop/delete-product/:id                          | 200 OK      | private | Delete Item in Collection           |
+| 23  | POST   | /api/shop/seller-statistics                           | 200 OK      | private | Get seller statistics per timeframe |
+| 24  | PUT    | /api/shop/seller-update-product-status/:id            | 200 OK      | private | Seller update product status        |
+| 25  | GET    | /api/shop/seller-get-products                         | 200 OK      | private | Seller get products                 |
+| 26  | GET    | /api/shop/user-get-products                           | 200 OK      | public  | User get product                    |
+| 27  | GET    | /api/shop/user-search-products                        | 200 OK      | public  | User search products                |
+| 28  | GET    | /api/shop/user-get-product/:id                        | 200 OK      | public  | Buyer get specific products         |
+| 29  | GET    | /api/shop/seller-get-product/:id                      | 200 OK      | private | seller get specific products        |
+| 30  | GET    | /api/cart/buyer-get-carts                             | 200 OK      | private | Buyer get carts                     |
+| 31  | GET    | /api/cart/buyer-get-cart/:cartId                      | 200 OK      | private | Buyer get cart details              |
+| 32  | DELETE | /api/cart/buyer-clear-cart-product/:cartId/:productId | 200 OK      | private | Buyer clear product in cart         |
+| 33  | DELETE | /api/cart/buyer-clear-carts                           | 200 OK      | private | Buyer clear carts                   |
+| 34  | DELETE | /api/cart/buyer-clear-cart/:id                        | 200 OK      | private | Buyer clear cart                    |
+| 35  | POST   | /api/cart/create-update-cart                          | 201 CREATED | private | Buyer create-update cart            |
+| 36  | POST   | /api/shop/buyer-add-product-wishList/:id              | 200 OK      | private | buyer add product to wish list      |
+| 37  | delete | /api/shop/delete-whishlist-products                   | 200 OK      | private | buyer delete products from wishlist |
+| 38  | delete | /api/shop/delete-whishlist-product:id                 | 200 OK      | private | buyer delete product from wishlist  |
 
 ## INSTALLATION
 

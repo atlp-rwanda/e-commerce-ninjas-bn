@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from "express";
@@ -7,7 +8,9 @@ import productRepositories from "../../product/repositories/productRepositories"
 import { ExtendRequest, IExtendedCartProduct } from "../../../types";
 import { cartStatusEnum } from "../../../enums";
 
-const getProductDetails = (cartProducts: IExtendedCartProduct[]): { productsDetails: any[]; cartTotal: number } => {
+const getProductDetails = (
+  cartProducts: IExtendedCartProduct[]
+): { productsDetails: any[]; cartTotal: number } => {
   let cartTotal = 0;
 
   const productsDetails = cartProducts.map((cartProduct) => {
@@ -30,8 +33,13 @@ const getProductDetails = (cartProducts: IExtendedCartProduct[]): { productsDeta
 
 const buyerGetCart = async (req: ExtendRequest, res: Response) => {
   try {
-    const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
-    const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+    const cart = await cartRepositories.getCartByUserIdAndCartId(
+      req.user.id,
+      req.params.cartId
+    );
+    const cartProducts = await cartRepositories.getCartProductsByCartId(
+      cart.id
+    );
     const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
     return res.status(httpStatus.OK).json({
@@ -56,7 +64,9 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
 
     const allCartsDetails = await Promise.all(
       carts.map(async (cart) => {
-        const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+        const cartProducts = await cartRepositories.getCartProductsByCartId(
+          cart.id
+        );
         const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
         return {
@@ -108,7 +118,9 @@ const updateCartProduct = async (cartProduct, quantity, res) => {
     totalPrice: cartProduct.products.price * quantity,
   });
 
-  const cartProducts = await cartRepositories.getCartProductsByCartId(cartProduct.cartId);
+  const cartProducts = await cartRepositories.getCartProductsByCartId(
+    cartProduct.cartId
+  );
   const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
   return res.status(httpStatus.OK).json({
@@ -128,9 +140,11 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
     const carts = await cartRepositories.getCartsByUserId(userId);
 
     for (const cart of carts) {
-      const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+      const cartProducts = await cartRepositories.getCartProductsByCartId(
+        cart.id
+      );
       for (const cartProduct of cartProducts) {
-        const product = (cartProduct as IExtendedCartProduct).products
+        const product = (cartProduct as IExtendedCartProduct).products;
         if (product.id === productId) {
           return updateCartProduct(cartProduct, quantity, res);
         }
@@ -140,7 +154,9 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
     if (carts.length > 0) {
       const productToAdd = await productRepositories.findProductById(productId);
       for (const cart of carts) {
-        const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+        const cartProducts = await cartRepositories.getCartProductsByCartId(
+          cart.id
+        );
         for (const cartProduct of cartProducts) {
           const product = (cartProduct as IExtendedCartProduct).products;
           if (product.shopId === productToAdd.shopId) {
@@ -150,7 +166,10 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
       }
     }
 
-    const createdCart = await cartRepositories.addCart({ userId, status: cartStatusEnum.PENDING });
+    const createdCart = await cartRepositories.addCart({
+      userId,
+      status: cartStatusEnum.PENDING,
+    });
     const product = await productRepositories.findProductById(productId);
     await cartRepositories.addCartProduct({
       cartId: createdCart.id,
@@ -161,7 +180,9 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
       totalPrice: product.price * quantity,
     });
 
-    const cartProducts = await cartRepositories.getCartProductsByCartId(createdCart.id);
+    const cartProducts = await cartRepositories.getCartProductsByCartId(
+      createdCart.id
+    );
     const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
     res.status(httpStatus.CREATED).json({
@@ -169,8 +190,8 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
       data: {
         cartId: createdCart.id,
         products: productsDetails,
-        total: cartTotal
-      }
+        total: cartTotal,
+      },
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -180,8 +201,64 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
   }
 };
 
-export default {
+const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    await cartRepositories.deleteCartProduct(
+      req.cart.id,
+      req.product.productId
+    );
+    res
+      .status(httpStatus.OK)
+      .json({ message: "Cart product cleared successfully" });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+const buyerClearCart = async (req: ExtendRequest, res: Response) => {
+  try {
+    await cartRepositories.deleteAllCartProducts(req.cart.id);
+
+    await cartRepositories.deleteCartById(req.cart.id);
+
+    res
+      .status(httpStatus.OK)
+      .json({ message: "All products in cart cleared successfully!" });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+const buyerClearCarts = async (req: ExtendRequest, res: Response) => {
+  try {
+    for (const cart of req.carts) {
+      await cartRepositories.deleteAllCartProducts(cart.id);
+    }
+
+    await cartRepositories.deleteAllUserCarts(req.user.id);
+
+    res
+      .status(httpStatus.OK)
+      .json({ message: "All carts cleared successfully!" });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+export {
   buyerGetCart,
   buyerGetCarts,
-  buyerCreateUpdateCart
+  buyerClearCart,
+  buyerClearCarts,
+  buyerCreateUpdateCart,
+  buyerClearCartProduct,
 };

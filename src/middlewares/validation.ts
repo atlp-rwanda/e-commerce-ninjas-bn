@@ -528,13 +528,23 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 };
 
 const isCartExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartsByUserId(req.user.id);
-  if (cart.length < 1)
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      message: "No cart found. Please create cart first.",
+  try {
+    const carts = await cartRepositories.getCartsByUserId(req.user.id);
+    if (!carts.length)
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No cart found. Please create cart first.",
+      });
+
+    req.carts = carts;
+
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
     });
-  return next();
+  }
 };
 
 const isProductIdExist = async (
@@ -542,26 +552,68 @@ const isProductIdExist = async (
   res: Response,
   next: NextFunction
 ) => {
-  const product = await productRepositories.findProductById(req.body.productId);
-  if (!product)
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      message: "No product with that ID.",
+  try {
+    const product = await productRepositories.findProductById(
+      req.body.productId
+    );
+    if (!product)
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No product with that ID.",
+      });
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
     });
-  return next();
+  }
 };
 
 const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartByUserIdAndCartId(
-    req.user.id,
-    req.params.cartId
-  );
-  if (!cart)
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      message: "Cart not found. Please add items to your cart.",
+  try {
+    const cart = await cartRepositories.getCartByUserIdAndCartId(
+      req.user.id,
+      req.params.cartId
+    );
+    if (!cart)
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "Cart not found. Please add items to your cart.",
+      });
+    req.cart = cart;
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
     });
-  return next();
+  }
+};
+
+const isCartProductExist = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const product = await cartRepositories.getProductByCartIdAndProductId(
+      req.cart.id,
+      req.params.productId
+    );
+    if (!product)
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "Product not found.",
+      });
+    req.product = product;
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
 };
 
 const isPaginated = (req: any, res: Response, next: NextFunction) => {
@@ -749,6 +801,7 @@ export {
   isCartIdExist,
   isProductIdExist,
   isCartExist,
+  isCartProductExist,
   isProductExistById,
   isProductExistToWishlist,
   isUserWishlistExist,

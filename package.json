@@ -88,6 +88,7 @@
     "passport-google-oauth2": "^0.2.0",
     "pg": "^8.11.5",
     "pg-hstore": "^2.3.4",
+    "rewire": "^7.0.0",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
