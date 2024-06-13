@@ -7,6 +7,7 @@ import SwaggerUi from "swagger-ui-express";
 import Document from "../swagger.json";
 import router from "./routes";
 import httpStatus from "http-status";
+import "./helpers/updatePassword.cronjob";
 
 dotenv.config();
 const app: Express = express();
