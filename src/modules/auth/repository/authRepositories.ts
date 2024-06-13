@@ -1,16 +1,14 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import db from "../../../databases/models";
 import { Op } from "sequelize";
-
-const {Users, Sessions} = db
+import db from "../../../databases/models";
 
 const createUser = async (body: any) => { 
-  return await Users.create({ ...body, role:"buyer" });
+  return await db.Users.create({ ...body, role:"buyer" });
 };
 
 const findUserByAttributes = async (key: string, value: any) => {
-  return await Users.findOne({ where: { [key]: value } });
+  return await db.Users.findOne({ where: { [key]: value } });
 };
 
 const updateUserByAttributes = async (
@@ -19,7 +17,7 @@ const updateUserByAttributes = async (
   whereKey: string,
   whereValue: any
 ) => {
-  await Users.update(
+  await db.Users.update(
     { [updatedKey]: updatedValue },
     { where: { [whereKey]: whereValue } }
   );
@@ -27,19 +25,19 @@ const updateUserByAttributes = async (
 };
 
 const createSession = async (body: any) => {
-  return await Sessions.create(body);
+  return await db.Sessions.create(body);
 };
 
 const findSessionByAttributes = async( key:string, value: any ) => {
-    return await Sessions.findOne({ where: { [key]:value } });
+    return await db.Sessions.findOne({ where: { [key]:value } });
 }
 
 const findSessionByUserIdAndToken = async (userId: string, token: string) => {
-  return await Sessions.findOne({ where: { token, userId } });
+  return await db.Sessions.findOne({ where: { token, userId } });
 };
 
 const findTokenByDeviceIdAndUserId = async (device: string, userId: string)=>{
-    const session = await Sessions.findOne({ where: {device, userId} });
+    const session = await db.Sessions.findOne({ where: {device, userId} });
     return session.token;
 }
 
@@ -49,13 +47,13 @@ const destroySessionByAttribute = async (
   key: string,
   value: string
 ) => {
-  return await Sessions.destroy({
+  return await db.Sessions.destroy({
     where: { [destroyKey]: destroyValue, [key]: value },
   });
 };
 
 const findSessionByUserIdOtp = async (userId:string, otp:string) => {
-    return await Sessions.findOne({
+    return await db.Sessions.findOne({
       where: {
         userId: userId,
         otp: otp,

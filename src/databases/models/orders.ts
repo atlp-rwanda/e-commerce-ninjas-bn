@@ -1,7 +1,10 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
+import Shops from "./shops";
+import Carts from "./carts";
 
 export interface OrderAttributes {
     id: string;
@@ -14,7 +17,7 @@ export interface OrderAttributes {
     updatedAt: Date;
 }
 
-class Order extends Model<OrderAttributes> implements OrderAttributes {
+class Orders extends Model<OrderAttributes> implements OrderAttributes {
     declare id: string;
     declare cartId: string;
     declare shopId: string;
@@ -24,13 +27,13 @@ class Order extends Model<OrderAttributes> implements OrderAttributes {
     declare createdAt: Date;
     declare updatedAt: Date;
 
-    static associate(models: any) {
-        Order.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
-        Order.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
+    static associate() {
+        Orders.belongsTo(Shops, { foreignKey: "shopId", as: "shops" });
+        Orders.belongsTo(Carts, { foreignKey: "cartId", as: "carts" });
     }
 }
 
-Order.init(
+Orders.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -76,8 +79,8 @@ Order.init(
         sequelize: sequelizeConnection,
         tableName: "orders",
         timestamps: true,
-        modelName: "Order"
+        modelName: "Orders"
     }
 );
 
-export default Order;
+export default Orders;

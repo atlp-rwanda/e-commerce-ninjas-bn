@@ -1,7 +1,11 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
+import Carts from "./carts";
+import Products from "./products";
+
 
 export interface CartProductAttributes {
     id: string;
@@ -15,7 +19,7 @@ export interface CartProductAttributes {
     updatedAt: Date;
 }
 
-class CartProduct extends Model<CartProductAttributes> implements CartProductAttributes {
+class CartProducts extends Model<CartProductAttributes> implements CartProductAttributes {
     declare id: string;
     declare productId: string;
     declare cartId: string;
@@ -26,13 +30,13 @@ class CartProduct extends Model<CartProductAttributes> implements CartProductAtt
     declare createdAt: Date;
     declare updatedAt: Date;
 
-    static associate(models: any) {
-        CartProduct.belongsTo(models.Cart, { foreignKey: "cartId", as: "cart" });
-        CartProduct.belongsTo(models.Products, { foreignKey: "productId", as: "products" });
+    static associate() {
+        CartProducts.belongsTo(Carts, { foreignKey: "cartId", as: "carts" });
+        CartProducts.belongsTo(Products, { foreignKey: "productId", as: "products" });
     }
 }
 
-CartProduct.init(
+CartProducts.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -79,10 +83,10 @@ CartProduct.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "cart_products",
+        tableName: "cartProducts",
         timestamps: true,
-        modelName: "CartProduct"
+        modelName: "CartProducts"
     }
 );
 
-export default CartProduct;
+export default CartProducts;

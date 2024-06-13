@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { CartProductAttributes } from "../databases/models/cartProducts";
 
 export interface IToken {
   userId: number;
@@ -68,4 +69,29 @@ export interface chatsAttributes {
   message?: string;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface chatsAttributes {
+  id: number;
+  userId: string;
+  message: string;
+  createdAt: Date;
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+export interface IExtendedCartProduct extends CartProductAttributes{
+  products?: IProduct;
+}
+
+export interface CustomSocket extends Socket {
+  user: UserAttributes
+}
+
+export interface JwtPayload extends usersAttributes {
+  iat?: number
+  exp?: number
 }

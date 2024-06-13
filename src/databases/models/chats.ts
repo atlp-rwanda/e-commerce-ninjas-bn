@@ -11,9 +11,13 @@ class Chats extends Model<chatsAttributes>
   declare message: string;
   declare createdAt?: Date;
   declare updatedAt?: Date;
+  user: any;
 
   static associate(models: any) {
-    Chats.belongsTo(models.Users, { foreignKey: "userId" ,as: "user" });
+    Chats.belongsTo(models.Users, {
+      foreignKey: "userId",
+      as: "user"
+    });
   }
 }
 

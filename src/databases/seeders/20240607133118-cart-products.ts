@@ -3,7 +3,7 @@ import { cartOneId, cartTwoId, orderOneId, orderProductFourId, orderProductThree
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
-    await queryInterface.bulkInsert("cart_products", [
+    await queryInterface.bulkInsert("cartProducts", [
       {
         id: orderOneId,
         productId: productOneId,
@@ -52,6 +52,6 @@ module.exports = {
   },
 
   async down(queryInterface: QueryInterface) {
-    await queryInterface.bulkDelete("cart_products", null, {});
+    await queryInterface.bulkDelete("cartProducts", null, {});
   }
 };

@@ -1,8 +1,10 @@
+/* eslint-disable no-shadow */
 /* eslint-disable comma-dangle */
 /* eslint quotes: "off" */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import chai, { expect, should } from "chai";
+import { Server, Socket, Namespace } from "socket.io";
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
@@ -13,12 +15,10 @@ import { isUsersExist } from "../../../middlewares/validation";
 import path from "path";
 import fs from "fs";
 import userRepositories from "../repository/userRepositories";
-import initializeSocket from "../../../services/sockets";
-import request from 'supertest';
-import express from 'express';
+import Chat from "../../../services/chat";
+import db from "../../../databases/models";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
-const { io } = initializeSocket(app)
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -377,7 +377,7 @@ describe("Middleware: isUsersExist", () => {
   });
 });
 
-describe.only("Admin Controllers", () => {
+describe("Admin Controllers", () => {
   let token: string = null;
   let userId: string;
   before((done) => {
@@ -385,7 +385,7 @@ describe.only("Admin Controllers", () => {
       .post("/api/auth/login")
       .send({
         email: "admin@gmail.com",
-        password: "Password@123",
+        password: "NewPassword!123",
       })
       .end((error, response) => {
         token = response.body.data.token;
@@ -479,51 +479,5 @@ describe.only("Admin Controllers", () => {
         );
         done(error);
       });
-  });
-  describe('Chat Controller', () => {
-    afterEach(() => {
-      sinon.restore();
-    })
-    it('should handle errors', (done) => {
-      const mockError = new Error('Database error');
-      sinon.stub(userRepositories, 'postChatMessage').rejects(mockError);
-  
-      router()
-        .post('/api/user/chats')
-        .send({ message: 'Hello' })
-        .set("authorization", `Bearer ${token}`)
-        .end((error, response) => {
-          expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(response.body).to.deep.equal({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            error: mockError.message,
-          })
-          done(error);
-        });
-    });
-    it('should return a list of chats', (done) => {
-      router()
-        .get('/api/user/chats')
-        .set("authorization", `Bearer ${token}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(httpStatus.OK);
-          done(err);
-        });
-    });
-    it('should handle errors', (done) => {
-      const mockError = new Error('Internal server error');
-      sinon.stub(userRepositories, 'getAllChats').rejects(mockError);
-      router()
-        .get('/api/user/chats')
-        .set("authorization", `Bearer ${token}`)
-        .end((err, response) => {
-          expect(response.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-          expect(response.body).to.deep.equal({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            error: mockError.message,
-          });
-          done(err);
-        })
-    });
   });
 });

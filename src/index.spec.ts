@@ -10,6 +10,8 @@ const { userAuthorization } = require("./middlewares/authorization");
 const httpStatus = require("http-status");
 import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
+import { Socket } from "socket.io";
+import { socketAuthMiddleware } from "./middlewares/authorization";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -160,5 +162,132 @@ describe("userAuthorization middleware", () => {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: "Unexpected error",
     });
+  });
+});
+
+
+describe("socketAuthMiddleware", () => {
+  let socket: Socket;
+  let next: sinon.SinonSpy;
+
+  beforeEach(() => {
+    socket = {
+      handshake: { auth: { token: "" } },
+      data: {},
+    } as unknown as Partial<Socket> as Socket;
+    next = sinon.spy();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should call next with an error if no token is provided", async () => {
+    socket.handshake.auth.token = "";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(next).to.have.been.calledOnce;
+    const error = next.getCall(0).args[0];
+    expect(error.message).to.equal("Authentication error");
+    expect(error.data.message).to.equal("No token provided");
+  });
+
+  it("should call next with an error if token is invalid", async () => {
+    sinon.stub(helpers, "decodeToken").resolves(null);
+
+    socket.handshake.auth.token = "invalidToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(next).to.have.been.calledOnce;
+    const error = next.getCall(0).args[0];
+    expect(error.message).to.equal("Authentication error");
+    expect(error.data.message).to.equal("Invalid token");
+  });
+
+  it("should call next with an error if session is not found", async () => {
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves(null);
+
+    socket.handshake.auth.token = "validToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(next).to.have.been.calledOnce;
+    const error = next.getCall(0).args[0];
+    expect(error.message).to.equal("Authentication error");
+    expect(error.data.message).to.equal("Session not found or expired");
+  });
+
+  it("should call next with an error if user is not found", async () => {
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
+
+    socket.handshake.auth.token = "validToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(next).to.have.been.calledOnce;
+    const error = next.getCall(0).args[0];
+    expect(error.message).to.equal("Authentication error");
+    expect(error.data.message).to.equal("User not found");
+  });
+
+  it("should attach user data to socket and call next if authentication is successful", async () => {
+    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" };
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+
+    socket.handshake.auth.token = "validToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(socket.data.user).to.deep.equal({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    });
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should call next with an error if an unexpected error occurs", async () => {
+    sinon.stub(helpers, "decodeToken").throws(new Error("Unexpected error"));
+
+    socket.handshake.auth.token = "validToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(next).to.have.been.calledOnce;
+    const error = next.getCall(0).args[0];
+    expect(error.message).to.equal("Internal server error");
+    expect(error.data.message).to.equal("Internal server error");
+  });
+
+  it("should initialize socket.data if it is undefined", async () => {
+    socket.data = undefined;
+
+    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" };
+    sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
+    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
+
+    socket.handshake.auth.token = "validToken";
+
+    await socketAuthMiddleware(socket, next);
+
+    expect(socket.data).to.not.be.undefined;
+    expect(socket.data.user).to.deep.equal({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    });
+    expect(next).to.have.been.calledOnce;
   });
 });

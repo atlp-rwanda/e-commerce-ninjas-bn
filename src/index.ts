@@ -7,18 +7,28 @@ import SwaggerUi from "swagger-ui-express";
 import Document from "../swagger.json";
 import router from "./routes";
 import httpStatus from "http-status";
-import initializeSocket from "./services/sockets";
-import { setSocketServer } from "./modules/user/controller/userControllers";
+import chat from "./services/chat";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
-const app: Express = express();
-const PORT = process.env.PORT;
-const { server,io } = initializeSocket(app);
 
+const app: Express = express();
+const PORT = process.env.PORT
+const server = createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+chat(io);
 app.use(express.json());
-app.use(morgan(process.env.NODE_EN));
+app.use(morgan(process.env.NODE_ENV));
 app.use(compression());
 app.use(cors());
+
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 app.use("/api", router);
 
@@ -28,8 +38,6 @@ app.get("**", (req: Request, res: Response) => {
     message: "Welcome to the e-Commerce Ninjas BackEnd."
   });
 });
-
-setSocketServer(io)
 server.listen(PORT, () => {
   console.log(`Server is running on the port ${PORT}`);
 });

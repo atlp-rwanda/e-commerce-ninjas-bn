@@ -16,7 +16,4 @@ import upload from "../helpers/multer";
   router.put("/user-update-profile", userAuthorization(["admin", "buyer", "seller"]), upload.single("profilePicture"), validation(userSchema), userControllers.updateUserProfile);
   router.put("/change-password", userAuthorization(["admin", "buyer", "seller"]), validation(changePasswordSchema), credential, userControllers.changePassword);
 
-  router.post("/chats",userAuthorization(["admin", "buyer","seller"]), userControllers.postChat);
-  router.get("/chats",userAuthorization(["admin", "buyer","seller"]), userControllers.getChats);
-
 export default router;

@@ -6,12 +6,7 @@ import httpStatus from "http-status";
 import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
-import { Server } from "socket.io"
-let io: Server;
 
-export const setSocketServer = (socketServer: Server) => {
-  io = socketServer;
-};
 const adminGetUsers = async (req: Request, res: Response) => {
   try {
     const user = await userRepositories.getAllUsers();
@@ -135,29 +130,6 @@ const changePassword = async (req: any, res: Response) => {
   }
 };
 
-const getChats = async (req: Request, res: Response) => {
-  try {
-    const chats = await userRepositories.getAllChats();
-    res.status(httpStatus.OK).json({
-      data: { chats: chats },
-    });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
-
-const postChat = async (req: Request, res: Response) => {
-  try {
-    const chat = await userRepositories.postChatMessage(req.user.id, req.body.message);
-    io.emit("chat message", chat);
-    console.log(chat);
-    return res.status(httpStatus.OK).json({
-      data: { chat }
-    });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
 export default {
   updateUserStatus,
   updateUserRole,
@@ -165,7 +137,5 @@ export default {
   adminGetUser,
   updateUserProfile,
   getUserDetails,
-  changePassword,
-  getChats,
-  postChat,
+  changePassword
 };
