@@ -31,3 +31,7 @@ export const orderProductFourId = uuidv4();
 
 export const wishListOneId = uuidv4();
 export const wishListTwoId = uuidv4();
+
+export const notificationOneId = uuidv4();
+export const notificationTwoId = uuidv4();
+export const notificationThreeId = uuidv4();

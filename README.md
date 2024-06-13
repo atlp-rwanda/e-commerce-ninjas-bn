@@ -63,6 +63,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - buyer delete product from wishlist
 - buyer view All products fromwishList Endpoint
 - buyer view single product fromwishList Endpoint
+- User get notifications Endpoint
+- User get notification Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -108,6 +110,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 38  | delete | /api/shop/delete-whishlist-product:id                 | 200 OK      | private | buyer delete product from wishlist  |
 | 39  | get    | /buyer-view-whishlist-product              | 200 ok      | private | buyer view All product from wishList|
 | 40  | get    | /api/shop/buyer-view-whishlist-product/{id}| 200 ok      | private | buyer view  product from wishList   |
+| 41  | GET    | /api/user/user-get-notifications           | 200 OK      | private | user get notifications              |
+| 42  | GET    | /api/user/user-get-notification/:id        | 200 OK      | private | user get notification               |
 
 ## INSTALLATION
 

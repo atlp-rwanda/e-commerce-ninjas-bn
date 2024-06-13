@@ -130,6 +130,36 @@ const changePassword = async (req: any, res: Response) => {
   }
 };
 
+const getAllNotifications = async ( req: Request, res: Response ) => {
+  try {
+    const notifications = await userRepositories.findNotificationsByuserId(req.user.id);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { notifications: notifications },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+const getSingleNotification = async ( req: Request, res: Response ) => {
+  try {
+    const notification = await userRepositories.findNotificationById(req.user.id, req.params.id);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { notification: notification },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -137,5 +167,7 @@ export default {
   adminGetUser,
   updateUserProfile,
   getUserDetails,
-  changePassword
+  changePassword,
+  getAllNotifications,
+  getSingleNotification
 };

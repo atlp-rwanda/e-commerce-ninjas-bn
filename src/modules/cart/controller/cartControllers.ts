@@ -7,6 +7,7 @@ import cartRepositories from "../repositories/cartRepositories";
 import productRepositories from "../../product/repositories/productRepositories";
 import { ExtendRequest, IExtendedCartProduct } from "../../../types";
 import { cartStatusEnum } from "../../../enums";
+import { eventEmitter } from "../../../helpers/notifications";
 
 const getProductDetails = (
   cartProducts: IExtendedCartProduct[]
@@ -258,7 +259,8 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
     const cart = req.cart
     let totalAmount = 0;
     cart.cartProducts.forEach(product => {
-      totalAmount += product.totalPrice; 
+      totalAmount += product.totalPrice;
+      eventEmitter.emit("productBought", product.products);
     });
 
     return res.status(httpStatus.OK).json({

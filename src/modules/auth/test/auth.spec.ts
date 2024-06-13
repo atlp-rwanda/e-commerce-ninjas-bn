@@ -918,6 +918,28 @@ describe("updateUser2FA", () => {
       });
   });
 
+  let cartId: string;
+  it("should get Buyer's all carts", (done) => {
+    router()
+      .get("/api/cart/buyer-get-carts")
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        cartId = res.body.data[0].cartId;
+        done();
+      });
+  });
+
+  it("should checkout the buyer cart ", (done) => {
+    router()
+      .get(`/api/cart/buyer-cart-checkout/${cartId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
+
   afterEach(() => {
     sinon.restore();
   });
