@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src\index.spec.ts
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable comma-dangle */
 import app from "./index";
