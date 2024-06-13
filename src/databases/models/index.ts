@@ -24,7 +24,6 @@ const db = {
 
 Object.values(db).forEach(model => {
   if (model.associate) {
-    // @ts-expect-error: Model association method expects a different type signature
     model.associate(db);
   }
 });
