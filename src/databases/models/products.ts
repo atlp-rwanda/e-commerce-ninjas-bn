@@ -4,11 +4,13 @@
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import Shop from "./shops";
+import Users from "./users";
 import CartProducts from "./cartProducts";
 import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
   declare id: string;
+  declare userId: string;
   declare shopId: string;
   declare name: string;
   declare description?: string;
@@ -26,6 +28,7 @@ class Products extends Model<IProduct> {
 
   static associate() {
     Products.belongsTo(Shop, { foreignKey: "shopId", as: "shops" });
+    Products.belongsTo(Users, { foreignKey: "userId", as: "user" });
     Products.hasMany(CartProducts, { foreignKey: "productId", as: "cartProducts" });
   }
 }
@@ -37,6 +40,15 @@ Products.init(
       primaryKey: true,
       autoIncrement: true,
       defaultValue: DataTypes.UUIDV4,
+    },
+    userId: {
+      allowNull: false,
+      type: DataTypes.UUID,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
     shopId: {
       allowNull: false,

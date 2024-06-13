@@ -6,10 +6,13 @@ import {
   productThreeId,
   shopOneId,
   shopTwoId,
+  userFourId,
+  userSevenId
 } from "../../types/uuid";
 
 const productOne = {
   id: productOneId,
+  userId: userFourId,
   shopId: shopOneId,
   name: "Lotion",
   description:
@@ -29,6 +32,7 @@ const productOne = {
 
 const productTwo = {
   id: productTwoId,
+  userId: userSevenId,
   shopId: shopTwoId,
   name: "Pizza",
   description:
@@ -48,6 +52,7 @@ const productTwo = {
 
 const productThree = {
   id: productThreeId,
+  userId: userSevenId,
   shopId: shopTwoId,
   name: "Fanta",
   description:
