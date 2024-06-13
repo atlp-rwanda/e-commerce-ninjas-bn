@@ -3,6 +3,8 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelizeConnection from "../config/db.config";
+import Shop from "./shops";
+import CartProducts from "./cartProducts";
 import { IProduct } from "../../types";
 
 class Products extends Model<IProduct> {
@@ -22,8 +24,9 @@ class Products extends Model<IProduct> {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  static associate(models: any) {
-    Products.belongsTo(models.Shops, { foreignKey: "shopId", as: "shop" });
+  static associate() {
+    Products.belongsTo(Shop, { foreignKey: "shopId", as: "shops" });
+    Products.hasMany(CartProducts, { foreignKey: "productId", as: "cartProducts" });
   }
 }
 

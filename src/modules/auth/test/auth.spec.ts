@@ -10,7 +10,7 @@ import app from "../../..";
 import { isSessionExist, isUserExist, verifyOtp, verifyUser, verifyUserCredentials } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
-import Session from "../../../databases/models/session";
+import Session from "../../../databases/models/sessions";
 import {
   sendEmail,
   transporter

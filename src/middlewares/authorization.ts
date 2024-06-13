@@ -5,7 +5,7 @@ import { usersAttributes } from "../databases/models/users";
 import authRepository from "../modules/auth/repository/authRepositories";
 import httpStatus from "http-status";
 import { decodeToken } from "../helpers";
-import Session from "../databases/models/session";
+import Session from "../databases/models/sessions";
 
 interface ExtendedRequest extends Request {
   user: usersAttributes;

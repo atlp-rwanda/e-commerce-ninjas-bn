@@ -13,6 +13,8 @@ import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
 import { ExtendRequest } from "../types";
 import { sendEmail } from "../services/sendEmail";
+import cartRepositories from "../modules/cart/repositories/cartRepositories";
+import db from "../databases/models";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
@@ -282,7 +284,7 @@ const credential = async (req: ExtendRequest, res: Response, next: NextFunction)
 
 const isShopExist = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const shop = await productRepositories.findShopByAttributes(Shops, "userId", req.user.id)
+    const shop = await productRepositories.findShopByAttributes(db.Shops, "userId", req.user.id)
     if (shop) {
       return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Already have a shop.", data: { shop: shop } });
     }
@@ -382,6 +384,11 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
   return next();
 }
 
+const isCartExist = async (req: any, res: Response, next: NextFunction) => {
+  const cart = await cartRepositories.getCartByUserId(req.user.id);
+  if(!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  return next();
+}
 
 const isPaginated = (req: any, res: Response, next: NextFunction) => {
   const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
@@ -407,5 +414,6 @@ export {
   isSessionExist, verifyUser, isGoogleEnabled,
   isUserEnabled, isUserVerified, isSellerShopExist,
   verifyOtp,
-  isPaginated
+  isPaginated,
+  isCartExist
 };

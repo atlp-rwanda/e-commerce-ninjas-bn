@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { CartProductAttributes } from "../databases/models/cartProducts";
 
 export interface IToken {
   userId: number;
@@ -60,4 +61,8 @@ export interface userInfo {
   lastName: string;
   picture: string;
   accToken: string;
+}
+
+export interface IExtendedCartProduct extends CartProductAttributes{
+  products?: IProduct;
 }

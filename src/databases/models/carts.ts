@@ -1,7 +1,10 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
+import CartProducts from "./cartProducts";
+import Users from "./users";
 
 export interface CartAttributes {
     id: string;
@@ -11,19 +14,20 @@ export interface CartAttributes {
     updatedAt: Date;
 }
 
-class Cart extends Model<CartAttributes> implements CartAttributes {
+class Carts extends Model<CartAttributes> implements CartAttributes {
     declare id: string;
     declare userId: string;
     declare status: string;
     declare createdAt: Date;
     declare updatedAt: Date;
 
-    static associate(models: any) {
-        Cart.belongsTo(models.User, { foreignKey: "userId", as: "buyer" });
+    static associate() {
+        Carts.belongsTo(Users, { foreignKey: "userId", as: "buyer" });
+        Carts.hasMany(CartProducts, { foreignKey: "cartId", as: "cartProducts" });
     }
 }
 
-Cart.init(
+Carts.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -56,8 +60,8 @@ Cart.init(
         sequelize: sequelizeConnection,
         tableName: "carts",
         timestamps: true,
-        modelName: "Cart"
+        modelName: "Carts"
     }
 );
 
-export default Cart;
+export default Carts;

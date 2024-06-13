@@ -8,7 +8,7 @@ import {
   isShopExist,
   transformFilesToBody,
   isSellerShopExist,
-  isPaginated
+  isPaginated,
 } from "../middlewares/validation";
 import {
   shopSchema,

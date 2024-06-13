@@ -1,8 +1,11 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { IShops } from "../../types";
+import Users from "./users";
+import Products from "./products";
 
 class Shops extends Model<IShops> {
     declare id: string;
@@ -10,9 +13,9 @@ class Shops extends Model<IShops> {
     declare name: string;
     declare description?: string;
 
-    static associate(models: any) {
-        Shops.belongsTo(models.Users, { foreignKey: "sellerId", as: "seller" });
-        Shops.hasMany(models.Products, { foreignKey: "shopId", as: "products" });
+    static associate() {
+        Shops.belongsTo(Users, { foreignKey: "userId", as: "users" });
+        Shops.hasMany(Products, { foreignKey: "shopId", as: "products" });
     }
 }
 
