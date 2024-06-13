@@ -197,6 +197,19 @@ const expiredProductsByUserId = async (userId: string) => {
   });
 };
 
+const expiredProductsByUserId = async (userId: string) => {
+  return await db.Products.findAll({
+    include: [
+        {
+            model: db.Shops,
+            as: "shops",
+            where: { userId: userId },
+        }
+    ],
+    where: { expiryDate: { [Op.lt]: new Date() } }
+  });
+};
+
 export default {
   createProduct,
   updateProduct,
