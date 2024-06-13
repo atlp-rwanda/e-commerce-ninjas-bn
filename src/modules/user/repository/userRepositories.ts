@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Users from "../../../databases/models/users";
+
+import db from "../../../databases/models";
 
 const getAllUsers = async () => {
-  return Users.findAll();
+  return db.Users.findAll();
 };
 
 const updateUserProfile = async (user: any, id: string) => {
-  await Users.update({ ...user }, { where: { id }, returning: true });
-  const updateUser = await Users.findOne({ where: { id } });
+  await db.Users.update({ ...user }, { where: { id }, returning: true });
+  const updateUser = await db.Users.findOne({ where: { id } });
   return updateUser;
 };
 
