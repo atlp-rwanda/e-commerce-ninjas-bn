@@ -318,8 +318,9 @@ describe("checkPasswordExpiration middleware", () => {
       setHeader: sinon.stub(),
     };
     next = sinon.spy();
+    sinon.stub(sendEmail, "sendEmail").resolves();
   });
-
+  
   afterEach(() => {
     sinon.restore();
   });
@@ -345,6 +346,11 @@ describe("checkPasswordExpiration middleware", () => {
       message: "Password expired, please check your email to reset your password.",
     });
     expect(next).to.not.have.been.called;
+    expect(sendEmail).to.have.been.calledWith(
+      "user@example.com",
+      "Password Expired - Reset Required",
+      sinon.match.string
+    );
   });
 
   it("should set header if the password is expiring soon", async () => {
@@ -371,6 +377,23 @@ describe("checkPasswordExpiration middleware", () => {
 
     await checkPasswordExpiration(req, res, next);
 
+    expect(next).to.have.been.calledOnce;
+    expect(res.setHeader).to.not.have.been.called;
+  });
+
+  it("should set a warning header if password is about to expire", async () => {
+    const user = {
+      id: "userId",
+      passwordUpdatedAt: new Date(Date.now() - (PASSWORD_EXPIRATION_DAYS - 5) * 24 * 60 * 60 * 1000)
+    };
+    sinon.stub(Users, "findByPk").resolves(user as any);
+
+    await checkPasswordExpiration(req, res, next);
+
+    expect(res.setHeader).to.have.been.calledWith(
+      "Password-Expiry-Notification",
+      "Your password will expire in 5 days. Please update your password."
+    );
     expect(next).to.have.been.calledOnce;
     expect(res.setHeader).to.not.have.been.called;
   });
