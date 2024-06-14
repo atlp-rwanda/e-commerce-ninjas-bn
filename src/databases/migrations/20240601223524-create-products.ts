@@ -11,15 +11,6 @@ export default {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      userId: {
-        allowNull: false,
-        type: DataTypes.UUID,
-        references: {
-          model: "users",
-          key: "id",
-        },
-        onDelete: "CASCADE",
-      },
       shopId: {
         allowNull: false,
         type: DataTypes.UUID,

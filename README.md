@@ -65,6 +65,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - buyer view single product fromwishList Endpoint
 - User get notifications Endpoint
 - User get notification Endpoint
+- User mark All notifications Endpoint
+- User mark notification Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -112,6 +114,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 40  | get    | /api/shop/buyer-view-whishlist-product/{id}| 200 ok      | private | buyer view  product from wishList   |
 | 41  | GET    | /api/user/user-get-notifications           | 200 OK      | private | user get notifications              |
 | 42  | GET    | /api/user/user-get-notification/:id        | 200 OK      | private | user get notification               |
+| 43  | PUT    | /api/user/user-mark-all-notifications      | 200 OK      | private | user mark all notifications         |
+| 44  | PUT    | /api/user/user-mark-notification/:id       | 200 OK      | private | user mark notification              |
 
 ## INSTALLATION
 

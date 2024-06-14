@@ -19,5 +19,7 @@ import upload from "../helpers/multer";
 router.get("/user-get-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.getAllNotifications);
 router.get("/user-get-notification/:id", userAuthorization(["seller"]),isNotificationsExist, userControllers.getSingleNotification);
 
+router.put("/user-mark-notification/:id", userAuthorization(["seller"]), isNotificationsExist, userControllers.markNotificationAsRead);
+router.put("/user-mark-all-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
 
 export default router;

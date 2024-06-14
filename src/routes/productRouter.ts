@@ -61,7 +61,7 @@ router.put(
   userAuthorization(["seller"]),
   upload.array("images"),
   validation(productUpdateSchema),
-  isProductExistById,
+  isProductExist,
   productController.sellerUpdateProduct
 );
 
