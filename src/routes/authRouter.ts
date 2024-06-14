@@ -1,3 +1,4 @@
+// src\routes\authRouter.ts
 import { Router } from "express";
 import authControllers from "../modules/auth/controller/authControllers";
 import {
@@ -10,7 +11,7 @@ import {
   isGoogleEnabled,
   isUserVerified,
   verifyOtp,
-  verifyUserCredentials
+  verifyUserCredentials 
 } from "../middlewares/validation";
 import {
   emailSchema,
@@ -22,6 +23,7 @@ import {
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
 import { checkPasswordExpiration } from "../middlewares/passwordExpiryCheck";
+
 
 const router: Router = Router();
 
@@ -44,7 +46,8 @@ router.post(
   isUserVerified,
   isUserEnabled,
   isGoogleEnabled,
-  verifyUserCredentials, checkPasswordExpiration,
+  verifyUserCredentials,
+  checkPasswordExpiration,
   authControllers.loginUser
 );
 
