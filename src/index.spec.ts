@@ -14,7 +14,6 @@ import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiration";
 import Users from "./databases/models/users";
-const { addDays } = require("date-fns");
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -157,7 +156,7 @@ describe("userAuthorization middleware", () => {
 
     const middleware = userAuthorization(roles);
     await middleware(req, res, next);
-
+    
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
@@ -187,13 +186,13 @@ describe("checkPasswordExpiration middleware", () => {
   afterEach(() => {
     sinon.restore();
   });
-  
+
   it("should respond with 403 if password is expired", async () => {
     const user = {
       id: "userId",
-      updatedAt: new Date(addDays(new Date(), - PASSWORD_EXPIRATION_DAYS - 1))
+      passwordUpdatedAt: new Date(Date.now() - (PASSWORD_EXPIRATION_DAYS + 1) * 24 * 60 * 60 * 1000)
     };
-    sinon.stub(Users, "findByPk").resolves(user as any)
+    sinon.stub(Users, "findByPk").resolves(user as any);
 
     await checkPasswordExpiration(req, res, next);
 
@@ -218,8 +217,10 @@ describe("checkPasswordExpiration middleware", () => {
   });
 
   it("should handle unexpected errors", async () => {
-    sinon.stub(Users, "findByPk").throws(new Error("Unexpected error"));  
-    await checkPasswordExpiration(req, res, next);  
+    sinon.stub(Users, "findByPk").throws(new Error("Unexpected error"));
+
+    await checkPasswordExpiration(req, res, next);
+
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
