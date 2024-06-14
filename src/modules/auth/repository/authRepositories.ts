@@ -18,7 +18,7 @@ const updateUserByAttributes = async (
   whereValue: any
 ) => {
   await db.Users.update(
-    { [updatedKey]: updatedValue },
+    { [updatedKey]: updatedValue, passwordUpdatedAt: new Date() }, 
     { where: { [whereKey]: whereValue } }
   );
   return await findUserByAttributes(whereKey, whereValue);
