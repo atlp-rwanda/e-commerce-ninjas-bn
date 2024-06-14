@@ -12,7 +12,7 @@ const { userAuthorization } = require("./middlewares/authorization");
 const httpStatus = require("http-status");
 import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
-import { checkPasswordExpiration } from "./middlewares/passwordExpiration";
+import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
 
 chai.use(chaiHttp);
