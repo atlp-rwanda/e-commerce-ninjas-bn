@@ -24,6 +24,7 @@ import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
 import { checkPasswordExpiration } from "../middlewares/passwordExpiryCheck";
 
+
 const router: Router = Router();
 
 router.post("/register",validation(credentialSchema),isUserExist,authControllers.registerUser
@@ -45,7 +46,8 @@ router.post(
   isUserVerified,
   isUserEnabled,
   isGoogleEnabled,
-  verifyUserCredentials, checkPasswordExpiration,
+  verifyUserCredentials,
+  checkPasswordExpiration,
   authControllers.loginUser
 );
 
