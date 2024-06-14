@@ -14,6 +14,7 @@ import authRepositories from "./modules/auth/repository/authRepositories";
 import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiration";
+import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
 import {  NextFunction } from "express";
 import * as emailService from "../src/services/sendEmail";
