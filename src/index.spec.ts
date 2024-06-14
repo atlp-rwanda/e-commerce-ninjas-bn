@@ -16,6 +16,7 @@ import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiration";
 import Users from "./databases/models/users";
+import { sendEmail } from "./services/sendEmail";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -302,7 +303,7 @@ describe("socketAuthMiddleware", () => {
 
 describe("checkPasswordExpiration middleware", () => {
   let req, res, next;
-  const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS);
+  const PASSWORD_EXPIRATION_DAYS = 90
 
   beforeEach(() => {
     req = {
@@ -310,18 +311,21 @@ describe("checkPasswordExpiration middleware", () => {
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
+      json: sinon.stub().returnsThis(),
+      setHeader: sinon.stub()
     };
     next = sinon.spy();
+    sinon.stub(sendEmail, "sendEmail").resolves();
   });
-
+  
   afterEach(() => {
     sinon.restore();
   });
-
-  it("should respond with 403 if password is expired", async () => {
+  
+  it("should respond with 403 if password is expired and send email", async () => {
     const user = {
       id: "userId",
+      email: "user@example.com",
       passwordUpdatedAt: new Date(Date.now() - (PASSWORD_EXPIRATION_DAYS + 1) * 24 * 60 * 60 * 1000)
     };
     sinon.stub(Users, "findByPk").resolves(user as any);
@@ -331,20 +335,41 @@ describe("checkPasswordExpiration middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.FORBIDDEN,
-      message: "Password expired, please update your password."
+      message: "Password expired, please check your email to reset your password."
     });
     expect(next).to.not.have.been.called;
+    expect(sendEmail).to.have.been.calledWith(
+      "user@example.com",
+      "Password Expired - Reset Required",
+      sinon.match.string
+    );
   });
 
   it("should call next if password is not expired", async () => {
     const user = {
       id: "userId",
-      updatedAt: new Date()
+      passwordUpdatedAt: new Date()
     };
     sinon.stub(Users, "findByPk").resolves(user as any);
 
     await checkPasswordExpiration(req, res, next);
 
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should set a warning header if password is about to expire", async () => {
+    const user = {
+      id: "userId",
+      passwordUpdatedAt: new Date(Date.now() - (PASSWORD_EXPIRATION_DAYS - 5) * 24 * 60 * 60 * 1000)
+    };
+    sinon.stub(Users, "findByPk").resolves(user as any);
+
+    await checkPasswordExpiration(req, res, next);
+
+    expect(res.setHeader).to.have.been.calledWith(
+      "Password-Expiry-Notification",
+      "Your password will expire in 5 days. Please update your password."
+    );
     expect(next).to.have.been.calledOnce;
   });
 
