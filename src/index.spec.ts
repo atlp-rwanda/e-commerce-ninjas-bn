@@ -13,7 +13,6 @@ import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
 import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
-import { checkPasswordExpiration } from "./middlewares/passwordExpiration";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
 import {  NextFunction } from "express";
@@ -320,8 +319,9 @@ describe("checkPasswordExpiration middleware", () => {
       setHeader: sinon.stub(),
     };
     next = sinon.spy();
+    sinon.stub(sendEmail, "sendEmail").resolves();
   });
-
+  
   afterEach(() => {
     sinon.restore();
   });
@@ -347,6 +347,11 @@ describe("checkPasswordExpiration middleware", () => {
       message: "Password expired, please check your email to reset your password.",
     });
     expect(next).to.not.have.been.called;
+    expect(sendEmail).to.have.been.calledWith(
+      "user@example.com",
+      "Password Expired - Reset Required",
+      sinon.match.string
+    );
   });
 
   it("should set header if the password is expiring soon", async () => {
