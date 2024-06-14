@@ -22,6 +22,7 @@ import {
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
+import { checkPasswordExpiration } from "../middlewares/passwordExpiryCheck";
 
 const router: Router = Router();
 
@@ -44,7 +45,7 @@ router.post(
   isUserVerified,
   isUserEnabled,
   isGoogleEnabled,
-  verifyUserCredentials,
+  verifyUserCredentials, checkPasswordExpiration,
   authControllers.loginUser
 );
 
