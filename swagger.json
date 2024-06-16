@@ -41,9 +41,16 @@
       "description": "Buyer Endpoint"
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "components": {
     "schemas": {
       "User": {
@@ -76,7 +83,10 @@
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"],
+            "enum": [
+              "male",
+              "female"
+            ],
             "nullable": true
           },
           "birthDate": {
@@ -169,7 +179,7 @@
         }
       },
       "Shop": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -183,10 +193,10 @@
           "description": {
             "type": "string"
           }
-        } 
+        }
       },
       "Cart": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -197,10 +207,10 @@
           "status": {
             "type": "string"
           }
-        } 
+        }
       },
       "CartProducts": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -223,10 +233,10 @@
           "totalPrice": {
             "type": "number"
           }
-        } 
+        }
       },
       "Orders": {
-         "type": "object",
+        "type": "object",
         "properties": {
           "id": {
             "type": "string"
@@ -246,7 +256,7 @@
           "status": {
             "type": "string"
           }
-        } 
+        }
       }
     },
     "securitySchemes": {
@@ -260,7 +270,9 @@
   "paths": {
     "/": {
       "get": {
-        "tags": ["Initial Route"],
+        "tags": [
+          "Initial Route"
+        ],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -272,7 +284,9 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -292,7 +306,10 @@
                     "format": "password"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -340,7 +357,9 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -356,7 +375,9 @@
                     "format": "email"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -403,7 +424,9 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -456,7 +479,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -477,7 +502,10 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -494,7 +522,9 @@
     },
     "/api/auth/google": {
       "get": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Login User via Google",
         "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-platform-backend.onrender.com/api/auth/google)",
         "responses": {
@@ -506,7 +536,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Authentication Routes"],
+        "tags": [
+          "Authentication Routes"
+        ],
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -909,7 +941,9 @@
     },
     "/api/user/user-update-profile": {
       "put": {
-        "tags": ["User Routes"],
+        "tags": [
+          "User Routes"
+        ],
         "summary": "Update a User Profile",
         "description": "User should be able to update his/her profile",
         "security": [
@@ -1013,7 +1047,9 @@
     },
     "/api/user/admin-get-users": {
       "get": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1097,7 +1133,9 @@
     },
     "/api/user/admin-get-user/{id}": {
       "get": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1189,7 +1227,9 @@
     },
     "/api/user/admin-update-user-status/{id}": {
       "put": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -1220,7 +1260,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -1323,7 +1365,9 @@
     },
     "/api/user/admin-update-user-role/{id}": {
       "put": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -1347,10 +1391,16 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": ["Admin", "Buyer", "Seller"]
+                    "enum": [
+                      "Admin",
+                      "Buyer",
+                      "Seller"
+                    ]
                   }
                 },
-                "required": ["role"]
+                "required": [
+                  "role"
+                ]
               }
             }
           }
@@ -1441,7 +1491,9 @@
     },
     "/api/shop/seller-create-shop": {
       "post": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Create new shop",
         "description": "This endpoint allows seller to create new shop",
         "requestBody": {
@@ -1561,7 +1613,9 @@
     },
     "/api/shop/seller-create-product": {
       "post": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Create/Add a product with shop Id",
         "description": "This endpoint allows seller to create/add a product with shop Id",
         "requestBody": {
@@ -1740,7 +1794,9 @@
     },
     "/api/shop/seller-update-product/{id}": {
       "put": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Update/Modify a product with Id",
         "description": "This endpoint allows seller to update/modify a product with Id",
         "parameters": [
@@ -1927,7 +1983,9 @@
     },
     "/api/shop/seller-delete-product/{id}": {
       "delete": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "Delete Item",
         "description": "Deletes a specific item from a seller's shop.",
         "security": [
@@ -2050,10 +2108,11 @@
         }
       }
     },
-
     "/api/shop/seller-update-product-status/{id}": {
       "put": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to update product status manually",
         "description": "This endpoint allows a seller to update the availability status of a product",
         "parameters": [
@@ -2078,7 +2137,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["isAvailable"]
+                "required": [
+                  "isAvailable"
+                ]
               }
             }
           }
@@ -2145,7 +2206,9 @@
     },
     "/api/shop/seller-get-products": {
       "get": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to get all products",
         "description": "This endpoint allows a seller to get all products",
         "parameters": [
@@ -2350,6 +2413,118 @@
           },
           "500": {
             "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/shop/user-search-products": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "A buyer should be able to should to search products",
+        "description": "This endpoint allow a buyer to search products according to different filters",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "minprice",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum price"
+          },
+          {
+            "in": "query",
+            "name": "maxprice",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Maximum price"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "category of the product"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product name"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Page number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
