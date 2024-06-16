@@ -2389,34 +2389,6 @@
         }
       }
     },
-    "/api/cart/buyer-get-cart": {
-      "get": {
-        "tags": [
-          "Buyer Routes"
-        ],
-        "summary": "Buyer view cart",
-        "description": "View Buyer's cart details & products",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Buyer's cart"
-          },
-          "404": {
-            "description": "No cart."
-          },
-          "401": {
-            "description": "Not logged in"
-          },
-          "500": {
-            "description": "Internal Server error"
-          }
-        }
-      }
-    },
     "/api/shop/user-search-products": {
       "get": {
         "tags": [
@@ -2525,6 +2497,182 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-get-carts": {
+      "get": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Buyer view carts",
+        "description": "View Buyer's carts details & products",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buyer's carts"
+          },
+          "404": {
+            "description": "No cart."
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-get-cart/{cartId}": {
+      "get": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "required": true,
+            "description": "Cart ID to get",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Buyer view specific cart",
+        "description": "View Buyer's cart details & products",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buyer's cart"
+          },
+          "404": {
+            "description": "No cart."
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-create-cart": {
+      "post": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Buyer create cart",
+        "description": "Buyer create new cart",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "example": "string-id"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "example": 5
+                  }
+                },
+                "required": [ "productId", "quantity" ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cart created successfully"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-update-cart/{cartId}": {
+      "put": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "required": true,
+            "description": "Cart ID to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Buyer update cart",
+        "description": "Buyer update existing cart",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "example": "string-id"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "example": 5
+                  }
+                },
+                "required": [ "productId", "quantity" ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cart created successfully"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
           }
         }
       }
