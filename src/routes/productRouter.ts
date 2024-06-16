@@ -10,7 +10,8 @@ import {
   isSellerShopExist,
   isPaginated,
   isSearchFiltered,
-  isProductExistById
+  isProductExistById,
+  isProductExistToWishlist
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -74,6 +75,8 @@ router.get("/user-search-products", isSearchFiltered, isPaginated, productContro
 
 router.get("/user-get-product/:id",isProductExistById,productController.userGetProduct);
 router.get("/seller-get-product/:id",userAuthorization(["seller"]),isSellerShopExist,isProductExistById,productController.sellerGetProduct)
+
+router.post("/buyer-add-product-wishList/:id",userAuthorization(["buyer"]),isProductExistToWishlist,productController.buyerAddProductToWishList)
 
 
 export default router;
