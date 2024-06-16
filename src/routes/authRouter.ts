@@ -24,11 +24,7 @@ import googleAuth from "../services/googleAuth";
 
 const router: Router = Router();
 
-router.post(
-  "/register",
-  validation(credentialSchema),
-  isUserExist,
-  authControllers.registerUser
+router.post("/register",validation(credentialSchema),isUserExist,authControllers.registerUser
 );
 router.get(
   "/verify-email/:token",

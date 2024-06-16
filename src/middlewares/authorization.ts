@@ -48,10 +48,9 @@ export const userAuthorization = function (roles: string[]) {
       }
 
       if (!roles.includes(user.role)) {
-        res
+        return res
           .status(httpStatus.UNAUTHORIZED)
           .json({ status: httpStatus.UNAUTHORIZED, message: "Not authorized" });
-          return;
       }
 
       req.user = user;

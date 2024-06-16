@@ -1,3 +1,5 @@
+// eslint-disable @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
 import { CartProductAttributes } from "../databases/models/cartProducts";
 
@@ -21,6 +23,7 @@ export interface ExtendRequest extends Request {
     page: number;
     offset: number;
   };
+  searchQuery?: any;
 }
 
 export interface IProduct {

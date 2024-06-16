@@ -129,7 +129,12 @@ const userGetProducts = async (limit, offset) => {
   });
   return { rows, count }
 }
-
+const userSearchProducts = async (searchQuery: any, limit, offset) => {
+  return await db.Products.findAndCountAll({
+    ...searchQuery,
+    limit, offset
+  })
+}
 
 export default {
   createProduct,
@@ -147,5 +152,6 @@ export default {
   markProducts,
   sellerGetProducts,
   getAvailableProductsByAttributes,
-  userGetProducts
+  userGetProducts,
+  userSearchProducts
 };
