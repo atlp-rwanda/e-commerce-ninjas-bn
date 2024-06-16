@@ -391,7 +391,7 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 
 const isCartExist = async (req: any, res: Response, next: NextFunction) => {
   const cart = await cartRepositories.getCartByUserId(req.user.id);
-  if(!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
   return next();
 }
 
@@ -414,28 +414,40 @@ const isSearchFiltered = (req: ExtendRequest, res: Response, next: NextFunction)
   const category = req.query.category || undefined;
   const description = req.query.description || undefined;
   const minPrice = req.query.minprice || undefined;
-  const maxPrice = req.query.maxprice|| undefined;
-
-  if (!minPrice && !maxPrice && !category && !description && !name) {
-    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Search parameters required" });
-  }
-  if ((minPrice && !maxPrice) || (!minPrice && maxPrice)) {
-    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Minimum and maximum price are required" });
-  }
-  if (Number(minPrice)> Number(maxPrice)) {
-    return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message: "Minimum Price must be less than Maximum price" });
-  }
+  const maxPrice = req.query.maxprice || undefined;
 
   const searchQuery: any = { where: {} };
 
-  if (name !== undefined) searchQuery.where.name = { [Op.iLike]: `%${name}%` };
-  if (category !== undefined) searchQuery.where.category = category;
-  if (description !== undefined) searchQuery.where.description = { [Op.iLike]: `%${description}%` };
+  if ((minPrice && !maxPrice) || (!minPrice && maxPrice)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      status: httpStatus.BAD_REQUEST,
+      message: "Minimum and maximum price are required"
+    });
+  }
+
+  if (Number(minPrice) > Number(maxPrice)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      status: httpStatus.BAD_REQUEST,
+      message: "Minimum Price must be less than Maximum price"
+    });
+  }
+
+  const orConditions = [];
+
+  if (name !== undefined) orConditions.push({ name: { [Op.iLike]: `%${name}%` } });
+  if (category !== undefined) orConditions.push({ category });
+  if (description !== undefined) orConditions.push({ description: { [Op.iLike]: `%${description}%` } });
   if (minPrice !== undefined && maxPrice !== undefined) {
-    searchQuery.where.price = {
-      [Op.gte]: minPrice,
-      [Op.lte]: maxPrice
-    };
+    orConditions.push({
+      price: {
+        [Op.gte]: minPrice,
+        [Op.lte]: maxPrice
+      }
+    });
+  }
+
+  if (orConditions.length > 0) {
+    searchQuery.where[Op.or] = orConditions;
   }
   searchQuery.where.status = "available";
   searchQuery.where.expiryDate = {

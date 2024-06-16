@@ -758,15 +758,6 @@ describe("isPaginated middleware", () => {
 
 
 describe("User filter products", () => {
-  it("Should reject if no search parameter provided", (done) => {
-    router().get("/api/shop/user-search-products")
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(response.body).to.be.an("object")
-        expect(response.body).to.have.property("message")
-        done(error)
-      })
-  })
   it("Should reject if one of Min and Max Price Provided without other", (done) => {
     router().get("/api/shop/user-search-products?minprice=1")
       .end((error, response) => {
