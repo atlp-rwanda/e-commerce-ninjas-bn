@@ -32,6 +32,7 @@ const Chat = (io: Server) => {
     socket.on("requestPastMessages", async () => {
       try {
         const chats = await db.Chats.findAll({
+          limit:50,
           order: [["createdAt", "ASC"]],
           include: [
             {

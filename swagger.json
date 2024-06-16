@@ -1368,7 +1368,9 @@
     },
     "/api/user/admin-update-user-role/{id}": {
       "put": {
-        "tags": ["Admin Routes"],
+        "tags": [
+          "Admin Routes"
+        ],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -1392,10 +1394,16 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": ["Admin", "Buyer", "Seller"]
+                    "enum": [
+                      "Admin",
+                      "Buyer",
+                      "Seller"
+                    ]
                   }
                 },
-                "required": ["role"]
+                "required": [
+                  "role"
+                ]
               }
             }
           }
@@ -1486,7 +1494,9 @@
     },
     "/api/shop/seller-create-shop": {
       "post": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Create new shop",
         "description": "This endpoint allows seller to create new shop",
         "requestBody": {
@@ -1606,7 +1616,9 @@
     },
     "/api/shop/seller-create-product": {
       "post": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Create/Add a product with shop Id",
         "description": "This endpoint allows seller to create/add a product with shop Id",
         "requestBody": {
@@ -1785,7 +1797,9 @@
     },
     "/api/shop/seller-update-product/{id}": {
       "put": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to Update/Modify a product with Id",
         "description": "This endpoint allows seller to update/modify a product with Id",
         "parameters": [
@@ -1972,7 +1986,9 @@
     },
     "/api/shop/seller-delete-product/{id}": {
       "delete": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "Delete Item",
         "description": "Deletes a specific item from a seller's shop.",
         "security": [
@@ -2095,10 +2111,11 @@
         }
       }
     },
-
     "/api/shop/seller-update-product-status/{id}": {
       "put": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to update product status manually",
         "description": "This endpoint allows a seller to update the availability status of a product",
         "parameters": [
@@ -2123,7 +2140,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["isAvailable"]
+                "required": [
+                  "isAvailable"
+                ]
               }
             }
           }
@@ -2190,7 +2209,9 @@
     },
     "/api/shop/seller-get-products": {
       "get": {
-        "tags": ["Seller Routes"],
+        "tags": [
+          "Seller Routes"
+        ],
         "summary": "A seller should be able to get all products",
         "description": "This endpoint allows a seller to get all products",
         "parameters": [
@@ -2395,6 +2416,118 @@
           },
           "500": {
             "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/shop/user-search-products": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "A buyer should be able to should to search products",
+        "description": "This endpoint allow a buyer to search products according to different filters",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "minprice",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum price"
+          },
+          {
+            "in": "query",
+            "name": "maxprice",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Maximum price"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "category of the product"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product name"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Number of rows"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Page number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
