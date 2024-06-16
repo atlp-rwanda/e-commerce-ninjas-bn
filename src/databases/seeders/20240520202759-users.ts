@@ -193,7 +193,7 @@ const userNine = {
 
 export const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [
-    userOne,
+    userOne, 
     userTwo,
     userThree,
     userFour,
