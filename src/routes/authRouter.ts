@@ -46,7 +46,6 @@ router.post(
   isUserEnabled,
   isGoogleEnabled,
   verifyUserCredentials,
-  checkPasswordExpiration,
   authControllers.loginUser
 );
 
