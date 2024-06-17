@@ -51,6 +51,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - User get product Endpoint
 - User search products Endpoint
 - Buyer get cart Endpoint
+- buyer  get specific product Endpoint
+- seller get specific product Endpoint
+
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -84,6 +87,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 26  | GET    | /api/shop/user-get-products                | 200 OK      | public  | User get product                    |
 | 27 | GET | /api/shop/user-search-products | 200 OK | public | User search products |
 | 28  | GET    | /api/cart/buyer-get-cart                   | 200 OK      | private | Buyer get cart                      |
+| 29  | GET    | /api/shop/user-get-product/:id             | 200 OK      | public  | Buyer get  specific products        |
+| 30  | GET    | /api/shop/seller-get-product/:id           | 200 OK      | private | seller get  specific products       |
+
 
 ## INSTALLATION
 
