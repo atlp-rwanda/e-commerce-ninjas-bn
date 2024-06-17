@@ -46,7 +46,6 @@
        message: error.message
      });
    }
- };
- 
+ }; 
 
  export {checkPasswordExpiration} 
