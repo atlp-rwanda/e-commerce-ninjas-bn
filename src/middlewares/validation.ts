@@ -469,7 +469,17 @@ const isSearchFiltered = (req: ExtendRequest, res: Response, next: NextFunction)
   req.searchQuery = searchQuery;
   return next();
 };
-
+const isProductExistById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+     const product = await productRepositories.findProductById(req.params.id);
+    if (!product) {
+      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No product found." });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+}
 export {
   validation,
   isUserExist,
@@ -489,7 +499,8 @@ export {
   verifyOtp,
   isPaginated,
   isSearchFiltered,
-  isCartExist,
   isCartIdExist,
-  isProductIdExist
+  isProductIdExist,
+  isCartExist,
+  isProductExistById
 };

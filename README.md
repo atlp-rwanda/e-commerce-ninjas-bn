@@ -50,7 +50,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Seller get products Endpoint
 - User get product Endpoint
 - User search products Endpoint
-- Buyer get cart Endpoint
+- buyer  get specific product Endpoint
+- seller get specific product Endpoint
+- Buyer get carts Endpoint
 - Buyer get single cart Endpoint
 - Buyer add cart Endpoint
 - Buyer update cart Endpoint
@@ -86,10 +88,13 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 25  | GET    | /api/shop/seller-get-products              | 200 OK      | private | Seller get products                 |
 | 26  | GET    | /api/shop/user-get-products                | 200 OK      | public  | User get product                    |
 | 27  | GET    | /api/shop/user-search-products             | 200 OK      | public  | User search products                |
-| 28  | GET    | /api/cart/buyer-get-carts                  | 200 OK      | private | Buyer get carts                     |
-| 28  | GET    | /api/cart/buyer-get-cart/:cartId           | 200 OK      | private | Buyer get cart details              |
-| 28  | POST   | /api/cart/buyer-create-cart                | 201 CREATED | private | Buyer create cart                   |
-| 28  | PUT    | /api/cart/buyer-update-cart/:cartId        | 200 OK      | private | Buyer update cart                   |
+| 28  | GET    | /api/shop/user-get-product/:id             | 200 OK      | public  | Buyer get  specific products        |
+| 29  | GET    | /api/shop/seller-get-product/:id           | 200 OK      | private | seller get  specific products       |
+| 30  | GET    | /api/cart/buyer-get-carts                  | 200 OK      | private | Buyer get carts                     |
+| 31  | GET    | /api/cart/buyer-get-cart/:cartId           | 200 OK      | private | Buyer get cart details              |
+| 32  | POST   | /api/cart/buyer-create-cart                | 201 CREATED | private | Buyer create cart                   |
+| 33  | PUT    | /api/cart/buyer-update-cart/:cartId        | 200 OK      | private | Buyer update cart                   |
+
 
 ## INSTALLATION
 

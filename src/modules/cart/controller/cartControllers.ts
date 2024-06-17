@@ -48,10 +48,56 @@ const buyerGetCart = async (req: ExtendRequest, res: Response) => {
 const buyerAddCart = async (req: ExtendRequest, res: Response) => {
   try {
     const { productId, quantity } = req.body;
-    const createdCart = await cartRepositories.addCart({
-      userId: req.user.id,
-      status: cartStatusEnum.PENDING
-    });
+    const userId = req.user.id;
+    const carts = await cartRepositories.getCartsByUserId(userId);
+
+    const updateCartProduct = async (cartProduct, quantity, product) => {
+      await cartRepositories.updateCartProduct(cartProduct.id, {
+        quantity,
+        totalPrice: product.price * quantity
+      });
+      res.status(httpStatus.CREATED).json({ message: "Cart quantity updated successfully" });
+    };
+
+    const addProductToExistingCart = async (cart, product, quantity) => {
+      const totalPrice = product.price * quantity;
+      await cartRepositories.addCartProduct({
+        cartId: cart.id,
+        productId,
+        quantity,
+        price: product.price,
+        discount: product.discount,
+        totalPrice
+      });
+      res.status(httpStatus.CREATED).json({ message: "Product added to existing Cart" });
+    };
+
+    for (const cart of carts) {
+      const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+      for (const cartProduct of cartProducts) {
+        const product = (cartProduct as IExtendedCartProduct).products;
+        if (product.id === productId) {
+          await updateCartProduct(cartProduct, quantity, product);
+          return;
+        }
+      }
+    }
+
+    if (carts.length > 0) {
+      const productToAdd = await productRepositories.findProductById(productId);
+      for (const cart of carts) {
+        const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
+        for (const cartProduct of cartProducts) {
+          const product = (cartProduct as IExtendedCartProduct).products;
+          if (product.shopId === productToAdd.shopId) {
+            await addProductToExistingCart(cart, productToAdd, quantity);
+            return;
+          }
+        }
+      }
+    }
+
+    const createdCart = await cartRepositories.addCart({ userId, status: cartStatusEnum.PENDING });
     const product = await productRepositories.findProductById(productId);
     const totalPrice = product.price * quantity;
     const createdCartProduct = await cartRepositories.addCartProduct({
@@ -61,13 +107,13 @@ const buyerAddCart = async (req: ExtendRequest, res: Response) => {
       price: product.price,
       discount: product.discount,
       totalPrice
-    })
-    return res.status(httpStatus.CREATED).json({ message: "Cart added successfully", data: createdCartProduct })
+    });
+
+    res.status(httpStatus.CREATED).json({ message: "Cart added successfully", data: createdCartProduct });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
-  catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
-  }
-}
+};
 
 const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
   try {
@@ -118,13 +164,26 @@ const buyerUpdateCart = async (req: ExtendRequest, res: Response) => {
     const existingCartProduct = cartProducts.find(cartProduct => cartProduct.productId === productId);
     if (existingCartProduct) {
       await cartRepositories.updateCartProduct(existingCartProduct.id, { quantity, totalPrice: existingCartProduct.price * quantity })
+      return res.status(httpStatus.OK).json({ message: "Cart quantity updated successfully" })
     }
-    else {
-      const product = await productRepositories.findProductById(productId);
-      const totalPrice = product.price * quantity;
-      await cartRepositories.addCartProduct({ cartId, productId, quantity, price: product.price, discount: product.discount, totalPrice })
+
+    const product = await productRepositories.findProductById(productId);
+    const existingFirstProduct = await productRepositories.findProductById(cartProducts[0].productId);
+    if (cartProducts.length > 0 && existingFirstProduct.shopId === product.shopId) {
+      await cartRepositories.addCartProduct({ cartId, productId, quantity, price: product.price, discount: product.discount, totalPrice: product.price * quantity })
+      return res.status(httpStatus.OK).json({ message: "Cart product added successfully" })
     }
-    return res.status(httpStatus.OK).json({ message: "Cart updated successfully" })
+
+    const createdCart = await cartRepositories.addCart({ userId: req.user.id, status: cartStatusEnum.PENDING });
+    const createdCartProduct = await cartRepositories.addCartProduct({
+      cartId: createdCart.id,
+      productId,
+      quantity,
+      price: product.price,
+      discount: product.discount,
+      totalPrice: product.price * quantity
+    });
+    return res.status(httpStatus.CREATED).json({ message: "Cart created successfully", data: createdCartProduct });
   }
   catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
