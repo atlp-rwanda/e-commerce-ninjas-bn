@@ -235,6 +235,39 @@ const userSearchProducts = async (req: ExtendRequest, res: Response) => {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 }
+
+const userGetProduct = async (req:ExtendRequest,res:Response) => {
+  try{
+      const product = await productRepositories.findProductById(req.params.id);
+      res.status(httpStatus.OK).json({
+          message: "Products is fetched successfully.",
+          product
+        });
+  
+  } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+      });
+  }
+  }
+  const sellerGetProduct = async (req: ExtendRequest, res: Response) => {
+    try {
+      
+        const products = await productRepositories.sellerGetProductById(req.shop.id,req.params.id);
+        res.status(httpStatus.OK).json({
+          message: "Product fetched successfully.",
+          data: products,
+        });
+      
+    } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      });
+    }
+  };
+
 export default {
   sellerCreateProduct,
   sellerCreateShop,
@@ -244,5 +277,7 @@ export default {
   updateProductStatus,
   sellerGetProducts,
   userGetProducts,
-  userSearchProducts
+  userSearchProducts,
+  userGetProduct,
+  sellerGetProduct
 };

@@ -136,6 +136,12 @@ const userSearchProducts = async (searchQuery: any, limit, offset) => {
   })
 }
 
+const sellerGetProductById = async (shopId: string,productId: string) => {
+  return await db.Products.findAll({
+    where: { shopId, id: productId } 
+  });
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -153,5 +159,6 @@ export default {
   sellerGetProducts,
   getAvailableProductsByAttributes,
   userGetProducts,
-  userSearchProducts
+  userSearchProducts,
+  sellerGetProductById
 };

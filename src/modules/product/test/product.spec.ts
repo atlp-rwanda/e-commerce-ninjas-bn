@@ -786,3 +786,104 @@ describe("User filter products", () => {
       })
   })
 })
+
+describe("sellerViewSpecificProduct", () => {
+  let req: Partial<ExtendRequest>;
+  let res: Partial<Response>;
+  let findProductStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {
+      params: { id: "test-product-id" },
+      shop: { id: "test-shop-id" }
+    };
+
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+
+    findProductStub = sinon.stub(productRepositories, "sellerGetProductById");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should fetch product successfully", async () => {
+    const productData = { id: "test-product-id", name: "Test Product" };
+    findProductStub.resolves(productData);
+
+    await productController.sellerGetProduct(req as ExtendRequest, res as Response); 
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      message: "Product fetched successfully.",
+      data: productData
+    });
+  });
+
+  it("should handle errors", async () => {
+    const error = new Error("Something went wrong");
+    findProductStub.rejects(error);
+
+    await productController.sellerGetProduct(req as ExtendRequest, res as Response); 
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  });
+});
+
+describe("userGetProduct", () => {
+  let req;
+  let res;
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      params: { id: "product-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should return product details when product is found", async () => {
+    const mockProduct = {
+      id: "product-id",
+      name: "Product Name",
+      price: 100,
+      description: "Product Description"
+    };
+
+    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+
+    await productController.userGetProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      message: "Products is fetched successfully.",
+      product: mockProduct
+    });
+  });
+
+  it("should handle errors properly", async () => {
+    const error = new Error("Something went wrong");
+    sandbox.stub(productRepositories, "findProductById").throws(error);
+
+    await productController.userGetProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  });
+});
