@@ -100,6 +100,30 @@ const getCartsByProductId = async (productId: string, userId: string) => {
           as: "order" } ]
   });
 };
+const getOrderByOrderIdAndUserId = async(orderId: string, userId: string)=>{
+  return await db.Orders.findOne({
+    where: { id: orderId },
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: {userId:userId}
+      }
+    ]
+  })
+}
+
+const getOrderById = async(orderId: string)=>{
+  return await db.Orders.findOne({where: {id:orderId}})
+}
+
+const updateOrderStatus = async(orderId: string, status:string)=>{
+  return await db.Orders.update(
+    {status: status},
+    {where: {id: orderId}}
+  )
+}
+
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
@@ -114,5 +138,8 @@ export default {
   deleteCartProduct,
   deleteAllCartProducts,
   findCartByAttributes,
-  getCartsByProductId
+  getCartsByProductId,
+  getOrderByOrderIdAndUserId,
+  getOrderById,
+  updateOrderStatus
 };
