@@ -173,6 +173,7 @@ describe("checkPasswordExpiration middleware", () => {
   let req, res, next;
   const PASSWORD_EXPIRATION_DAYS = 90
 
+
   beforeEach(() => {
     req = {
       user: { id: "userId" }
