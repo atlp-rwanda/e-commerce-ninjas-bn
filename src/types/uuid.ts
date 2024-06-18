@@ -28,3 +28,6 @@ export const orderProductOneId = uuidv4();
 export const orderProductTwoId = uuidv4();
 export const orderProductThreeId = uuidv4();
 export const orderProductFourId = uuidv4();
+
+export const wishListOneId = uuidv4();
+export const wishListTwoId = uuidv4();

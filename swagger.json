@@ -858,9 +858,6 @@
         "tags": [
           "User Routes"
         ],
-        "tags": [
-          "User Routes"
-        ],
         "security": [
           {
             "bearerAuth": []
@@ -2810,6 +2807,93 @@
           }
         }
       }
+    },
+    "/api/shop/buyer-add-product-wishList/{id}": {
+      "post": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Add product to Wishlist",
+        "description": "Buyer Should Add product to Wishlist",
+         "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Pass the ID"
+          }
+        ],
+       
+        "responses": {
+            "200": {
+              "description": "Products added to wish list successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+       }
     }
+
   }
 }
+    
+
+
+
+
+
+

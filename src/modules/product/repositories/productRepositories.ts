@@ -127,6 +127,12 @@ const sellerGetProductById = async (shopId: string,productId: string) => {
   });
 };
 
+const findProductfromWishList = async (productId:string, userId: string) => {
+  return await db.wishLists.findOne({ where: { productId ,userId} });
+}
+const addProductToWishList = async (body:any)=>{
+  return await db.wishLists.create(body);
+}
 export default {
   createProduct,
   updateProduct,
@@ -143,5 +149,7 @@ export default {
   sellerGetProducts,
   userGetProducts,
   userSearchProducts,
-  sellerGetProductById
+  sellerGetProductById,
+  findProductfromWishList,
+  addProductToWishList
 };
