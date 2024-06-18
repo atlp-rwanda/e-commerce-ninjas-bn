@@ -307,6 +307,7 @@ describe("checkPasswordExpiration middleware", () => {
   const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
 
 
+
   beforeEach(() => {
     req = {
       user: {
