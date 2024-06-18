@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { socketAuthMiddleware } from "../middlewares/authorization";
-import db from "../databases/models";
+import userRepositories from "../modules/user/repository/userRepositories";
 
 const Chat = (io: Server) => {
   const chatNamespace = io.of("/chats");
@@ -12,17 +12,7 @@ const Chat = (io: Server) => {
 
     socket.on("chatMessage", async (message) => {
       try {
-        const chat = await db.Chats.create({ userId: user.id, message });
-        const fullChat = await db.Chats.findOne({
-          where: { id: chat.id },
-          include: [
-            {
-              model: db.Users,
-              as: "user",
-              attributes: ["id", "firstName", "lastName", "email"]
-            }
-          ]
-        });
+        const fullChat = await userRepositories.postChatMessage(user.id, message);
         socket.broadcast.emit("chatMessage", { user, message: fullChat.message });
       } catch (error) {
         console.error("Error in chatMessage:", error);
@@ -31,17 +21,7 @@ const Chat = (io: Server) => {
 
     socket.on("requestPastMessages", async () => {
       try {
-        const chats = await db.Chats.findAll({
-          limit:50,
-          order: [["createdAt", "ASC"]],
-          include: [
-            {
-              model: db.Users,
-              as: "user",
-              attributes: ["id", "firstName", "lastName", "email"]
-            }
-          ]
-        });
+        const chats = await userRepositories.getAllPastChats()
         socket.emit("pastMessages", chats);
       } catch (error) {
         console.error("Error in requestPastMessages:", error);

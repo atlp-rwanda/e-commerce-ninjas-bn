@@ -25,7 +25,7 @@ const io = new Server(server, {
 });
 chat(io);
 app.use(express.json());
-app.use(morgan(process.env.NODE_ENV));
+app.use(morgan(process.env.NODE_EN));
 app.use(compression());
 app.use(cors());
 

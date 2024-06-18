@@ -3,9 +3,11 @@
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import { chatsAttributes } from "../../types";
+import Users from "./users";
 
 class Chats extends Model<chatsAttributes>
 {
+  [x: string]: any;
   declare id: string;
   declare userId: string;
   declare message: string;
@@ -13,8 +15,8 @@ class Chats extends Model<chatsAttributes>
   declare updatedAt?: Date;
   user: any;
 
-  static associate(models: any) {
-    Chats.belongsTo(models.Users, {
+  static associate() {
+    Chats.belongsTo(Users, {
       foreignKey: "userId",
       as: "user"
     });

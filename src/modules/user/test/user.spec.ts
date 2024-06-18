@@ -3,7 +3,6 @@
 /* eslint quotes: "off" */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Server, Socket, Namespace } from "socket.io";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
@@ -15,14 +14,14 @@ import { isUsersExist } from "../../../middlewares/validation";
 import path from "path";
 import fs from "fs";
 import userRepositories from "../repository/userRepositories";
-import Chat from "../../../services/chat";
 import db from "../../../databases/models";
+import { hashPassword } from "../../../helpers";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
-
+let userIdd: string;
 describe("Update User Status test case ", () => {
   let userId = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
@@ -201,7 +200,7 @@ describe("User Repository Functions", () => {
 });
 
 describe("Admin update User roles", () => {
-  let userIdd: number | string;
+
   let token = null;
   const unknownId = "10000000-0000-0000-0000-000000000000";
 
@@ -479,5 +478,62 @@ describe("Admin Controllers", () => {
         );
         done(error);
       });
+  });
+});
+
+describe('postChatMessage', () => {
+  let testUser;
+  before(async () => {
+    testUser = await db.Users.create({
+      id: 'cfefa1c6-af47-42f0-94d3-7c2915580ccb',
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test.user@example.com',
+      password: hashPassword("Password@123"),
+      role: 'buyer',
+      status: 'enabled'
+    });
+  });
+
+  after(async () => {
+    await db.Chats.destroy({ where: { userId: testUser.id } });
+    await db.Users.destroy({ where: { id: testUser.id } });
+  });
+
+  it('should create a chat message and associate it with the user', async () => {
+    const message = 'Test message';
+    const chat = await userRepositories.postChatMessage(testUser.id, message);
+    expect(chat).to.be.an('object');
+    expect(chat).to.have.property('message', message);
+    expect(chat).to.have.property('userId', testUser.id);
+
+    expect(chat.user).to.be.an('object');
+    expect(chat.user).to.have.property('id', testUser.id);
+    expect(chat.user).to.have.property('firstName', testUser.firstName);
+    expect(chat.user).to.have.property('lastName', testUser.lastName);
+    expect(chat.user).to.have.property('email', testUser.email);
+  });
+  it('should retrieve up to 50 past chats ordered by createdAt ascending', async () => {
+    const pastChats = await userRepositories.getAllPastChats();
+
+    expect(pastChats).to.be.an('array').with.length.at.most(50);
+    const hasUsers = pastChats.every(chat => {
+      return chat.dataValues.user && chat.dataValues.user.id;
+    });
+    console.log('hasUsers:', hasUsers);
+    expect(hasUsers).to.be.true;
+    const hasValidUserAttributes = pastChats.every(chat =>
+      chat.dataValues.user &&
+      chat.dataValues.user.id && 
+      chat.dataValues.user.firstName && 
+      chat.dataValues.user.lastName && 
+      chat.dataValues.user.email && 
+      chat.dataValues.user.role
+    );
+    expect(hasValidUserAttributes).to.be.true;
+    const hasValidChatAttributes = pastChats.every(chat =>
+      chat.id && chat.createdAt
+    );
+    expect(hasValidChatAttributes).to.be.true;
   });
 });

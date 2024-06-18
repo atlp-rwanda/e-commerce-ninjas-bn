@@ -236,7 +236,7 @@ describe("socketAuthMiddleware", () => {
   });
 
   it("should attach user data to socket and call next if authentication is successful", async () => {
-    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" };
+    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" ,role: "admin" };
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
     sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
@@ -251,6 +251,7 @@ describe("socketAuthMiddleware", () => {
       lastName: user.lastName,
       email: user.email,
       profilePicture: user.profilePicture,
+      role:user.role
     });
     expect(next).to.have.been.calledOnce;
   });
@@ -271,7 +272,7 @@ describe("socketAuthMiddleware", () => {
   it("should initialize socket.data if it is undefined", async () => {
     socket.data = undefined;
 
-    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" };
+    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" ,role: "admin"};
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
     sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
@@ -287,6 +288,7 @@ describe("socketAuthMiddleware", () => {
       lastName: user.lastName,
       email: user.email,
       profilePicture: user.profilePicture,
+      role:user.role
     });
     expect(next).to.have.been.calledOnce;
   });

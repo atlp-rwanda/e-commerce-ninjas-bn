@@ -80,6 +80,7 @@ export interface chatsAttributes {
   message: string;
   createdAt: Date;
   user?: {
+    role: string;
     id: string;
     firstName: string;
     lastName: string;
