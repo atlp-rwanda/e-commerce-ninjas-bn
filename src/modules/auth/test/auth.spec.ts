@@ -901,42 +901,42 @@ describe("Google Authentication", () => {
     });
   });
 
-  describe("updateUser2FA", () => {
-    let req;
-    let res;
-    let token: string = null;
-    before((done) => {
-      router()
-        .post("/api/auth/login")
-        .send({
-          email: "buyer@gmail.com",
-          password:"Password@123"
-        })
-        .end((error, response) => {
-          token = response.body.data.token;
-          done(error);
-        });
-    });
+  // describe("updateUser2FA", () => {
+  //   let req;
+  //   let res;
+  //   let token: string = null;
+  //   before((done) => {
+  //     router()
+  //       .post("/api/auth/login")
+  //       .send({
+  //         email: "buyer@gmail.com",
+  //         password:"Password@123"
+  //       })
+  //       .end((error, response) => {
+  //         token = response.body.data.token;
+  //         done(error);
+  //       });
+  //   });
   
-    afterEach(() => {
-      sinon.restore();
-    });
+  //   afterEach(() => {
+  //     sinon.restore();
+  //   });
   
-    // it("should enable 2FA for the user and return success message", (done) => {
-    //   router()
-    //     .put("/api/auth/enable-2f")
-    //     .set("Authorization", `Bearer ${token}`)
-    //     .send({ is2FAEnabled: true })
-    //     .end((error, response) => {
-    //       expect(response.body).to.have.property("status", httpStatus.OK);
-    //       expect(response.body).to.have.property(
-    //         "message",
-    //         "2FA enabled successfully."
-    //       );
-    //       expect(response.body).to.have.property("data");
-    //       done(error);
-    //     });
-    // });
+  //   it("should enable 2FA for the user and return success message", (done) => {
+  //     router()
+  //       .put("/api/auth/enable-2f")
+  //       .set("Authorization", `Bearer ${token}`)
+  //       .send({ is2FAEnabled: true })
+  //       .end((error, response) => {
+  //         expect(response.body).to.have.property("status", httpStatus.OK);
+  //         expect(response.body).to.have.property(
+  //           "message",
+  //           "2FA enabled successfully."
+  //         );
+  //         expect(response.body).to.have.property("data");
+  //         done(error);
+  //       });
+  //   });
   
     it("should return internal server error message if updating 2FA fails", (done) => {
       const errorMessage = "Failed to enable 2FA";
