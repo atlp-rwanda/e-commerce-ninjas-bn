@@ -858,6 +858,9 @@
         "tags": [
           "User Routes"
         ],
+        "tags": [
+          "User Routes"
+        ],
         "security": [
           {
             "bearerAuth": []
