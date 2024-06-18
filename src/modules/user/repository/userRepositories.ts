@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import db from "../../../databases/models";
 
 const getAllUsers = async () => {
@@ -12,4 +11,38 @@ const updateUserProfile = async (user: any, id: string) => {
   return updateUser;
 };
 
-export default { getAllUsers, updateUserProfile };
+const postChatMessage = async (userId, message) => {
+  const chat = await db.Chats.create({ userId, message });
+  const fullChat = await db.Chats.findOne({
+    where: { id: chat.id },
+    include: [
+      {
+        model: db.Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email", "role"]
+      }
+    ]
+  });
+
+  return fullChat.toJSON();
+};
+
+
+
+const getAllPastChats = async () => {
+  const chats = await db.Chats.findAll({
+    limit: 50,
+    order: [["createdAt", "ASC"]],
+    include: [
+      {
+        model: db.Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email", "role"]
+      }
+    ]
+  });
+  return chats;
+};
+
+
+export default { getAllUsers, updateUserProfile, postChatMessage, getAllPastChats };

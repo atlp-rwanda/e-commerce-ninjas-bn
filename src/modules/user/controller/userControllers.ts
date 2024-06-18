@@ -137,5 +137,5 @@ export default {
   adminGetUser,
   updateUserProfile,
   getUserDetails,
-  changePassword,
+  changePassword
 };

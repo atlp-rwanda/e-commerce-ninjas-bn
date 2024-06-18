@@ -6,6 +6,9 @@ import authRepository from "../modules/auth/repository/authRepositories";
 import httpStatus from "http-status";
 import { decodeToken } from "../helpers";
 import Session from "../databases/models/sessions";
+import { Socket } from "socket.io"
+import { ExtendedError } from "socket.io/dist/namespace"
+
 
 interface ExtendedRequest extends Request {
   user: usersAttributes;
@@ -63,4 +66,55 @@ export const userAuthorization = function (roles: string[]) {
       });
     }
   };
+};
+
+export const socketAuthMiddleware = async (socket: Socket, next: NextFunction) => {
+  try {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      const err = new Error("Authentication error") as ExtendedError;
+      err.data = { message: "No token provided" };
+      return next(err);
+    }
+
+    const decoded = await decodeToken(token);
+    if (!decoded || typeof decoded !== "object") {
+      const err = new Error("Authentication error") as ExtendedError;
+      err.data = { message: "Invalid token" };
+      return next(err);
+    }
+
+    const session: Session = await authRepository.findSessionByUserIdAndToken(decoded.id, token);
+    if (!session) {
+      const err = new Error("Authentication error") as ExtendedError;
+      err.data = { message: "Session not found or expired" };
+      return next(err);
+    }
+
+    const user = await authRepository.findUserByAttributes("id", decoded.id);
+    if (!user) {
+      const err = new Error("Authentication error") as ExtendedError;
+      err.data = { message: "User not found" };
+      return next(err);
+    }
+
+    if (!socket.data) {
+      socket.data = {};
+    }
+
+    socket.data.user = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role:user.role,
+      profilePicture: user.profilePicture,
+    };
+
+    next();
+  } catch (error) {
+    const err = new Error("Internal server error") as ExtendedError;
+    err.data = { message: "Internal server error" };
+    return next(err);
+  }
 };

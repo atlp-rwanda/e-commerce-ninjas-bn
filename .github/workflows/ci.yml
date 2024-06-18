@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+
 env:
   PORT: ${{ secrets.PORT }}
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
@@ -16,16 +17,16 @@ env:
   API_SECRET: ${{ secrets.API_SECRET }}
   CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  SERVER_URL_PRO : ${{ secrets.SERVER_URL_PRO }}
+  SERVER_URL_PRO: ${{ secrets.SERVER_URL_PRO }}
   SMTP_HOST_PORT: ${{ secrets.SMTP_HOST_PORT }}
-  MP : ${{ secrets.MP }}
+  MP: ${{ secrets.MP }}
   SMTP_HOST: ${{ secrets.SMTP_HOST }}
   MAIL_ID: ${{ secrets.MAIL_ID }}
   DB_HOST_TYPE: ${{ secrets.DB_HOST_TYPE }}
-  GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID }}
-  GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET }}
-  Session_secret: ${{secrets.Session_secret }}
- 
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  Session_secret: ${{ secrets.Session_secret }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,7 +55,6 @@ jobs:
       - run: npm test --if-present
 
       - run: npm run coverage --if-present
-
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

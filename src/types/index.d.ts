@@ -66,6 +66,36 @@ export interface userInfo {
   accToken: string;
 }
 
+export interface chatsAttributes {
+  id: string;
+  userId?: string;
+  message?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface chatsAttributes {
+  id: number;
+  userId: string;
+  message: string;
+  createdAt: Date;
+  user?: {
+    role: string;
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
 export interface IExtendedCartProduct extends CartProductAttributes{
   products?: IProduct;
+}
+
+export interface CustomSocket extends Socket {
+  user: UserAttributes
+}
+
+export interface JwtPayload extends usersAttributes {
+  iat?: number
+  exp?: number
 }

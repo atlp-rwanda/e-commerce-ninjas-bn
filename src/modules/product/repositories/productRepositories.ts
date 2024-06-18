@@ -99,23 +99,8 @@ const updateProduct = async (
   );
 };
 
-const findProductByIdAndShopId = async (id: string, shopId: string) => {
-  return await db.Products.findOne({ where: { id, shopId } });
-};
-
 const currentDate = new Date();
 
-const getAvailableProductsByAttributes = async (key, value) => {
-  return await db.Products.findAll({
-    where: {
-      [key]: value,
-      status: "available",
-      expiryDate: {
-        [Op.gte]: currentDate
-      }
-    }
-  })
-}
 const userGetProducts = async (limit, offset) => {
   const { rows, count } = await db.Products.findAndCountAll({
     where: {
@@ -147,7 +132,6 @@ export default {
   updateProduct,
   createShop,
   findShopByAttributes,
-  findProductByIdAndShopId,
   findByModelsAndAttributes,
   deleteProductById,
   getOrdersPerTimeframe,
@@ -157,7 +141,6 @@ export default {
   updateProductByAttributes,
   markProducts,
   sellerGetProducts,
-  getAvailableProductsByAttributes,
   userGetProducts,
   userSearchProducts,
   sellerGetProductById
