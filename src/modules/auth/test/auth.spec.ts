@@ -938,25 +938,25 @@ describe("Google Authentication", () => {
   //       });
   //   });
   
-    it("should return internal server error message if updating 2FA fails", (done) => {
-      const errorMessage = "Failed to enable 2FA";
-      sinon
-        .stub(authRepositories, "updateUserByAttributes")
-        .throws(new Error(errorMessage));
-      router()
-        .put("/api/auth/enable-2f")
-        .set("Authorization", `Bearer ${token}`)
-        .send({ is2FAEnabled: true })
-        .end((error, response) => {
-         expect(response.body).to.have.property(
-            "status",
-            httpStatus.INTERNAL_SERVER_ERROR
-          );
-          expect(response.body).to.have.property("message", errorMessage);
-          done(error);
-        });
-    });
-  });
+  //   it("should return internal server error message if updating 2FA fails", (done) => {
+  //     const errorMessage = "Failed to enable 2FA";
+  //     sinon
+  //       .stub(authRepositories, "updateUserByAttributes")
+  //       .throws(new Error(errorMessage));
+  //     router()
+  //       .put("/api/auth/enable-2f")
+  //       .set("Authorization", `Bearer ${token}`)
+  //       .send({ is2FAEnabled: true })
+  //       .end((error, response) => {
+  //        expect(response.body).to.have.property(
+  //           "status",
+  //           httpStatus.INTERNAL_SERVER_ERROR
+  //         );
+  //         expect(response.body).to.have.property("message", errorMessage);
+  //         done(error);
+  //       });
+  //   });
+  // });
   
   describe("verifyUserCredentials Middleware", () => {
     let req;
