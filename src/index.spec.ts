@@ -171,7 +171,7 @@ describe("userAuthorization middleware", () => {
 
 
 
-const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS);
+const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS) || 90;
 
 describe("checkPasswordExpiration middleware", () => {
   let req: any, res: any, next: NextFunction;
@@ -218,7 +218,7 @@ describe("checkPasswordExpiration middleware", () => {
   });
 
   it("should set header if the password is expiring soon", async () => {
-    const daysToExpire = 10;
+    const daysToExpire = 11;
     sinon.stub(Users, "findByPk").resolves({
       passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (PASSWORD_EXPIRATION_DAYS - daysToExpire)),
       email: "user@example.com",
