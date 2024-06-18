@@ -480,6 +480,21 @@ const isProductExistById = async (req: Request, res: Response, next: NextFunctio
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 }
+const isProductExistToWishlist = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+     const product = await productRepositories.findProductfromWishList(req.params.id,req.user.id);
+    if (product) {
+        return res.status(httpStatus.OK).json({
+          message: "Product is added to wishlist successfully.",
+          data: { product }
+        });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+}
+
 export {
   validation,
   isUserExist,
@@ -502,5 +517,6 @@ export {
   isCartIdExist,
   isProductIdExist,
   isCartExist,
-  isProductExistById
+  isProductExistById,
+  isProductExistToWishlist
 };

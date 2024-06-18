@@ -267,7 +267,25 @@ const userGetProduct = async (req:ExtendRequest,res:Response) => {
       });
     }
   };
-
+  const buyerAddProductToWishList = async (req:ExtendRequest,res:Response) => {
+    try{
+        const data = {
+          productId: req.params.id,
+          userId: req.user.id
+        }
+        const product = await productRepositories.addProductToWishList(data);
+        res.status(httpStatus.OK).json({
+          message: "Product is added to wishlist successfully.",
+          data: { product }
+        });
+    
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: httpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message
+        });
+    }
+    }
 export default {
   sellerCreateProduct,
   sellerCreateShop,
@@ -279,5 +297,6 @@ export default {
   userGetProducts,
   userSearchProducts,
   userGetProduct,
-  sellerGetProduct
+  sellerGetProduct,
+  buyerAddProductToWishList
 };
