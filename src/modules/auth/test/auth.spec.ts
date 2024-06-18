@@ -1130,10 +1130,10 @@ describe("checkPasswordExpirations", () => {
   let sendEmailStub: sinon.SinonStub;
   let findAllStub: sinon.SinonStub;
 
-  const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS);
-  const subtractDays = (date: Date, days: number) => {
+  const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
+  const subtractMinutes = (date: Date, minutes: number) => {
     const result = new Date(date);
-    result.setDate(result.getDate() - days);
+    result.setMinutes(result.getMinutes() - minutes);
     return result;
   };
 
@@ -1150,7 +1150,7 @@ describe("checkPasswordExpirations", () => {
     const now = new Date();
     const expiredUser = {
       email: "expired@example.com",
-      updatedAt: subtractDays(now, PASSWORD_EXPIRATION_DAYS + 1),
+      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };
@@ -1161,7 +1161,7 @@ describe("checkPasswordExpirations", () => {
 
     expect(findAllStub).to.have.been.calledOnceWith({
       where: {
-        updatedAt: { [Op.lte]: subtractDays(now, PASSWORD_EXPIRATION_DAYS) },
+        updatedAt: { [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES) },
         isVerified: true,
         status: "enabled"
       }
@@ -1178,7 +1178,7 @@ describe("checkPasswordExpirations", () => {
     const now = new Date();
     const expiredUser = {
       email: "expired@example.com",
-      updatedAt: subtractDays(now, PASSWORD_EXPIRATION_DAYS + 1),
+      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };
@@ -1213,13 +1213,13 @@ describe("checkPasswordExpirations", () => {
     const now = new Date();
     const expiredUser1 = {
       email: "expired1@example.com",
-      updatedAt: subtractDays(now, PASSWORD_EXPIRATION_DAYS + 1),
+      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };
     const expiredUser2 = {
       email: "expired2@example.com",
-      updatedAt: subtractDays(now, PASSWORD_EXPIRATION_DAYS + 1),
+      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };

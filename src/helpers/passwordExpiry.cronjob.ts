@@ -3,11 +3,11 @@ import { Op } from "sequelize";
 import Users from "../databases/models/users";
 import { sendEmail } from "../services/sendEmail";
 
-const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS) || 90;
+const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
 
-const subtractDays = (date: Date, days: number) => {
+const subtractMinutes = (date: Date, minutes: number) => {
   const result = new Date(date);
-  result.setDate(result.getDate() - days);
+  result.setMinutes(result.getMinutes() - minutes);
   return result;
 };
 
@@ -18,7 +18,7 @@ export const checkPasswordExpirations = async () => {
     const users = await Users.findAll({
       where: {
         updatedAt: {
-          [Op.lte]: subtractDays(now, PASSWORD_EXPIRATION_DAYS)
+          [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES)
         },
         isVerified: true,
         status: "enabled"
@@ -40,4 +40,4 @@ export const checkPasswordExpirations = async () => {
   }
 };
 
-cron.schedule("0 0 * * *", checkPasswordExpirations);
+cron.schedule("0 0 1 * *", checkPasswordExpirations);
