@@ -34,6 +34,8 @@ router.get(
   isCartIdExist,
   cartControllers.buyerGetCart
 );
+router.get("/user-get-order-status/:id",userAuthorization(["buyer"]), cartControllers.buyerGetOrderStatus )
+router.put("/admin-update-order-status/:id", userAuthorization(["admin"]), cartControllers.adminUpdateOrderStatus)
 
 router.delete(
   "/buyer-clear-cart-product/:cartId/:productId",

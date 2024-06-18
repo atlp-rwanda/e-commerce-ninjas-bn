@@ -201,6 +201,35 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
+const buyerGetOrderStatus  = async(req:ExtendRequest, res:Response)=>{
+  try{
+    const status= await cartRepositories.getOrderStatus(req.params.id)
+    return res.status(200).json({
+      message: "Order Status found successfully",
+      data: status
+    })
+
+  }catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+
+
+const adminUpdateOrderStatus = async(req:ExtendRequest, res:Response)=>{
+  const orderId = req.params.id;
+  const updatedStatus: any = {
+    status:req.body.status
+  };
+
+  const updateStatus = await cartRepositories.updateOrderStatus(orderId, updatedStatus);
+  return res.status(httpStatus.OK).json({
+    status: "Status updated successfully!",
+    data:updateStatus
+  })
+}
 
 const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
   try {
@@ -280,5 +309,7 @@ export {
   buyerClearCarts,
   buyerCreateUpdateCart,
   buyerClearCartProduct,
-  buyerCheckout
+  buyerCheckout,
+  buyerGetOrderStatus,
+  adminUpdateOrderStatus
 };
