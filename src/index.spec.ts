@@ -304,6 +304,7 @@ describe("socketAuthMiddleware", () => {
 describe("checkPasswordExpiration middleware", () => {
   let req: any, res: any, next: NextFunction;
 
+
   beforeEach(() => {
     req = {
       user: {
