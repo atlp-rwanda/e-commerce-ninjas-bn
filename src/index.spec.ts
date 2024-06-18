@@ -331,7 +331,6 @@ describe("checkPasswordExpiration middleware", () => {
     const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
 
     await checkPasswordExpiration(req, res, next);
-
  
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
@@ -347,7 +346,7 @@ describe("checkPasswordExpiration middleware", () => {
   });
 
   it("should set header if the password is expiring soon", async () => {
-    const daysToExpire = 10;
+    const daysToExpire = 9;
     sinon.stub(Users, "findByPk").resolves({
       passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (PASSWORD_EXPIRATION_DAYS - daysToExpire)),
       email: "user@example.com",

@@ -7,7 +7,7 @@ interface ExtendedRequest extends Request {
   user: usersAttributes;
 }
 
-const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS);
+const PASSWORD_EXPIRATION_DAYS = Number(process.env.PASSWORD_EXPIRATION_DAYS) || 90;
 const PASSWORD_RESET_URL = `${process.env.SERVER_URL_PRO}/api/auth/forget-password`;
 
 const addDays = (date: Date, days: number): Date => {
