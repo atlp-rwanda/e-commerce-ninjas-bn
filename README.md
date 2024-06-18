@@ -69,6 +69,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - User mark notification Endpoint
 - Buyer review product Endpoint
 - Submit a seller request
+- Buyer track order status Endpoint
+- Admin update order status EndPoint 
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -120,6 +122,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 44  | PUT    | /api/user/user-mark-notification/:id                  | 200 OK      | private | user mark notification              |
 | 45  | POST   | /api/shop/buyer-review-product/:id                    | 200 OK      | private | Buyer Create review                 |
 | 46  | POST   | /api/user/user-submit-seller-request                  | 200 OK      | private | Submit a seller request             |
+| 46  | POST   | /api/cart/user-get-order-status/           | 200 OK      | private | user get order status               |
+| 47  |  PUT   | /api/cart/admin-update-order-status/:id    | 200 OK      | private | admin update order status           |
+
 
 ## INSTALLATION
 
@@ -188,12 +193,4 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 7. Run the Migration:
    ```sh
    npm run createAllTables
-   ```
-8. Delete the Seeder:
-   ```sh
-   npm run deleteAllSeeders
-   ```
-9. Delete the Migration:
-   ```sh
-   npm run deleteAllTables
    ```

@@ -925,4 +925,4 @@ export {
   isProductOrdered,
   isUserProfileComplete,
   isSellerRequestExist
-};    
+};      

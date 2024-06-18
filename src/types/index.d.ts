@@ -31,6 +31,7 @@ export interface ExtendRequest extends Request {
     offset: number;
   };
   searchQuery?: any;
+  order?: any;
 }
 
 export interface IProduct {
