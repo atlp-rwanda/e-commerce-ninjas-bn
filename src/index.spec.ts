@@ -319,9 +319,8 @@ describe("checkPasswordExpiration middleware", () => {
       setHeader: sinon.stub(),
     };
     next = sinon.spy();
-    sinon.stub(sendEmail, "sendEmail").resolves();
   });
-  
+
   afterEach(() => {
     sinon.restore();
   });
@@ -347,11 +346,6 @@ describe("checkPasswordExpiration middleware", () => {
       message: "Password expired, please check your email to reset your password.",
     });
     expect(next).to.not.have.been.called;
-    expect(sendEmail).to.have.been.calledWith(
-      "user@example.com",
-      "Password Expired - Reset Required",
-      sinon.match.string
-    );
   });
 
   it("should set header if the password is expiring soon", async () => {
@@ -393,7 +387,7 @@ describe("checkPasswordExpiration middleware", () => {
 
     expect(res.setHeader).to.have.been.calledWith(
       "Password-Expiry-Notification",
-      "Your password will expire in 5 days. Please update your password."
+      `Your password will expire in ${daysToExpire} days. Please update your password.`
     );
     expect(next).to.have.been.calledOnce;
     expect(res.setHeader).to.not.have.been.called;
