@@ -1,4 +1,3 @@
-// src\helpers\passwordExpiry.cronjob.ts
 import cron from "node-cron";
 import { Op } from "sequelize";
 import Users from "../databases/models/users";
@@ -41,4 +40,4 @@ export const checkPasswordExpirations = async () => {
   }
 };
 
-cron.schedule("* * * * *", checkPasswordExpirations);
+cron.schedule("0 0 * * *", checkPasswordExpirations);
