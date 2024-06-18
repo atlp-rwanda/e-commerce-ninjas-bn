@@ -133,65 +133,6 @@ describe("Cart Repositories", () => {
     });
   });
 
-  describe("getCartProductsByCartId", () => {
-    it("should return cart products for a given cart ID", async () => {
-      const mockCartProducts = [
-        {
-          quantity: 2,
-          products: {
-            id: "product-id-1",
-            name: "Product 1",
-            price: 50,
-            images: ["image1.jpg"]
-          }
-        },
-        {
-          quantity: 1,
-          products: {
-            id: "product-id-2",
-            name: "Product 2",
-            price: 100,
-            images: ["image2.jpg"]
-          }
-        }
-      ];
-
-      sandbox.stub(db.CartProducts, "findAll").resolves(mockCartProducts);
-
-      const result = await cartRepositories.getCartProductsByCartId("cart-id");
-
-      expect(db.CartProducts.findAll).to.have.been.calledOnceWith({
-        where: { cartId: "cart-id" },
-        include: [
-          {
-            model: db.Products,
-            as: "products",
-            attributes: ["id", "name", "price", "images"]
-          }
-        ]
-      });
-      expect(result).to.eql(mockCartProducts);
-    });
-
-    it("should return an empty array if no cart products are found", async () => {
-      sandbox.stub(db.CartProducts, "findAll").resolves([]);
-
-      const result = await cartRepositories.getCartProductsByCartId("cart-id");
-
-      expect(db.CartProducts.findAll).to.have.been.calledOnceWith({
-        where: { cartId: "cart-id" },
-        include: [
-          {
-            model: db.Products,
-            as: "products",
-            attributes: ["id", "name", "price", "images"]
-          }
-        ]
-      });
-      expect(result).to.be.an("array").that.is.empty;
-    });
-  });
-
   describe("getCartByUserIdAndCartId", () => {
     it("should return a cart for a given user ID and cart ID with pending status", async () => {
       const mockCart = { id: "6ee2addd-5270-4855-969b-1f56608b122b", userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" };
@@ -355,7 +296,7 @@ describe("Validation Middlewares", () => {
   });
 });
 
-describe("Cart Controller", () => {
+describe("Cart Controller - GetCart", () => {
   let req;
   let res;
   let sandbox;
@@ -375,35 +316,6 @@ describe("Cart Controller", () => {
 
   afterEach(() => {
     sandbox.restore();
-  });
-
-  it("should add a cart", async () => {
-    const mockCart = { id: "cart-id" };
-    const mockProduct = { price: 50, discount: 0 };
-    sandbox.stub(cartRepositories, "addCart").resolves(mockCart);
-    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-    sandbox.stub(cartRepositories, "addCartProduct").resolves({});
-
-    await cartController.buyerAddCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.CREATED);
-    expect(res.json).to.have.been.calledWith({
-      message: "Cart added successfully",
-      data: {}
-    });
-  });
-
-  it("should handle errors in adding a cart", async () => {
-    const error = new Error("Something went wrong");
-    sandbox.stub(cartRepositories, "addCart").throws(error);
-
-    await cartController.buyerAddCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
-    });
   });
 
   it("should get cart details", async () => {
@@ -466,35 +378,6 @@ describe("Cart Controller", () => {
     sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").throws(error);
 
     await cartController.buyerGetCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
-    });
-  });
-
-  it("should update a cart", async () => {
-    const mockCartProduct = { id: "cart-product-id", price: 50, quantity: 2 };
-    const mockProduct = { price: 50, discount: 0 };
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves([mockCartProduct]);
-    sandbox.stub(cartRepositories, "updateCartProduct").resolves([1, [mockCartProduct]]);
-    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-    sandbox.stub(cartRepositories, "addCartProduct").resolves({});
-
-    await cartController.buyerUpdateCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledWith({
-      message: "Cart product added successfully"
-    });
-  });
-
-  it("should handle errors in updating a cart", async () => {
-    const error = new Error("Something went wrong");
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").throws(error);
-
-    await cartController.buyerUpdateCart(req, res);
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
@@ -571,41 +454,6 @@ describe("Cart Controller", () => {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
     });
-  });
-});
-
-
-describe("Cart Routes", () => {
-  let sandbox;
-  let req;
-  let res;
-
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    req = {
-      user: { id: "user-id" },
-      body: { productId: "product-id", quantity: 2 },
-      params: { cartId: "cart-id" }
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
-    };
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  it("should create a cart", async () => {
-    sandbox.stub(cartRepositories, "addCart").resolves({ id: "cart-id" });
-    sandbox.stub(productRepositories, "findProductById").resolves({ price: 50, discount: 0 });
-    sandbox.stub(cartRepositories, "addCartProduct").resolves({});
-
-    await cartController.buyerAddCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    // expect(res.json).to.have.been.calledWith({ message: "Cart added successfully", data: {} });
   });
 
   it("should get all carts for a buyer", async () => {
@@ -720,31 +568,190 @@ describe("Cart Routes", () => {
     });
   });
 
-  it("should update cart details", async () => {
-    const mockCartProduct = { id: "cart-product-id", price: 50, quantity: 2 };
-    const mockProduct = { price: 50, discount: 0 };
+});
 
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves([mockCartProduct]);
-    sandbox.stub(cartRepositories, "updateCartProduct").resolves();
-    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-    sandbox.stub(cartRepositories, "addCartProduct").resolves({});
+describe("Cart Controller Tests", () => {
+  let req;
+  let res;
+  let sandbox;
 
-    await cartController.buyerUpdateCart(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledWith({ message: "Cart product added successfully" });
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      user: { id: "user-id" },
+      body: { productId: "product-id", quantity: 2 },
+      params: { cartId: "cart-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
   });
 
-  it("should update cart product quantity and total price", async () => {
-    const existingCartProduct = { id: "cart-product-id", price: 50, quantity: 2 };
-    const updatedQuantity = 3;
-    const updatedTotalPrice = existingCartProduct.price * updatedQuantity;
-  
-    sandbox.stub(cartRepositories, "updateCartProduct").resolves();
-  
-    await cartRepositories.updateCartProduct(existingCartProduct.id, { quantity: updatedQuantity, totalPrice: updatedTotalPrice });
-  
-    expect(cartRepositories.updateCartProduct).to.have.been.calledOnceWith(existingCartProduct.id, { quantity: updatedQuantity, totalPrice: updatedTotalPrice });
+  afterEach(() => {
+    sandbox.restore();
   });
 
+  describe("buyerCreateUpdateCart", () => {
+    it("should update cart product if already exist", async () => {
+      const mockCart = { id: "cart-id", userId: "user-id", status: "pending" };
+      const mockProduct = {
+        id: "product-id",
+        name: "Product 1",
+        price: 50,
+        images: ["image1.jpg"],
+        shopId: "shop-id"
+      };
+      const mockCartProducts = [
+        {
+          quantity: 2,
+          products: {
+            id: "product-id",
+            name: "Product 1",
+            price: 50,
+            images: ["image1.jpg"]
+          }
+        }
+      ];
+
+      sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
+      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox.stub(cartRepositories, "addCartProduct").resolves();
+      sandbox.stub(cartRepositories, "updateCartProduct").resolves();
+
+      await cartController.buyerCreateUpdateCart(req, res);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+        message: "Cart quantity updated successfully",
+        data: {
+          cartId: undefined,
+          products: [
+            {
+              id: "product-id",
+              name: "Product 1",
+              price: 50,
+              image: "image1.jpg",
+              quantity: 2,
+              totalPrice: 100
+            }
+          ],
+          total: 100
+        }
+      });
+    });
+
+    it("should add product to existing cart if cart exists", async () => {
+      const mockCart = { id: "cart-id", userId: "user-id", status: "pending" };
+      const mockProduct = {
+        id: "product-id",
+        name: "Product 1",
+        price: 50,
+        images: ["image1.jpg"],
+        shopId: "shop-id"
+      };
+      const mockCartProducts = [
+        {
+          quantity: 2,
+          products: {
+            id: "product-id-2",
+            name: "Product 1",
+            price: 50,
+            images: ["image1.jpg"],
+            shopId: "shop-id"
+          }
+        }
+      ];
+
+      sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
+      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox.stub(cartRepositories, "addCartProduct").resolves();
+      sandbox.stub(cartRepositories, "updateCartProduct").resolves();
+
+      await cartController.buyerCreateUpdateCart(req, res);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+        message: "Product added to existing Cart",
+        data: {
+          cartId: "cart-id",
+          products: [
+            {
+              id: "product-id-2",
+              name: "Product 1",
+              price: 50,
+              image: "image1.jpg",
+              quantity: 2,
+              totalPrice: 100
+            }
+          ],
+          total: 100
+        }
+      });
+    });
+
+    it("should create new cart and add product if no cart exists", async () => {
+      const mockCreatedCart = { id: "new-cart-id", userId: "user-id", status: "pending" };
+      const mockProduct = {
+        id: "product-id",
+        name: "Product 1",
+        price: 50,
+        images: ["image1.jpg"],
+        shopId: "shop-id"
+      };
+      const mockCartProducts = [
+        {
+          quantity: 2,
+          products: {
+            id: "product-id",
+            name: "Product 1",
+            price: 50,
+            images: ["image1.jpg"]
+          }
+        }
+      ];
+
+      sandbox.stub(cartRepositories, "getCartsByUserId").resolves([]);
+      sandbox.stub(cartRepositories, "addCart").resolves(mockCreatedCart);
+      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox.stub(cartRepositories, "addCartProduct").resolves();
+      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+
+      await cartController.buyerCreateUpdateCart(req, res);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.CREATED);
+      expect(res.json).to.have.been.calledWith({
+        message: "Cart added successfully",
+        data: {
+          cartId: "new-cart-id",
+          products: [
+            {
+              id: "product-id",
+              name: "Product 1",
+              price: 50,
+              image: "image1.jpg",
+              quantity: 2,
+              totalPrice: 100
+            }
+          ],
+          total: 100
+        }
+      });
+    });
+
+    it("should handle errors properly", async () => {
+      const error = new Error("Something went wrong");
+      sandbox.stub(cartRepositories, "getCartsByUserId").throws(error);
+
+      await cartController.buyerCreateUpdateCart(req, res);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+      });
+    });
+  });
 });

@@ -2756,13 +2756,13 @@
         }
       }
     },
-    "/api/cart/buyer-create-cart": {
+    "/api/cart/create-update-cart": {
       "post": {
         "tags": [
           "Buyer Routes"
         ],
-        "summary": "Buyer create cart",
-        "description": "Buyer create new cart",
+        "summary": "Buyer create or update cart",
+        "description": "Buyer create new cart or update existing cart",
         "security": [
           {
             "bearerAuth": []
@@ -2790,66 +2790,9 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Cart created successfully"
+          "200": {
+            "description": "Cart updated successfully"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Not logged in"
-          },
-          "500": {
-            "description": "Internal Server error"
-          }
-        }
-      }
-    },
-    "/api/cart/buyer-update-cart/{cartId}": {
-      "put": {
-        "tags": [
-          "Buyer Routes"
-        ],
-        "parameters": [
-          {
-            "name": "cartId",
-            "in": "path",
-            "required": true,
-            "description": "Cart ID to update",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "summary": "Buyer update cart",
-        "description": "Buyer update existing cart",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "productId": {
-                    "type": "string",
-                    "example": "string-id"
-                  },
-                  "quantity": {
-                    "type": "number",
-                    "example": 5
-                  }
-                },
-                "required": [ "productId", "quantity" ]
-              }
-            }
-          }
-        },
-        "responses": {
           "201": {
             "description": "Cart created successfully"
           },

@@ -27,7 +27,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images"]
+        attributes: ["id", "name", "price", "images", "shopId"]
       }
     ]
   });

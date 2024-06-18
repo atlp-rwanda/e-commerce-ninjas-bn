@@ -8,11 +8,11 @@ import { cartSchema } from "../modules/cart/validation/cartValidations";
 const router: Router = Router();
 
 router.post(
-  "/buyer-create-cart",
+  "/create-update-cart",
   userAuthorization(["buyer"]),
   validation(cartSchema),
   isProductIdExist,
-  cartControllers.buyerAddCart
+  cartControllers.buyerCreateUpdateCart
 );
 
 router.get(
@@ -27,15 +27,6 @@ router.get(
   userAuthorization(["buyer"]),
   isCartIdExist,
   cartControllers.buyerGetCart
-);
-
-router.put(
-  "/buyer-update-cart/:cartId",
-  userAuthorization(["buyer"]),
-  validation(cartSchema),
-  isCartIdExist,
-  isProductIdExist,
-  cartControllers.buyerUpdateCart
 );
 
 export default router;

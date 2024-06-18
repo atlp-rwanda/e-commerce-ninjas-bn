@@ -54,8 +54,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - seller get specific product Endpoint
 - Buyer get carts Endpoint
 - Buyer get single cart Endpoint
-- Buyer add cart Endpoint
-- Buyer update cart Endpoint
+- Buyer create-update cart Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -92,8 +91,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 29  | GET    | /api/shop/seller-get-product/:id           | 200 OK      | private | seller get  specific products       |
 | 30  | GET    | /api/cart/buyer-get-carts                  | 200 OK      | private | Buyer get carts                     |
 | 31  | GET    | /api/cart/buyer-get-cart/:cartId           | 200 OK      | private | Buyer get cart details              |
-| 32  | POST   | /api/cart/buyer-create-cart                | 201 CREATED | private | Buyer create cart                   |
-| 33  | PUT    | /api/cart/buyer-update-cart/:cartId        | 200 OK      | private | Buyer update cart                   |
+| 32  | POST   | /api/cart/create-update-cart               | 201 CREATED | private | Buyer create-update cart            |
 
 
 ## INSTALLATION
