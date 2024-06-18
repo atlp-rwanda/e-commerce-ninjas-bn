@@ -390,7 +390,19 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 }
 
 const isCartExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartByUserId(req.user.id);
+  const cart = await cartRepositories.getCartsByUserId(req.user.id);
+  if (cart.length < 1) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create cart first." })
+  return next();
+}
+
+const isProductIdExist = async (req: any, res: Response, next: NextFunction) => {
+  const product = await productRepositories.findProductById(req.body.productId);
+  if (!product) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No product with that ID." })
+  return next();
+}
+
+const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
+  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
   if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
   return next();
 }
@@ -487,6 +499,8 @@ export {
   verifyOtp,
   isPaginated,
   isSearchFiltered,
+  isCartIdExist,
+  isProductIdExist,
   isCartExist,
   isProductExistById
 };
