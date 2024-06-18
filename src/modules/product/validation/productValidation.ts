@@ -85,24 +85,12 @@ const statusSchema = Joi.object({
     "any.only": "status must be either 'available' or 'unavailable'",
   }),
 });
-// const ratingSchema = Joi.object({
-//   rating: Joi.number().when('status', {
-//     is: 'available',
-//     then: Joi.min(1).max(5).required().messages({
-//       "number.base": "rating must be a number",
-//       "number.integer": "rating must be an integer",
-//       "number.min": "rating must be between 1 and 5",
-//       "number.max": "rating must be between 1 and 5",
-//       "any.required": "rating is required",
-//     }),
-//     otherwise: Joi.optional().allow(null),
-//   }),
-// })
 
-export {
-  productSchema,
-  productUpdateSchema,
-  shopSchema,
-  statisticsSchema,
-  statusSchema,
-};
+const reviewSchema = Joi.object({
+  rating:Joi.number().required(),
+  feedback: Joi.string().required()
+})
+
+
+
+export { productSchema, shopSchema, statisticsSchema, statusSchema,reviewSchema  };

@@ -59,7 +59,8 @@ ProductReviews.init(
         },
         status: {
             type: new DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: false,
+            defaultValue: false
         },
         createdAt: {
             field: "createdAt",
