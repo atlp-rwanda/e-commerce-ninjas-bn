@@ -86,11 +86,16 @@ const statusSchema = Joi.object({
   }),
 });
 
-const reviewSchema = Joi.object({
-  rating:Joi.number().required(),
+const productReviewSchema = Joi.object({
+  rating: Joi.number().min(1).max(5).required(),
   feedback: Joi.string().required()
 })
 
-
-
-export { productSchema, shopSchema, statisticsSchema, statusSchema,reviewSchema  };
+export {
+  productSchema,
+  productUpdateSchema,
+  shopSchema,
+  statisticsSchema,
+  statusSchema,
+  productReviewSchema
+};

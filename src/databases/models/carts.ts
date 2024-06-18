@@ -5,6 +5,7 @@ import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
 import CartProducts from "./cartProducts";
 import Users from "./users";
+import Orders from "./orders";
 
 export interface CartAttributes {
     id: string;
@@ -24,6 +25,7 @@ class Carts extends Model<CartAttributes> implements CartAttributes {
     static associate() {
         Carts.belongsTo(Users, { foreignKey: "userId", as: "buyer" });
         Carts.hasMany(CartProducts, { foreignKey: "cartId", as: "cartProducts" });
+        Carts.hasMany(Orders,{foreignKey: "cartId", as: "order"})
     }
 }
 
