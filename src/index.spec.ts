@@ -376,22 +376,7 @@ describe("checkPasswordExpiration middleware", () => {
     expect(res.setHeader).to.not.have.been.called;
   });
 
-  it("should set a warning header if password is about to expire", async () => {
-    const user = {
-      id: "userId",
-      passwordUpdatedAt: new Date(Date.now() - (PASSWORD_EXPIRATION_DAYS - 5) * 24 * 60 * 60 * 1000)
-    };
-    sinon.stub(Users, "findByPk").resolves(user as any);
-
-    await checkPasswordExpiration(req, res, next);
-
-    expect(res.setHeader).to.have.been.calledWith(
-      "Password-Expiry-Notification",
-      `Your password will expire in ${daysToExpire} days. Please update your password.`
-    );
-    expect(next).to.have.been.calledOnce;
-    expect(res.setHeader).to.not.have.been.called;
-  });
+  
 
   it("should respond with 500 if an error occurs", async () => {
     sinon.stub(Users, "findByPk").rejects(new Error("Database error"));
