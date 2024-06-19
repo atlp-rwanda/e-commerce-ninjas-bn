@@ -1182,3 +1182,83 @@ describe("Wishlist Routes", () => {
     });
   });
 });
+
+describe("updateExpiredProducts", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let productFindAllStub: sinon.SinonStub;
+  let productUpdateStub: sinon.SinonStub;
+  let shopFindAllStub: sinon.SinonStub;
+  let userFindAllStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+
+    productFindAllStub = sinon.stub(Product, "findAll");
+    productUpdateStub = sinon.stub();
+    shopFindAllStub = sinon.stub(Shop, "findAll");
+    userFindAllStub = sinon.stub(User, "findAll");
+
+    Product.prototype.update = productUpdateStub;
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should update expired products and send emails to the respective users", async () => {
+    const expiredProducts = [
+      {
+        id: "productId1",
+        shopId: "shopId1",
+        name: "Product1",
+        update: productUpdateStub
+      },
+      {
+        id: "productId2",
+        shopId: "shopId2",
+        name: "Product2",
+        update: productUpdateStub
+      }
+    ];
+
+    const shops = [
+      { id: "shopId1", userId: "userId1" },
+      { id: "shopId2", userId: "userId2" }
+    ];
+
+    const users = [
+      { id: "userId1", email: "user1@example.com", firstName: "User1" },
+      { id: "userId2", email: "user2@example.com", firstName: "User2" }
+    ];
+
+    productFindAllStub.onFirstCall().resolves(expiredProducts);
+    shopFindAllStub.resolves(shops);
+    userFindAllStub.resolves(users);
+
+    await updateExpiredProducts(req as Request, res as Response);
+
+    expect(productFindAllStub).to.have.been.calledOnce;
+    expect(productUpdateStub).to.have.been.calledTwice;
+    expect(shopFindAllStub).to.have.been.calledOnce;
+    expect(userFindAllStub).to.have.been.calledOnce;
+    expect(res.status).not.to.have.been.called;
+    expect(res.json).not.to.have.been.called;
+  });
+
+  it("should return 500 if an error occurs", async () => {
+    productFindAllStub.rejects(new Error("Internal Server Error"));
+
+    await updateExpiredProducts(req as Request, res as Response);
+
+    expect(productFindAllStub).to.have.been.calledOnce;
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({
+      error: "Internal server error"
+    });
+  });
+});
