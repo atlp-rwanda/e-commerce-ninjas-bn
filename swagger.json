@@ -2848,6 +2848,192 @@
                 }
               }
             },
+            
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+       }
+    },
+
+    "/api/shop/delete-whishlist-products": {
+      "delete": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Delete All  Product  From Wishlist",
+        "description": "Buyer Should Delete All  Product  From Wishlist",
+         "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+             
+        "responses": {
+            "200": {
+              "description": "Your wishlist has been cleared successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No product found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+       }
+    },
+
+    "/api/shop/delete-whishlist-product/{id}": {
+      "delete": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Delete  Single Product from Wishlist",
+        "description": "Buyer Single Product from Wishlist",
+         "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Pass the ID"
+          }
+        ],
+       
+        "responses": {
+            "200": {
+              "description": "The product has been removed from your wishlist.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No product found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
             "400": {
               "description": "Bad Request",
               "content": {
@@ -2887,6 +3073,7 @@
           }
        }
     }
+    
 
   }
 }

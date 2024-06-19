@@ -11,7 +11,9 @@ import {
   isPaginated,
   isSearchFiltered,
   isProductExistById,
-  isProductExistToWishlist
+  isProductExistToWishlist,
+  isUserWishlistExist,
+  isUserWishlistExistById
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -77,6 +79,8 @@ router.get("/user-get-product/:id",isProductExistById,productController.userGetP
 router.get("/seller-get-product/:id",userAuthorization(["seller"]),isSellerShopExist,isProductExistById,productController.sellerGetProduct)
 
 router.post("/buyer-add-product-wishList/:id",userAuthorization(["buyer"]),isProductExistToWishlist,productController.buyerAddProductToWishList)
+router.delete("/delete-whishlist-products",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerDeleteAllProductFromWishlist)
+router.delete("/delete-whishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExistById,productController.buyerDeleteProductFromWishList)
 
 
 export default router;
