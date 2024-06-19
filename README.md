@@ -56,6 +56,8 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Buyer get single cart Endpoint
 - Buyer create-update cart Endpoint
 - buyer add  product to wish list Endpoint
+- buyer delete products from wishlist
+- buyer delete product from wishlist 
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -93,7 +95,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 30  | GET    | /api/cart/buyer-get-carts                  | 200 OK      | private | Buyer get carts                     |
 | 31  | GET    | /api/cart/buyer-get-cart/:cartId           | 200 OK      | private | Buyer get cart details              |
 | 32  | POST   | /api/cart/create-update-cart               | 201 CREATED | private | Buyer create-update cart            |
-| 33  | POST   | /api/shop/buyer-add-product-wishList/:id         | 200 OK      | private | buyer add product to wish list      |
+| 33  | POST   | /api/shop/buyer-add-product-wishList/:id   | 200 OK      | private | buyer add product to wish list      |
+| 34  | delete | /api/shop/delete-whishlist-products        | 200 OK      | private | buyer delete products from wishlist |
+| 35  | delete | /api/shop/delete-whishlist-product:id      | 200 OK      | private | buyer delete product from wishlist  |
 
 
 ## INSTALLATION

@@ -7,7 +7,7 @@ import app from "../../..";
 import path from "path";
 import fs from "fs";
 import { fileFilter } from "../../../helpers/multer";
-import { credential, isProductExist, isShopExist, transformFilesToBody, isPaginated,isProductExistToWishlist } from "../../../middlewares/validation";
+import { credential, isProductExist, isShopExist, transformFilesToBody, isPaginated,isProductExistToWishlist,isUserWishlistExistById,isUserWishlistExist } from "../../../middlewares/validation";
 import sinon, { SinonStub } from "sinon";
 import productRepositories from "../repositories/productRepositories";
 import httpStatus from "http-status";
@@ -16,6 +16,11 @@ import userRepositories from "../../user/repository/userRepositories";
 import userControllers from "../../user/controller/userControllers";
 import authRepositories from "../../auth/repository/authRepositories";
 import { ExtendRequest } from "../../../types";
+import Product from "../../../databases/models/products";
+import Shop from "../../../databases/models/shops";
+import User from "../../../databases/models/users";
+import { sendEmail, transporter } from "../../../services/sendEmail";
+import updateExpiredProducts from "../../../helpers/updateExpiredProducts";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -998,5 +1003,182 @@ describe("isProductExistToWishlist Middleware", () => {
       message: errorMessage
     });
     expect(next).not.to.have.been.called;
+  });
+});
+describe("Wishlist Middlewares", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+  let findProductFromWishListByUserIdStub: SinonStub;
+  let findProductfromWishListStub: SinonStub;
+
+  beforeEach(() => {
+    req = {
+      user: { id: "userId" },
+      params: { id: "productId" }
+    } as any;
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    } as Partial<Response>;
+    next = sinon.stub() as unknown as NextFunction;
+    findProductFromWishListByUserIdStub = sinon.stub(productRepositories, "findProductFromWishListByUserId");
+    findProductfromWishListStub = sinon.stub(productRepositories, "findProductfromWishList");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe("isUserWishlistExist Middleware", () => {
+    it("should return 404 if no wishlist is found", async () => {
+      findProductFromWishListByUserIdStub.resolves(null);
+
+      await isUserWishlistExist(req as Request, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+      expect(res.json).to.have.been.calledWith({ message: "No wishlist Found" });
+      expect(next).not.to.have.been.called;
+    });
+
+    it("should return 404 if wishlist is an empty array", async () => {
+      findProductFromWishListByUserIdStub.resolves([]);
+
+      await isUserWishlistExist(req as Request, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+      expect(res.json).to.have.been.calledWith({ message: "No wishlist Found" });
+      expect(next).not.to.have.been.called;
+    });
+
+    it("should call next if wishlist is found", async () => {
+      const wishList = [{ id: "item1" }];
+      findProductFromWishListByUserIdStub.resolves(wishList);
+
+      await isUserWishlistExist(req as Request, res as Response, next);
+
+      expect(next).to.have.been.called;
+      expect(res.status).not.to.have.been.called;
+      expect(res.json).not.to.have.been.called;
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const errorMessage = "Internal server error";
+      findProductFromWishListByUserIdStub.rejects(new Error(errorMessage));
+
+      await isUserWishlistExist(req as Request, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: errorMessage });
+      expect(next).not.to.have.been.called;
+    });
+  });
+
+  describe("isUserWishlistExistById Middleware", () => {
+    it("should return 404 if product is not found in wishlist", async () => {
+      findProductfromWishListStub.resolves(null);
+
+      await isUserWishlistExistById(req as Request, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+      expect(res.json).to.have.been.calledWith({ message: "Product Not Found From WishList" });
+      expect(next).not.to.have.been.called;
+    });
+
+    it("should call next if product is found in wishlist", async () => {
+      const product = { id: "productId" };
+      findProductfromWishListStub.resolves(product);
+
+      await isUserWishlistExistById(req as Request, res as Response, next);
+
+      expect(next).to.have.been.called;
+      expect(res.status).not.to.have.been.called;
+      expect(res.json).not.to.have.been.called;
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const errorMessage = "Internal server error";
+      findProductfromWishListStub.rejects(new Error(errorMessage));
+
+      await isUserWishlistExistById(req as Request, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({ status: httpStatus.INTERNAL_SERVER_ERROR, message: errorMessage });
+      expect(next).not.to.have.been.called;
+    });
+  });
+});
+
+describe("Wishlist Routes", () => {
+  let deleteAllWishListByUserIdStub: SinonStub;
+  let deleteProductFromWishListByIdStub: SinonStub;
+
+  beforeEach(() => {
+    deleteAllWishListByUserIdStub = sinon.stub(productRepositories, "deleteAllWishListByUserId");
+    deleteProductFromWishListByIdStub = sinon.stub(productRepositories, "deleteProductFromWishListById");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe("buyerDeleteAllProductFromWishlist", () => {
+    it("should clear all products from wishlist", async () => {
+      deleteAllWishListByUserIdStub.resolves();
+      const req = { user: { id: "user-id" } }; 
+      const res = { 
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      };
+      await productController.buyerDeleteAllProductFromWishlist(req as any, res as any); 
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(res.json.calledWith({ message: "Your wishlist is cleared successfully." })).to.be.true;
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const errorMessage = "Internal server error";
+      deleteAllWishListByUserIdStub.rejects(new Error(errorMessage));
+      const req = { user: { id: "user-id" } }; 
+      const res = { 
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      };
+      await productController.buyerDeleteAllProductFromWishlist(req as any, res as any);
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.json.calledWith({ message: "Internal server error", error: errorMessage })).to.be.true;
+    });
+  });
+
+  describe("buyerDeleteProductFromWishList", () => {
+    it("should remove a product from wishlist", async () => {
+      deleteProductFromWishListByIdStub.resolves();
+      const req = {
+        params: { id: "product-id" },
+        user: { id: "user-id" }
+      }; 
+      const res = { 
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      };
+      await productController.buyerDeleteProductFromWishList(req as any, res as any);
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(res.json.calledWith({ message: "The product  removed from wishlist successfully." })).to.be.true;
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const errorMessage = "Internal server error";
+      deleteProductFromWishListByIdStub.rejects(new Error(errorMessage));
+      const req = {
+        params: { id: "product-id" },
+        user: { id: "user-id" }
+      }; 
+      const res = { 
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub()
+      };
+      await productController.buyerDeleteProductFromWishList(req as any, res as any); 
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.json.calledWith({ message: "Internal server error", error: errorMessage })).to.be.true;
+    });
   });
 });

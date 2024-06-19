@@ -133,6 +133,19 @@ const findProductfromWishList = async (productId:string, userId: string) => {
 const addProductToWishList = async (body:any)=>{
   return await db.wishLists.create(body);
 }
+
+const findProductFromWishListByUserId = async(userId:string)=>{
+   return await db.wishLists.findAll({where: {userId:userId}} );
+}
+
+const deleteAllWishListByUserId = async (userId:string) => {
+return await db.wishLists.destroy({ where: { userId: userId } });
+}
+
+const deleteProductFromWishListById = async (productId:string, userId: string) => {
+  return await db.wishLists.destroy({ where: { productId ,userId} });
+}
+
 export default {
   createProduct,
   updateProduct,
@@ -151,5 +164,8 @@ export default {
   userSearchProducts,
   sellerGetProductById,
   findProductfromWishList,
-  addProductToWishList
+  addProductToWishList,
+  findProductFromWishListByUserId,
+  deleteAllWishListByUserId,
+  deleteProductFromWishListById
 };

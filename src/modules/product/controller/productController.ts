@@ -286,6 +286,28 @@ const userGetProduct = async (req:ExtendRequest,res:Response) => {
         });
     }
     }
+    const buyerDeleteAllProductFromWishlist = async(req:ExtendRequest,res:Response)=>{
+      try {
+        await productRepositories.deleteAllWishListByUserId(req.user.id);
+        res.status(httpStatus.OK).json({ message: "Your wishlist is cleared successfully." });
+      } catch (error) {
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: "Internal server error", error: error.message });
+      }
+    };
+    
+    const buyerDeleteProductFromWishList = async(req:ExtendRequest,res:Response)=>{
+      try {
+        await productRepositories.deleteProductFromWishListById(req.user.id,req.params.id);
+        res.status(httpStatus.OK).json({ message: "The product  removed from wishlist successfully." });
+      } catch (error) {
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: "Internal server error", error: error.message });
+      }
+    };
+
 export default {
   sellerCreateProduct,
   sellerCreateShop,
@@ -298,5 +320,7 @@ export default {
   userSearchProducts,
   userGetProduct,
   sellerGetProduct,
-  buyerAddProductToWishList
+  buyerAddProductToWishList,
+  buyerDeleteAllProductFromWishlist,
+  buyerDeleteProductFromWishList
 };
