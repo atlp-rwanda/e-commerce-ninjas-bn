@@ -2,7 +2,8 @@ import cron from "node-cron";
 import updateExpiredProducts from "../helpers/updateExpiredProducts";
 import { Request, Response } from "express";
 
-const cronSchedule = "* * * * *";
+
+const cronSchedule = process.env.cronSchedule;
 
 export const startCronJobMiddleware = () => {
   cron.schedule(cronSchedule, async () => {
