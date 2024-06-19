@@ -495,6 +495,36 @@ const isProductExistToWishlist = async (req: Request, res: Response, next: NextF
   }
 }
 
+const isUserWishlistExist = async(req:Request,res:Response, next: NextFunction)=>{
+  try{
+  const wishList = await productRepositories.findProductFromWishListByUserId(req.user.id);
+  if(!wishList || wishList.length === 0){
+    return res.status(httpStatus.NOT_FOUND).json({
+      message: "No wishlist Found"
+    });
+  }
+  next();
+}catch (error) {
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+}
+}
+
+const isUserWishlistExistById = async(req:Request, res:Response, next:NextFunction)=>{
+  try{
+    const product = await productRepositories.findProductfromWishList(req.params.id,req.user.id);
+    if (!product) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: "Product Not Found From WishList"
+      });
+    }
+    next()
+     }catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+
+}
+
+
 export {
   validation,
   isUserExist,
@@ -518,5 +548,7 @@ export {
   isProductIdExist,
   isCartExist,
   isProductExistById,
-  isProductExistToWishlist
+  isProductExistToWishlist,
+  isUserWishlistExist,
+  isUserWishlistExistById
 };
