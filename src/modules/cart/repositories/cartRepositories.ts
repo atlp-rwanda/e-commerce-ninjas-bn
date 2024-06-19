@@ -1,6 +1,9 @@
 /* eslint-disable comma-dangle */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import db from "../../../databases/models";
-
+import CartProduct from "../../../databases/models/cartProducts";
+import Products from "../../../databases/models/products";
 const getCartsByUserId = async (userId: string) => {
   return await db.Carts.findAll({ where: { userId, status: "pending" } });
 };
@@ -69,6 +72,21 @@ const deleteAllUserCarts = async (userId: string) => {
 const deleteCartById = async (id: string) => {
   await db.Carts.destroy({ where: { id } });
 };
+const findCartByAttributes = async(key1: string, value1:any, key2: string, value2:any): Promise<any> => {
+  return await db.Carts.findOne({ where: { [key1]: value1, [key2]: value2 } })
+}
+const findCartProductsByCartId = async (value: any) => {
+  const result = await CartProduct.findAll({
+    where: {"cartId":value },
+    include: [{
+      model: Products, 
+      as: "products",
+      attributes: [ "id" , "name", "description" , "category" , "images" ]
+    }],
+    attributes: [ "id" , "quantity" , "price" , "totalPrice" ]
+  }) 
+  return result;
+};
 
 export default {
   getCartsByUserId,
@@ -83,4 +101,6 @@ export default {
   deleteCartById,
   deleteCartProduct,
   deleteAllCartProducts,
+  findCartByAttributes,
+  findCartProductsByCartId
 };
