@@ -304,6 +304,7 @@ describe("socketAuthMiddleware", () => {
 describe("checkPasswordExpiration middleware", () => {
   let req: any, res: any, next: NextFunction;
 
+  const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
 
   beforeEach(() => {
     req = {
@@ -325,12 +326,13 @@ describe("checkPasswordExpiration middleware", () => {
 
   it("should send an email and respond with 403 if the password is expired", async () => {
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (PASSWORD_EXPIRATION_DAYS + 1)),
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES + 1)),
       email: "user@example.com",
     });
     const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
 
     await checkPasswordExpiration(req, res, next);
+
  
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
@@ -346,9 +348,9 @@ describe("checkPasswordExpiration middleware", () => {
   });
 
   it("should set header if the password is expiring soon", async () => {
-    const daysToExpire = 9;
+    const minutesToExpire = 9;
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (PASSWORD_EXPIRATION_DAYS - daysToExpire)),
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES - minutesToExpire)),
       email: "user@example.com",
     });
 
@@ -356,20 +358,18 @@ describe("checkPasswordExpiration middleware", () => {
 
     expect(res.setHeader).to.have.been.calledWith(
       "Password-Expiry-Notification",
-      `Your password will expire in ${daysToExpire} days. Please update your password.`
+      `Your password will expire in ${minutesToExpire} minutes. Please update your password.`
     );
     expect(next).to.have.been.calledOnce;
   });
 
   it("should call next if the password is valid", async () => {
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
       email: "user@example.com",
     });
 
     await checkPasswordExpiration(req, res, next);
-
-  
 
     expect(next).to.have.been.calledOnce;
     expect(res.setHeader).to.not.have.been.called;
