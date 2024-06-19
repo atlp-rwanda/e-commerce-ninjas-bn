@@ -1175,7 +1175,7 @@ describe("checkPasswordExpirations Cronjob", () => {
     const now = new Date();
     const expiredUser = {
       email: "expired@example.com",
-      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+      passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };
@@ -1189,7 +1189,7 @@ describe("checkPasswordExpirations Cronjob", () => {
 
     expect(findAllStub).to.have.been.calledOnceWith({
       where: {
-        updatedAt: { [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES) },
+        passwordUpdatedAt: { [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES) },
         isVerified: true,
         status: "enabled"
       }
@@ -1208,7 +1208,7 @@ describe("checkPasswordExpirations Cronjob", () => {
     const now = new Date();
     const expiredUser = {
       email: "expired@example.com",
-      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+      passwordExpiredAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
       isVerified: true,
       status: "enabled"
     };
@@ -1234,12 +1234,9 @@ describe("checkPasswordExpirations Cronjob", () => {
   it("should log an error if database query fails", async () => {
     findAllStub.rejects(new Error("Database error"));
 
-
     const consoleErrorStub = sinon.stub(console, "error");
 
-
     await checkPasswordExpirations();
-
 
     expect(consoleErrorStub).to.have.been.calledWith(
       "Error checking password expiration:",
@@ -1263,29 +1260,21 @@ describe("checkPasswordExpirations Cronjob", () => {
       status: "enabled"
     };
 
-
     findAllStub.resolves([expiredUser1, expiredUser2]);
-
 
     const consoleLogStub = sinon.stub(console, "log");
 
-
     await checkPasswordExpirations();
-
 
     expect(consoleLogStub).to.have.been.calledWith("2 users notified for password expiration.");
   });
 
-
   it("should not send emails if no users have expired passwords", async () => {
     findAllStub.resolves([]);
 
-
     const consoleLogStub = sinon.stub(console, "log");
 
-
     await checkPasswordExpirations();
-
 
     expect(sendEmailStub).to.not.have.been.called;
     expect(consoleLogStub).to.have.been.calledWith("0 users notified for password expiration.");

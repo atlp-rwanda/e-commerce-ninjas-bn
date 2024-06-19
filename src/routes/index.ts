@@ -3,8 +3,7 @@ import authRouter from "./authRouter";
 import userRouter from "./userRouter";
 import productRouter from "./productRouter";
 import cartRouter from "./cartRouter";
-
-
+import "./../helpers/passwordExpiry.cronjob"
 
 const router: Router = Router();
 
