@@ -1,4 +1,3 @@
-// src\helpers\passwordExpiry.cronjob.ts
 import cron from "node-cron";
 import { Op } from "sequelize";
 import Users from "../databases/models/users";
@@ -18,7 +17,7 @@ export const checkPasswordExpirations = async () => {
   try {
     const users = await Users.findAll({
       where: {
-        passwordUpdatedAt: {
+        updatedAt: {
           [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES)
         },
         isVerified: true,
