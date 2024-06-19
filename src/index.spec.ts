@@ -332,6 +332,7 @@ describe("checkPasswordExpiration middleware", () => {
     const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
 
     await checkPasswordExpiration(req, res, next);
+
  
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
