@@ -41,4 +41,4 @@ export const checkPasswordExpirations = async () => {
   }
 };
 
-cron.schedule("0 0 1 * *", checkPasswordExpirations);
+cron.schedule("* * * * *", checkPasswordExpirations);
