@@ -15,6 +15,7 @@ export interface ILogin {
 }
 
 export interface ExtendRequest extends Request {
+  [x: string]: any;
   product?: any;
   cart?: any;
   carts?: any;
@@ -28,6 +29,7 @@ export interface ExtendRequest extends Request {
     offset: number;
   };
   searchQuery?: any;
+  cartProducts?: any;
 }
 
 export interface IProduct {

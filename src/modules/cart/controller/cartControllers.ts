@@ -253,7 +253,25 @@ const buyerClearCarts = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
+const buyerCheckout = async (req: ExtendRequest, res: Response) => {
+  try {
+    const cart = req.cart
+    let totalAmount = 0;
+    cart.cartProducts.forEach(product => {
+      totalAmount += product.totalPrice; 
+    });
 
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { totalAmount,cart }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message 
+    });
+  }
+};
 export {
   buyerGetCart,
   buyerGetCarts,
@@ -261,4 +279,5 @@ export {
   buyerClearCarts,
   buyerCreateUpdateCart,
   buyerClearCartProduct,
+  buyerCheckout
 };

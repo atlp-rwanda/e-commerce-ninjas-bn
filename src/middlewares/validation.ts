@@ -527,18 +527,15 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
   return next();
 };
 
-const isCartExist = async (req: any, res: Response, next: NextFunction) => {
+const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
-    const carts = await cartRepositories.getCartsByUserId(req.user.id);
-    if (!carts.length)
-      return res.status(httpStatus.NOT_FOUND).json({
-        status: httpStatus.NOT_FOUND,
-        message: "No cart found. Please create cart first.",
-      });
-
-    req.carts = carts;
-
-    return next();
+    const cart = await cartRepositories.getCartsByUserId (req.user.id);
+    if (!cart) {
+    return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+  }
+  req.cart = cart;
+  return next();
+    
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -571,25 +568,13 @@ const isProductIdExist = async (
 };
 
 const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
-  try {
-    const cart = await cartRepositories.getCartByUserIdAndCartId(
-      req.user.id,
-      req.params.cartId
-    );
-    if (!cart)
-      return res.status(httpStatus.NOT_FOUND).json({
-        status: httpStatus.NOT_FOUND,
-        message: "Cart not found. Please add items to your cart.",
-      });
-    req.cart = cart;
-    return next();
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
-    });
-  }
-};
+  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
+  if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  
+  req.cart = cart
+  return next();
+}
+
 
 const isCartProductExist = async (
   req: any,
