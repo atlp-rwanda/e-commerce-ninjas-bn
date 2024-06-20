@@ -13,7 +13,10 @@ const cartSchema = Joi.object({
         "any.required": "quantity is required"
     })
 });
-
+const paymentCheckoutSchema = Joi.object({
+    cartId: Joi.string().required()
+})
 export {
-    cartSchema
+    cartSchema,
+    paymentCheckoutSchema
 }

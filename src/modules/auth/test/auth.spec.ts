@@ -688,8 +688,10 @@ describe("Forget password", () => {
   it("should reset password when token is valid", (done) => {
     router()
       .put(`/api/auth/reset-password/${resetToken}`)
-      .send({ newPassword: "Newpassword#12" })
+      .send({ password: "Newpassword#12" })
       .end((err, res) => {
+        console.log(res);
+        
         expect(res.status).to.be.equal(httpStatus.OK);
         expect(res.body.message).to.be.equal("Password reset successfully.");
         done(err)
