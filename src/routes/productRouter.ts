@@ -103,23 +103,10 @@ router.get(
   productController.sellerGetProduct
 );
 
-router.post(
-  "/buyer-add-product-wishList/:id",
-  userAuthorization(["buyer"]),
-  isProductExistToWishlist,
-  productController.buyerAddProductToWishList
-);
-router.delete(
-  "/delete-whishlist-products",
-  userAuthorization(["buyer"]),
-  isUserWishlistExist,
-  productController.buyerDeleteAllProductFromWishlist
-);
-router.delete(
-  "/delete-whishlist-product/:id",
-  userAuthorization(["buyer"]),
-  isUserWishlistExistById,
-  productController.buyerDeleteProductFromWishList
-);
+router.post("/buyer-add-product-wishList/:id",userAuthorization(["buyer"]),isProductExistToWishlist,productController.buyerAddProductToWishList)
+router.get("/buyer-view-whishlist-product",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerViewWishLists)
+router.get("/buyer-view-whishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExistById,productController.buyerViewWishList)
+router.delete("/delete-whishlist-products",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerDeleteAllProductFromWishlist)
+router.delete("/delete-whishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExistById,productController.buyerDeleteProductFromWishList)
 
 export default router;
