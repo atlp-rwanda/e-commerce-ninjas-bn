@@ -1,11 +1,10 @@
 import Product from "../databases/models/products";
 import { Op } from "sequelize";
 import { sendEmail } from "../services/sendEmail";
-import { Request, Response } from "express";
 import Shop from "../databases/models/shops";
 import User from "../databases/models/users";
 
-const updateExpiredProducts = async (req: Request, res: Response) => {
+const updateExpiredProducts = async () => {
   try {
     const expiredProducts = await Product.findAll({
       where: {
@@ -66,7 +65,6 @@ const updateExpiredProducts = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error updating expired products:", error.message);
-    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
