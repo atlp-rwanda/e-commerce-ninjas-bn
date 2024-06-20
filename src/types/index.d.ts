@@ -15,6 +15,9 @@ export interface ILogin {
 }
 
 export interface ExtendRequest extends Request {
+  product?: any;
+  cart?: any;
+  carts?: any;
   files: Express.Multer.File[];
   user?: user;
   shop?: Shops;
@@ -87,15 +90,15 @@ export interface chatsAttributes {
     email: string;
   };
 }
-export interface IExtendedCartProduct extends CartProductAttributes{
+export interface IExtendedCartProduct extends CartProductAttributes {
   products?: IProduct;
 }
 
 export interface CustomSocket extends Socket {
-  user: UserAttributes
+  user: UserAttributes;
 }
 
 export interface JwtPayload extends usersAttributes {
-  iat?: number
-  exp?: number
+  iat?: number;
+  exp?: number;
 }
