@@ -1,12 +1,26 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable comma-dangle */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
-import cartController from "../controller/cartControllers";
+import * as cartController from "../controller/cartControllers";
 import db from "../../../databases/models";
-import { isCartExist, isCartIdExist, isProductIdExist } from "../../../middlewares/validation";
+import {
+  isCartExist,
+  isCartIdExist,
+  isProductIdExist,
+} from "../../../middlewares/validation";
 import productRepositories from "../../product/repositories/productRepositories";
+import {
+  buyerClearCart,
+  buyerClearCarts,
+  buyerClearCartProduct,
+} from "../controller/cartControllers";
+
 chai.use(chaiHttp);
 describe("Buyer Get Cart", () => {
   let req;
@@ -15,20 +29,18 @@ describe("Buyer Get Cart", () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     req = {
-      user: { id: "user-id" }
+      user: { id: "user-id" },
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
+      json: sinon.stub().returnsThis(),
     };
   });
   afterEach(() => {
     sandbox.restore();
   });
   it("should return cart details when cart exists", async () => {
-    const mockCarts = [
-      { id: "6ee2addd-5270-4855-969b-1f56608b122b" }
-    ];
+    const mockCarts = [{ id: "6ee2addd-5270-4855-969b-1f56608b122b" }];
     const mockCartProducts = [
       {
         quantity: 2,
@@ -36,8 +48,8 @@ describe("Buyer Get Cart", () => {
           id: "6ee2addd-5270-4855-969b-1f56608b122c",
           name: "Product 1",
           price: 50,
-          images: ["image1.jpg"]
-        }
+          images: ["image1.jpg"],
+        },
       },
       {
         quantity: 1,
@@ -45,16 +57,18 @@ describe("Buyer Get Cart", () => {
           id: "6ee2addd-5270-4855-969b-1f56608b122d",
           name: "Product 2",
           price: 100,
-          images: ["image2.jpg"]
-        }
-      }
+          images: ["image2.jpg"],
+        },
+      },
     ];
-  
+
     sandbox.stub(cartRepositories, "getCartsByUserId").resolves(mockCarts);
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
-    
+    sandbox
+      .stub(cartRepositories, "getCartProductsByCartId")
+      .resolves(mockCartProducts);
+
     await cartController.buyerGetCarts(req, res);
-    
+
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Buyer's all carts",
@@ -68,7 +82,7 @@ describe("Buyer Get Cart", () => {
               price: 50,
               image: "image1.jpg",
               quantity: 2,
-              totalPrice: 100
+              totalPrice: 100,
             },
             {
               id: "6ee2addd-5270-4855-969b-1f56608b122d",
@@ -76,23 +90,25 @@ describe("Buyer Get Cart", () => {
               price: 100,
               image: "image2.jpg",
               quantity: 1,
-              totalPrice: 100
-            }
+              totalPrice: 100,
+            },
           ],
-          total: 200
-        }
-      ]
+          total: 200,
+        },
+      ],
     });
   });
-  
+
   it("should handle errors properly", async () => {
     const error = new Error("Something went wrong");
     sandbox.stub(cartRepositories, "getCartsByUserId").throws(error);
     await cartController.buyerGetCarts(req, res);
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      error: error.message,
     });
   });
 });
@@ -110,13 +126,24 @@ describe("Cart Repositories", () => {
 
   describe("getCartsByUserId", () => {
     it("should return a cart for a given user ID with pending status", async () => {
-      const mockCarts = [{ id: "6ee2addd-5270-4855-969b-1f56608b122b", userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" }];
+      const mockCarts = [
+        {
+          id: "6ee2addd-5270-4855-969b-1f56608b122b",
+          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+          status: "pending",
+        },
+      ];
       sandbox.stub(db.Carts, "findAll").resolves(mockCarts);
 
-      const result = await cartRepositories.getCartsByUserId("6ee2addd-5270-4855-969b-1f56608b122e");
+      const result = await cartRepositories.getCartsByUserId(
+        "6ee2addd-5270-4855-969b-1f56608b122e"
+      );
 
       expect(db.Carts.findAll).to.have.been.calledOnceWith({
-        where: { userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" }
+        where: {
+          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+          status: "pending",
+        },
       });
       expect(result).to.eql(mockCarts);
     });
@@ -124,10 +151,15 @@ describe("Cart Repositories", () => {
     it("should return an empty array if no cart is found", async () => {
       sandbox.stub(db.Carts, "findAll").resolves([]);
 
-      const result = await cartRepositories.getCartsByUserId("6ee2addd-5270-4855-969b-1f56608b122e");
+      const result = await cartRepositories.getCartsByUserId(
+        "6ee2addd-5270-4855-969b-1f56608b122e"
+      );
 
       expect(db.Carts.findAll).to.have.been.calledOnceWith({
-        where: { userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" }
+        where: {
+          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+          status: "pending",
+        },
       });
       expect(result).to.be.an("array").that.is.empty;
     });
@@ -135,13 +167,24 @@ describe("Cart Repositories", () => {
 
   describe("getCartByUserIdAndCartId", () => {
     it("should return a cart for a given user ID and cart ID with pending status", async () => {
-      const mockCart = { id: "6ee2addd-5270-4855-969b-1f56608b122b", userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" };
+      const mockCart = {
+        id: "6ee2addd-5270-4855-969b-1f56608b122b",
+        userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+        status: "pending",
+      };
       sandbox.stub(db.Carts, "findOne").resolves(mockCart);
 
-      const result = await cartRepositories.getCartByUserIdAndCartId("6ee2addd-5270-4855-969b-1f56608b122e", "cart-id");
+      const result = await cartRepositories.getCartByUserIdAndCartId(
+        "6ee2addd-5270-4855-969b-1f56608b122e",
+        "cart-id"
+      );
 
       expect(db.Carts.findOne).to.have.been.calledOnceWith({
-        where: { id: "cart-id", userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" }
+        where: {
+          id: "cart-id",
+          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+          status: "pending",
+        },
       });
       expect(result).to.eql(mockCart);
     });
@@ -149,10 +192,17 @@ describe("Cart Repositories", () => {
     it("should return null if no cart is found", async () => {
       sandbox.stub(db.Carts, "findOne").resolves(null);
 
-      const result = await cartRepositories.getCartByUserIdAndCartId("6ee2addd-5270-4855-969b-1f56608b122e", "cart-id");
+      const result = await cartRepositories.getCartByUserIdAndCartId(
+        "6ee2addd-5270-4855-969b-1f56608b122e",
+        "cart-id"
+      );
 
       expect(db.Carts.findOne).to.have.been.calledOnceWith({
-        where: { id: "cart-id", userId: "6ee2addd-5270-4855-969b-1f56608b122e", status: "pending" }
+        where: {
+          id: "cart-id",
+          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
+          status: "pending",
+        },
       });
       expect(result).to.be.null;
     });
@@ -179,7 +229,10 @@ describe("Cart Repositories", () => {
 
       await cartRepositories.updateCartProduct(productId, cartProductData);
 
-      expect(db.CartProducts.update).to.have.been.calledOnceWith(cartProductData, { where: { id: productId } });
+      expect(db.CartProducts.update).to.have.been.calledOnceWith(
+        cartProductData,
+        { where: { id: productId } }
+      );
     });
   });
 
@@ -191,25 +244,32 @@ describe("Cart Repositories", () => {
 
       const result = await cartRepositories.getShopIdByProductId(productId);
 
-      expect(db.Products.findOne).to.have.been.calledOnceWith({ where: { id: productId } });
+      expect(db.Products.findOne).to.have.been.calledOnceWith({
+        where: { id: productId },
+      });
       expect(result).to.equal(mockProduct.shopId);
     });
   });
 
   describe("addCartProduct", () => {
     it("should add a new cart product", async () => {
-      const cartProductData = { cartId: "cart-id", productId: "product-id", quantity: 3 };
+      const cartProductData = {
+        cartId: "cart-id",
+        productId: "product-id",
+        quantity: 3,
+      };
       const mockCartProduct = { id: "cart-product-id", ...cartProductData };
       sandbox.stub(db.CartProducts, "create").resolves(mockCartProduct);
 
       const result = await cartRepositories.addCartProduct(cartProductData);
 
-      expect(db.CartProducts.create).to.have.been.calledOnceWith(cartProductData);
+      expect(db.CartProducts.create).to.have.been.calledOnceWith(
+        cartProductData
+      );
       expect(result).to.eql(mockCartProduct);
     });
   });
 });
-
 
 describe("Validation Middlewares", () => {
   let req;
@@ -222,11 +282,11 @@ describe("Validation Middlewares", () => {
     req = {
       user: { id: "6ee2addd-5270-4855-969b-1f56608b122e" },
       body: { productId: "6ee2addd-5270-4855-969b-1f56608b122c" },
-      params: { cartId: "6ee2addd-5270-4855-969b-1f56608b1229" }
+      params: { cartId: "6ee2addd-5270-4855-969b-1f56608b1229" },
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
+      json: sinon.stub().returnsThis(),
     };
     next = sinon.stub();
   });
@@ -236,7 +296,9 @@ describe("Validation Middlewares", () => {
   });
 
   it("should check if cart exists", async () => {
-    sandbox.stub(cartRepositories, "getCartsByUserId").resolves([{ id: "cart-id" }]);
+    sandbox
+      .stub(cartRepositories, "getCartsByUserId")
+      .resolves([{ id: "cart-id" }]);
 
     await isCartExist(req, res, next);
 
@@ -251,12 +313,14 @@ describe("Validation Middlewares", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.NOT_FOUND,
-      message: "No cart found. Please create cart first."
+      message: "No cart found. Please create cart first.",
     });
   });
 
   it("should check if product ID exists", async () => {
-    sandbox.stub(productRepositories, "findProductById").resolves({ id: "6ee2addd-5270-4855-969b-1f56608b1228" });
+    sandbox
+      .stub(productRepositories, "findProductById")
+      .resolves({ id: "6ee2addd-5270-4855-969b-1f56608b1228" });
 
     await isProductIdExist(req, res, next);
 
@@ -271,12 +335,14 @@ describe("Validation Middlewares", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.NOT_FOUND,
-      message: "No product with that ID."
+      message: "No product with that ID.",
     });
   });
 
   it("should check if cart ID exists", async () => {
-    sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").resolves({ id: "6ee2addd-5270-4855-969b-1f56608b1229" });
+    sandbox
+      .stub(cartRepositories, "getCartByUserIdAndCartId")
+      .resolves({ id: "6ee2addd-5270-4855-969b-1f56608b1229" });
 
     await isCartIdExist(req, res, next);
 
@@ -291,7 +357,7 @@ describe("Validation Middlewares", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.NOT_FOUND,
-      message: "Cart not found. Please add items to your cart."
+      message: "Cart not found. Please add items to your cart.",
     });
   });
 });
@@ -306,11 +372,11 @@ describe("Cart Controller - GetCart", () => {
     req = {
       user: { id: "6ee2addd-5270-4855-969b-1f56608b122e" },
       body: { productId: "6ee2addd-5270-4855-969b-1f56608b1228", quantity: 2 },
-      params: { cartId: "6ee2addd-5270-4855-969b-1f56608b1229" }
+      params: { cartId: "6ee2addd-5270-4855-969b-1f56608b1229" },
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
+      json: sinon.stub().returnsThis(),
     };
   });
 
@@ -327,8 +393,8 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          images: ["image1.jpg"]
-        }
+          images: ["image1.jpg"],
+        },
       },
       {
         quantity: 1,
@@ -336,12 +402,16 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          images: ["image2.jpg"]
-        }
-      }
+          images: ["image2.jpg"],
+        },
+      },
     ];
-    sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").resolves(mockCart);
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+    sandbox
+      .stub(cartRepositories, "getCartByUserIdAndCartId")
+      .resolves(mockCart);
+    sandbox
+      .stub(cartRepositories, "getCartProductsByCartId")
+      .resolves(mockCartProducts);
 
     await cartController.buyerGetCart(req, res);
 
@@ -357,7 +427,7 @@ describe("Cart Controller - GetCart", () => {
             price: 50,
             image: "image1.jpg",
             quantity: 2,
-            totalPrice: 100
+            totalPrice: 100,
           },
           {
             id: "product-id-2",
@@ -365,11 +435,11 @@ describe("Cart Controller - GetCart", () => {
             price: 100,
             image: "image2.jpg",
             quantity: 1,
-            totalPrice: 100
-          }
+            totalPrice: 100,
+          },
         ],
-        total: 200
-      }
+        total: 200,
+      },
     });
   });
 
@@ -379,10 +449,12 @@ describe("Cart Controller - GetCart", () => {
 
     await cartController.buyerGetCart(req, res);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      error: error.message,
     });
   });
 
@@ -395,8 +467,8 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          images: ["image1.jpg"]
-        }
+          images: ["image1.jpg"],
+        },
       },
       {
         quantity: 1,
@@ -404,12 +476,14 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          images: ["image2.jpg"]
-        }
-      }
+          images: ["image2.jpg"],
+        },
+      },
     ];
     sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+    sandbox
+      .stub(cartRepositories, "getCartProductsByCartId")
+      .resolves(mockCartProducts);
 
     await cartController.buyerGetCarts(req, res);
 
@@ -426,7 +500,7 @@ describe("Cart Controller - GetCart", () => {
               price: 50,
               image: "image1.jpg",
               quantity: 2,
-              totalPrice: 100
+              totalPrice: 100,
             },
             {
               id: "product-id-2",
@@ -434,12 +508,12 @@ describe("Cart Controller - GetCart", () => {
               price: 100,
               image: "image2.jpg",
               quantity: 1,
-              totalPrice: 100
-            }
+              totalPrice: 100,
+            },
           ],
-          total: 200
-        }
-      ]
+          total: 200,
+        },
+      ],
     });
   });
 
@@ -449,10 +523,12 @@ describe("Cart Controller - GetCart", () => {
 
     await cartController.buyerGetCarts(req, res);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      error: error.message,
     });
   });
 
@@ -465,8 +541,8 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          images: ["image1.jpg"]
-        }
+          images: ["image1.jpg"],
+        },
       },
       {
         quantity: 1,
@@ -474,41 +550,45 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          images: ["image2.jpg"]
-        }
-      }
+          images: ["image2.jpg"],
+        },
+      },
     ];
 
     sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+    sandbox
+      .stub(cartRepositories, "getCartProductsByCartId")
+      .resolves(mockCartProducts);
 
     await cartController.buyerGetCarts(req, res);
 
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Buyer's all carts",
-      data: [{
-        cartId: mockCart.id,
-        products: [
-          {
-            id: "product-id-1",
-            name: "Product 1",
-            price: 50,
-            image: "image1.jpg",
-            quantity: 2,
-            totalPrice: 100
-          },
-          {
-            id: "product-id-2",
-            name: "Product 2",
-            price: 100,
-            image: "image2.jpg",
-            quantity: 1,
-            totalPrice: 100
-          }
-        ],
-        total: 200
-      }]
+      data: [
+        {
+          cartId: mockCart.id,
+          products: [
+            {
+              id: "product-id-1",
+              name: "Product 1",
+              price: 50,
+              image: "image1.jpg",
+              quantity: 2,
+              totalPrice: 100,
+            },
+            {
+              id: "product-id-2",
+              name: "Product 2",
+              price: 100,
+              image: "image2.jpg",
+              quantity: 1,
+              totalPrice: 100,
+            },
+          ],
+          total: 200,
+        },
+      ],
     });
   });
 
@@ -521,8 +601,8 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          images: ["image1.jpg"]
-        }
+          images: ["image1.jpg"],
+        },
       },
       {
         quantity: 1,
@@ -530,13 +610,17 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          images: ["image2.jpg"]
-        }
-      }
+          images: ["image2.jpg"],
+        },
+      },
     ];
 
-    sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").resolves(mockCart);
-    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+    sandbox
+      .stub(cartRepositories, "getCartByUserIdAndCartId")
+      .resolves(mockCart);
+    sandbox
+      .stub(cartRepositories, "getCartProductsByCartId")
+      .resolves(mockCartProducts);
 
     await cartController.buyerGetCart(req, res);
 
@@ -552,7 +636,7 @@ describe("Cart Controller - GetCart", () => {
             price: 50,
             image: "image1.jpg",
             quantity: 2,
-            totalPrice: 100
+            totalPrice: 100,
           },
           {
             id: "product-id-2",
@@ -560,14 +644,13 @@ describe("Cart Controller - GetCart", () => {
             price: 100,
             image: "image2.jpg",
             quantity: 1,
-            totalPrice: 100
-          }
+            totalPrice: 100,
+          },
         ],
-        total: 200
-      }
+        total: 200,
+      },
     });
   });
-
 });
 
 describe("Cart Controller Tests", () => {
@@ -580,11 +663,11 @@ describe("Cart Controller Tests", () => {
     req = {
       user: { id: "user-id" },
       body: { productId: "product-id", quantity: 2 },
-      params: { cartId: "cart-id" }
+      params: { cartId: "cart-id" },
     };
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
+      json: sinon.stub().returnsThis(),
     };
   });
 
@@ -600,7 +683,7 @@ describe("Cart Controller Tests", () => {
         name: "Product 1",
         price: 50,
         images: ["image1.jpg"],
-        shopId: "shop-id"
+        shopId: "shop-id",
       };
       const mockCartProducts = [
         {
@@ -609,14 +692,18 @@ describe("Cart Controller Tests", () => {
             id: "product-id",
             name: "Product 1",
             price: 50,
-            images: ["image1.jpg"]
-          }
-        }
+            images: ["image1.jpg"],
+          },
+        },
       ];
 
       sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
-      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox
+        .stub(cartRepositories, "getCartProductsByCartId")
+        .resolves(mockCartProducts);
+      sandbox
+        .stub(productRepositories, "findProductById")
+        .resolves(mockProduct);
       sandbox.stub(cartRepositories, "addCartProduct").resolves();
       sandbox.stub(cartRepositories, "updateCartProduct").resolves();
 
@@ -634,11 +721,11 @@ describe("Cart Controller Tests", () => {
               price: 50,
               image: "image1.jpg",
               quantity: 2,
-              totalPrice: 100
-            }
+              totalPrice: 100,
+            },
           ],
-          total: 100
-        }
+          total: 100,
+        },
       });
     });
 
@@ -649,7 +736,7 @@ describe("Cart Controller Tests", () => {
         name: "Product 1",
         price: 50,
         images: ["image1.jpg"],
-        shopId: "shop-id"
+        shopId: "shop-id",
       };
       const mockCartProducts = [
         {
@@ -659,14 +746,18 @@ describe("Cart Controller Tests", () => {
             name: "Product 1",
             price: 50,
             images: ["image1.jpg"],
-            shopId: "shop-id"
-          }
-        }
+            shopId: "shop-id",
+          },
+        },
       ];
 
       sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
-      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox
+        .stub(cartRepositories, "getCartProductsByCartId")
+        .resolves(mockCartProducts);
+      sandbox
+        .stub(productRepositories, "findProductById")
+        .resolves(mockProduct);
       sandbox.stub(cartRepositories, "addCartProduct").resolves();
       sandbox.stub(cartRepositories, "updateCartProduct").resolves();
 
@@ -684,22 +775,26 @@ describe("Cart Controller Tests", () => {
               price: 50,
               image: "image1.jpg",
               quantity: 2,
-              totalPrice: 100
-            }
+              totalPrice: 100,
+            },
           ],
-          total: 100
-        }
+          total: 100,
+        },
       });
     });
 
     it("should create new cart and add product if no cart exists", async () => {
-      const mockCreatedCart = { id: "new-cart-id", userId: "user-id", status: "pending" };
+      const mockCreatedCart = {
+        id: "new-cart-id",
+        userId: "user-id",
+        status: "pending",
+      };
       const mockProduct = {
         id: "product-id",
         name: "Product 1",
         price: 50,
         images: ["image1.jpg"],
-        shopId: "shop-id"
+        shopId: "shop-id",
       };
       const mockCartProducts = [
         {
@@ -708,16 +803,20 @@ describe("Cart Controller Tests", () => {
             id: "product-id",
             name: "Product 1",
             price: 50,
-            images: ["image1.jpg"]
-          }
-        }
+            images: ["image1.jpg"],
+          },
+        },
       ];
 
       sandbox.stub(cartRepositories, "getCartsByUserId").resolves([]);
       sandbox.stub(cartRepositories, "addCart").resolves(mockCreatedCart);
-      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox
+        .stub(productRepositories, "findProductById")
+        .resolves(mockProduct);
       sandbox.stub(cartRepositories, "addCartProduct").resolves();
-      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+      sandbox
+        .stub(cartRepositories, "getCartProductsByCartId")
+        .resolves(mockCartProducts);
 
       await cartController.buyerCreateUpdateCart(req, res);
 
@@ -733,11 +832,11 @@ describe("Cart Controller Tests", () => {
               price: 50,
               image: "image1.jpg",
               quantity: 2,
-              totalPrice: 100
-            }
+              totalPrice: 100,
+            },
           ],
-          total: 100
-        }
+          total: 100,
+        },
       });
     });
 
@@ -747,11 +846,181 @@ describe("Cart Controller Tests", () => {
 
       await cartController.buyerCreateUpdateCart(req, res);
 
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.status).to.have.been.calledWith(
+        httpStatus.INTERNAL_SERVER_ERROR
+      );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
+        error: error.message,
       });
     });
+  });
+});
+
+describe("buyerClearCartProduct", () => {
+  let req, res, deleteCartProductStub;
+
+  beforeEach(() => {
+    req = {
+      cart: { id: "cartId" },
+      product: { productId: "productId" },
+    };
+
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    deleteCartProductStub = sinon.stub(cartRepositories, "deleteCartProduct");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should clear the cart product successfully", async () => {
+    deleteCartProductStub.resolves();
+
+    await buyerClearCartProduct(req, res);
+
+    expect(deleteCartProductStub).to.have.been.calledWith(
+      "cartId",
+      "productId"
+    );
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      message: "Cart product cleared successfully",
+    });
+  });
+
+  it("should handle errors and respond with an error message", async () => {
+    const errorMessage = "Internal Server Error";
+    deleteCartProductStub.rejects(new Error(errorMessage));
+
+    await buyerClearCartProduct(req, res);
+
+    expect(deleteCartProductStub).to.have.been.calledWith(
+      "cartId",
+      "productId"
+    );
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: errorMessage,
+    });
+  });
+});
+
+describe("buyerClearCart", () => {
+  let req, res, deleteAllCartProductsStub, deleteCartByIdStub;
+
+  beforeEach(() => {
+    req = {
+      cart: { id: "cartId" },
+    };
+
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    deleteAllCartProductsStub = sinon.stub(
+      cartRepositories,
+      "deleteAllCartProducts"
+    );
+    deleteCartByIdStub = sinon.stub(cartRepositories, "deleteCartById");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should clear all products in the cart and the cart itself successfully", async () => {
+    deleteAllCartProductsStub.resolves();
+    deleteCartByIdStub.resolves();
+
+    await buyerClearCart(req, res);
+
+    expect(deleteAllCartProductsStub).to.have.been.calledWith("cartId");
+    expect(deleteCartByIdStub).to.have.been.calledWith("cartId");
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      message: "All products in cart cleared successfully!",
+    });
+  });
+
+  it("should handle errors and respond with an error message", async () => {
+    const errorMessage = "Internal Server Error";
+    deleteAllCartProductsStub.rejects(new Error(errorMessage));
+
+    await buyerClearCart(req, res);
+
+    expect(deleteAllCartProductsStub).to.have.been.calledWith("cartId");
+    expect(deleteCartByIdStub).not.to.have.been.called;
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: errorMessage,
+    });
+  });
+});
+
+describe("buyerClearCarts", () => {
+  let req, res, deleteAllCartProductsStub, deleteAllUserCartsStub;
+
+  beforeEach(() => {
+    req = {
+      carts: [{ id: 1 }, { id: 2 }],
+      user: { id: 1 },
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    deleteAllCartProductsStub = sinon
+      .stub(cartRepositories, "deleteAllCartProducts")
+      .resolves();
+    deleteAllUserCartsStub = sinon
+      .stub(cartRepositories, "deleteAllUserCarts")
+      .resolves();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should clear all carts and return success message", async () => {
+    await buyerClearCarts(req, res);
+
+    expect(deleteAllCartProductsStub.calledTwice).to.be.true;
+    expect(deleteAllCartProductsStub.firstCall.calledWith(1)).to.be.true;
+    expect(deleteAllCartProductsStub.secondCall.calledWith(2)).to.be.true;
+    expect(deleteAllUserCartsStub.calledOnceWith(1)).to.be.true;
+
+    expect(res.status.calledOnceWith(httpStatus.OK)).to.be.true;
+    expect(
+      res.json.calledOnceWith({ message: "All carts cleared successfully!" })
+    ).to.be.true;
+  });
+
+  it("should handle errors and return internal server error message", async () => {
+    const errorMessage = "Something went wrong";
+    deleteAllCartProductsStub.rejects(new Error(errorMessage));
+
+    await buyerClearCarts(req, res);
+
+    expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be
+      .true;
+    expect(
+      res.json.calledOnceWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: errorMessage,
+      })
+    ).to.be.true;
   });
 });

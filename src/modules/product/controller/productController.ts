@@ -153,15 +153,22 @@ const updateProductStatus = async (req: ExtendRequest, res: Response) => {
 
 const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
-    const { limit, page, offset } = req.pagination
+    const { limit, page, offset } = req.pagination;
     await productRepositories.markProducts(req.shop.id);
-    const products = await productRepositories.sellerGetProducts(req.shop.id, limit, offset);
+    const products = await productRepositories.sellerGetProducts(
+      req.shop.id,
+      limit,
+      offset
+    );
     const totalPages = Math.ceil(products.count / limit);
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
     res.status(httpStatus.OK).json({
       message: "All products fetched successfully.",
-      previousPage, currentPage: page, nextPage, limit,
+      previousPage,
+      currentPage: page,
+      nextPage,
+      limit,
       data: products.rows,
     });
   } catch (error) {
@@ -211,102 +218,135 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
 
 const userGetProducts = async (req: ExtendRequest, res: Response) => {
   try {
-    const { limit, page, offset } = req.pagination
+    const { limit, page, offset } = req.pagination;
     const products = await productRepositories.userGetProducts(limit, offset);
     const totalPages = Math.ceil(products.count / limit);
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
 
-    return res.status(httpStatus.OK).json({ status: httpStatus.OK, nextPage, currentPage: page, previousPage, limit, data: products.rows });
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      nextPage,
+      currentPage: page,
+      previousPage,
+      limit,
+      data: products.rows,
+    });
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
-}
+};
 
 const userSearchProducts = async (req: ExtendRequest, res: Response) => {
   try {
-    const { limit, page, offset } = req.pagination
-    const products = await productRepositories.userSearchProducts(req.searchQuery, limit, offset)
+    const { limit, page, offset } = req.pagination;
+    const products = await productRepositories.userSearchProducts(
+      req.searchQuery,
+      limit,
+      offset
+    );
     const totalPages = Math.ceil(products.count / limit);
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
-    return res.status(httpStatus.OK).json({ nextPage, currentPage: page, previousPage, limit, data: products.rows })
+    return res.status(httpStatus.OK).json({
+      nextPage,
+      currentPage: page,
+      previousPage,
+      limit,
+      data: products.rows,
+    });
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
-}
+};
 
-const userGetProduct = async (req:ExtendRequest,res:Response) => {
-  try{
-      const product = await productRepositories.findProductById(req.params.id);
-      res.status(httpStatus.OK).json({
-          message: "Products is fetched successfully.",
-          product
-        });
-  
+const userGetProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    const product = await productRepositories.findProductById(req.params.id);
+    res.status(httpStatus.OK).json({
+      message: "Products is fetched successfully.",
+      product,
+    });
   } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
-      });
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
   }
+};
+const sellerGetProduct = async (req: ExtendRequest, res: Response) => {
+  try {
+    const products = await productRepositories.sellerGetProductById(
+      req.shop.id,
+      req.params.id
+    );
+    res.status(httpStatus.OK).json({
+      message: "Product fetched successfully.",
+      data: products,
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
   }
-  const sellerGetProduct = async (req: ExtendRequest, res: Response) => {
-    try {
-      
-        const products = await productRepositories.sellerGetProductById(req.shop.id,req.params.id);
-        res.status(httpStatus.OK).json({
-          message: "Product fetched successfully.",
-          data: products,
-        });
-      
-    } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message,
-      });
-    }
-  };
-  const buyerAddProductToWishList = async (req:ExtendRequest,res:Response) => {
-    try{
-        const data = {
-          productId: req.params.id,
-          userId: req.user.id
-        }
-        const product = await productRepositories.addProductToWishList(data);
-        res.status(httpStatus.OK).json({
-          message: "Product is added to wishlist successfully.",
-          data: { product }
-        });
-    
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          error: error.message
-        });
-    }
-    }
-    const buyerDeleteAllProductFromWishlist = async(req:ExtendRequest,res:Response)=>{
-      try {
-        await productRepositories.deleteAllWishListByUserId(req.user.id);
-        res.status(httpStatus.OK).json({ message: "Your wishlist is cleared successfully." });
-      } catch (error) {
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .json({ message: "Internal server error", error: error.message });
-      }
+};
+const buyerAddProductToWishList = async (req: ExtendRequest, res: Response) => {
+  try {
+    const data = {
+      productId: req.params.id,
+      userId: req.user.id,
     };
-    
-    const buyerDeleteProductFromWishList = async(req:ExtendRequest,res:Response)=>{
-      try {
-        await productRepositories.deleteProductFromWishListById(req.user.id,req.params.id);
-        res.status(httpStatus.OK).json({ message: "The product  removed from wishlist successfully." });
-      } catch (error) {
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .json({ message: "Internal server error", error: error.message });
-      }
-    };
+    const product = await productRepositories.addProductToWishList(data);
+    res.status(httpStatus.OK).json({
+      message: "Product is added to wishlist successfully.",
+      data: { product },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+const buyerDeleteAllProductFromWishlist = async (
+  req: ExtendRequest,
+  res: Response
+) => {
+  try {
+    await productRepositories.deleteAllWishListByUserId(req.user.id);
+    res
+      .status(httpStatus.OK)
+      .json({ message: "Your wishlist is cleared successfully." });
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const buyerDeleteProductFromWishList = async (
+  req: ExtendRequest,
+  res: Response
+) => {
+  try {
+    await productRepositories.deleteProductFromWishListById(
+      req.user.id,
+      req.params.id
+    );
+    res
+      .status(httpStatus.OK)
+      .json({ message: "The product  removed from wishlist successfully." });
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
 
 export default {
   sellerCreateProduct,
@@ -322,5 +362,5 @@ export default {
   sellerGetProduct,
   buyerAddProductToWishList,
   buyerDeleteAllProductFromWishlist,
-  buyerDeleteProductFromWishList
+  buyerDeleteProductFromWishList,
 };

@@ -13,7 +13,7 @@ import {
   isProductExistById,
   isProductExistToWishlist,
   isUserWishlistExist,
-  isUserWishlistExistById
+  isUserWishlistExistById,
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -69,18 +69,57 @@ router.put(
   validation(statusSchema),
   productController.updateProductStatus
 );
-router.get("/seller-get-products", userAuthorization(["seller"]), isSellerShopExist, isPaginated, productController.sellerGetProducts);
+router.get(
+  "/seller-get-products",
+  userAuthorization(["seller"]),
+  isSellerShopExist,
+  isPaginated,
+  productController.sellerGetProducts
+);
 
-router.get("/user-get-products", isPaginated, productController.userGetProducts);
+router.get(
+  "/user-get-products",
+  isPaginated,
+  productController.userGetProducts
+);
 
-router.get("/user-search-products", isSearchFiltered, isPaginated, productController.userSearchProducts)
+router.get(
+  "/user-search-products",
+  isSearchFiltered,
+  isPaginated,
+  productController.userSearchProducts
+);
 
-router.get("/user-get-product/:id",isProductExistById,productController.userGetProduct);
-router.get("/seller-get-product/:id",userAuthorization(["seller"]),isSellerShopExist,isProductExistById,productController.sellerGetProduct)
+router.get(
+  "/user-get-product/:id",
+  isProductExistById,
+  productController.userGetProduct
+);
+router.get(
+  "/seller-get-product/:id",
+  userAuthorization(["seller"]),
+  isSellerShopExist,
+  isProductExistById,
+  productController.sellerGetProduct
+);
 
-router.post("/buyer-add-product-wishList/:id",userAuthorization(["buyer"]),isProductExistToWishlist,productController.buyerAddProductToWishList)
-router.delete("/delete-whishlist-products",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerDeleteAllProductFromWishlist)
-router.delete("/delete-whishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExistById,productController.buyerDeleteProductFromWishList)
-
+router.post(
+  "/buyer-add-product-wishList/:id",
+  userAuthorization(["buyer"]),
+  isProductExistToWishlist,
+  productController.buyerAddProductToWishList
+);
+router.delete(
+  "/delete-whishlist-products",
+  userAuthorization(["buyer"]),
+  isUserWishlistExist,
+  productController.buyerDeleteAllProductFromWishlist
+);
+router.delete(
+  "/delete-whishlist-product/:id",
+  userAuthorization(["buyer"]),
+  isUserWishlistExistById,
+  productController.buyerDeleteProductFromWishList
+);
 
 export default router;

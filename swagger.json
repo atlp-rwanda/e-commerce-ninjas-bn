@@ -41,16 +41,9 @@
       "description": "Buyer Endpoint"
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "components": {
     "schemas": {
       "User": {
@@ -83,10 +76,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female"
-            ],
+            "enum": ["male", "female"],
             "nullable": true
           },
           "birthDate": {
@@ -270,9 +260,7 @@
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Initial Route"
-        ],
+        "tags": ["Initial Route"],
         "summary": "Handle Initial / Wrong GET Route",
         "description": "By using the initial/wrong GET endpoint, you will see a welcome message (Welcome to E-Commerce-Ninja-BackEnd)",
         "responses": {
@@ -284,9 +272,7 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Register a new user",
         "description": "This endpoint allows for registering a new user by providing the required details.",
         "requestBody": {
@@ -306,10 +292,7 @@
                     "format": "password"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -357,9 +340,7 @@
     },
     "/api/auth/send-verify-email": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Resend verification email again",
         "description": "This endpoint allows user to request verification email again",
         "requestBody": {
@@ -375,9 +356,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -424,9 +403,7 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Verify user email",
         "description": "This endpoint allows user to verify their email",
         "parameters": [
@@ -479,9 +456,7 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Login User",
         "description": "Login a registered user by providing Email and Password",
         "requestBody": {
@@ -502,10 +477,7 @@
                     "example": "yourpassword"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -522,9 +494,7 @@
     },
     "/api/auth/google": {
       "get": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Login User via Google",
         "description": "This route should redirect the user to Google for verification. [Login Via Google](https://e-commerce-ninjas-platform-backend.onrender.com/api/auth/google)",
         "responses": {
@@ -536,9 +506,7 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Logout User",
         "description": "Logout a logged in user",
         "security": [
@@ -561,9 +529,7 @@
     },
     "/api/auth/enable-2f": {
       "put": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Allow User to Enable  2FA",
         "description": "Allow User to Enable  2FA",
         "security": [
@@ -584,9 +550,7 @@
                     "example": true
                   }
                 },
-                "required": [
-                  "is2FAEnabled"
-                ]
+                "required": ["is2FAEnabled"]
               }
             }
           }
@@ -603,9 +567,7 @@
     },
     "/api/auth/verify-otp/{id}": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Verify The OTP Sent",
         "description": "The Verification of OTP Sent to SMS  ",
         "parameters": [
@@ -629,9 +591,7 @@
                     "example": "otp"
                   }
                 },
-                "required": [
-                  "OTP"
-                ]
+                "required": ["OTP"]
               }
             }
           }
@@ -648,9 +608,7 @@
     },
     "/api/auth/forget-password": {
       "post": {
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "summary": "Request password reset",
         "description": "This endpoint allows a user to request a password reset link by providing their email address.",
         "requestBody": {
@@ -666,9 +624,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -747,9 +703,7 @@
       "put": {
         "summary": "Reset password",
         "description": "Resets the user's password using the provided token and new password.",
-        "tags": [
-          "Authentication Routes"
-        ],
+        "tags": ["Authentication Routes"],
         "parameters": [
           {
             "in": "path",
@@ -773,9 +727,7 @@
                     "description": "The new password"
                   }
                 },
-                "required": [
-                  "newPassword"
-                ]
+                "required": ["newPassword"]
               }
             }
           }
@@ -797,9 +749,7 @@
       "put": {
         "summary": "User update password",
         "description": "Updates the password for a user with the specified ID.",
-        "tags": [
-          "User Routes"
-        ],
+        "tags": ["User Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -825,11 +775,7 @@
                     "description": "Confirmation of the new password. It must match the new password."
                   }
                 },
-                "required": [
-                  "oldPassword",
-                  "newPassword",
-                  "confirmPassword"
-                ]
+                "required": ["oldPassword", "newPassword", "confirmPassword"]
               }
             }
           }
@@ -855,9 +801,7 @@
     },
     "/api/user/user-get-profile": {
       "get": {
-        "tags": [
-          "User Routes"
-        ],
+        "tags": ["User Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -941,9 +885,7 @@
     },
     "/api/user/user-update-profile": {
       "put": {
-        "tags": [
-          "User Routes"
-        ],
+        "tags": ["User Routes"],
         "summary": "Update a User Profile",
         "description": "User should be able to update his/her profile",
         "security": [
@@ -1047,9 +989,7 @@
     },
     "/api/user/admin-get-users": {
       "get": {
-        "tags": [
-          "Admin Routes"
-        ],
+        "tags": ["Admin Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -1133,9 +1073,7 @@
     },
     "/api/user/admin-get-user/{id}": {
       "get": {
-        "tags": [
-          "Admin Routes"
-        ],
+        "tags": ["Admin Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -1227,9 +1165,7 @@
     },
     "/api/user/admin-update-user-status/{id}": {
       "put": {
-        "tags": [
-          "Admin Routes"
-        ],
+        "tags": ["Admin Routes"],
         "security": [
           {
             "bearerAuth": []
@@ -1260,9 +1196,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -1365,9 +1299,7 @@
     },
     "/api/user/admin-update-user-role/{id}": {
       "put": {
-        "tags": [
-          "Admin Routes"
-        ],
+        "tags": ["Admin Routes"],
         "summary": "Update user role",
         "description": "This endpoint allows admin to update a user's role",
         "parameters": [
@@ -1391,16 +1323,10 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "Admin",
-                      "Buyer",
-                      "Seller"
-                    ]
+                    "enum": ["Admin", "Buyer", "Seller"]
                   }
                 },
-                "required": [
-                  "role"
-                ]
+                "required": ["role"]
               }
             }
           }
@@ -1491,9 +1417,7 @@
     },
     "/api/shop/seller-create-shop": {
       "post": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "A seller should be able to Create new shop",
         "description": "This endpoint allows seller to create new shop",
         "requestBody": {
@@ -1613,9 +1537,7 @@
     },
     "/api/shop/seller-create-product": {
       "post": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "A seller should be able to Create/Add a product with shop Id",
         "description": "This endpoint allows seller to create/add a product with shop Id",
         "requestBody": {
@@ -1794,9 +1716,7 @@
     },
     "/api/shop/seller-update-product/{id}": {
       "put": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "A seller should be able to Update/Modify a product with Id",
         "description": "This endpoint allows seller to update/modify a product with Id",
         "parameters": [
@@ -1983,9 +1903,7 @@
     },
     "/api/shop/seller-delete-product/{id}": {
       "delete": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "Delete Item",
         "description": "Deletes a specific item from a seller's shop.",
         "security": [
@@ -2056,9 +1974,7 @@
     },
     "/api/shop/seller-statistics": {
       "post": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "Seller Statistics",
         "description": "View Seller's revenue, orders and best selling products in specific timeframe.",
         "security": [
@@ -2084,10 +2000,7 @@
                     "example": "2024-12-31"
                   }
                 },
-                "required": [
-                  "startDate",
-                  "endDate"
-                ]
+                "required": ["startDate", "endDate"]
               }
             }
           }
@@ -2110,9 +2023,7 @@
     },
     "/api/shop/seller-update-product-status/{id}": {
       "put": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "A seller should be able to update product status manually",
         "description": "This endpoint allows a seller to update the availability status of a product",
         "parameters": [
@@ -2137,9 +2048,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "isAvailable"
-                ]
+                "required": ["isAvailable"]
               }
             }
           }
@@ -2206,9 +2115,7 @@
     },
     "/api/shop/seller-get-products": {
       "get": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "A seller should be able to get all products",
         "description": "This endpoint allows a seller to get all products",
         "parameters": [
@@ -2313,9 +2220,7 @@
     },
     "/api/shop/user-get-products": {
       "get": {
-        "tags": [
-          "User Routes"
-        ],
+        "tags": ["User Routes"],
         "summary": "A buyer should be able to view products",
         "description": "This endpoint allow a buyer to view all products available",
         "parameters": [
@@ -2391,9 +2296,7 @@
     },
     "/api/shop/user-search-products": {
       "get": {
-        "tags": [
-          "User Routes"
-        ],
+        "tags": ["User Routes"],
         "summary": "A buyer should be able to should to search products",
         "description": "This endpoint allow a buyer to search products according to different filters",
         "parameters": [
@@ -2503,9 +2406,7 @@
     },
     "/api/shop/user-get-product/{id}": {
       "get": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Get specific item",
         "description": "The user should get specific item by its id",
         "parameters": [
@@ -2520,90 +2421,88 @@
           }
         ],
         "responses": {
-            "200": {
-              "description": "Products fetched successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "Products fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad Request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "404": {
-              "description": "No product found.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "404": {
+            "description": "No product found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
-       }
+        }
+      }
     },
     "/api/shop/seller-get-product/{id}": {
       "get": {
-        "tags": [
-          "Seller Routes"
-        ],
+        "tags": ["Seller Routes"],
         "summary": "Get specific item",
         "description": "The seller should get specific item by its id",
-         "security": [
-              {
-                "bearerAuth": []
-              }
-            ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2615,85 +2514,83 @@
             "description": "Pass the ID"
           }
         ],
-       
+
         "responses": {
-            "200": {
-              "description": "Products fetched successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "Products fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad Request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "404": {
-              "description": "No product found.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "404": {
+            "description": "No product found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
-       }
+        }
+      }
     },
     "/api/cart/buyer-get-carts": {
       "get": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Buyer view carts",
         "description": "View Buyer's carts details & products",
         "security": [
@@ -2719,9 +2616,7 @@
     },
     "/api/cart/buyer-get-cart/{cartId}": {
       "get": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "parameters": [
           {
             "name": "cartId",
@@ -2756,11 +2651,118 @@
         }
       }
     },
+    "/api/cart/buyer-clear-carts": {
+      "delete": {
+        "tags": ["Buyer Routes"],
+        "summary": "Buyer clear all carts",
+        "description": "Buyer delete all products in all their carts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All carts cleared successfully!"
+          },
+          "404": {
+            "description": "No cart."
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-clear-cart/{id}": {
+      "delete": {
+        "tags": ["Buyer Routes"],
+        "summary": "Buyer clear cart",
+        "description": "Buyer delete all products in the cart",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cart Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All products in cart cleared successfully!"
+          },
+          "404": {
+            "description": "No cart."
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/cart/buyer-clear-cart-product/{cartId}/{productId}": {
+      "delete": {
+        "tags": ["Buyer Routes"],
+        "summary": "Buyer clear cart product",
+        "description": "Buyer delete a single product in the cart",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cart Id"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cart product cleared successfully!"
+          },
+          "404": {
+            "description": "Cart or Product not found"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
     "/api/cart/create-update-cart": {
       "post": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Buyer create or update cart",
         "description": "Buyer create new cart or update existing cart",
         "security": [
@@ -2784,7 +2786,7 @@
                     "example": 5
                   }
                 },
-                "required": [ "productId", "quantity" ]
+                "required": ["productId", "quantity"]
               }
             }
           }
@@ -2810,16 +2812,14 @@
     },
     "/api/shop/buyer-add-product-wishList/{id}": {
       "post": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Add product to Wishlist",
         "description": "Buyer Should Add product to Wishlist",
-         "security": [
-              {
-                "bearerAuth": []
-              }
-            ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2831,163 +2831,159 @@
             "description": "Pass the ID"
           }
         ],
-       
+
         "responses": {
-            "200": {
-              "description": "Products added to wish list successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "Products added to wish list successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            
-            "400": {
-              "description": "Bad Request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
-       }
+        }
+      }
     },
 
     "/api/shop/delete-whishlist-products": {
       "delete": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Delete All  Product  From Wishlist",
         "description": "Buyer Should Delete All  Product  From Wishlist",
-         "security": [
-              {
-                "bearerAuth": []
-              }
-            ],
-             
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
         "responses": {
-            "200": {
-              "description": "Your wishlist has been cleared successfully.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "Your wishlist has been cleared successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "404": {
-              "description": "No product found.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "404": {
+            "description": "No product found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad Request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
-       }
+        }
+      }
     },
 
     "/api/shop/delete-whishlist-product/{id}": {
       "delete": {
-        "tags": [
-          "Buyer Routes"
-        ],
+        "tags": ["Buyer Routes"],
         "summary": "Delete  Single Product from Wishlist",
         "description": "Buyer Single Product from Wishlist",
-         "security": [
-              {
-                "bearerAuth": []
-              }
-            ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2999,88 +2995,79 @@
             "description": "Pass the ID"
           }
         ],
-       
+
         "responses": {
-            "200": {
-              "description": "The product has been removed from your wishlist.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "The product has been removed from your wishlist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "404": {
-              "description": "No product found.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "404": {
+            "description": "No product found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad Request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "message": {
-                        "type": "string"
-                      }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "integer"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
-       }
+        }
+      }
     }
-    
-
   }
 }
-    
-
-
-
-
-
-
