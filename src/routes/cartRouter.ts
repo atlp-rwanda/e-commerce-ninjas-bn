@@ -62,4 +62,8 @@ router.get(
   isCartIdExist,
   cartControllers.buyerCheckout
   );
+
+  router.post("/checkout", userAuthorization(["buyer"]),cartControllers.checkout)
+  router.post("/webhook",cartControllers.webhook)
+
 export default router;

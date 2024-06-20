@@ -9,6 +9,10 @@ export = {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
+      products: {
+        type: DataTypes.JSONB
+        
+      },
       shopId: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -30,7 +34,7 @@ export = {
         onDelete: "CASCADE"
       },
       paymentMethodId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false
       },
       orderDate: {
