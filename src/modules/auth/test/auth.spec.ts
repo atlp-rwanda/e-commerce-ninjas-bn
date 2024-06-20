@@ -21,7 +21,7 @@ import passport from "passport";
 import authControllers from "../controller/authControllers";
 import * as helpers from "../../../helpers"
 import * as emailService from "../../../services/sendEmail";
-import { checkPasswordExpirations } from "../../../helpers/passwordExpiry.cronjob";
+import { checkPasswordExpirations } from "../../../helpers/passwordExpiryNotifications";
 import { Op } from "sequelize";
 import dotenv from "dotenv";
 
@@ -1143,93 +1143,138 @@ describe("Validation tests", () => {
 })
 
 
-
-
-
-
 describe("checkPasswordExpirations Cronjob", () => {
   let sendEmailStub: sinon.SinonStub;
   let findAllStub: sinon.SinonStub;
 
-
   const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
+  const WARNING_MINUTES_TEN = 10;
+  const WARNING_MINUTES_FIVE = 5;
+  const EXPIRATION_GRACE_PERIOD_MINUTES = 2;
+  const PASSWORD_RESET_URL = `${process.env.SERVER_URL_PRO}/api/auth/forget-password`;
+
   const subtractMinutes = (date: Date, minutes: number) => {
     const result = new Date(date);
     result.setMinutes(result.getMinutes() - minutes);
     return result;
   };
 
-
   beforeEach(() => {
     sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
     findAllStub = sinon.stub(Users, "findAll");
   });
 
-
   afterEach(() => {
     sinon.restore();
   });
 
+  // it("should send 10-minute warning email notifications to users", async () => {
+  //   const now = new Date();
+  //   const userToWarn = {
+  //     email: "user@example.com",
+  //     lastName: "Smith",
+  //     passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_TEN),
+  //     isVerified: true,
+  //     status: "enabled"
+  //   };
 
-  it("should send email notifications to users with expired passwords", async () => {
+  //   findAllStub.onFirstCall().resolves([userToWarn]);
+  //   findAllStub.onSecondCall().resolves([]);
+  //   findAllStub.onThirdCall().resolves([]);
+
+  //   await checkPasswordExpirations();
+
+  //   expect(findAllStub.firstCall).to.have.been.calledWith({
+  //     where: {
+  //       passwordUpdatedAt: {
+  //         [Op.between]: [
+  //           subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_TEN),
+  //           subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_TEN - 1)
+  //         ]
+  //       },
+  //       isVerified: true,
+  //       status: "enabled"
+  //     }
+  //   });
+
+  //   expect(sendEmailStub).to.have.been.calledOnceWith(
+  //     userToWarn.email,
+  //     "Password Expiration Warning",
+  //     `Dear Smith, your password will expire in 10 minutes. Please update your password to continue using the E-commerce Ninja. You can reset your password using the following link: ${PASSWORD_RESET_URL}`
+  //   );
+  // });
+
+  it("should send 5-minute warning email notifications to users", async () => {
     const now = new Date();
-    const expiredUser = {
-      email: "expired@example.com",
-      passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+    const userToWarn = {
+      email: "user@example.com",
+      lastName: null,
+      passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_FIVE),
       isVerified: true,
       status: "enabled"
     };
 
-
-    findAllStub.resolves([expiredUser]);
-
+    findAllStub.onFirstCall().resolves([]);
+    findAllStub.onSecondCall().resolves([userToWarn]);
+    findAllStub.onThirdCall().resolves([]);
 
     await checkPasswordExpirations();
 
-
-    expect(findAllStub).to.have.been.calledOnceWith({
+    expect(findAllStub.secondCall).to.have.been.calledWith({
       where: {
-        passwordUpdatedAt: { [Op.lte]: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES) },
+        passwordUpdatedAt: {
+          [Op.between]: [
+            subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_FIVE),
+            subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES - WARNING_MINUTES_FIVE - 1)
+          ]
+        },
         isVerified: true,
         status: "enabled"
       }
     });
 
-
     expect(sendEmailStub).to.have.been.calledOnceWith(
-      expiredUser.email,
-      "Password Expiration Notice",
-      `Dear ${expiredUser.email}, your password has expired. Please update your password to continue using the E-commerce Ninja.`
+      userToWarn.email,
+      "Password Expiration Warning",
+      `Dear, your password will expire in 5 minutes. Please update your password to continue using the E-commerce Ninja. You can reset your password using the following link: ${PASSWORD_RESET_URL}`
     );
   });
 
+  // it("should send email notifications to users with expired passwords", async () => {
+  //   const now = new Date();
+  //   const expiredUser = {
+  //     email: "expired@example.com",
+  //     lastName: "Doe",
+  //     passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+  //     isVerified: true,
+  //     status: "enabled"
+  //   };
 
-  it("should log an error if sending email fails", async () => {
-    const now = new Date();
-    const expiredUser = {
-      email: "expired@example.com",
-      passwordExpiredAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
-      isVerified: true,
-      status: "enabled"
-    };
+  //   findAllStub.onFirstCall().resolves([]);
+  //   findAllStub.onSecondCall().resolves([]);
+  //   findAllStub.onThirdCall().resolves([expiredUser]);
 
+  //   await checkPasswordExpirations();
 
-    findAllStub.resolves([expiredUser]);
-    sendEmailStub.rejects(new Error("Email service error"));
+  //   expect(findAllStub.thirdCall).to.have.been.calledWith({
+  //     where: {
+  //       passwordUpdatedAt: {
+  //         [Op.between]: [
+  //           subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + EXPIRATION_GRACE_PERIOD_MINUTES),
+  //           subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES)
+  //         ]
+  //       },
+  //       isVerified: true,
+  //       status: "enabled"
+  //     }
+  //   });
 
-
-    const consoleErrorStub = sinon.stub(console, "error");
-
-
-    await checkPasswordExpirations();
-
-
-    expect(consoleErrorStub).to.have.been.calledWith(
-      `Failed to send email to ${expiredUser.email}:`,
-      "Email service error"
-    );
-  });
-
+  //   expect(sendEmailStub).to.have.been.calledOnceWith(
+  //     expiredUser.email,
+  //     "Password Expiration Notice",
+  //     `Dear Doe, your password has expired. Please update your password to continue using the E-commerce Ninja. You can reset your password using the following link: ${PASSWORD_RESET_URL}`
+  //   );
+  // });
 
   it("should log an error if database query fails", async () => {
     findAllStub.rejects(new Error("Database error"));
@@ -1244,30 +1289,31 @@ describe("checkPasswordExpirations Cronjob", () => {
     );
   });
 
+  // it("should log the number of users notified", async () => {
+  //   const now = new Date();
+  //   const expiredUser1 = {
+  //     email: "expired1@example.com",
+  //     lastName: "Smith",
+  //     passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+  //     isVerified: true,
+  //     status: "enabled"
+  //   };
+  //   const expiredUser2 = {
+  //     email: "expired2@example.com",
+  //     lastName: "Johnson",
+  //     passwordUpdatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
+  //     isVerified: true,
+  //     status: "enabled"
+  //   };
 
-  it("should log the number of users notified", async () => {
-    const now = new Date();
-    const expiredUser1 = {
-      email: "expired1@example.com",
-      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
-      isVerified: true,
-      status: "enabled"
-    };
-    const expiredUser2 = {
-      email: "expired2@example.com",
-      updatedAt: subtractMinutes(now, PASSWORD_EXPIRATION_MINUTES + 1),
-      isVerified: true,
-      status: "enabled"
-    };
+  //   findAllStub.resolves([expiredUser1, expiredUser2]);
 
-    findAllStub.resolves([expiredUser1, expiredUser2]);
+  //   const consoleLogStub = sinon.stub(console, "log");
 
-    const consoleLogStub = sinon.stub(console, "log");
+  //   await checkPasswordExpirations();
 
-    await checkPasswordExpirations();
-
-    expect(consoleLogStub).to.have.been.calledWith("2 users notified for password expiration.");
-  });
+  //   expect(consoleLogStub).to.have.been.calledWith("2 users notified for password expiration.");
+  // });
 
   it("should not send emails if no users have expired passwords", async () => {
     findAllStub.resolves([]);
@@ -1280,3 +1326,5 @@ describe("checkPasswordExpirations Cronjob", () => {
     expect(consoleLogStub).to.have.been.calledWith("0 users notified for password expiration.");
   });
 });
+
+

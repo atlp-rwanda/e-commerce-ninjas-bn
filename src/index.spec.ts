@@ -16,7 +16,7 @@ import { socketAuthMiddleware } from "./middlewares/authorization";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
 import {  NextFunction } from "express";
-import * as emailService from "../src/services/sendEmail";
+import * as emailService from "./services/sendEmail";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
