@@ -10,6 +10,7 @@ import httpStatus from "http-status";
 import chat from "./services/chat";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import "./services/cronJob"
 
 dotenv.config();
 
@@ -38,6 +39,8 @@ app.get("**", (req: Request, res: Response) => {
     message: "Welcome to the e-Commerce Ninjas BackEnd."
   });
 });
+
+
 server.listen(PORT, () => {
   console.log(`Server is running on the port ${PORT}`);
 });

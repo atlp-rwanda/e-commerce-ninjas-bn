@@ -12,7 +12,8 @@ const productOne = {
   id: productOneId,
   shopId: shopOneId,
   name: "Lotion",
-  description: "Our luxurious lotion store, offering a curated selection of nourishing formulas designed to hydrate and pamper. From silky-smooth textures to delightful fragrances, experience the ultimate in skincare indulgence at our boutique",
+  description:
+    "Our luxurious lotion store, offering a curated selection of nourishing formulas designed to hydrate and pamper. From silky-smooth textures to delightful fragrances, experience the ultimate in skincare indulgence at our boutique",
   price: 19.99,
   discount: "10%",
   category: "Cosmetics",
@@ -30,7 +31,8 @@ const productTwo = {
   id: productTwoId,
   shopId: shopTwoId,
   name: "Pizza",
-  description: "Our authentic pizza store, where each slice is crafted with love and tradition. From classic Margherita to adventurous toppings, indulge in a culinary journey that delights the senses.",
+  description:
+    "Our authentic pizza store, where each slice is crafted with love and tradition. From classic Margherita to adventurous toppings, indulge in a culinary journey that delights the senses.",
   price: 19.99,
   discount: "10%",
   category: "Food",
@@ -48,7 +50,8 @@ const productThree = {
   id: productThreeId,
   shopId: shopTwoId,
   name: "Fanta",
-  description: "Our Fanta store, where fizzy refreshment meets bold fruit sensations. From tangy orange to exotic tropical blends, quench your thirst with our vibrant array of sodas.",
+  description:
+    "Our Fanta store, where fizzy refreshment meets bold fruit sensations. From tangy orange to exotic tropical blends, quench your thirst with our vibrant array of sodas.",
   price: 19.99,
   discount: "10%",
   category: "Drinks",

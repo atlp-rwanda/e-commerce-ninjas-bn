@@ -31,8 +31,8 @@ const userOne = {
   role: "admin",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 const userTwo = {
   id: userTwoId,
   createdAt: new Date(),
@@ -50,8 +50,8 @@ const userTwo = {
   role: "buyer",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 
 const userThree = {
   id: userThreeId,
@@ -70,8 +70,8 @@ const userThree = {
   role: "buyer",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: true
-}
+  is2FAEnabled: true,
+};
 
 const userFour = {
   id: userFourId,
@@ -90,8 +90,8 @@ const userFour = {
   role: "seller",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 
 const userFive = {
   id: userFiveId,
@@ -110,7 +110,7 @@ const userFive = {
   role: "seller",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
+  is2FAEnabled: false,
 };
 
 const userSix = {
@@ -130,7 +130,7 @@ const userSix = {
   role: "seller",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
+  is2FAEnabled: false,
 };
 
 const userSeven = {
@@ -150,7 +150,7 @@ const userSeven = {
   role: "seller",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
+  is2FAEnabled: false,
 };
 
 const userEight = {
@@ -170,8 +170,8 @@ const userEight = {
   role: "buyer",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 const userNine = {
   id: userNineId,
   createdAt: new Date(),
@@ -189,8 +189,8 @@ const userNine = {
   role: "nurse",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 
 const userTen = {
   id: userTenId,
@@ -209,12 +209,12 @@ const userTen = {
   role: "buyer",
   status: "enabled",
   isVerified: true,
-  is2FAEnabled: false
-}
+  is2FAEnabled: false,
+};
 
 export const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [
-    userOne, 
+    userOne,
     userTwo,
     userThree,
     userFour,
@@ -223,7 +223,7 @@ export const up = (queryInterface: QueryInterface) =>
     userSeven,
     userEight,
     userNine,
-    userTen
+    userTen,
   ]);
 
 export const down = async (queryInterface: QueryInterface) => {
