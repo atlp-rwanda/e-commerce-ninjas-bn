@@ -288,7 +288,7 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
       session.token
     );
     if (destroy) {
-      const hashedPassword = await hashPassword(req.body.newPassword);
+      const hashedPassword = await hashPassword(req.body.password);
       req.user.password = hashedPassword;
       next();
     }
@@ -567,12 +567,25 @@ const isProductIdExist = async (
   }
 };
 
+
 const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
-  if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  const cartId = req.params.cartId || req.body.cartId;
+  if (!cartId) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      status: httpStatus.BAD_REQUEST,
+      message: "Cart ID is required."
+    });
+  }
+  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, cartId);
+  if (!cart) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      message: "Cart not found. Please add items to your cart."
+    });
+  }
   req.cart = cart;
   return next();
-}
+};
 
 
 const isCartProductExist = async (

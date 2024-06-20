@@ -23,16 +23,6 @@ const updateCartProduct = async (
   return await db.CartProducts.update(body, { where: { id } });
 };
 
-const getCartByUserIdAndCartId = async (
-  userId: string,
-  cartId: string,
-  status: string = "pending"
-) => {
-  return await db.Carts.findOne({
-    where: { id: cartId, userId, status },
-  });
-};
-
 const getCartProductsByCartId = async (cartId: string) => {
   return await db.CartProducts.findAll({
     where: { cartId },
@@ -40,7 +30,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"],
+        attributes: ["id", "name", "price", "discount", "images", "shopId"],
       },
     ],
   });
@@ -81,17 +71,60 @@ const findCartProductsByCartId = async (value: any) => {
     include: [{
       model: Products, 
       as: "products",
-      attributes: [ "id" , "name", "description" , "category" , "images" ]
+      attributes: [ "id" , "name", "discount", "description" , "category" , "images" ]
     }],
-    attributes: [ "id" , "quantity" , "price" , "totalPrice" ]
+    attributes: [ "id" , "quantity" , "discount", "price" , "totalPrice" ]
   }) 
   return result;
 };
 
+const getCartByUserIdAndCartId = async (userId: string,cartId: string,status: string = "pending") => {
+  return await db.Carts.findOne({
+    where: { id: cartId, userId, status },
+    include: [
+      {
+        model: db.CartProducts,
+        as: "cartProducts",
+        include: [
+          {
+            model: db.Products,
+            as: "products"
+          },
+        ],
+      }
+    ]
+  });
+};
+const findCartIdbyUserId = async(userId: string)=>{
+  return await db.Carts.findOne({where:{userId}})
+}
+const findCartProductByCartId = async(cartId: string)=>{
+  return await db.CartProducts.findAll({where:{cartId:cartId}})
+}
+const findProductById = async(productId: string)=>{
+  return  await db.Products.findByPk(productId)
+}
+const saveOrder = async(lineItems: any, shopIds: any, productIds: any, session: any, cartId: any,paymentMethodId:any)=> {
+  const products = productIds.map((productId: any) => ({
+      productId,
+      status: "pending"
+  }));
+  const order =  {
+      shopId: shopIds[0], 
+      products: products,
+      cartId: cartId,
+      paymentMethodId: paymentMethodId,
+      orderDate: new Date(),
+      status: "pending",
+      createdAt: new Date(),
+      updatedAt: new Date()
+  };
+return await db.Orders.create(order)
+}
+
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
-  getCartByUserIdAndCartId,
   getProductByCartIdAndProductId,
   addCart,
   updateCartProduct,
@@ -102,5 +135,10 @@ export default {
   deleteCartProduct,
   deleteAllCartProducts,
   findCartByAttributes,
-  findCartProductsByCartId
+  findCartProductsByCartId,
+  getCartByUserIdAndCartId,
+  findCartProductByCartId,
+  findCartIdbyUserId,
+  findProductById,
+  saveOrder
 };

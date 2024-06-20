@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, Response ,NextFunction} from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import compression from "compression";
@@ -25,7 +25,13 @@ const io = new Server(server, {
   }
 });
 chat(io);
-app.use(express.json());
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.originalUrl === "/api/cart/webhook") {
+    express.raw({ type: "application/json" })(req, res, next);
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(morgan(process.env.NODE_EN));
 app.use(compression());
 app.use(cors());
