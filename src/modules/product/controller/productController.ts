@@ -348,6 +348,35 @@ const buyerDeleteProductFromWishList = async (
   }
 };
 
+    const buyerViewWishLists = async (req:ExtendRequest,res:Response) => {
+      try{
+        const product = await productRepositories.findProductFromWishListByUserId(req.user.id);
+              res.status(httpStatus.OK).json({
+              message: "WishList is fetched successfully.",
+              data: { product },
+            });
+        } catch (error) {
+          res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            error: error.message
+          });
+       }
+      }
+      const buyerViewWishList = async (req:ExtendRequest,res:Response) => {
+        try{
+          const product = await productRepositories.findProductfromWishList(req.params.id,req.user.id);
+                res.status(httpStatus.OK).json({
+                message: "WishList is fetched successfully.",
+                data: { product },
+              });
+          } catch (error) {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+              status: httpStatus.INTERNAL_SERVER_ERROR,
+              error: error.message
+            });
+         }
+        }  
+
 export default {
   sellerCreateProduct,
   sellerCreateShop,
@@ -363,4 +392,6 @@ export default {
   buyerAddProductToWishList,
   buyerDeleteAllProductFromWishlist,
   buyerDeleteProductFromWishList,
+  buyerViewWishLists,
+  buyerViewWishList
 };

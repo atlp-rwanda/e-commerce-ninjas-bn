@@ -1483,3 +1483,117 @@ describe("updateExpiredProducts", () => {
     expect(productFindAllStub).to.have.been.calledOnce;
   });
 });
+
+describe("buyerViewWishLists", () => {
+  let findProductFromWishListByUserIdStub: SinonStub;
+
+  beforeEach(() => {
+    findProductFromWishListByUserIdStub = sinon.stub(productRepositories, "findProductFromWishListByUserId");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should fetch wishlist successfully", async () => {
+    const mockProducts = [{ id: 1, name: "Product 1", price: 100 }];
+    findProductFromWishListByUserIdStub.resolves(mockProducts);
+
+    const req = {
+      user: { id: 1 }
+    } as ExtendRequest;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    } as unknown as Response;
+
+    await productController.buyerViewWishLists(req, res);
+
+    expect(res.status).to.have.been.calledOnceWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledOnceWith({
+      message: "WishList is fetched successfully.",
+      data: { product: mockProducts },
+    });
+    expect(findProductFromWishListByUserIdStub).to.have.been.calledOnceWith(1);
+  });
+
+  it("should handle errors in fetching wishlist", async () => {
+    const errorMessage = "Something went wrong";
+    findProductFromWishListByUserIdStub.rejects(new Error(errorMessage));
+
+    const req = {
+      user: { id: 1 }
+    } as ExtendRequest;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    } as unknown as Response;
+
+    await productController.buyerViewWishLists(req, res);
+
+    expect(res.status).to.have.been.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledOnceWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
+    });
+  });
+});
+describe("buyerViewWishList", () => {
+  let findProductfromWishListStub: SinonStub;
+
+  beforeEach(() => {
+    findProductfromWishListStub = sinon.stub(productRepositories, "findProductfromWishList");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should fetch wishlist successfully", async () => {
+    const mockProducts = [{ id: 1, name: "Product 1", price: 100 }];
+    findProductfromWishListStub.resolves(mockProducts);
+
+    const req = {
+      params: { id: "1" },
+      user: { id: 1 }
+    } as unknown as ExtendRequest;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    } as unknown as Response;
+
+    await productController.buyerViewWishList(req, res);
+    expect(res.status).to.have.been.calledOnceWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledOnceWith({
+      message: "WishList is fetched successfully.",
+      data: { product: mockProducts },
+    });
+    expect(findProductfromWishListStub).to.have.been.calledOnceWith("1", 1);
+  });
+
+  it("should handle errors in fetching wishlist", async () => {
+    const errorMessage = "Something went wrong";
+    findProductfromWishListStub.rejects(new Error(errorMessage));
+
+    const req = {
+      params: { id: "1" },
+      user: { id: 1 }
+    } as unknown as ExtendRequest;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    } as unknown as Response;
+
+    await productController.buyerViewWishList(req, res);
+
+    expect(res.status).to.have.been.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledOnceWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
+    });
+  });
+});

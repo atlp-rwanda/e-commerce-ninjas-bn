@@ -136,27 +136,39 @@ const sellerGetProductById = async (shopId: string, productId: string) => {
   });
 };
 
-const findProductfromWishList = async (productId: string, userId: string) => {
-  return await db.wishLists.findOne({ where: { productId, userId } });
-};
-const addProductToWishList = async (body: any) => {
+const findProductfromWishList = async (productId:string, userId: string) => {
+  return await db.wishLists.findOne({ where: { productId ,userId},
+    include: [
+      {
+        model: db.Products,
+        as: "products",
+        attributes: ["id", "name", "price", "images", "shopId"]
+      }
+    ] });
+}
+const addProductToWishList = async (body:any)=>{
   return await db.wishLists.create(body);
-};
+}
 
-const findProductFromWishListByUserId = async (userId: string) => {
-  return await db.wishLists.findAll({ where: { userId: userId } });
-};
+const findProductFromWishListByUserId  = async (userId: string) => {
+  return await db.wishLists.findAll({
+    where: {userId},
+    include: [
+      {
+        model: db.Products,
+        as: "products",
+        attributes: ["id", "name", "price", "images", "shopId"]
+      }
+    ]
+  });
+}
+const deleteAllWishListByUserId = async (userId:string) => {
+return await db.wishLists.destroy({ where: { userId: userId } });
+}
 
-const deleteAllWishListByUserId = async (userId: string) => {
-  return await db.wishLists.destroy({ where: { userId: userId } });
-};
-
-const deleteProductFromWishListById = async (
-  productId: string,
-  userId: string
-) => {
-  return await db.wishLists.destroy({ where: { productId, userId } });
-};
+const deleteProductFromWishListById = async (productId:string, userId: string) => {
+  return await db.wishLists.destroy({ where: { productId ,userId} });
+}
 
 export default {
   createProduct,
