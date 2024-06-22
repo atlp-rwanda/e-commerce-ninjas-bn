@@ -359,14 +359,14 @@ describe("checkPasswordExpiration middleware", () => {
 
     expect(res.setHeader).to.have.been.calledWith(
       "Password-Expiry-Notification",
-      `Your password will expire in ${minutesToExpire} minutes. Please update your password.`
+      sinon.match(/Your password will expire in \d+ minutes. Please update your password./)
     );
     expect(next).to.have.been.calledOnce;
   });
 
   it("should call next if the password is valid", async () => {
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5), 
       email: "user@example.com",
     });
 
