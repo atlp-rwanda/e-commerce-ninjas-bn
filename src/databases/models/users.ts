@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-jsdoc */
@@ -25,15 +26,11 @@ export interface usersAttributes {
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  passwordUpdatedAt?: Date;
 }
 
-export interface UsersCreationAttributes
-  extends Optional<usersAttributes, "id"> {}
-
-class Users
-  extends Model<usersAttributes, UsersCreationAttributes>
-  implements usersAttributes
-{
+export interface UsersCreationAttributes extends Optional<usersAttributes, "id"> {}
+class Users extends Model<usersAttributes, UsersCreationAttributes> implements usersAttributes {
   declare id: string;
   declare firstName?: string;
   declare lastName?: string;
@@ -52,6 +49,7 @@ class Users
   declare password: string;
   declare createdAt?: Date;
   declare updatedAt?: Date;
+  declare passwordUpdatedAt?: Date; 
 
   static associate() {
     Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions" });
@@ -93,8 +91,7 @@ Users.init(
     profilePicture: {
       type: DataTypes.STRING(128),
       allowNull: true,
-      defaultValue:
-        "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg",
+      defaultValue: "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg",
     },
     gender: {
       type: DataTypes.ENUM("male", "female"),
@@ -136,6 +133,11 @@ Users.init(
       allowNull: true,
       defaultValue: "enabled",
     },
+    passwordUpdatedAt: { 
+      field: "passwordUpdatedAt",
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     createdAt: {
       field: "createdAt",
       type: DataTypes.DATE,
@@ -153,13 +155,20 @@ Users.init(
     sequelize: sequelizeConnection,
     tableName: "users",
     timestamps: true,
-    modelName: "Users",
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          user.password = await hashPassword(user.password);
-        }
-      },
+    modelName: "Users",  
+      hooks: {
+        beforeCreate: async (user) => {
+          if (user.password) {
+            user.password = await hashPassword(user.password);
+            user.passwordUpdatedAt = new Date(); 
+          }
+        },
+        beforeUpdate: async (user) => {
+          if (user.changed('password')) {
+            user.password = await hashPassword(user.password);
+            user.passwordUpdatedAt = new Date(); 
+          }
+        },
     },
   }
 );

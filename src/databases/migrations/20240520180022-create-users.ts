@@ -82,6 +82,11 @@ export default {
         allowNull: false,
         defaultValue: "enabled"
       },
+      passwordUpdatedAt: { 
+        field: "passwordUpdatedAt",
+        type: DataTypes.DATE,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

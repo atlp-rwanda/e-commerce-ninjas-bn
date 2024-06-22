@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable comma-dangle */
 import app from "./index";
@@ -12,6 +13,10 @@ import * as helpers from "./helpers/index";
 import authRepositories from "./modules/auth/repository/authRepositories";
 import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
+import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
+import Users from "./databases/models/users";
+import {  NextFunction } from "express";
+import * as emailService from "./services/sendEmail";
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -154,7 +159,7 @@ describe("userAuthorization middleware", () => {
 
     const middleware = userAuthorization(roles);
     await middleware(req, res, next);
-
+    
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
@@ -291,5 +296,98 @@ describe("socketAuthMiddleware", () => {
       role:user.role
     });
     expect(next).to.have.been.calledOnce;
+  });
+});
+
+
+
+describe("checkPasswordExpiration middleware", () => {
+  let req: any, res: any, next: NextFunction;
+
+  const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
+
+
+  beforeEach(() => {
+    req = {
+      user: {
+        id: 1,
+      },
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+      setHeader: sinon.stub(),
+    };
+    next = sinon.spy();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should send an email and respond with 403 if the password is expired", async () => {
+    sinon.stub(Users, "findByPk").resolves({
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES + 1)),
+      email: "user@example.com",
+    });
+    const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
+
+    await checkPasswordExpiration(req, res, next);
+
+ 
+    expect(sendEmailStub).to.have.been.calledOnceWith(
+      "user@example.com",
+      "Password Expired - Reset Required",
+      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/api/auth/forget-password`
+    );
+    expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.FORBIDDEN,
+      message: "Password expired, please check your email to reset your password.",
+    });
+    expect(next).to.not.have.been.called;
+  });
+
+  it("should set header if the password is expiring soon", async () => {
+    const minutesToExpire = 9;
+    sinon.stub(Users, "findByPk").resolves({
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES - minutesToExpire)),
+      email: "user@example.com",
+    });
+
+    await checkPasswordExpiration(req, res, next);
+
+    expect(res.setHeader).to.have.been.calledWith(
+      "Password-Expiry-Notification",
+      sinon.match(/Your password will expire in \d+ minutes. Please update your password./)
+    );
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should call next if the password is valid", async () => {
+    sinon.stub(Users, "findByPk").resolves({
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5), 
+      email: "user@example.com",
+    });
+
+    await checkPasswordExpiration(req, res, next);
+
+    expect(next).to.have.been.calledOnce;
+    expect(res.setHeader).to.not.have.been.called;
+  });
+
+  
+
+  it("should respond with 500 if an error occurs", async () => {
+    sinon.stub(Users, "findByPk").rejects(new Error("Database error"));
+
+    await checkPasswordExpiration(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: "Database error",
+    });
+    expect(next).to.not.have.been.called;
   });
 });
