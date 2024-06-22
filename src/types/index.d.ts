@@ -21,6 +21,7 @@ export interface ExtendRequest extends Request {
   files: Express.Multer.File[];
   user?: user;
   shop?: Shops;
+  cart?:Cart;
   pagination?: {
     limit: number;
     page: number;
