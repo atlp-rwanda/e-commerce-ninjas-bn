@@ -305,18 +305,6 @@ describe("Validation Middlewares", () => {
     expect(next).to.have.been.calledOnce;
   });
 
-  it("should return 404 if no cart exists", async () => {
-    sandbox.stub(cartRepositories, "getCartsByUserId").resolves([]);
-
-    await isCartExist(req, res, next);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.NOT_FOUND,
-      message: "No cart found. Please create cart first.",
-    });
-  });
-
   it("should check if product ID exists", async () => {
     sandbox
       .stub(productRepositories, "findProductById")

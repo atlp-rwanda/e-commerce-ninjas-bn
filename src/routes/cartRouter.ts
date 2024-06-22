@@ -56,5 +56,10 @@ router.delete(
   isCartExist,
   cartControllers.buyerClearCarts
 );
-
+router.get(
+  "/buyer-cart-checkout/:cartId",
+  userAuthorization(["buyer"]),
+  isCartIdExist,
+  cartControllers.buyerCheckout
+  );
 export default router;
