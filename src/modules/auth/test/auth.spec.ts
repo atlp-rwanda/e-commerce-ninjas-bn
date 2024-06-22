@@ -20,6 +20,12 @@ import { VerifyCallback } from "jsonwebtoken";
 import passport from "passport";
 import authControllers from "../controller/authControllers";
 import * as helpers from "../../../helpers"
+import * as emailService from "../../../services/sendEmail";
+import { checkPasswordExpirations } from "../../../helpers/passwordExpiryNotifications";
+import { Op } from "sequelize";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
