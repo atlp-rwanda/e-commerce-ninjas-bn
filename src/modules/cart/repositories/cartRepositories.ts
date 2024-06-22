@@ -40,7 +40,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"],
+        attributes: ["id", "name", "price", "discount", "images", "shopId"],
       },
     ],
   });
@@ -81,9 +81,9 @@ const findCartProductsByCartId = async (value: any) => {
     include: [{
       model: Products, 
       as: "products",
-      attributes: [ "id" , "name", "description" , "category" , "images" ]
+      attributes: [ "id" , "name", "discount", "description" , "category" , "images" ]
     }],
-    attributes: [ "id" , "quantity" , "price" , "totalPrice" ]
+    attributes: [ "id" , "quantity" , "discount", "price" , "totalPrice" ]
   }) 
   return result;
 };
