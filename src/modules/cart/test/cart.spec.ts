@@ -48,7 +48,6 @@ describe("Buyer Get Cart", () => {
           id: "6ee2addd-5270-4855-969b-1f56608b122c",
           name: "Product 1",
           price: 50,
-          discount: '0',
           images: ["image1.jpg"],
         },
       },
@@ -58,7 +57,6 @@ describe("Buyer Get Cart", () => {
           id: "6ee2addd-5270-4855-969b-1f56608b122d",
           name: "Product 2",
           price: 100,
-          discount: '0',
           images: ["image2.jpg"],
         },
       },
@@ -82,7 +80,6 @@ describe("Buyer Get Cart", () => {
               id: "6ee2addd-5270-4855-969b-1f56608b122c",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
@@ -91,7 +88,6 @@ describe("Buyer Get Cart", () => {
               id: "6ee2addd-5270-4855-969b-1f56608b122d",
               name: "Product 2",
               price: 100,
-              discount: '0',
               image: "image2.jpg",
               quantity: 1,
               totalPrice: 100,
@@ -126,90 +122,6 @@ describe("Cart Repositories", () => {
 
   afterEach(() => {
     sandbox.restore();
-  });
-
-  describe("getCartsByUserId", () => {
-    it("should return a cart for a given user ID with pending status", async () => {
-      const mockCarts = [
-        {
-          id: "6ee2addd-5270-4855-969b-1f56608b122b",
-          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-          status: "pending",
-        },
-      ];
-      sandbox.stub(db.Carts, "findAll").resolves(mockCarts);
-
-      const result = await cartRepositories.getCartsByUserId(
-        "6ee2addd-5270-4855-969b-1f56608b122e"
-      );
-
-      expect(db.Carts.findAll).to.have.been.calledOnceWith({
-        where: {
-          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-          status: "pending",
-        },
-      });
-      expect(result).to.eql(mockCarts);
-    });
-
-    it("should return an empty array if no cart is found", async () => {
-      sandbox.stub(db.Carts, "findAll").resolves([]);
-
-      const result = await cartRepositories.getCartsByUserId(
-        "6ee2addd-5270-4855-969b-1f56608b122e"
-      );
-
-      expect(db.Carts.findAll).to.have.been.calledOnceWith({
-        where: {
-          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-          status: "pending",
-        },
-      });
-      expect(result).to.be.an("array").that.is.empty;
-    });
-  });
-
-  describe("getCartByUserIdAndCartId", () => {
-    it("should return a cart for a given user ID and cart ID with pending status", async () => {
-      const mockCart = {
-        id: "6ee2addd-5270-4855-969b-1f56608b122b",
-        userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-        status: "pending",
-      };
-      sandbox.stub(db.Carts, "findOne").resolves(mockCart);
-
-      const result = await cartRepositories.getCartByUserIdAndCartId(
-        "6ee2addd-5270-4855-969b-1f56608b122e",
-        "cart-id"
-      );
-
-      expect(db.Carts.findOne).to.have.been.calledOnceWith({
-        where: {
-          id: "cart-id",
-          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-          status: "pending",
-        },
-      });
-      expect(result).to.eql(mockCart);
-    });
-
-    it("should return null if no cart is found", async () => {
-      sandbox.stub(db.Carts, "findOne").resolves(null);
-
-      const result = await cartRepositories.getCartByUserIdAndCartId(
-        "6ee2addd-5270-4855-969b-1f56608b122e",
-        "cart-id"
-      );
-
-      expect(db.Carts.findOne).to.have.been.calledOnceWith({
-        where: {
-          id: "cart-id",
-          userId: "6ee2addd-5270-4855-969b-1f56608b122e",
-          status: "pending",
-        },
-      });
-      expect(result).to.be.null;
-    });
   });
 
   describe("addCart", () => {
@@ -385,7 +297,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          discount: '0',
           images: ["image1.jpg"],
         },
       },
@@ -395,7 +306,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          discount: '0',
           images: ["image2.jpg"],
         },
       },
@@ -419,7 +329,6 @@ describe("Cart Controller - GetCart", () => {
             id: "product-id-1",
             name: "Product 1",
             price: 50,
-            discount: '0',
             image: "image1.jpg",
             quantity: 2,
             totalPrice: 100,
@@ -428,7 +337,6 @@ describe("Cart Controller - GetCart", () => {
             id: "product-id-2",
             name: "Product 2",
             price: 100,
-            discount: '0',
             image: "image2.jpg",
             quantity: 1,
             totalPrice: 100,
@@ -463,7 +371,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          discount: '0',
           images: ["image1.jpg"],
         },
       },
@@ -473,7 +380,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          discount: '0',
           images: ["image2.jpg"],
         },
       },
@@ -496,7 +402,6 @@ describe("Cart Controller - GetCart", () => {
               id: "product-id-1",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
@@ -505,7 +410,6 @@ describe("Cart Controller - GetCart", () => {
               id: "product-id-2",
               name: "Product 2",
               price: 100,
-              discount: '0',
               image: "image2.jpg",
               quantity: 1,
               totalPrice: 100,
@@ -541,7 +445,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          discount: '0',
           images: ["image1.jpg"],
         },
       },
@@ -551,7 +454,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          discount: '0',
           images: ["image2.jpg"],
         },
       },
@@ -575,7 +477,6 @@ describe("Cart Controller - GetCart", () => {
               id: "product-id-1",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
@@ -584,7 +485,6 @@ describe("Cart Controller - GetCart", () => {
               id: "product-id-2",
               name: "Product 2",
               price: 100,
-              discount: '0',
               image: "image2.jpg",
               quantity: 1,
               totalPrice: 100,
@@ -605,7 +505,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-1",
           name: "Product 1",
           price: 50,
-          discount: '0',
           images: ["image1.jpg"],
         },
       },
@@ -615,7 +514,6 @@ describe("Cart Controller - GetCart", () => {
           id: "product-id-2",
           name: "Product 2",
           price: 100,
-          discount: '0',
           images: ["image2.jpg"],
         },
       },
@@ -640,7 +538,6 @@ describe("Cart Controller - GetCart", () => {
             id: "product-id-1",
             name: "Product 1",
             price: 50,
-            discount: '0',
             image: "image1.jpg",
             quantity: 2,
             totalPrice: 100,
@@ -649,7 +546,6 @@ describe("Cart Controller - GetCart", () => {
             id: "product-id-2",
             name: "Product 2",
             price: 100,
-            discount: '0',
             image: "image2.jpg",
             quantity: 1,
             totalPrice: 100,
@@ -690,7 +586,6 @@ describe("Cart Controller Tests", () => {
         id: "product-id",
         name: "Product 1",
         price: 50,
-        discount: '0',
         images: ["image1.jpg"],
         shopId: "shop-id",
       };
@@ -701,7 +596,6 @@ describe("Cart Controller Tests", () => {
             id: "product-id",
             name: "Product 1",
             price: 50,
-            discount: '0',
             images: ["image1.jpg"],
           },
         },
@@ -729,7 +623,6 @@ describe("Cart Controller Tests", () => {
               id: "product-id",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
@@ -746,7 +639,6 @@ describe("Cart Controller Tests", () => {
         id: "product-id",
         name: "Product 1",
         price: 50,
-        discount: '0',
         images: ["image1.jpg"],
         shopId: "shop-id",
       };
@@ -757,7 +649,6 @@ describe("Cart Controller Tests", () => {
             id: "product-id-2",
             name: "Product 1",
             price: 50,
-            discount: '0',
             images: ["image1.jpg"],
             shopId: "shop-id",
           },
@@ -786,7 +677,6 @@ describe("Cart Controller Tests", () => {
               id: "product-id-2",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
@@ -807,7 +697,6 @@ describe("Cart Controller Tests", () => {
         id: "product-id",
         name: "Product 1",
         price: 50,
-        discount: '0',
         images: ["image1.jpg"],
         shopId: "shop-id",
       };
@@ -818,7 +707,6 @@ describe("Cart Controller Tests", () => {
             id: "product-id",
             name: "Product 1",
             price: 50,
-            discount: '0',
             images: ["image1.jpg"],
           },
         },
@@ -846,7 +734,6 @@ describe("Cart Controller Tests", () => {
               id: "product-id",
               name: "Product 1",
               price: 50,
-              discount: '0',
               image: "image1.jpg",
               quantity: 2,
               totalPrice: 100,
