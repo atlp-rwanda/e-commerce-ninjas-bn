@@ -15,7 +15,7 @@ import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
-import {  NextFunction } from "express";
+import { NextFunction } from "express";
 import * as emailService from "./services/sendEmail";
 
 chai.use(chaiHttp);
@@ -159,7 +159,7 @@ describe("userAuthorization middleware", () => {
 
     const middleware = userAuthorization(roles);
     await middleware(req, res, next);
-    
+
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
@@ -169,7 +169,6 @@ describe("userAuthorization middleware", () => {
     });
   });
 });
-
 
 describe("socketAuthMiddleware", () => {
   let socket: Socket;
@@ -227,7 +226,9 @@ describe("socketAuthMiddleware", () => {
 
   it("should call next with an error if user is not found", async () => {
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
-    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon
+      .stub(authRepositories, "findSessionByUserIdAndToken")
+      .resolves({ id: "sessionId" });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(null);
 
     socket.handshake.auth.token = "validToken";
@@ -241,9 +242,18 @@ describe("socketAuthMiddleware", () => {
   });
 
   it("should attach user data to socket and call next if authentication is successful", async () => {
-    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" ,role: "admin" };
+    const user = {
+      id: "userId",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      profilePicture: "url",
+      role: "admin",
+    };
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
-    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon
+      .stub(authRepositories, "findSessionByUserIdAndToken")
+      .resolves({ id: "sessionId" });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
 
     socket.handshake.auth.token = "validToken";
@@ -256,7 +266,7 @@ describe("socketAuthMiddleware", () => {
       lastName: user.lastName,
       email: user.email,
       profilePicture: user.profilePicture,
-      role:user.role
+      role: user.role,
     });
     expect(next).to.have.been.calledOnce;
   });
@@ -277,9 +287,18 @@ describe("socketAuthMiddleware", () => {
   it("should initialize socket.data if it is undefined", async () => {
     socket.data = undefined;
 
-    const user = { id: "userId", firstName: "John", lastName: "Doe", email: "john.doe@example.com", profilePicture: "url" ,role: "admin"};
+    const user = {
+      id: "userId",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      profilePicture: "url",
+      role: "admin",
+    };
     sinon.stub(helpers, "decodeToken").resolves({ id: "userId" });
-    sinon.stub(authRepositories, "findSessionByUserIdAndToken").resolves({ id: "sessionId" });
+    sinon
+      .stub(authRepositories, "findSessionByUserIdAndToken")
+      .resolves({ id: "sessionId" });
     sinon.stub(authRepositories, "findUserByAttributes").resolves(user);
 
     socket.handshake.auth.token = "validToken";
@@ -293,19 +312,17 @@ describe("socketAuthMiddleware", () => {
       lastName: user.lastName,
       email: user.email,
       profilePicture: user.profilePicture,
-      role:user.role
+      role: user.role,
     });
     expect(next).to.have.been.calledOnce;
   });
 });
 
-
-
 describe("checkPasswordExpiration middleware", () => {
   let req: any, res: any, next: NextFunction;
 
-  const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
-
+  const PASSWORD_EXPIRATION_MINUTES =
+    Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
 
   beforeEach(() => {
     req = {
@@ -327,14 +344,15 @@ describe("checkPasswordExpiration middleware", () => {
 
   it("should send an email and respond with 403 if the password is expired", async () => {
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES + 1)),
+      passwordUpdatedAt: new Date(
+        Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES + 1)
+      ),
       email: "user@example.com",
     });
     const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
 
     await checkPasswordExpiration(req, res, next);
 
- 
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
       "Password Expired - Reset Required",
@@ -343,7 +361,8 @@ describe("checkPasswordExpiration middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.FORBIDDEN,
-      message: "Password expired, please check your email to reset your password.",
+      message:
+        "Password expired, please check your email to reset your password.",
     });
     expect(next).to.not.have.been.called;
   });
@@ -351,7 +370,9 @@ describe("checkPasswordExpiration middleware", () => {
   it("should set header if the password is expiring soon", async () => {
     const minutesToExpire = 9;
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES - minutesToExpire)),
+      passwordUpdatedAt: new Date(
+        Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES - minutesToExpire)
+      ),
       email: "user@example.com",
     });
 
@@ -359,14 +380,16 @@ describe("checkPasswordExpiration middleware", () => {
 
     expect(res.setHeader).to.have.been.calledWith(
       "Password-Expiry-Notification",
-      sinon.match(/Your password will expire in \d+ minutes. Please update your password./)
+      sinon.match(
+        /Your password will expire in \d+ minutes. Please update your password./
+      )
     );
     expect(next).to.have.been.calledOnce;
   });
 
   it("should call next if the password is valid", async () => {
     sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5), 
+      passwordUpdatedAt: new Date(Date.now() - 1000 * 60 * 5),
       email: "user@example.com",
     });
 
@@ -376,14 +399,14 @@ describe("checkPasswordExpiration middleware", () => {
     expect(res.setHeader).to.not.have.been.called;
   });
 
-  
-
   it("should respond with 500 if an error occurs", async () => {
     sinon.stub(Users, "findByPk").rejects(new Error("Database error"));
 
     await checkPasswordExpiration(req, res, next);
 
-    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: "Database error",

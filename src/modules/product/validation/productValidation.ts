@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable comma-dangle */
 import Joi from "joi";
 
@@ -44,6 +45,17 @@ const productSchema = Joi.object({
   }),
 });
 
+const productUpdateSchema = Joi.object({
+  name: Joi.string().optional(),
+  description: Joi.string().optional(),
+  price: Joi.number().optional(),
+  discount: Joi.string().optional(),
+  category: Joi.string().optional(),
+  expiryDate: Joi.date().optional(),
+  expired: Joi.boolean().default(false).optional(),
+  bonus: Joi.string().optional(),
+});
+
 const shopSchema = Joi.object({
   name: Joi.string().required().messages({
     "string.base": "Name must be a string",
@@ -74,4 +86,10 @@ const statusSchema = Joi.object({
   }),
 });
 
-export { productSchema, shopSchema, statisticsSchema, statusSchema };
+export {
+  productSchema,
+  productUpdateSchema,
+  shopSchema,
+  statisticsSchema,
+  statusSchema,
+};

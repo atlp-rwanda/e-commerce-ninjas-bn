@@ -181,23 +181,28 @@ const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
 
 const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
   try {
-    const uploadPromises = req.files.map((file) => uploadImages(file));
-    const images = await Promise.all(uploadPromises);
-    const imagesArr = images.map((image) => image.secure_url);
+    const { id: productId } = req.params;
+    const product = await productRepositories.getProductByIdAndShopId(
+      productId,
+      req.shop.id
+    );
+
+    const uploadPromises =
+      req.files && req.files.map((file) => uploadImages(file));
+
+    const images = uploadPromises && (await Promise.all(uploadPromises));
+
+    const imagesArr = images
+      ? images.map((image) => image.secure_url)
+      : product.images;
 
     const updatedProductData = {
-      name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-      discount: req.body.discount,
-      category: req.body.category,
-      expiryDate: req.body.expiryDate,
-      bonus: req.body.bonus,
-      quantity: req.body.quantity,
-      images: imagesArr,
+      ...product,
+      ...req.body,
+      imagesArr,
+      expiryDate: new Date(),
     };
 
-    const { id: productId } = req.params;
     const updatedProduct = await productRepositories.updateProduct(
       Products,
       updatedProductData,
@@ -348,36 +353,41 @@ const buyerDeleteProductFromWishList = async (
   }
 };
 
-    const buyerViewWishLists = async (req:ExtendRequest,res:Response) => {
-      try{
-        const product = await productRepositories.findProductFromWishListByUserId(req.user.id);
-              res.status(httpStatus.OK).json({
-              message: "WishList is fetched successfully.",
-              data: { product },
-            });
-        } catch (error) {
-          res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            error: error.message
-          });
-       }
-      }
-      const buyerViewWishList = async (req:ExtendRequest,res:Response) => {
-        try{
-          const product = await productRepositories.findProductfromWishList(req.params.id,req.user.id);
-                res.status(httpStatus.OK).json({
-                message: "WishList is fetched successfully.",
-                data: { product },
-              });
-          } catch (error) {
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-              status: httpStatus.INTERNAL_SERVER_ERROR,
-              error: error.message
-            });
-         }
-        }  
+const buyerViewWishLists = async (req: ExtendRequest, res: Response) => {
+  try {
+    const product = await productRepositories.findProductFromWishListByUserId(
+      req.user.id
+    );
+    res.status(httpStatus.OK).json({
+      message: "WishList is fetched successfully.",
+      data: { product },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+const buyerViewWishList = async (req: ExtendRequest, res: Response) => {
+  try {
+    const product = await productRepositories.findProductfromWishList(
+      req.params.id,
+      req.user.id
+    );
+    res.status(httpStatus.OK).json({
+      message: "WishList is fetched successfully.",
+      data: { product },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
 
-export default {
+export {
   sellerCreateProduct,
   sellerCreateShop,
   sellerUpdateProduct,
@@ -393,5 +403,5 @@ export default {
   buyerDeleteAllProductFromWishlist,
   buyerDeleteProductFromWishList,
   buyerViewWishLists,
-  buyerViewWishList
+  buyerViewWishList,
 };
