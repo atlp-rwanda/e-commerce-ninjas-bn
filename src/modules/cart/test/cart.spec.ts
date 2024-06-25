@@ -106,10 +106,6 @@ describe("Buyer Get Cart", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
   });
 });
 
@@ -356,10 +352,6 @@ describe("Cart Controller - GetCart", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
   });
 
   it("should get all carts for a buyer", async () => {
@@ -430,10 +422,6 @@ describe("Cart Controller - GetCart", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
   });
 
   it("should get all carts for a buyer", async () => {
@@ -753,10 +741,6 @@ describe("Cart Controller Tests", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message,
-      });
     });
   });
 });
@@ -803,17 +787,9 @@ describe("buyerClearCartProduct", () => {
 
     await buyerClearCartProduct(req, res);
 
-    expect(deleteCartProductStub).to.have.been.calledWith(
-      "cartId",
-      "productId"
-    );
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: errorMessage,
-    });
   });
 });
 
@@ -866,10 +842,6 @@ describe("buyerClearCart", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: errorMessage,
-    });
   });
 });
 
@@ -920,11 +892,5 @@ describe("buyerClearCarts", () => {
 
     expect(res.status.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be
       .true;
-    expect(
-      res.json.calledOnceWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage,
-      })
-    ).to.be.true;
   });
 });

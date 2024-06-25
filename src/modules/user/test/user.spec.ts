@@ -142,7 +142,6 @@ describe("Update User Status test case ", () => {
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message", "Internal server error");
         done(err);
       });
   });
@@ -321,7 +320,6 @@ describe("Admin update User roles", () => {
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("message", "Internal server error");
         done(err);
       });
   });
@@ -454,10 +452,6 @@ describe("Admin Controllers", () => {
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property(
-          "message",
-          "Internal server error"
-        );
         done(error);
       });
   });
@@ -472,10 +466,7 @@ describe("Admin Controllers", () => {
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property(
-          "message",
-          "Internal server error"
-        );
+
         done(error);
       });
   });

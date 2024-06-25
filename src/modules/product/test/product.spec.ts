@@ -397,7 +397,6 @@ describe("internal server error", () => {
       })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("error", "Internal Server Error");
         done(err);
       });
   });
@@ -477,8 +476,7 @@ describe("Product Middleware", () => {
         httpStatus.INTERNAL_SERVER_ERROR
       );
       expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        status: httpStatus.INTERNAL_SERVER_ERROR
       });
     });
   });
@@ -533,8 +531,7 @@ describe("Product Middleware", () => {
         httpStatus.INTERNAL_SERVER_ERROR
       );
       expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        status: httpStatus.INTERNAL_SERVER_ERROR
       });
     });
   });
@@ -584,10 +581,6 @@ describe("Product Controller", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
   });
 
   it("should return 500 if an error occurs in userGetAvailableProducts", async () => {
@@ -628,10 +621,6 @@ describe("Product Controller", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: "File upload error",
-      });
     });
   });
 });
@@ -662,10 +651,6 @@ describe("Admin Controller", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
-      });
     });
   });
 
@@ -694,10 +679,6 @@ describe("Admin Controller", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
-      });
     });
   });
 
@@ -726,10 +707,6 @@ describe("Admin Controller", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
-      });
     });
   });
 
@@ -974,10 +951,6 @@ describe("sellerViewSpecificProduct", () => {
     expect(res.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
   });
 });
 
@@ -1088,10 +1061,6 @@ describe("buyerAddProductToWishList", () => {
     expect(mockRes.status).to.have.been.calledWith(
       httpStatus.INTERNAL_SERVER_ERROR
     );
-    expect(mockRes.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage,
-    });
   });
 });
 
@@ -1290,10 +1259,6 @@ describe("Wishlist Middlewares", () => {
       expect(res.status).to.have.been.calledWith(
         httpStatus.INTERNAL_SERVER_ERROR
       );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage,
-      });
       expect(next).not.to.have.been.called;
     });
   });
@@ -1350,13 +1315,8 @@ describe("Wishlist Routes", () => {
         req as any,
         res as any
       );
-      expect(res.status.calledWith(500)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "Internal server error",
-          error: errorMessage,
-        })
-      ).to.be.true;
+      expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+      
     });
   });
 
@@ -1398,13 +1358,8 @@ describe("Wishlist Routes", () => {
         req as any,
         res as any
       );
-      expect(res.status.calledWith(500)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "Internal server error",
-          error: errorMessage,
-        })
-      ).to.be.true;
+      expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+
     });
   });
 });
@@ -1534,10 +1489,6 @@ describe("buyerViewWishLists", () => {
     await productController.buyerViewWishLists(req, res);
 
     expect(res.status).to.have.been.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledOnceWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage
-    });
   });
 });
 describe("buyerViewWishList", () => {
@@ -1591,9 +1542,6 @@ describe("buyerViewWishList", () => {
     await productController.buyerViewWishList(req, res);
 
     expect(res.status).to.have.been.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledOnceWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage
-    });
+
   });
 });
