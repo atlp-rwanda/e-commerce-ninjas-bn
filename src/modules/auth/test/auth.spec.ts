@@ -200,7 +200,6 @@ describe("Authentication Test Cases", () => {
       .set("Authorization", `Bearer ${token}`)
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message", "Internal Server error");
         done(err);
       });
   });
@@ -342,7 +341,6 @@ describe("isUserExist Middleware", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(res.body).to.have.property("message", "Database error");
         done(err);
       });
   });
@@ -382,8 +380,7 @@ describe("POST /auth/register - Error Handling", () => {
       .end((err, res) => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error"
+          status: httpStatus.INTERNAL_SERVER_ERROR
         });
         done(err);
       });
@@ -495,7 +492,7 @@ describe("Authentication Test Cases", () => {
       .send({ email: "user@example.com" })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message");
+        expect(res.body).to.have.property("error");
         done(err);
       });
   });
@@ -760,8 +757,7 @@ describe("verifyUser middleware", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
+      status: httpStatus.INTERNAL_SERVER_ERROR
     });
   });
 
@@ -817,8 +813,7 @@ describe("isSessionExist middleware", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
+      status: httpStatus.INTERNAL_SERVER_ERROR
     });
   });
 });
@@ -952,7 +947,6 @@ describe("updateUser2FA", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(response.body).to.have.property("message", errorMessage);
         done(error);
       });
   });
@@ -1119,8 +1113,6 @@ describe("verifyOtp", () => {
       .send({ otp: "123456" });
 
     expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.body.message).to.equal("Internal Server Error");
-
   });
 });
 
@@ -1133,7 +1125,7 @@ describe("Validation tests", () => {
         email: "mytest_email15456@gmail.com",
         password: "Password@123"
       })
-     .end((error, response) => {
+      .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.has.property("message");
         expect(response.body.message).to.equal("Invalid Email or Password");

@@ -18,13 +18,14 @@ const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
     };
     const product = await productRepositories.createProduct(productData);
     res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
       message: "Product created successfully",
-      data: { product: product },
+      data: { product: product }
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      error: error.message
     });
   }
 };
@@ -34,10 +35,11 @@ const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
     const shopData = {
       userId: req.user.id,
       name: req.body.name,
-      description: req.body.description,
+      description: req.body.description
     };
     const shop = await productRepositories.createShop(shopData);
     res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
       message: "Shop created successfully",
       data: { shop: shop },
     });
@@ -52,11 +54,11 @@ const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
 const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => {
   try {
     await productRepositories.deleteProductById(req.params.id);
-    res.status(httpStatus.OK).json({ message: "Product deleted successfully" });
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Product deleted successfully" });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server error", error: error.message });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
 
@@ -121,13 +123,14 @@ const sellerGetStatistics = async (
     };
 
     res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: `Seller's statistics from ${startDate} to ${endDate}`,
-      data,
+      data: { data },
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -142,7 +145,11 @@ const updateProductStatus = async (req: ExtendRequest, res: Response) => {
     );
     res
       .status(httpStatus.OK)
-      .json({ message: "Status updated successfully.", data });
+      .json({
+        status: httpStatus,
+        message: "Status updated successfully.",
+        data: { data }
+      });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -164,12 +171,15 @@ const sellerGetProducts = async (req: ExtendRequest, res: Response) => {
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
     res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "All products fetched successfully.",
-      previousPage,
-      currentPage: page,
-      nextPage,
-      limit,
-      data: products.rows,
+      data: {
+        previousPage,
+        currentPage: page,
+        nextPage,
+        limit,
+        products: products.rows
+      },
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -206,6 +216,7 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
     );
 
     res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Product updated successfully",
       data: { product: updatedProduct },
     });
@@ -226,11 +237,14 @@ const userGetProducts = async (req: ExtendRequest, res: Response) => {
 
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      nextPage,
-      currentPage: page,
-      previousPage,
-      limit,
-      data: products.rows,
+      message: "Products fetched successfully",
+      data: {
+        nextPage,
+        currentPage: page,
+        previousPage,
+        limit,
+        products: products.rows
+      }
     });
   } catch (error) {
     return res
@@ -251,11 +265,14 @@ const userSearchProducts = async (req: ExtendRequest, res: Response) => {
     const nextPage = page && page < totalPages ? page + 1 : undefined;
     const previousPage = page && page > 1 ? page - 1 : undefined;
     return res.status(httpStatus.OK).json({
-      nextPage,
-      currentPage: page,
-      previousPage,
-      limit,
-      data: products.rows,
+      status: httpStatus.OK,
+      data: {
+        nextPage,
+        currentPage: page,
+        previousPage,
+        limit,
+        products: products.rows
+      }
     });
   } catch (error) {
     return res
@@ -268,8 +285,9 @@ const userGetProduct = async (req: ExtendRequest, res: Response) => {
   try {
     const product = await productRepositories.findProductById(req.params.id);
     res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Products is fetched successfully.",
-      product,
+      data:{product}
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -285,13 +303,14 @@ const sellerGetProduct = async (req: ExtendRequest, res: Response) => {
       req.params.id
     );
     res.status(httpStatus.OK).json({
+      status:httpStatus.OK,
       message: "Product fetched successfully.",
-      data: products,
+      data: {products}
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      error: error.message
     });
   }
 };
@@ -313,19 +332,16 @@ const buyerAddProductToWishList = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
-const buyerDeleteAllProductFromWishlist = async (
-  req: ExtendRequest,
-  res: Response
-) => {
+const buyerDeleteAllProductFromWishlist = async (req: ExtendRequest,res: Response) => {
   try {
     await productRepositories.deleteAllWishListByUserId(req.user.id);
     res
       .status(httpStatus.OK)
-      .json({ message: "Your wishlist is cleared successfully." });
+      .json({status:httpStatus.OK, message: "Your wishlist is cleared successfully." });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server error", error: error.message });
+      .json({ status:httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
 
@@ -340,7 +356,7 @@ const buyerDeleteProductFromWishList = async (
     );
     res
       .status(httpStatus.OK)
-      .json({ message: "The product  removed from wishlist successfully." });
+      .json({status: httpStatus.OK, message: "The product  removed from wishlist successfully." });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -348,34 +364,36 @@ const buyerDeleteProductFromWishList = async (
   }
 };
 
-    const buyerViewWishLists = async (req:ExtendRequest,res:Response) => {
-      try{
-        const product = await productRepositories.findProductFromWishListByUserId(req.user.id);
-              res.status(httpStatus.OK).json({
-              message: "WishList is fetched successfully.",
-              data: { product },
-            });
-        } catch (error) {
-          res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            error: error.message
-          });
-       }
-      }
-      const buyerViewWishList = async (req:ExtendRequest,res:Response) => {
-        try{
-          const product = await productRepositories.findProductfromWishList(req.params.id,req.user.id);
-                res.status(httpStatus.OK).json({
-                message: "WishList is fetched successfully.",
-                data: { product },
-              });
-          } catch (error) {
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-              status: httpStatus.INTERNAL_SERVER_ERROR,
-              error: error.message
-            });
-         }
-        }  
+const buyerViewWishLists = async (req: ExtendRequest, res: Response) => {
+  try {
+    const product = await productRepositories.findProductFromWishListByUserId(req.user.id);
+    res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "WishList is fetched successfully.",
+      data: { product },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+}
+const buyerViewWishList = async (req: ExtendRequest, res: Response) => {
+  try {
+    const product = await productRepositories.findProductfromWishList(req.params.id, req.user.id);
+    res.status(httpStatus.OK).json({
+      status:httpStatus.OK,
+      message: "WishList is fetched successfully.",
+      data: { product },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    });
+  }
+}
 
 export default {
   sellerCreateProduct,

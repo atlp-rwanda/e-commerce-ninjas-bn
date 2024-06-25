@@ -11,13 +11,14 @@ const adminGetUsers = async (req: Request, res: Response) => {
   try {
     const user = await userRepositories.getAllUsers();
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Successfully",
       data: { user: user },
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -29,13 +30,14 @@ const adminGetUser = async (req: Request, res: Response) => {
       req.params.id
     );
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Successfully",
       data: { user: user },
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -49,13 +51,14 @@ const updateUserRole = async (req: Request, res: Response) => {
       req.params.id
     );
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "User role updated successfully",
       data: { user: user },
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -71,11 +74,11 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
     );
     res
       .status(httpStatus.OK)
-      .json({ message: "Status updated successfully.", data: { user: user } });
+      .json({ status: httpStatus.OK, message: "Status updated successfully.", data: { user: user } });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message
     });
   }
 };
@@ -84,11 +87,11 @@ const getUserDetails = async (req: Request, res: Response) => {
     const user = await authRepositories.findUserByAttributes("id", req.user.id);
     res
       .status(httpStatus.OK)
-      .json({ status: httpStatus.OK, data: { user: user } });
+      .json({ status: httpStatus.OK, messgae: "User details", data: { user: user } });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message
     });
   }
 };
@@ -103,7 +106,7 @@ const updateUserProfile = async (req: Request, res: Response) => {
     );
     res
       .status(httpStatus.OK)
-      .json({ status: httpStatus.OK, data: { user: user } });
+      .json({ status: httpStatus.OK, message: "Profile updated successfully", data: { user: user } });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -121,11 +124,11 @@ const changePassword = async (req: any, res: Response) => {
     );
     return res
       .status(httpStatus.OK)
-      .json({ message: "Password updated successfully", data: { user: user } });
+      .json({status: httpStatus.OK, message: "Password updated successfully", data: { user: user } });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };

@@ -107,7 +107,7 @@ export const socketAuthMiddleware = async (socket: Socket, next: NextFunction) =
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      role:user.role,
+      role: user.role,
       profilePicture: user.profilePicture,
     };
 

@@ -28,24 +28,24 @@ import db from "../databases/models";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = schema.validate(req.body, { abortEarly: false });
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { error } = schema.validate(req.body, { abortEarly: false });
 
-      if (error) {
-        throw new Error(
-          error.details
-            .map((detail) => detail.message.replace(/"/g, ""))
-            .join(", ")
-        );
+        if (error) {
+          throw new Error(
+            error.details
+              .map((detail) => detail.message.replace(/"/g, ""))
+              .join(", ")
+          );
+        }
+        return next();
+      } catch (error) {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ status: httpStatus.BAD_REQUEST, message: error.message });
       }
-      return next();
-    } catch (error) {
-      res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
-    }
-  };
+    };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -102,13 +102,13 @@ const isUsersExist = async (
     if (userCount === 0) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ error: "No users found in the database." });
+        .json({ status: httpStatus.NOT_FOUND, message: "No users found in the database." });
     }
     next();
   } catch (err) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internet Server error." });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: "Internet Server error." });
   }
 };
 
@@ -133,13 +133,13 @@ const isAccountVerified = async (
     if (!user) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ message: "Account not found." });
+        .json({ status: httpStatus.NOT_FOUND, message: "Account not found." });
     }
 
     if (user.isVerified) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Account already verified." });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Account already verified." });
     }
 
     const session = await authRepositories.findSessionByAttributes(
@@ -149,7 +149,7 @@ const isAccountVerified = async (
     if (!session) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid token." });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Invalid token." });
     }
 
     req.session = session;
@@ -158,7 +158,7 @@ const isAccountVerified = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -176,7 +176,7 @@ const verifyUserCredentials = async (
     if (!user) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
     if (user.is2FAEnabled) {
       const { otp, expirationTime } = generateOTP();
@@ -193,8 +193,7 @@ const verifyUserCredentials = async (
       await sendEmail(
         user.email,
         "E-Commerce Ninja Login",
-        `Dear ${
-          user.lastName || user.email
+        `Dear ${user.lastName || user.email
         }\n\nUse This Code To Confirm Your Account: ${otp}`
       );
 
@@ -204,15 +203,21 @@ const verifyUserCredentials = async (
       );
       if (isTokenExist) {
         return res.status(httpStatus.OK).json({
+          status: httpStatus.OK,
           message: "Check your Email for OTP Confirmation",
-          UserId: { userId: user.id },
-          data: { token: isTokenExist },
+          data: {
+            token: isTokenExist,
+            UserId: user.id
+          }
         });
       }
 
       return res.status(httpStatus.OK).json({
+        status: httpStatus.OK,
         message: "Check your Email for OTP Confirmation",
-        UserId: { userId: user.id },
+        data: {
+          userId: user.id
+        }
       });
     }
     const passwordMatches = await comparePassword(
@@ -222,7 +227,7 @@ const verifyUserCredentials = async (
     if (!passwordMatches) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
+        .json({status:httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
 
     req.user = user;
@@ -230,7 +235,7 @@ const verifyUserCredentials = async (
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal Server error", data: error.message });
+      .json({status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
 
@@ -265,7 +270,7 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -295,7 +300,7 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -331,7 +336,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -363,7 +368,7 @@ const credential = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -386,7 +391,7 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -412,7 +417,7 @@ const isSellerShopExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -424,8 +429,8 @@ const transformFilesToBody = (
 ) => {
   if (!req.files) {
     return res
-      .status(400)
-      .json({ status: 400, message: "Images are required" });
+      .status(httpStatus.BAD_REQUEST)
+      .json({ status: httpStatus.BAD_REQUEST, message: "Images are required" });
   }
 
   const files = req.files as Express.Multer.File[];
@@ -485,7 +490,7 @@ const verifyOtp = async (
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -529,17 +534,17 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 
 const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
-    const cart = await cartRepositories.getCartsByUserId (req.user.id);
+    const cart = await cartRepositories.getCartsByUserId(req.user.id);
     if (!cart) {
-    return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
-  }
-  req.cart = cart;
-  return next();
-    
+      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+    }
+    req.cart = cart;
+    return next();
+
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -562,7 +567,7 @@ const isProductIdExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -595,7 +600,7 @@ const isCartProductExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -687,7 +692,7 @@ const isProductExistById = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -703,6 +708,7 @@ const isProductExistToWishlist = async (
     );
     if (product) {
       return res.status(httpStatus.OK).json({
+        status: httpStatus.OK,
         message: "Product is added to wishlist successfully.",
         data: { product },
       });
@@ -711,7 +717,7 @@ const isProductExistToWishlist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message
     });
   }
 };
@@ -727,6 +733,7 @@ const isUserWishlistExist = async (
     );
     if (!wishList || wishList.length === 0) {
       return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
         message: "No wishlist Found",
       });
     }
@@ -734,7 +741,7 @@ const isUserWishlistExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -751,14 +758,15 @@ const isUserWishlistExistById = async (
     );
     if (!product) {
       return res.status(httpStatus.NOT_FOUND).json({
-        message: "Product Not Found From WishList",
+        status: httpStatus.NOT_FOUND,
+        message: "Product Not Found From WishList"
       });
     }
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };

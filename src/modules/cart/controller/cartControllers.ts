@@ -45,6 +45,7 @@ const buyerGetCart = async (req: ExtendRequest, res: Response) => {
     const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
     return res.status(httpStatus.OK).json({
+      status:httpStatus.OK,
       message: "Cart details",
       data: {
         cartId: cart.id,
@@ -80,8 +81,9 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
     );
 
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Buyer's all carts",
-      data: allCartsDetails,
+      data: {allCartsDetails}
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -134,6 +136,7 @@ const updateCartProduct = async (cartProduct, quantity, res) => {
   const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
   return res.status(httpStatus.OK).json({
+    status: httpStatus.OK,
     message: "Cart quantity updated successfully",
     data: {
       cartId: cartProduct.cartId,
@@ -201,13 +204,13 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
       data: {
         cartId: createdCart.id,
         products: productsDetails,
-        total: cartTotal,
-      },
+        total: cartTotal
+      }
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      error: error.message
     });
   }
 };
@@ -220,11 +223,11 @@ const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
     );
     res
       .status(httpStatus.OK)
-      .json({ message: "Cart product cleared successfully" });
+      .json({status: httpStatus.OK, message: "Cart product cleared successfully" });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -237,11 +240,11 @@ const buyerClearCart = async (req: ExtendRequest, res: Response) => {
 
     res
       .status(httpStatus.OK)
-      .json({ message: "All products in cart cleared successfully!" });
+      .json({status:httpStatus.OK, message: "All products in cart cleared successfully!" });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message
     });
   }
 };
@@ -256,11 +259,11 @@ const buyerClearCarts = async (req: ExtendRequest, res: Response) => {
 
     res
       .status(httpStatus.OK)
-      .json({ message: "All carts cleared successfully!" });
+      .json({status:httpStatus.OK, message: "All carts cleared successfully!" });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message
     });
   }
 };
