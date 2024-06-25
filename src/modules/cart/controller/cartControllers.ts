@@ -15,13 +15,15 @@ const getProductDetails = (
 
   const productsDetails = cartProducts.map((cartProduct) => {
     const product = cartProduct.products;
-    const totalPrice = cartProduct.quantity * product.price;
+    const discountedPrice = calculateDiscountedPrice(product.price, product.discount);
+    const totalPrice = cartProduct.quantity * discountedPrice;
     cartTotal += totalPrice;
 
     return {
       id: product.id,
       name: product.name,
       price: product.price,
+      discount: product.discount,
       image: product.images[0],
       quantity: cartProduct.quantity,
       totalPrice: totalPrice,
@@ -89,14 +91,21 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
   }
 };
 
+const calculateDiscountedPrice = (price, discount) => {
+  const discountPercentage = parseFloat(discount) / 100;
+  return price - (price * discountPercentage);
+};
+
+
 const addProductToExistingCart = async (cart, product, quantity, res) => {
+  const discountedPrice = calculateDiscountedPrice(product.price, product.discount);
   await cartRepositories.addCartProduct({
     cartId: cart.id,
     productId: product.id,
     quantity,
     price: product.price,
     discount: product.discount,
-    totalPrice: product.price * quantity,
+    totalPrice: discountedPrice * quantity,
   });
 
   const cartProducts = await cartRepositories.getCartProductsByCartId(cart.id);
@@ -113,9 +122,10 @@ const addProductToExistingCart = async (cart, product, quantity, res) => {
 };
 
 const updateCartProduct = async (cartProduct, quantity, res) => {
+  const discountedPrice = calculateDiscountedPrice(cartProduct.products.price, cartProduct.products.discount);
   await cartRepositories.updateCartProduct(cartProduct.id, {
     quantity,
-    totalPrice: cartProduct.products.price * quantity,
+    totalPrice: discountedPrice  * quantity,
   });
 
   const cartProducts = await cartRepositories.getCartProductsByCartId(
@@ -171,13 +181,14 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
       status: cartStatusEnum.PENDING,
     });
     const product = await productRepositories.findProductById(productId);
+    const discountedPrice = calculateDiscountedPrice(product.price, product.discount);
     await cartRepositories.addCartProduct({
       cartId: createdCart.id,
       productId,
       quantity,
       price: product.price,
       discount: product.discount,
-      totalPrice: product.price * quantity,
+      totalPrice: discountedPrice * quantity,
     });
 
     const cartProducts = await cartRepositories.getCartProductsByCartId(
@@ -253,6 +264,7 @@ const buyerClearCarts = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
+
 const buyerCheckout = async (req: ExtendRequest, res: Response) => {
   try {
     const cart = req.cart
@@ -272,6 +284,7 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
+
 export {
   buyerGetCart,
   buyerGetCarts,

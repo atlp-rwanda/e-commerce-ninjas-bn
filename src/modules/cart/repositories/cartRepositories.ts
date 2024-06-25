@@ -23,28 +23,6 @@ const updateCartProduct = async (
   return await db.CartProducts.update(body, { where: { id } });
 };
 
-const getCartByUserIdAndCartId = async (
-  userId: string,
-  cartId: string,
-  status: string = "pending"
-) => {
-  return await db.Carts.findOne({
-    where: { id: cartId, userId, status },
-    include: [
-      {
-        model: db.CartProducts,
-        as: "cartProducts",
-        include: [
-          {
-            model: db.Products,
-            as: "products"
-          },
-        ],
-      }
-    ]
-  });
-};
-
 const getCartProductsByCartId = async (cartId: string) => {
   return await db.CartProducts.findAll({
     where: { cartId },
@@ -52,7 +30,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"],
+        attributes: ["id", "name", "price", "discount", "images", "shopId"],
       },
     ],
   });
@@ -87,10 +65,43 @@ const deleteCartById = async (id: string) => {
 const findCartByAttributes = async(key1: string, value1:any, key2: string, value2:any): Promise<any> => {
   return await db.Carts.findOne({ where: { [key1]: value1, [key2]: value2 } })
 }
+const findCartProductsByCartId = async (value: any) => {
+  const result = await CartProduct.findAll({
+    where: {"cartId":value },
+    include: [{
+      model: Products, 
+      as: "products",
+      attributes: [ "id" , "name", "discount", "description" , "category" , "images" ]
+    }],
+    attributes: [ "id" , "quantity" , "discount", "price" , "totalPrice" ]
+  }) 
+  return result;
+};
+
+
+
+const getCartByUserIdAndCartId = async (userId: string,cartId: string,status: string = "pending") => {
+  return await db.Carts.findOne({
+    where: { id: cartId, userId, status },
+    include: [
+      {
+        model: db.CartProducts,
+        as: "cartProducts",
+        include: [
+          {
+            model: db.Products,
+            as: "products"
+          },
+        ],
+      }
+    ]
+  });
+};
+
+
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
-  getCartByUserIdAndCartId,
   getProductByCartIdAndProductId,
   addCart,
   updateCartProduct,
@@ -100,5 +111,7 @@ export default {
   deleteCartById,
   deleteCartProduct,
   deleteAllCartProducts,
-  findCartByAttributes
+  findCartByAttributes,
+  findCartProductsByCartId,
+  getCartByUserIdAndCartId
 };
