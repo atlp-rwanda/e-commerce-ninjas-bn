@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Op } from "sequelize";
 import db from "../../../databases/models";
+import Products from "../../../databases/models/products";
 const createProduct = async (body: any) => {
   return await db.Products.create(body);
 };
@@ -95,6 +96,10 @@ const sellerGetProducts = async (
   return { rows, count };
 };
 
+const getProductByIdAndShopId = async (id: string, shopId: string) => {
+  return await Products.findOne({ where: { id, shopId } });
+};
+
 const updateProduct = async (
   model: any,
   productData: any,
@@ -136,39 +141,44 @@ const sellerGetProductById = async (shopId: string, productId: string) => {
   });
 };
 
-const findProductfromWishList = async (productId:string, userId: string) => {
-  return await db.wishLists.findOne({ where: { productId ,userId},
+const findProductfromWishList = async (productId: string, userId: string) => {
+  return await db.wishLists.findOne({
+    where: { productId, userId },
     include: [
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"]
-      }
-    ] });
-}
-const addProductToWishList = async (body:any)=>{
-  return await db.wishLists.create(body);
-}
-
-const findProductFromWishListByUserId  = async (userId: string) => {
-  return await db.wishLists.findAll({
-    where: {userId},
-    include: [
-      {
-        model: db.Products,
-        as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"]
-      }
-    ]
+        attributes: ["id", "name", "price", "images", "shopId"],
+      },
+    ],
   });
-}
-const deleteAllWishListByUserId = async (userId:string) => {
-return await db.wishLists.destroy({ where: { userId: userId } });
-}
+};
+const addProductToWishList = async (body: any) => {
+  return await db.wishLists.create(body);
+};
 
-const deleteProductFromWishListById = async (productId:string, userId: string) => {
-  return await db.wishLists.destroy({ where: { productId ,userId} });
-}
+const findProductFromWishListByUserId = async (userId: string) => {
+  return await db.wishLists.findAll({
+    where: { userId },
+    include: [
+      {
+        model: db.Products,
+        as: "products",
+        attributes: ["id", "name", "price", "images", "shopId"],
+      },
+    ],
+  });
+};
+const deleteAllWishListByUserId = async (userId: string) => {
+  return await db.wishLists.destroy({ where: { userId: userId } });
+};
+
+const deleteProductFromWishListById = async (
+  productId: string,
+  userId: string
+) => {
+  return await db.wishLists.destroy({ where: { productId, userId } });
+};
 
 export default {
   createProduct,
@@ -191,5 +201,6 @@ export default {
   addProductToWishList,
   findProductFromWishListByUserId,
   deleteAllWishListByUserId,
+  getProductByIdAndShopId,
   deleteProductFromWishListById,
 };
