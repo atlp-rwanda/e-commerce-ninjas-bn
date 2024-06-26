@@ -160,6 +160,36 @@ const getSingleNotification = async ( req: Request, res: Response ) => {
   }
 };
 
+const markNotificationAsRead = async (req: Request, res: Response) => {
+  try {
+    const notification = await userRepositories.markNotificationAsRead("id", req.params.id);
+    res.status(httpStatus.OK).json({ 
+      message: "Notification marked as read",
+      data: { notification: notification }
+     });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+const markAllNotificationsAsRead = async (req: Request, res: Response) => {
+  try {
+    const notifications = await userRepositories.markAllNotificationsAsRead(req.user.id);
+    res.status(httpStatus.OK).json({ 
+      message: "All notifications marked as read",
+      data: { notifications: notifications }
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -169,5 +199,7 @@ export default {
   getUserDetails,
   changePassword,
   getAllNotifications,
-  getSingleNotification
+  getSingleNotification,
+  markNotificationAsRead,
+  markAllNotificationsAsRead
 };

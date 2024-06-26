@@ -520,7 +520,6 @@ describe('postChatMessage', () => {
     const hasUsers = pastChats.every(chat => {
       return chat.dataValues.user && chat.dataValues.user.id;
     });
-    console.log('hasUsers:', hasUsers);
     expect(hasUsers).to.be.true;
     const hasValidUserAttributes = pastChats.every(chat =>
       chat.dataValues.user &&

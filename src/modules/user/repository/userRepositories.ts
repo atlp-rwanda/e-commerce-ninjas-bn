@@ -54,6 +54,16 @@ const findNotificationById = async (userId: string, id: string) => {
   return await db.Notifications.findOne({ where: { userId, id } });
 }
 
+const markNotificationAsRead = async (key: string, value: any) => {
+  await db.Notifications.update({ isRead: true },{ where: { [key]: value } });
+  return await db.Notifications.findOne({ where: { [key]: value } })
+};
+
+const markAllNotificationsAsRead = async (userId: string) => {
+  await db.Notifications.update({ isRead: true },{ where: { userId, isRead: false } });
+  return await db.Notifications.findAll({where: { userId } })
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -61,5 +71,7 @@ export default {
   getAllPastChats,
   addNotification,
   findNotificationsByuserId,
-  findNotificationById
+  findNotificationById,
+  markAllNotificationsAsRead,
+  markNotificationAsRead
 };
