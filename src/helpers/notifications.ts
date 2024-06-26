@@ -1,4 +1,4 @@
-import { sendEmailNotification } from "../services/sendEmail";
+import { sendEmailNotification, sendEmailOrderStatus } from "../services/sendEmail";
 import userRepositories from "../modules/user/repository/userRepositories";
 import { EventEmitter } from "events";
 import cron from "node-cron";
@@ -6,8 +6,10 @@ import productRepository from "../modules/product/repositories/productRepositori
 import Products from "../databases/models/products";
 import Shops from "../databases/models/shops";
 import Users from "../databases/models/users";
-import { IProductsWithShop } from "../types/index";
+import { IProductsWithShop, IOrderWithCart } from "../types/index";
 import { io } from "../index";
+import Orders from "../databases/models/orders";
+import Carts from "../databases/models/carts";
 
 export const eventEmitter = new EventEmitter();
 
@@ -24,6 +26,13 @@ const saveAndEmitNotification = async (userId: string, message: string, event: s
   await sendEmailNotification(userId, message);
 };
 
+const fetchOrderWithCarts = async (orderId: string): Promise<IOrderWithCart> => {
+  return (await Orders.findOne({
+    where: { id: orderId },
+    include: { model: Carts, as: "carts" }
+  })) as IOrderWithCart;
+};
+  
 eventEmitter.on("productAdded", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
@@ -74,6 +83,15 @@ eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
   await saveAndEmitNotification(userId, message, "passwordExpiry");
 });
 
+eventEmitter.on('orderStatusUpdated', async (order) => {
+  const orderStatus = await fetchOrderWithCarts(order.id)
+  const userId = orderStatus.carts.userId
+  const message = `The order that was created on ${order.orderDate} status has been updated to ${order.status}.`;
+  await userRepositories.addNotification(userId, message);
+  await sendEmailOrderStatus(userId, message);
+  io.to(userId).emit('orderStatusUpdated', message)
+});
+  
 cron.schedule("0 0 * * *", async () => {
   const users = await Users.findAll();
   for (const user of users) {
