@@ -808,20 +808,20 @@ const isOrderExist = async (req: ExtendRequest, res: Response, next: NextFunctio
     let order;
     if (req.user.role === "buyer") {
 
-      order = await cartRepositories.getOrderByOrderIdAndUserId(req.body.orderId, req.user.id)
+      order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
       if (!order) {
         return res.status(httpStatus.NOT_FOUND).json({
           status: httpStatus.NOT_FOUND,
-          message: "order Not Found",
+          error: "order Not Found",
         });
       }
     }
     if(req.user.role === "admin"){
-      order = await cartRepositories.getOrderById(req.body.orderId)
+      order = await cartRepositories.getOrderById(req.params.id)
       if (!order) {
         return res.status(httpStatus.NOT_FOUND).json({
           status: httpStatus.NOT_FOUND,
-          message: "order Not Found",
+          error: "order Not Found",
         });
       }
     }
@@ -831,7 +831,7 @@ const isOrderExist = async (req: ExtendRequest, res: Response, next: NextFunctio
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      er: error.message,
     });
   }
 }

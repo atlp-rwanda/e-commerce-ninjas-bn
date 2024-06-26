@@ -995,3 +995,315 @@ describe("getCartsByProductId", () => {
     }
   });
 });
+
+describe("isOrderExist Middleware", () => {
+  let req, res, next, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      user: {},
+      body: {}
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should find the order for a buyer", async () => {
+    req.user.role = "buyer";
+    req.body.orderId = "order-id";
+    req.user.id = "user-id";
+    const mockOrder = { id: "order-id" };
+    sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").resolves(mockOrder);
+
+    await isOrderExist(req, res, next);
+
+    expect(req.order).to.equal(mockOrder);
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should return 404 if order is not found for a buyer", async () => {
+    req.user.role = "buyer";
+    req.body.orderId = "order-id";
+    req.user.id = "user-id";
+    sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").resolves(null);
+
+    await isOrderExist(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.NOT_FOUND,
+      message: "order Not Found",
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should find the order for an admin", async () => {
+    req.user.role = "admin";
+    req.body.orderId = "order-id";
+    const mockOrder = { id: "order-id" };
+    sandbox.stub(cartRepositories, "getOrderById").resolves(mockOrder);
+
+    await isOrderExist(req, res, next);
+
+    expect(req.order).to.equal(mockOrder);
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should return 404 if order is not found for an admin", async () => {
+    req.user.role = "admin";
+    req.body.orderId = "order-id";
+    sandbox.stub(cartRepositories, "getOrderById").resolves(null);
+
+    await isOrderExist(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.NOT_FOUND,
+      message: "order Not Found",
+    });
+    expect(next).not.to.have.been.called;
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    req.user.role = "buyer";
+    req.body.orderId = "order-id";
+    req.user.id = "user-id";
+    sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").throws(new Error("Database error"));
+
+    await isOrderExist(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: "Database error",
+    });
+    expect(next).not.to.have.been.called;
+  });
+});
+
+describe("getOrderByOrderIdAndUserId", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+it("should return the order if found", async () => {
+    const mockOrder = { id: "order-id", carts: [{ userId: "user-id" }] };
+    sandbox.stub(db.Orders, "findOne").resolves(mockOrder);
+
+    const order = await cartRepositories.getOrderByOrderIdAndUserId("order-id", "user-id");
+
+    expect(order).to.equal(mockOrder);
+    expect(db.Orders.findOne).to.have.been.calledOnceWith({
+      where: { id: "order-id" },
+      include: [
+        {
+          model: db.Carts,
+          as: "carts",
+          where: { userId: "user-id" }
+        }
+      ]
+    });
+  });
+
+  it("should return null if order is not found", async () => {
+    sandbox.stub(db.Orders, "findOne").resolves(null);
+
+    const order = await cartRepositories.getOrderByOrderIdAndUserId("order-id", "user-id");
+
+    expect(order).to.be.null;
+    expect(db.Orders.findOne).to.have.been.calledOnceWith({
+      where: { id: "order-id" },
+      include: [
+        {
+          model: db.Carts,
+          as: "carts",
+          where: { userId: "user-id" }
+        }
+      ]
+    });
+  });
+
+  it("should throw an error if there is a database error", async () => {
+    const errorMessage = "Database error";
+sandbox.stub(db.Orders, "findOne").throws(new Error(errorMessage));
+
+    try {
+      await cartRepositories.getOrderByOrderIdAndUserId("order-id", "user-id");
+      throw new Error("Expected getOrderByOrderIdAndUserId to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal(errorMessage);
+    }
+  });
+});
+
+describe("buyerGetOrderStatus", () => {
+  let req, res, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      order: { id: "order-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should return the order status", async () => {
+    await cartController.buyerGetOrderStatus(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      message: "Order Status found successfully",
+      data: {
+        order: req.order
+      }
+    });
+  });
+});
+
+describe("getOrderById", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should return the order if found", async () => {
+    const mockOrder = { id: "order-id" };
+    sandbox.stub(db.Orders, "findOne").resolves(mockOrder);
+
+    const order = await cartRepositories.getOrderById("order-id");
+
+    expect(order).to.equal(mockOrder);
+    expect(db.Orders.findOne).to.have.been.calledOnceWith({ where: { id: "order-id" } });
+  });
+
+  it("should return null if order is not found", async () => {
+    sandbox.stub(db.Orders, "findOne").resolves(null);
+
+    const order = await cartRepositories.getOrderById("order-id");
+
+    expect(order).to.be.null;
+    expect(db.Orders.findOne).to.have.been.calledOnceWith({ where: { id: "order-id" } });
+  });
+
+  it("should throw an error if there is a database error", async () => {
+    const errorMessage = "Database error";
+    sandbox.stub(db.Orders, "findOne").throws(new Error(errorMessage));
+
+    try {
+      await cartRepositories.getOrderById("order-id");
+      throw new Error("Expected getOrderById to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal(errorMessage);
+    }
+  });
+});
+
+describe("updateOrderStatus", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should update the order status", async () => {
+    const mockUpdateResult = [1]; 
+    sandbox.stub(db.Orders, "update").resolves(mockUpdateResult);
+
+    const result = await cartRepositories.updateOrderStatus("order-id", "completed");
+
+    expect(result).to.equal(mockUpdateResult);
+    expect(db.Orders.update).to.have.been.calledOnceWith(
+      { status: "completed" },
+      { where: { id: "order-id" } }
+    );
+  });
+
+  it("should return an array with 0 if no rows were affected", async () => {
+    const mockUpdateResult = [0];
+    sandbox.stub(db.Orders, "update").resolves(mockUpdateResult);
+
+    const result = await cartRepositories.updateOrderStatus("order-id", "completed");
+
+    expect(result).to.equal(mockUpdateResult);
+    expect(db.Orders.update).to.have.been.calledOnceWith(
+      { status: "completed" },
+      { where: { id: "order-id" } }
+    );
+  });
+
+  it("should throw an error if there is a database error", async () => {
+    const errorMessage = "Database error";
+    sandbox.stub(db.Orders, "update").throws(new Error(errorMessage));
+
+    try {
+      await cartRepositories.updateOrderStatus("order-id", "completed");
+      throw new Error("Expected updateOrderStatus to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal(errorMessage);
+    }
+  });
+});
+describe("adminUpdateOrderStatus", () => {
+  let req, res, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      body: { orderId: "order-id", status: "completed" },
+      order: { id: "order-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should update order status", async () => {
+    const mockUpdateStatus = [1];
+    sandbox.stub(cartRepositories, "updateOrderStatus").resolves(mockUpdateStatus);
+
+    await cartController.adminUpdateOrderStatus(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      message: "Status updated successfully!",
+      data: { order: req.order }
+    });
+  });
+});

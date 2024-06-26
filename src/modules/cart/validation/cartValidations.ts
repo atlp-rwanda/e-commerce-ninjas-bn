@@ -13,19 +13,11 @@ const cartSchema = Joi.object({
         "any.required": "quantity is required"
     })
 });
-const orderStatusSchema = Joi.object({
-    orderId: Joi.string().pattern(uuidPattern).required().messages({
-        "string.pattern.base": "Order ID must be a valid UUID",
-        "string.empty": "Order ID is required"
-    })
-});
   const updateOrderStatusSchema = Joi.object({
-    orderId: Joi.string().pattern(uuidPattern).required(),
     status: Joi.string().required()
   });
 
 export {
     cartSchema,
-    orderStatusSchema,
     updateOrderStatusSchema
 }

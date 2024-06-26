@@ -296,13 +296,15 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
 
   const order = req.order
-  await cartRepositories.updateOrderStatus(req.body.orderId, req.body.status);
+  await cartRepositories.updateOrderStatus(req.params.id, req.body.status);
+  eventEmitter.emit("orderStatusUpdated", order);
   return res.status(httpStatus.OK).json({
     status: httpStatus.OK,
     message: "Status updated successfully!",
     data: { order }
   })
 }
+
 export {
   buyerGetCart,
   buyerGetCarts,

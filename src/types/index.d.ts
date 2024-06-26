@@ -119,3 +119,7 @@ export interface INotifications {
 export interface IProductsWithShop extends IProduct {
   shops?: IShops;
 }
+
+export interface IOrderWithCart extends OrderAttributes {
+  carts?: CartAttributes;
+}

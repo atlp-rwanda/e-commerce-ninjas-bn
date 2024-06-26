@@ -10,7 +10,7 @@ import {
   isOrderExist
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema, updateOrderStatusSchema, orderStatusSchema } from "../modules/cart/validation/cartValidations";
+import { cartSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
 
 const router: Router = Router();
 
@@ -64,6 +64,6 @@ router.get(
   cartControllers.buyerCheckout
   );
 
-router.post("/user-get-order-status",userAuthorization(["buyer"]),validation(orderStatusSchema),isOrderExist, cartControllers.buyerGetOrderStatus )
-router.put("/admin-update-order-status", userAuthorization(["admin"]),validation(updateOrderStatusSchema),isOrderExist, cartControllers.adminUpdateOrderStatus)
+router.get("/user-get-order-status/:id",userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus )
+router.put("/admin-update-order-status/:id", userAuthorization(["admin"]),validation(updateOrderStatusSchema),isOrderExist, cartControllers.adminUpdateOrderStatus)
 export default router;
