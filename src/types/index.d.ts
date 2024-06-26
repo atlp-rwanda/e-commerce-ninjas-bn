@@ -56,8 +56,8 @@ export interface IProductSold {
 }
 
 export interface IShops {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   name: string;
   description?: string;
 }
@@ -102,4 +102,15 @@ export interface CustomSocket extends Socket {
 export interface JwtPayload extends usersAttributes {
   iat?: number;
   exp?: number;
+}
+
+export interface INotifications {
+  id: string;
+  userId: string;
+  message: string;
+  isRead: boolean;
+}
+
+export interface IProductsWithShop extends IProduct {
+  shops?: IShops;
 }

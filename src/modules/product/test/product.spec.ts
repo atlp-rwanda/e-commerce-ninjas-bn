@@ -113,8 +113,20 @@ describe("Product and Shops API Tests", () => {
     });
   });
 
+  it("should give an error on notifications", (done) => {
+    router()
+      .get("/api/user/user-get-notifications")
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(httpStatus.NOT_FOUND);
+        expect(res.body).to.have.property("status", httpStatus.NOT_FOUND);
+        done();
+      });
+  });
+
   describe("POST /api/shop/seller-create-product", () => {
     let productId: string;
+    let notificationId: string;
     it("should create a product successfully", (done) => {
       router()
         .post("/api/shop/seller-create-product")
@@ -172,6 +184,40 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
+    it("should get notifications", (done) => {
+      router()
+        .get("/api/user/user-get-notifications")
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("status", httpStatus.OK);
+          notificationId = res.body.data.notifications[0].id;
+          done();
+        });
+    });
+
+    it("should give an error for getting a single notification", (done) => {
+      router()
+        .get(`/api/user/user-get-notification/${productId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.NOT_FOUND);
+          expect(res.body).to.have.property("status", httpStatus.NOT_FOUND);
+          done();
+        });
+    });
+
+    it("should get single notification", (done) => {
+      router()
+        .get(`/api/user/user-get-notification/${notificationId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("status", httpStatus.OK);
+          done();
+        });
+    });
+
     it("should update a product successfully", (done) => {
       router()
         .put(`/api/shop/seller-update-product/${productId}`)
@@ -180,7 +226,6 @@ describe("Product and Shops API Tests", () => {
         .field("description", "An updated product description")
         .field("price", "88.44")
         .field("category", "Electronics")
-        .field("quantity", "15")
         .field("bonus", "15%")
         .field("discount", "11%")
         .field("expiryDate", "2040-11-12")
@@ -205,11 +250,7 @@ describe("Product and Shops API Tests", () => {
           "69180880-2138-11eb-8b06-03db3ef1abad.jpeg"
         )
         .end((err, res) => {
-          expect(res).to.have.status(httpStatus.BAD_REQUEST);
-          // expect(res.body).to.have.property(
-          //   "message",
-          //   "Product updated successfully"
-          // );
+          expect(res).to.have.status(200);
           done();
         });
     });

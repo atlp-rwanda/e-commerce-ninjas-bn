@@ -32,8 +32,12 @@ const findByModelsAndAttributes = async (
   });
 };
 
-const deleteProductById = async (productId: string): Promise<void> => {
-  await db.Products.destroy({ where: { id: productId } });
+const deleteProductById = async (productId: string) => {
+  const product = await findProductById(productId);
+  if (product) {
+    await db.Products.destroy({ where: { id: productId } });
+  }
+  return product;
 };
 
 const getOrdersPerTimeframe = async (
@@ -180,6 +184,19 @@ const deleteProductFromWishListById = async (
   return await db.wishLists.destroy({ where: { productId, userId } });
 };
 
+const expiredProductsByUserId = async (userId: string) => {
+  return await db.Products.findAll({
+    include: [
+        {
+            model: db.Shops,
+            as: "shops",
+            where: { userId: userId },
+        }
+    ],
+    where: { expiryDate: { [Op.lt]: new Date() } }
+  });
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -203,4 +220,5 @@ export default {
   deleteAllWishListByUserId,
   getProductByIdAndShopId,
   deleteProductFromWishListById,
+  expiredProductsByUserId
 };

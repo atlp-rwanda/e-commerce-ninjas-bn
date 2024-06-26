@@ -10,6 +10,7 @@ import httpStatus from "http-status";
 import chat from "./services/chat";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import setupSocket from "./services/notificationSocket";
 import "./services/cronJob"
 
 dotenv.config();
@@ -18,13 +19,14 @@ const app: Express = express();
 const PORT = process.env.PORT
 const server = createServer(app);
 
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   }
 });
 chat(io);
+setupSocket(io);
 app.use(express.json());
 app.use(morgan(process.env.NODE_EN));
 app.use(compression());

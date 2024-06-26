@@ -7,6 +7,7 @@ import Orders from "./orders";
 import Sessions from "./sessions";
 import Chats from "./chats";
 import wishLists from "./wishLists";
+import Notifications from "./notifications";
 
 const db = {
   CartProducts,
@@ -17,7 +18,8 @@ const db = {
   Orders,
   Sessions,
   Chats,
-  wishLists
+  wishLists,
+  Notifications
 };
 
 Object.values(db).forEach(model => {
