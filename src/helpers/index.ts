@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import jwt,{JwtPayload} from "jsonwebtoken"
 import dotenv from "dotenv"
 import bcrypt from "bcrypt"
 
 dotenv.config
 
- const generateToken = (id: number) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "12h" });
+ const generateToken = (id: string) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET);
   };
 
   const decodeToken = (token: string) => {
@@ -21,4 +22,14 @@ const hashPassword = (password: string)=>{
   return bcrypt.hashSync(password, 10);
 }
 
-  export { generateToken, decodeToken, comparePassword, hashPassword }
+const generateRandomCode = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const generateOTP = () => {
+  const otp = generateRandomCode();
+  const expirationTime = new Date(Date.now() + 5 * 60 * 1000);
+  return { otp, expirationTime };
+};
+
+  export { generateToken, decodeToken, comparePassword, hashPassword, generateRandomCode,generateOTP }

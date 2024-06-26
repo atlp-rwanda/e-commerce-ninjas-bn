@@ -1,4 +1,7 @@
+// eslint-disable @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
+import { CartProductAttributes } from "../databases/models/cartProducts";
 
 export interface IToken {
   userId: number;
@@ -12,34 +15,51 @@ export interface ILogin {
 }
 
 export interface ExtendRequest extends Request {
-    files: Express.Multer.File[];
-    user?: user;
-    shop?:Shops;
+  product?: any;
+  cart?: any;
+  carts?: any;
+  files: Express.Multer.File[];
+  user?: user;
+  shop?: Shops;
+  cart?:Cart;
+  pagination?: {
+    limit: number;
+    page: number;
+    offset: number;
+  };
+  searchQuery?: any;
 }
 
-export interface IProduct{
-    id: string;
-    shopId: string;
-    name: string;
-    description?: string;
-    price: number;
-    discount?: string;
-    category: string;
-    expiryDate?: Date;
-    expired: boolean;
-    bonus?: string;
-    images: string[];
-    quantity: number;
-    isAvailable: string;
-    createdAt: Date;
-    updatedAt: Date;
+export interface IProduct {
+  id: string;
+  shopId: string;
+  name: string;
+  description?: string;
+  price: number;
+  discount?: string;
+  category: string;
+  expiryDate?: Date;
+  expired: boolean;
+  bonus?: string;
+  images: string[];
+  quantity: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface IShops{
-    id: number;
-    userId: number;
-    name: string;
-    description?: string;
+export interface IProductSold {
+  id: number | string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface IShops {
+  id: number;
+  userId: number;
+  name: string;
+  description?: string;
 }
 
 export interface userInfo {
@@ -48,4 +68,38 @@ export interface userInfo {
   lastName: string;
   picture: string;
   accToken: string;
+}
+
+export interface chatsAttributes {
+  id: string;
+  userId?: string;
+  message?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface chatsAttributes {
+  id: number;
+  userId: string;
+  message: string;
+  createdAt: Date;
+  user?: {
+    role: string;
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+export interface IExtendedCartProduct extends CartProductAttributes {
+  products?: IProduct;
+}
+
+export interface CustomSocket extends Socket {
+  user: UserAttributes;
+}
+
+export interface JwtPayload extends usersAttributes {
+  iat?: number;
+  exp?: number;
 }
