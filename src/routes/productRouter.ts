@@ -46,7 +46,7 @@ router.post(
 router.delete(
   "/seller-delete-product/:id",
   userAuthorization(["seller"]),
-  isProductExist,
+  isProductExistById,
   productController.sellerDeleteProduct
 );
 router.post(
@@ -69,6 +69,7 @@ router.put(
   "/seller-update-product-status/:id",
   userAuthorization(["seller"]),
   validation(statusSchema),
+  isProductExistById,
   productController.updateProductStatus
 );
 router.get(

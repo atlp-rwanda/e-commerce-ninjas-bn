@@ -551,7 +551,7 @@ const isProductIdExist = async (
 ) => {
   try {
     const product = await productRepositories.findProductById(
-      req.body.productId
+      req.body.productId || req.params.id
     );
     if (!product)
       return res.status(httpStatus.NOT_FOUND).json({
@@ -763,6 +763,28 @@ const isUserWishlistExistById = async (
   }
 };
 
+const isNotificationsExist = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user.id;
+    let notifications: any;
+    if (req.params.id) {
+      notifications = await db.Notifications.findOne({ where: { id: req.params.id, userId } });
+      if (!notifications) {
+        return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Notification not found" });
+      }
+    } else {
+      notifications = await db.Notifications.findAll({ where: { userId } });
+      if (!notifications.length) {
+        return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Notifications not found" });
+      }
+    }
+    (req as any).notifications = notifications;
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+};
+
 export {
   validation,
   isUserExist,
@@ -790,4 +812,5 @@ export {
   isProductExistToWishlist,
   isUserWishlistExist,
   isUserWishlistExistById,
+  isNotificationsExist
 };

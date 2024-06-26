@@ -9,6 +9,7 @@ import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
 import * as cartController from "../controller/cartControllers";
 import db from "../../../databases/models";
+import app from "../../..";
 import {
   isCartExist,
   isCartIdExist,
@@ -22,6 +23,7 @@ import {
 } from "../controller/cartControllers";
 
 chai.use(chaiHttp);
+const router = () => chai.request(app);
 describe("Buyer Get Cart", () => {
   let req;
   let res;
@@ -98,7 +100,6 @@ describe("Buyer Get Cart", () => {
       ],
     });
   });
-
   it("should handle errors properly", async () => {
     const error = new Error("Something went wrong");
     sandbox.stub(cartRepositories, "getCartsByUserId").throws(error);
