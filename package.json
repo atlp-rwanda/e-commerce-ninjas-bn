@@ -39,6 +39,7 @@
       "src/types/*.*",
       "src/services/googleAuth.ts",
       "src/services/chat.ts",
+      "src/services/notificationSocket.ts",
       "src/services/cronJob.ts"
     ],
     "reporter": [
@@ -59,6 +60,7 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/mocha": "^10.0.6",
     "@types/multer": "^1.4.11",
+    "@types/node-cron": "^3.0.11",
     "@types/sinon": "^17.0.3",
     "@types/sinon-chai": "^3.2.12",
     "bcrypt": "^5.1.1",

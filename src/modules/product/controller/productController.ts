@@ -1,4 +1,5 @@
 /* eslint-disable comma-dangle */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from "express";
 import httpStatus from "http-status";
@@ -6,6 +7,7 @@ import productRepositories from "../repositories/productRepositories";
 import uploadImages from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 import Products from "../../../databases/models/products";
+import { eventEmitter } from "../../../helpers/notifications";
 
 const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
   try {
@@ -21,6 +23,7 @@ const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
       message: "Product created successfully",
       data: { product: product },
     });
+    eventEmitter.emit("productAdded", product);
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -51,7 +54,9 @@ const sellerCreateShop = async (req: ExtendRequest, res: Response) => {
 
 const sellerDeleteProduct = async (req: ExtendRequest, res: Response) => {
   try {
-    await productRepositories.deleteProductById(req.params.id);
+    const productId = req.params.id;
+    eventEmitter.emit("productRemoved", {id: productId});
+    await productRepositories.deleteProductById(productId);
     res.status(httpStatus.OK).json({ message: "Product deleted successfully" });
   } catch (error) {
     res
@@ -143,6 +148,7 @@ const updateProductStatus = async (req: ExtendRequest, res: Response) => {
     res
       .status(httpStatus.OK)
       .json({ message: "Status updated successfully.", data });
+      eventEmitter.emit("productStatusChanged", data)
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -209,11 +215,11 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
       "id",
       productId
     );
-
     res.status(httpStatus.OK).json({
       message: "Product updated successfully",
       data: { product: updatedProduct },
     });
+    eventEmitter.emit("productUpdated", { id: productId, name: updatedProduct[1][0].name });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)

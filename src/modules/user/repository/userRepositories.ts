@@ -27,8 +27,6 @@ const postChatMessage = async (userId, message) => {
   return fullChat.toJSON();
 };
 
-
-
 const getAllPastChats = async () => {
   const chats = await db.Chats.findAll({
     limit: 50,
@@ -44,5 +42,24 @@ const getAllPastChats = async () => {
   return chats;
 };
 
+const addNotification = async (userId: string, message: string) => {
+  return await db.Notifications.create({ userId, message });
+}
 
-export default { getAllUsers, updateUserProfile, postChatMessage, getAllPastChats };
+const findNotificationsByuserId = async (userId: string) => {
+  return await db.Notifications.findAll({ where: { userId } });
+}
+
+const findNotificationById = async (userId: string, id: string) => {
+  return await db.Notifications.findOne({ where: { userId, id } });
+}
+
+export default { 
+  getAllUsers, 
+  updateUserProfile, 
+  postChatMessage, 
+  getAllPastChats,
+  addNotification,
+  findNotificationsByuserId,
+  findNotificationById
+};
