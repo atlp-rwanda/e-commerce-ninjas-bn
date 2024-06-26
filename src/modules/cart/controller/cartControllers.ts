@@ -9,7 +9,6 @@ import { ExtendRequest, IExtendedCartProduct } from "../../../types";
 import { cartStatusEnum } from "../../../enums";
 import { Stripe } from "stripe";import { eventEmitter } from "../../../helpers/notifications";
 
-import { Stripe } from "stripe";
 const getProductDetails = (
   cartProducts: IExtendedCartProduct[]
 ): { productsDetails: any[]; cartTotal: number } => {
