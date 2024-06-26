@@ -40,7 +40,8 @@
       "src/services/googleAuth.ts",
       "src/services/chat.ts",
       "src/services/notificationSocket.ts",
-      "src/services/cronJob.ts"
+      "src/services/cronJob.ts",
+      "src/helpers/passwordExpiryNotifications.ts"
     ],
     "reporter": [
       "html",

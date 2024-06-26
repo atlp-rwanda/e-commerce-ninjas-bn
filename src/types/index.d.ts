@@ -23,6 +23,8 @@ export interface ExtendRequest extends Request {
   user?: user;
   shop?: Shops;
   cart?:Cart;
+  wishList?:any;
+  wishListId:string;
   pagination?: {
     limit: number;
     page: number;
