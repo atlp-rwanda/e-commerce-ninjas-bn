@@ -218,6 +218,28 @@ describe("Product and Shops API Tests", () => {
         });
     });
 
+    it("should give an error for getting a single notification", (done) => {
+      router()
+        .get(`/api/user/user-get-notification/${productId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.NOT_FOUND);
+          expect(res.body).to.have.property("status", httpStatus.NOT_FOUND);
+          done();
+        });
+    });
+
+    it("should mark single notifications as read", (done) => {
+      router()
+        .put(`/api/user/user-mark-notification/${notificationId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res).to.have.status(httpStatus.OK);
+          expect(res.body).to.have.property("message", "Notification marked as read");
+          done();
+        });
+    });
+
     it("should update a product successfully", (done) => {
       router()
         .put(`/api/shop/seller-update-product/${productId}`)
