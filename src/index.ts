@@ -10,7 +10,6 @@ import httpStatus from "http-status";
 import chat from "./services/chat";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import setupSocket from "./services/notificationSocket";
 import "./services/cronJob"
 
 dotenv.config();

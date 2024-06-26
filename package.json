@@ -42,7 +42,7 @@
       "src/services/cronJob.ts",
       "src/helpers/passwordExpiryNotifications.ts",
       "src/services/notificationSocket.ts",
-      "src/services/cronJob.ts"
+      "src/helpers/passwordExpiryNotifications.ts"  
     ],
     "reporter": [
       "html",

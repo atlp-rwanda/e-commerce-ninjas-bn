@@ -7,7 +7,7 @@ import cartRepositories from "../repositories/cartRepositories";
 import productRepositories from "../../product/repositories/productRepositories";
 import { ExtendRequest, IExtendedCartProduct } from "../../../types";
 import { cartStatusEnum } from "../../../enums";
-import { eventEmitter } from "../../../helpers/notifications";
+import { Stripe } from "stripe";import { eventEmitter } from "../../../helpers/notifications";
 
 import { Stripe } from "stripe";
 const getProductDetails = (
