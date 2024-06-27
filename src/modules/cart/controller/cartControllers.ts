@@ -272,7 +272,7 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
   try {
     const cart = req.cart
     let totalAmount = 0;
-    cartProducts.forEach(product => {
+    cart.cartProducts.forEach(product => {
       totalAmount += product.totalPrice; 
     });
 
