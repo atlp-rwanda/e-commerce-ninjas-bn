@@ -15,6 +15,7 @@ import {
   isProductExistToWishlist,
   isUserWishlistExist,
   isUserWishlistExistById,
+  isProductOrdered
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -22,6 +23,7 @@ import {
   statisticsSchema,
   statusSchema,
   productUpdateSchema,
+  productReviewSchema
 } from "../modules/product/validation/productValidation";
 import upload from "../helpers/multer";
 
@@ -137,4 +139,10 @@ router.delete(
   productController.buyerDeleteProductFromWishList
 );
 
+router.post(
+  "/buyer-review-product/:id",
+  userAuthorization(["buyer"]),
+  validation(productReviewSchema),
+  isProductOrdered, 
+  productController.buyerReviewProduct )
 export default router;
