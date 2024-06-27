@@ -71,6 +71,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Submit a seller request
 - Buyer track order status Endpoint
 - Admin update order status EndPoint 
+- Buyer get order history Endpoint
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -122,8 +123,9 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 44  | PUT    | /api/user/user-mark-notification/:id                  | 200 OK      | private | user mark notification              |
 | 45  | POST   | /api/shop/buyer-review-product/:id                    | 200 OK      | private | Buyer Create review                 |
 | 46  | POST   | /api/user/user-submit-seller-request                  | 200 OK      | private | Submit a seller request             |
-| 46  | POST   | /api/cart/user-get-order-status/           | 200 OK      | private | user get order status               |
-| 47  |  PUT   | /api/cart/admin-update-order-status/:id    | 200 OK      | private | admin update order status           |
+| 47  | GET    | /api/cart/user-get-order-status/:id        | 200 OK      | private | user get order status               |
+| 48  | GET    | /api/cart/buyer-get-order-history          | 200 OK      | private | buyer get order history              |
+| 49  |  PUT   | /api/cart/admin-update-order-status/:id    | 200 OK      | private | admin update order status           | 
 
 
 ## INSTALLATION

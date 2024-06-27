@@ -46,7 +46,6 @@
       "src/services/stripe.ts",
       "src/services/cronJob.ts",
       "src/helpers/passwordExpiryNotifications.ts"
-
     ],
     "reporter": [
       "html",

@@ -51,7 +51,7 @@ const sendEmailOrderStatus = async (userId: string, message: string) => {
     const mailOptions: SendMailOptions = {
     from: process.env.MAIL_ID,
     to: user.email,
-    subject: "Order status",
+    subject: "Order notification",
     text: message
   };
 

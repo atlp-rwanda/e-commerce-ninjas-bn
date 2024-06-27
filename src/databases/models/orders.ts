@@ -14,6 +14,8 @@ export interface OrderAttributes {
     paymentMethodId: string;
     orderDate: Date;
     status: string;
+    shippingProcess: string;
+    expectedDeliveryDate: Date
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,6 +28,8 @@ class Orders extends Model<OrderAttributes> implements OrderAttributes {
     declare paymentMethodId: string;
     declare orderDate: Date;
     declare status: string;
+    declare shippingProcess: string;
+    declare expectedDeliveryDate: Date;
     declare createdAt: Date;
     declare updatedAt: Date;
 
@@ -66,6 +70,14 @@ Orders.init(
         },
         status: {
             type: new DataTypes.STRING,
+            allowNull: false
+        },
+        shippingProcess: {
+            type: DataTypes.STRING,
+            allowNull: false
+          },
+        expectedDeliveryDate:{
+            type:DataTypes.DATE,
             allowNull: false
         },
         createdAt: {

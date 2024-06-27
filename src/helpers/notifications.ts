@@ -83,13 +83,13 @@ eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
   await saveAndEmitNotification(userId, message, "passwordExpiry");
 });
 
-eventEmitter.on('orderStatusUpdated', async (order) => {
+eventEmitter.on("orderStatusUpdated", async (order) => {
   const orderStatus = await fetchOrderWithCarts(order.id)
   const userId = orderStatus.carts.userId
-  const message = `The order that was created on ${order.orderDate} status has been updated to ${order.status}.`;
+  const message = order.shippingProcess;
   await userRepositories.addNotification(userId, message);
   await sendEmailOrderStatus(userId, message);
-  io.to(userId).emit('orderStatusUpdated', message)
+  io.to(userId).emit("orderStatusUpdated", message)
 });
   
 cron.schedule("0 0 * * *", async () => {
