@@ -3,33 +3,37 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-import CartProducts from "./cartProducts";
+import Products from "./products";
 import Users from "./users";
-import Orders from "./orders";
 
-export interface CartAttributes {
+export interface ProductReviewAttributes {
     id: string;
+    productId: string;
     userId: string;
-    status: string;
+    feedback: string;
+    rating: number;
+    status: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
 
-class Carts extends Model<CartAttributes> implements CartAttributes {
+class ProductReviews extends Model<ProductReviewAttributes> implements ProductReviewAttributes {
     declare id: string;
+    declare productId: string;
     declare userId: string;
-    declare status: string;
+    declare feedback: string;
+    declare rating: number;
+    declare status: boolean;
     declare createdAt: Date;
     declare updatedAt: Date;
 
     static associate() {
-        Carts.belongsTo(Users, { foreignKey: "userId", as: "buyer" });
-        Carts.hasMany(CartProducts, { foreignKey: "cartId", as: "cartProducts" });
-        Carts.hasMany(Orders,{foreignKey: "cartId", as: "order"})
+        ProductReviews.belongsTo(Products, { foreignKey: "productId", as: "product" });
+        ProductReviews.belongsTo(Users, { foreignKey: "userId", as: "user" });
     }
 }
 
-Carts.init(
+ProductReviews.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -37,13 +41,26 @@ Carts.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
           },
+        productId: {
+            type: new DataTypes.UUID,
+            allowNull: false
+        },
         userId: {
             type: new DataTypes.UUID,
             allowNull: false
         },
-        status: {
+        feedback: {
             type: new DataTypes.STRING,
-            allowNull: false
+            allowNull: true
+        },
+        rating: {
+            type: new DataTypes.INTEGER,
+            allowNull: true
+        },
+        status: {
+            type: new DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
         createdAt: {
             field: "createdAt",
@@ -60,10 +77,10 @@ Carts.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "carts",
+        tableName: "productReviews",
         timestamps: true,
-        modelName: "Carts"
+        modelName: "ProductReview"
     }
 );
 
-export default Carts;
+export default ProductReviews;

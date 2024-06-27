@@ -393,6 +393,27 @@ const buyerViewWishList = async (req: ExtendRequest, res: Response) => {
   }
 };
 
+const buyerReviewProduct = async (req: ExtendRequest, res: Response) => {
+  try{
+    const data = { 
+    rating: req.body.rating,
+    feedback: req.body.feedback,
+    productId: req.params.id,
+    userId: req.user.id
+  }
+  const productReview = await productRepositories.userCreateReview(data)
+  return res.status(httpStatus.OK).json({
+    message: "Product reviewed successfully",
+    data: {productReview}
+  })
+} catch(error){
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    status: httpStatus.INTERNAL_SERVER_ERROR,
+    error: error.message
+  })
+}
+}
+
 export {
   sellerCreateProduct,
   sellerCreateShop,
@@ -410,4 +431,5 @@ export {
   buyerDeleteProductFromWishList,
   buyerViewWishLists,
   buyerViewWishList,
+  buyerReviewProduct
 };

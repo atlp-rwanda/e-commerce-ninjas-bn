@@ -17,6 +17,7 @@ import {
   isProductExistToWishlist,
   isUserWishlistExistById,
   isUserWishlistExist,
+  isProductOrdered
 } from "../../../middlewares/validation";
 import sinon, { SinonStub } from "sinon";
 import productRepositories from "../repositories/productRepositories";
@@ -31,6 +32,7 @@ import Shop from "../../../databases/models/shops";
 import User from "../../../databases/models/users";
 import { sendEmail, transporter } from "../../../services/sendEmail";
 import updateExpiredProducts from "../../../helpers/updateExpiredProducts";
+import cartRepositories from "../../cart/repositories/cartRepositories";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -1667,6 +1669,129 @@ describe("buyerViewWishList", () => {
     expect(res.json).to.have.been.calledOnceWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: errorMessage,
+    });
+  });
+});
+
+describe("isProductOrdered", () => {
+  let req, res, next, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      params: { id: "product-id" },
+      user: { id: "user-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should proceed to the next middleware if the product is ordered and completed", async () => {
+    const mockCart = { status: "completed" };
+    sandbox.stub(cartRepositories, "getCartsByProductId").resolves(mockCart);
+
+    await isProductOrdered(req, res, next);
+
+    expect(cartRepositories.getCartsByProductId).to.have.been.calledOnceWith("product-id", "user-id");
+    expect(req.cart).to.equal(mockCart);
+    expect(next).to.have.been.calledOnce;
+  });
+
+  it("should return 404 if the product is not ordered", async () => {
+    sandbox.stub(cartRepositories, "getCartsByProductId").resolves(null);
+
+    await isProductOrdered(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.NOT_FOUND,
+      message: "Product is not ordered"
+    });
+  });
+
+  it("should return 400 if the order is not completed", async () => {
+    const mockCart = { status: "pending" };
+    sandbox.stub(cartRepositories, "getCartsByProductId").resolves(mockCart);
+
+    await isProductOrdered(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.BAD_REQUEST,
+      message: "Order is not Completed"
+    });
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    const errorMessage = "Server error";
+    sandbox.stub(cartRepositories, "getCartsByProductId").throws(new Error(errorMessage));
+
+    await isProductOrdered(req, res, next);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
+    });
+  });
+});
+
+describe("buyerReviewProduct", () => {
+  let req, res, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      body: { rating: 5, feedback: "Great product!" },
+      params: { id: "product-id" },
+      user: { id: "user-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should create a product review successfully", async () => {
+    const mockReview = { id: "review-id", rating: 5, feedback: "Great product!" };
+    sandbox.stub(productRepositories, "userCreateReview").resolves(mockReview);
+
+    await productController.buyerReviewProduct(req, res);
+
+    expect(productRepositories.userCreateReview).to.have.been.calledOnceWith({
+      rating: 5,
+      feedback: "Great product!",
+      productId: "product-id",
+      userId: "user-id"
+    });
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      message: "Product reviewed successfully",
+      data: { productReview: mockReview }
+    });
+  });
+
+  it("should handle errors", async () => {
+    const errorMessage = "An error occurred";
+    sandbox.stub(productRepositories, "userCreateReview").throws(new Error(errorMessage));
+
+    await productController.buyerReviewProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
     });
   });
 });

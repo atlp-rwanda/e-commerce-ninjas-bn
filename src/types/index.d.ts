@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
 import { CartProductAttributes } from "../databases/models/cartProducts";
+import { CartAttributes } from "../databases/models/carts";
 
 export interface IToken {
   userId: number;
@@ -93,6 +94,7 @@ export interface chatsAttributes {
 }
 export interface IExtendedCartProduct extends CartProductAttributes {
   products?: IProduct;
+  carts?: CartAttributes;
 }
 
 export interface CustomSocket extends Socket {
