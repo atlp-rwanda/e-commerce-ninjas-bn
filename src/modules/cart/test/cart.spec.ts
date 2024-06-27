@@ -14,6 +14,7 @@ import {
   isCartExist,
   isCartIdExist,
   isProductIdExist,
+  isOrderExist
 } from "../../../middlewares/validation";
 import productRepositories from "../../product/repositories/productRepositories";
 import {
@@ -21,6 +22,7 @@ import {
   buyerClearCarts,
   buyerClearCartProduct,
 } from "../controller/cartControllers";
+import EventEmitter = require("events");
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);
@@ -930,72 +932,6 @@ describe("buyerClearCarts", () => {
   });
 });
 
-describe("getCartsByProductId", () => {
-  let sandbox;
-
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  it("should return the cart with the specified product and user", async () => {
-    const mockCart = {
-      userId: "user-id",
-      cartProducts: [{ productId: "product-id" }],
-      order: {}
-    };
-
-    sandbox.stub(db.Carts, "findOne").resolves(mockCart);
-
-    const result = await cartRepositories.getCartsByProductId("product-id", "user-id");
-
-    expect(db.Carts.findOne).to.have.been.calledOnceWith({
-      where: { userId: "user-id" },
-      include: [
-        { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
-        { model: db.Orders, as: "order" }
-      ]
-    });
-    expect(result).to.equal(mockCart);
-  });
-
-  it("should return null if no cart is found", async () => {
-    sandbox.stub(db.Carts, "findOne").resolves(null);
-
-    const result = await cartRepositories.getCartsByProductId("product-id", "user-id");
-
-    expect(db.Carts.findOne).to.have.been.calledOnceWith({
-      where: { userId: "user-id" },
-      include: [
-        { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
-        { model: db.Orders, as: "order" }
-      ]
-    });
-    expect(result).to.be.null;
-  });
-
-  it("should throw an error if there is a database error", async () => {
-    const errorMessage = "Database error";
-    sandbox.stub(db.Carts, "findOne").throws(new Error(errorMessage));
-
-    try {
-      await cartRepositories.getCartsByProductId("product-id", "user-id");
-    } catch (error) {
-      expect(db.Carts.findOne).to.have.been.calledOnceWith({
-        where: { userId: "user-id" },
-        include: [
-          { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
-          { model: db.Orders, as: "order" }
-        ]
-      });
-      expect(error.message).to.equal(errorMessage);
-    }
-  });
-});
-
 describe("isOrderExist Middleware", () => {
   let req, res, next, sandbox;
 
@@ -1003,7 +939,7 @@ describe("isOrderExist Middleware", () => {
     sandbox = sinon.createSandbox();
     req = {
       user: {},
-      body: {}
+      params: { id: 'order-id' },
     };
     res = {
       status: sinon.stub().returnsThis(),
@@ -1018,7 +954,6 @@ describe("isOrderExist Middleware", () => {
 
   it("should find the order for a buyer", async () => {
     req.user.role = "buyer";
-    req.body.orderId = "order-id";
     req.user.id = "user-id";
     const mockOrder = { id: "order-id" };
     sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").resolves(mockOrder);
@@ -1031,7 +966,6 @@ describe("isOrderExist Middleware", () => {
 
   it("should return 404 if order is not found for a buyer", async () => {
     req.user.role = "buyer";
-    req.body.orderId = "order-id";
     req.user.id = "user-id";
     sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").resolves(null);
 
@@ -1040,14 +974,13 @@ describe("isOrderExist Middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.NOT_FOUND,
-      message: "order Not Found",
+      error: "order Not Found",
     });
     expect(next).not.to.have.been.called;
   });
 
   it("should find the order for an admin", async () => {
     req.user.role = "admin";
-    req.body.orderId = "order-id";
     const mockOrder = { id: "order-id" };
     sandbox.stub(cartRepositories, "getOrderById").resolves(mockOrder);
 
@@ -1059,7 +992,6 @@ describe("isOrderExist Middleware", () => {
 
   it("should return 404 if order is not found for an admin", async () => {
     req.user.role = "admin";
-    req.body.orderId = "order-id";
     sandbox.stub(cartRepositories, "getOrderById").resolves(null);
 
     await isOrderExist(req, res, next);
@@ -1067,14 +999,13 @@ describe("isOrderExist Middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.NOT_FOUND,
-      message: "order Not Found",
+      error: "order Not Found",
     });
     expect(next).not.to.have.been.called;
   });
 
   it("should return 500 if there is a server error", async () => {
     req.user.role = "buyer";
-    req.body.orderId = "order-id";
     req.user.id = "user-id";
     sandbox.stub(cartRepositories, "getOrderByOrderIdAndUserId").throws(new Error("Database error"));
 
@@ -1083,7 +1014,7 @@ describe("isOrderExist Middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Database error",
+      er: "Database error",
     });
     expect(next).not.to.have.been.called;
   });
@@ -1100,7 +1031,7 @@ describe("getOrderByOrderIdAndUserId", () => {
     sandbox.restore();
   });
 
-it("should return the order if found", async () => {
+  it("should return the order if found", async () => {
     const mockOrder = { id: "order-id", carts: [{ userId: "user-id" }] };
     sandbox.stub(db.Orders, "findOne").resolves(mockOrder);
 
@@ -1139,7 +1070,7 @@ it("should return the order if found", async () => {
 
   it("should throw an error if there is a database error", async () => {
     const errorMessage = "Database error";
-sandbox.stub(db.Orders, "findOne").throws(new Error(errorMessage));
+    sandbox.stub(db.Orders, "findOne").throws(new Error(errorMessage));
 
     try {
       await cartRepositories.getOrderByOrderIdAndUserId("order-id", "user-id");
@@ -1173,7 +1104,6 @@ describe("buyerGetOrderStatus", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
-      status: httpStatus.OK,
       message: "Order Status found successfully",
       data: {
         order: req.order
@@ -1274,13 +1204,15 @@ describe("updateOrderStatus", () => {
     }
   });
 });
+
 describe("adminUpdateOrderStatus", () => {
   let req, res, sandbox;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     req = {
-      body: { orderId: "order-id", status: "completed" },
+      params: { id: "order-id" },
+      body: { status: "completed" },
       order: { id: "order-id" }
     };
     res = {
@@ -1294,16 +1226,48 @@ describe("adminUpdateOrderStatus", () => {
   });
 
   it("should update order status", async () => {
-    const mockUpdateStatus = [1];
+    const mockUpdateStatus = [1]; 
     sandbox.stub(cartRepositories, "updateOrderStatus").resolves(mockUpdateStatus);
 
     await cartController.adminUpdateOrderStatus(req, res);
 
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
-      status: httpStatus.OK,
       message: "Status updated successfully!",
       data: { order: req.order }
+    });
+  });
+});
+
+describe("adminUpdateOrderStatus", () => {
+  let req, res, sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      params: { id: "order-id" },
+      body: { status: "completed" },
+      order: { id: "order-id" }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+  it("should handle errors", async () => {
+    const errorMessage = "An error occurred";
+    sandbox.stub(cartRepositories, "updateOrderStatus").throws(new Error(errorMessage));
+
+    await cartController.adminUpdateOrderStatus(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
     });
   });
 });

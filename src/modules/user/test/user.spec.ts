@@ -18,6 +18,8 @@ import db from "../../../databases/models";
 import { hashPassword } from "../../../helpers";
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
+import { sendEmail, sendEmailOrderStatus } from "../../../services/sendEmail";
+import { transporter } from "../../../services/sendEmail";
 
 chai.use(chaiHttp);
 const router = () => chai.request(app);

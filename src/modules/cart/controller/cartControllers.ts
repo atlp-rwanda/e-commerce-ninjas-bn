@@ -264,12 +264,12 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
 
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      data: { totalAmount,cart }
+      data: { totalAmount, cart }
     });
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -278,11 +278,8 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order
     return res.status(httpStatus.OK).json({
-      status: httpStatus.OK,
       message: "Order Status found successfully",
-      data: {
-        order
-      }
+      data: {order}
     })
 
   } catch (error) {
@@ -294,15 +291,21 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
 }
 
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
-
-  const order = req.order
-  await cartRepositories.updateOrderStatus(req.params.id, req.body.status);
-  eventEmitter.emit("orderStatusUpdated", order);
-  return res.status(httpStatus.OK).json({
-    status: httpStatus.OK,
-    message: "Status updated successfully!",
-    data: { order }
-  })
+  try {
+    const order = req.order
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status);
+    eventEmitter.emit("orderStatusUpdated", order);
+    return res.status(httpStatus.OK).json({
+      message: "Status updated successfully!",
+      data: { order }
+    })
+  }catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+  
 }
 
 export {
