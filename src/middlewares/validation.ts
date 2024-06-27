@@ -17,7 +17,7 @@ import {
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
-import { ExtendRequest } from "../types";
+import { ExtendRequest, IExtendedCartProduct } from "../types";
 import { sendEmail } from "../services/sendEmail";
 import { Op } from "sequelize";
 
@@ -785,6 +785,35 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunction) => {
+  try {
+    const cart = await cartRepositories.getCartsByProductId(req.params.id, req.user.id);
+    console.log("Order info: ",cart);
+    if (!cart) {
+      return res
+       .status(httpStatus.NOT_FOUND)
+       .json({
+          status: httpStatus.NOT_FOUND,
+          message: "Product is not ordered",
+        });
+    }
+
+    if(cart.status !== "completed") {
+      return res.status(httpStatus.BAD_REQUEST).json({ 
+        status: httpStatus.BAD_REQUEST,
+        message: "Order is not Completed"
+      })
+    }
+    req.cart = cart;
+    return next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  }
+};
+
+
 export {
   validation,
   isUserExist,
@@ -812,5 +841,6 @@ export {
   isProductExistToWishlist,
   isUserWishlistExist,
   isUserWishlistExistById,
-  isNotificationsExist
+  isNotificationsExist,
+  isProductOrdered
 };
