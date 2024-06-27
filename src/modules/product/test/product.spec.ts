@@ -1778,7 +1778,20 @@ describe("buyerReviewProduct", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Product reviewed successfully",
-      data: {createdReview:mockReview}
+      data: { productReview: mockReview }
+    });
+  });
+
+  it("should handle errors", async () => {
+    const errorMessage = "An error occurred";
+    sandbox.stub(productRepositories, "userCreateReview").throws(new Error(errorMessage));
+
+    await productController.buyerReviewProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage
     });
   });
 });
