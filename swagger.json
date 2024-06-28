@@ -344,7 +344,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -897,7 +897,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1089,7 +1089,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1112,7 +1112,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1183,7 +1183,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1206,7 +1206,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1215,7 +1215,7 @@
                   "serverError": {
                     "summary": "Internal Server Error",
                     "value": {
-                      "message": "Internal Server error"
+                      "error": "Internal Server error"
                     }
                   }
                 }
@@ -1298,7 +1298,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1307,7 +1307,7 @@
                   "userNotFound": {
                     "summary": "User Not Found",
                     "value": {
-                      "message": "User doesn't exist."
+                      "error": "User doesn't exist."
                     }
                   }
                 }
@@ -1321,7 +1321,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1330,7 +1330,7 @@
                   "userNotFound": {
                     "summary": "Invalid user ID",
                     "value": {
-                      "message": "Invalid user ID"
+                      "error": "Invalid user ID"
                     }
                   }
                 }
@@ -1344,7 +1344,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1353,7 +1353,7 @@
                   "serverError": {
                     "summary": "Server Error",
                     "value": {
-                      "message": "Server error"
+                      "error": "Server error"
                     }
                   }
                 }
@@ -1440,7 +1440,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1459,7 +1459,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1478,7 +1478,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1582,7 +1582,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1763,7 +1763,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1952,7 +1952,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2031,7 +2031,7 @@
                         "schema": {
                           "type": "object",
                           "properties": {
-                            " message": {
+                            " error": {
                               "type": "string",
                               "description": "Error message",
                               "example": "Item not found"
@@ -2175,7 +2175,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2264,7 +2264,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2282,7 +2282,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2545,7 +2545,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2641,7 +2641,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2659,7 +2659,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2974,7 +2974,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3041,7 +3041,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3059,7 +3059,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3137,7 +3137,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3155,7 +3155,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3222,7 +3222,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3240,7 +3240,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3318,7 +3318,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3336,7 +3336,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }

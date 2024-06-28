@@ -17,7 +17,7 @@ const adminGetUsers = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -35,7 +35,7 @@ const adminGetUser = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -55,7 +55,7 @@ const updateUserRole = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -75,7 +75,7 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -88,7 +88,7 @@ const getUserDetails = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -125,7 +125,7 @@ const changePassword = async (req: any, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -140,7 +140,7 @@ const getAllNotifications = async ( req: Request, res: Response ) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -155,7 +155,7 @@ const getSingleNotification = async ( req: Request, res: Response ) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -170,7 +170,7 @@ const markNotificationAsRead = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -185,7 +185,7 @@ const markAllNotificationsAsRead = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };

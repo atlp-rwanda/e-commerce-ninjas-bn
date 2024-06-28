@@ -329,9 +329,9 @@ const checkout = async (req: ExtendRequest, res: Response) => {
                 productIds: JSON.stringify(productIds) 
             }
         });
-        res.status(200).json({ payment_url: session.url });
+        res.status(httpStatus.OK).json({ payment_url: session.url });
     } catch (error: any) {
-        res.status(500).json({ message: error.message });
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status:httpStatus.INTERNAL_SERVER_ERROR , error: error.message });
     }
 };
 

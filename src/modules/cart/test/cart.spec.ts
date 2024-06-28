@@ -650,8 +650,8 @@ describe("Payment Controller", () => {
 
       await cartController.checkout(req, res);
 
-      expect(res.status).to.have.been.calledWith(500);
-      expect(res.json).to.have.been.calledWith({ message: "Database error" });
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({status:httpStatus.INTERNAL_SERVER_ERROR, error: "Database error" });
     });
   });
 });
@@ -1104,7 +1104,7 @@ describe('Middleware Functions', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
+        error: errorMessage
       });
       expect(next).to.not.have.been.called;
     });
