@@ -65,6 +65,19 @@ const deleteCartById = async (id: string) => {
 const findCartByAttributes = async(key1: string, value1:any, key2: string, value2:any): Promise<any> => {
   return await db.Carts.findOne({ where: { [key1]: value1, [key2]: value2 } })
 }
+
+const getCartsByProductId = async (productId: string, userId: string) => {
+  return await db.Carts.findOne(
+    { where: 
+    { userId: userId }, 
+    include: [ 
+      { model: db.CartProducts, 
+        as: "cartProducts", 
+        where: { productId: productId } }, 
+        { model: db.Orders, 
+          as: "order" } ]
+  });
+};
 const findCartProductsByCartId = async (value: any) => {
   const result = await CartProduct.findAll({
     where: {"cartId":value },
@@ -135,6 +148,7 @@ export default {
   deleteCartProduct,
   deleteAllCartProducts,
   findCartByAttributes,
+  getCartsByProductId,
   findCartProductsByCartId,
   getCartByUserIdAndCartId,
   findCartProductByCartId,

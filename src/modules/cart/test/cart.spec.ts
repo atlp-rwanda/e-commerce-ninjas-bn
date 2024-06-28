@@ -933,6 +933,72 @@ describe("buyerClearCarts", () => {
   });
 });
 
+describe("getCartsByProductId", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should return the cart with the specified product and user", async () => {
+    const mockCart = {
+      userId: "user-id",
+      cartProducts: [{ productId: "product-id" }],
+      order: {}
+    };
+
+    sandbox.stub(db.Carts, "findOne").resolves(mockCart);
+
+    const result = await cartRepositories.getCartsByProductId("product-id", "user-id");
+
+    expect(db.Carts.findOne).to.have.been.calledOnceWith({
+      where: { userId: "user-id" },
+      include: [
+        { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
+        { model: db.Orders, as: "order" }
+      ]
+    });
+    expect(result).to.equal(mockCart);
+  });
+
+  it("should return null if no cart is found", async () => {
+    sandbox.stub(db.Carts, "findOne").resolves(null);
+
+    const result = await cartRepositories.getCartsByProductId("product-id", "user-id");
+
+    expect(db.Carts.findOne).to.have.been.calledOnceWith({
+      where: { userId: "user-id" },
+      include: [
+        { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
+        { model: db.Orders, as: "order" }
+      ]
+    });
+    expect(result).to.be.null;
+  });
+
+  it("should throw an error if there is a database error", async () => {
+    const errorMessage = "Database error";
+    sandbox.stub(db.Carts, "findOne").throws(new Error(errorMessage));
+
+    try {
+      await cartRepositories.getCartsByProductId("product-id", "user-id");
+    } catch (error) {
+      expect(db.Carts.findOne).to.have.been.calledOnceWith({
+        where: { userId: "user-id" },
+        include: [
+          { model: db.CartProducts, as: "cartProducts", where: { productId: "product-id" } },
+          { model: db.Orders, as: "order" }
+        ]
+      });
+      expect(error.message).to.equal(errorMessage);
+    }
+  });
+});
+
 
 describe('Cart Functions', () => {
   afterEach(() => {
