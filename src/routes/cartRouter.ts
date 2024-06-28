@@ -10,6 +10,7 @@ import {
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
 import { cartSchema } from "../modules/cart/validation/cartValidations";
+import { webhook } from "../services/stripe";
 
 const router: Router = Router();
 
@@ -64,6 +65,6 @@ router.get(
   );
 
   router.post("/checkout", userAuthorization(["buyer"]),cartControllers.checkout)
-  router.post("/webhook",cartControllers.webhook)
+  router.post("/webhook",webhook)
 
 export default router;

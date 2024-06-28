@@ -13,6 +13,7 @@ import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/sessions";
 import {
   sendEmail,
+  sendEmailNotification,
   transporter
 } from "../../../services/sendEmail";
 import googleAuth from "../../../services/googleAuth";

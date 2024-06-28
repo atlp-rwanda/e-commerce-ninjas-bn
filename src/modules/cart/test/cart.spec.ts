@@ -12,8 +12,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import sinon from "sinon";
-import { Stripe } from "stripe";
+import sinon, {mock}  from "sinon";
+import stripe, { Stripe } from "stripe";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
 import * as cartController from "../controller/cartControllers";
@@ -31,6 +31,8 @@ import {
   buyerClearCartProduct,
 } from "../controller/cartControllers";
 import app from "../../..";
+import { sendEmailNotification, transporter } from "../../../services/sendEmail";
+import authRepositories from "../../auth/repository/authRepositories";
 
 chai.use(chaiHttp);
 let token;
@@ -537,9 +539,7 @@ describe("buyerClearCarts", () => {
     router()
       .delete(`/api/cart/buyer-clear-cart/${cartId}`)
       .set("Authorization", `Bearer ${token}`)
-      .end((error, response) => {
-        console.log(response);
-        
+      .end((error, response) => {        
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.OK);
@@ -682,5 +682,187 @@ describe("paymentCheckoutSchema", () => {
     expect(error?.details[0].message).to.equal(
       '"cartId" is not allowed to be empty'
     );
+  });
+});
+
+describe('buyerCheckout', () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should calculate the total amount and return the cart', async () => {
+    const req = {
+      cart: {
+        cartProducts: [
+          { totalPrice: 50 },
+          { totalPrice: 100 },
+        ],
+      },
+    } as any;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    } as any;
+
+    await cartController.buyerCheckout(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      data: {
+        totalAmount: 150,
+        cart: req.cart,
+      },
+    });
+  });
+
+  it('should handle errors and return internal server error status', async () => {
+    const req = {
+      cart: {
+        cartProducts: [
+          { totalPrice: 50 },
+          { totalPrice: 100 },
+        ],
+      },
+    } as any;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    } as any;
+
+    
+    const error = new Error('Something went wrong');
+    const originalForEach = Array.prototype.forEach;
+    sandbox.stub(Array.prototype, 'forEach').throws(error);
+
+    await cartController.buyerCheckout(req, res);
+
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+
+    Array.prototype.forEach = originalForEach; 
+  });
+});
+describe('buyerClearCarts', () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should clear all carts and respond with success message', async () => {
+    const req = {
+      carts: [
+        { id: 'cart-id-1' },
+        { id: 'cart-id-2' },
+      ],
+      user: {
+        id: 'user-id',
+      },
+    } as any; 
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    } as any;
+
+    sandbox.stub(cartRepositories, 'deleteAllCartProducts').resolves();
+    sandbox.stub(cartRepositories, 'deleteAllUserCarts').resolves();
+
+    await buyerClearCarts(req, res);
+
+    expect(cartRepositories.deleteAllCartProducts).to.have.been.calledTwice;
+    expect(cartRepositories.deleteAllUserCarts).to.have.been.calledOnceWith('user-id');
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      message: 'All carts cleared successfully!',
+    });
+  });
+
+  it('should handle errors and return internal server error status', async () => {
+    const req = {
+      carts: [
+        { id: 'cart-id-1' },
+        { id: 'cart-id-2' },
+      ],
+      user: {
+        id: 'user-id',
+      },
+    } as any;
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    } as any;
+
+    const error = new Error('Something went wrong');
+    sandbox.stub(cartRepositories, 'deleteAllCartProducts').rejects(error);
+
+    await buyerClearCarts(req, res);
+
+    expect(cartRepositories.deleteAllCartProducts).to.have.been.calledOnceWith('cart-id-1');
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  });
+});
+
+
+
+describe('sendEmailNotification', () => {
+  let findUserByAttributesStub: sinon.SinonStub;
+  let sendMailStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    findUserByAttributesStub = sinon.stub(authRepositories, 'findUserByAttributes');
+    sendMailStub = sinon.stub(transporter, 'sendMail');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should throw an error if findUserByAttributes fails', async () => {
+    const errorMessage = 'User not found';
+    findUserByAttributesStub.rejects(new Error(errorMessage));
+
+    try {
+      await sendEmailNotification('user-id', 'Test message');
+      throw new Error('Expected function to throw');
+    } catch (error) {
+      expect(error).to.be.an('error');
+    }
+  });
+
+  it('should throw an error if sendMail fails', async () => {
+    const user = { id: 'user-id', email: 'user@example.com' };
+    findUserByAttributesStub.resolves(user);
+    const errorMessage = 'Failed to send email';
+    sendMailStub.rejects(new Error(errorMessage));
+
+    try {
+      await sendEmailNotification('user-id', 'Test message');
+      throw new Error('Expected function to throw');
+    } catch (error) {
+      expect(error).to.be.an('error');
+    }
   });
 });

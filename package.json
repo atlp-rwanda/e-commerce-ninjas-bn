@@ -41,6 +41,7 @@
       "src/services/chat.ts",
       "src/services/notificationSocket.ts",
       "src/helpers/notifications.ts",
+      "src/services/stripe.ts",
       "src/services/cronJob.ts",
       "src/helpers/passwordExpiryNotifications.ts"
 
