@@ -23,6 +23,7 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
     const now = new Date();
     const passwordExpirationDate = addMinutes(user.passwordUpdatedAt, PASSWORD_EXPIRATION_MINUTES);
     const minutesRemaining = Math.floor((passwordExpirationDate.getTime() - now.getTime()) / (1000 * 60));
+    console.log(`Password expiration in ${minutesRemaining} minutes.`);
 
 
     if (minutesRemaining <= 0) {

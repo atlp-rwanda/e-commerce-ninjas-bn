@@ -2,26 +2,27 @@
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable comma-dangle */
-/* eslint-disable quotes */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable require-jsdoc */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-shadow */
+/* eslint-disable comma-dangle */
+/* eslint quotes: "off" */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
+import { Stripe } from "stripe";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
 import * as cartController from "../controller/cartControllers";
 import db from "../../../databases/models";
-import app from "../../..";
-import Stripe from 'stripe';
-import { checkout } from '../controller/cartControllers';
-import { Response } from 'express';
-import { ExtendRequest } from "../../../types";
-
+import { paymentCheckoutSchema } from "../validation/cartValidations";
 import {
   isCartExist,
   isCartIdExist,
   isProductIdExist,
-  isCartProductExist,
 } from "../../../middlewares/validation";
 import productRepositories from "../../product/repositories/productRepositories";
 import {
@@ -29,9 +30,67 @@ import {
   buyerClearCarts,
   buyerClearCartProduct,
 } from "../controller/cartControllers";
+import app from "../../..";
 
 chai.use(chaiHttp);
+let token;
 const router = () => chai.request(app);
+let cartId;
+let cartId2;
+describe("Buyer Get Cart", () => {
+  before((done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "buyer@gmail.com",
+        password: "Password@123",
+      })
+      .end((error, response) => {
+        token = response.body.data.token;
+        done(error);
+      });
+  });
+  afterEach(() => {
+    sinon.restore();
+  });
+  it("should return cart details when cart exists", (done) => {
+    router()
+      .get("/api/cart/buyer-get-carts")
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("status", httpStatus.OK);
+        expect(response.body).to.have.property("message", "Buyer's all carts");
+        expect(response.body).to.have.property("data");
+        cartId = response.body.data.allCartsDetails[0].cartId;
+
+        done(error);
+      });
+  });
+
+  it("should handle errors properly", (done) => {
+    sinon
+      .stub(cartRepositories, "getCartsByUserId")
+      .throws(new Error("Internal server error"));
+    router()
+      .get("/api/cart/buyer-get-carts")
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property(
+          "status",
+          httpStatus.INTERNAL_SERVER_ERROR
+        );
+        expect(response.body).to.have.property(
+          "error",
+          "Internal server error"
+        );
+        done(error);
+      });
+  });
+});
 
 describe("Cart Repositories", () => {
   let sandbox;
@@ -186,125 +245,442 @@ describe("Validation Middlewares", () => {
   });
 });
 
-
-
-describe('Middleware Functions', () => {
-  let req: any;
-  let res: any;
-  let next: any;
+describe("Cart Controller - GetCart", () => {
+  let req;
+  let res;
+  let sandbox;
 
   beforeEach(() => {
+    sandbox = sinon.createSandbox();
     req = {
-      params: {},
-      cart: {},
-      product: null
+      user: { id: "6ee2addd-5270-4855-969b-1f56608b122e" },
+      body: { productId: "6ee2addd-5270-4855-969b-1f56608b1228", quantity: 2 },
+      params: { cartId: "6ee2addd-5270-4855-969b-1f56608b1229" },
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it(" buyer should get cart details by cart id ", (done) => {
+    router()
+      .get(`/api/cart/buyer-get-cart/${cartId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("status", httpStatus.OK);
+        expect(response.body).to.have.property("message", "Cart details");
+        expect(response.body).to.have.property("data");
+        done(error);
+      });
+  });
+
+  it("should handle errors in getting cart details", async () => {
+    const error = new Error("Something went wrong");
+    sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").throws(error);
+
+    await cartController.buyerGetCart(req, res);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  });
+});
+describe(" Cart Controller Tests ", () => {
+  let req;
+  let res;
+  let productId;
+  let sandbox;
+  let cartId;
+  let token2;
+  before(async () => {
+    sandbox = sinon.createSandbox();
+    req = {
+      user: { id: "user-id" },
+      body: { productId: "product-id", quantity: 2 },
+      params: { cartId: "cart-id" }
     };
     res = {
       status: sinon.stub().returnsThis(),
       json: sinon.stub().returnsThis()
     };
-    next = sinon.stub();
+    const carts = await db.Carts.findAll();
+    cartId2 = carts[1].id;
+    const product = await db.CartProducts.findOne({ where: { cartId:cartId2 } });
+    productId = product.productId;
+
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+  it("should login user", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({ email: "buyer4@gmail.com", password: "Password@123" })
+      .end((error, response) => {
+        token2 = response.body.data.token;
+        done(error);
+      });
+  });
+  it("should update cart product if already exist", (done) => {
+    router()
+      .post("/api/cart/create-update-cart")
+      .set("authorization", `Bearer ${token2}`)
+      .send({ productId:productId , quantity: 3 })
+      .end((error,response)=>{
+        expect(response).to.have.status(httpStatus.CREATED);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("status", httpStatus.CREATED);
+        expect(response.body).to.have.property("message", "Cart added successfully");
+        expect(response.body).to.have.property("data")
+        done(error);
+      })
+
+  });
+
+  it("should add product to existing cart if cart exists", async () => {
+    const mockCart = { id: "cart-id", userId: "user-id", status: "pending" };
+      const mockProduct = {
+        id: "product-id",
+        name: "Product 1",
+        price: 50,
+        images: ["image1.jpg"],
+        shopId: "shop-id"
+      };
+      const mockCartProducts = [
+        {
+          quantity: 2,
+          products: {
+            id: "product-id-2",
+            name: "Product 1",
+            price: 50,
+            images: ["image1.jpg"],
+            shopId: "shop-id"
+          }
+        }
+      ];
+
+      sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
+      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+      sandbox.stub(cartRepositories, "addCartProduct").resolves();
+      sandbox.stub(cartRepositories, "updateCartProduct").resolves();
+
+       await cartController.buyerCreateUpdateCart(req, res);
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    });
+
+  it("should handle errors properly", async () => {
+    const error = new Error("Something went wrong");
+    sinon.stub(cartRepositories, "getCartsByUserId").throws(error);
+
+    await cartController.buyerCreateUpdateCart(req, res);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  });
+});
+
+describe("buyerClearCartProduct", () => {
+  let req, res, deleteCartProductStub;
+
+  beforeEach(() => {
+    req = {
+      cart: { id: "cartId" },
+      product: { productId: "productId" },
+    };
+
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    deleteCartProductStub = sinon.stub(cartRepositories, "deleteCartProduct");
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('isCartProductExist', () => {
-    it('should return 404 if product does not exist in cart', async () => {
-      const cartId = 'testCartId';
-      const productId = 'testProductId';
+  it("should clear the cart product successfully", async () => {
+    deleteCartProductStub.resolves();
 
-      req.cart.id = cartId;
-      req.params.productId = productId;
+    await buyerClearCartProduct(req, res);
 
-      sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').resolves(null);
-
-      await isCartProductExist(req, res , next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.NOT_FOUND,
-        message: 'Product not found.'
-      });
-      expect(next).to.not.have.been.called;
+    expect(deleteCartProductStub).to.have.been.calledWith(
+      "cartId",
+      "productId"
+    );
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      message: "Cart product cleared successfully",
     });
+  });
 
-    it('should set req.product and call next if product exists in cart', async () => {
-      const cartId = 'testCartId';
-      const productId = 'testProductId';
-      const product = { id: 'product1' };
+  it("should handle errors and respond with an error message", async () => {
+    const errorMessage = "Internal Server Error";
+    deleteCartProductStub.rejects(new Error(errorMessage));
 
-      req.cart.id = cartId;
-      req.params.productId = productId;
+    await buyerClearCartProduct(req, res);
 
-      sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').resolves(product as any);
-
-      await isCartProductExist(req, res , next);
-
-      expect(req.product).to.equal(product);
-      expect(next).to.have.been.called;
-    });
-
-    it('should handle errors and return 500 status', async () => {
-      const errorMessage = 'Internal server error';
-
-      sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').rejects(new Error(errorMessage));
-
-      await isCartProductExist(req, res , next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
-      });
-      expect(next).to.not.have.been.called;
+    expect(deleteCartProductStub).to.have.been.calledWith(
+      "cartId",
+      "productId"
+    );
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage,
     });
   });
 });
 
-
-
-describe('Cart Controllers - Checkout', () => {
-  let req: ExtendRequest;
-  let res
-  let stripeStub: sinon.SinonStub;
-  let findCartIdbyUserIdStub: sinon.SinonStub;
-  let findCartProductByCartIdStub: sinon.SinonStub;
-  let findProductByIdStub: sinon.SinonStub;
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET);
+describe("buyerClearCart", () => {
+  let req, res, deleteAllCartProductsStub, deleteCartByIdStub;
 
   beforeEach(() => {
     req = {
-      user: { id: 'user-id' }
-    } as ExtendRequest;
+      cart: { id: "cartId" },
+    };
 
     res = {
       status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis()
-    } as unknown as Response;
+      json: sinon.stub(),
+    };
 
-    findCartIdbyUserIdStub = sinon.stub(cartRepositories, 'findCartIdbyUserId');
-    findCartProductByCartIdStub = sinon.stub(cartRepositories, 'findCartProductByCartId');
-    findProductByIdStub = sinon.stub(cartRepositories, 'findProductById');
-    stripeStub = sinon.stub(stripe.checkout.sessions, 'create');
+    deleteAllCartProductsStub = sinon.stub(
+      cartRepositories,
+      "deleteAllCartProducts"
+    );
+    deleteCartByIdStub = sinon.stub(cartRepositories, "deleteCartById");
   });
 
   afterEach(() => {
-    findCartIdbyUserIdStub.restore();
-    findCartProductByCartIdStub.restore();
-    findProductByIdStub.restore();
-    stripeStub.restore();
+    sinon.restore();
   });
 
-  it('should handle errors', async () => {
-    const error = new Error('Something went wrong');
-    findCartIdbyUserIdStub.rejects(error);
+  it("should clear all products in the cart and the cart itself successfully", async () => {
+    deleteAllCartProductsStub.resolves();
+    deleteCartByIdStub.resolves();
 
-    await checkout(req, res);
+    await buyerClearCart(req, res);
 
-    expect(res.status).to.have.been.calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).to.have.been.calledOnceWith({ message: error.message });
+    expect(deleteAllCartProductsStub).to.have.been.calledWith("cartId");
+    expect(deleteCartByIdStub).to.have.been.calledWith("cartId");
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.OK,
+      message: "All products in cart cleared successfully!",
+    });
+  });
+
+  it("should handle errors and respond with an error message", async () => {
+    const errorMessage = "Internal Server Error";
+    deleteAllCartProductsStub.rejects(new Error(errorMessage));
+
+    await buyerClearCart(req, res);
+
+    expect(deleteAllCartProductsStub).to.have.been.calledWith("cartId");
+    expect(deleteCartByIdStub).not.to.have.been.called;
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage,
+    });
+  });
+});
+
+describe("buyerClearCarts", () => {
+  let req;
+  let res;
+  let sandbox: sinon.SinonSandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+
+    req = {
+      cart: { id: "cart-id" },
+    };
+
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    } as unknown as Response;
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should clear all carts and return success message", (done) => {
+    router()
+      .delete(`/api/cart/buyer-clear-cart/${cartId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((error, response) => {
+        console.log(response);
+        
+        expect(response).to.have.status(httpStatus.OK);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("status", httpStatus.OK);
+        expect(response.body).to.have.property(
+          "message",
+          "All products in cart cleared successfully!"
+        );
+        done(error);
+      });
+  });
+
+  it("should return 500 internal server error if clearing cart products fails", async () => {
+    const errorMessage = "Database error";
+    sandbox
+      .stub(cartRepositories, "deleteAllCartProducts")
+      .rejects(new Error(errorMessage));
+
+    await cartController.buyerClearCart(req, res);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage,
+    });
+  });
+
+  it("should return 500 internal server error if deleting cart fails", async () => {
+    sandbox.stub(cartRepositories, "deleteAllCartProducts").resolves();
+    const errorMessage = "Database error";
+    sandbox
+      .stub(cartRepositories, "deleteCartById")
+      .rejects(new Error(errorMessage));
+
+    await cartController.buyerClearCart(req, res);
+
+    expect(res.status).to.have.been.calledWith(
+      httpStatus.INTERNAL_SERVER_ERROR
+    );
+    expect(res.json).to.have.been.calledWith({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: errorMessage,
+    });
+  });
+});
+describe("Payment Controller", () => {
+  let req;
+  let res;
+  let sandbox: sinon.SinonSandbox;
+
+  const stripe = new Stripe("fake_stripe_secret_key");
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    req = {
+      user: { id: "user-id" },
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+      send: sinon.stub().returnsThis(),
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  describe("checkout", () => {
+    it("should create a checkout session and return the payment URL", async () => {
+      const mockCart = db.Carts.build({ id: "cart-id" });
+      const mockProducts = [
+        { productId: "product-id-1", price: 100, quantity: 1 },
+        { productId: "product-id-2", price: 200, quantity: 2 },
+      ];
+      const mockProductDetails = db.Products.build({
+        name: "Product Name",
+        images: ["image.jpg"],
+        shopId: "shop-id",
+      });
+      const mockSession = {
+        id: "session-id",
+        object: "checkout.session",
+        url: "https://stripe.com",
+      };
+
+      sandbox.stub(cartRepositories, "findCartIdbyUserId").resolves(mockCart);
+      sandbox
+        .stub(cartRepositories, "findCartProductByCartId")
+        .resolves(mockProducts as any);
+      sandbox
+        .stub(cartRepositories, "findProductById")
+        .resolves(mockProductDetails);
+      sandbox
+        .stub(stripe.checkout.sessions, "create")
+        .resolves(mockSession as any);
+
+      await cartController.checkout(req, res);
+      expect(res.status).to.have.been.calledWith(200);
+    });
+
+    it("should handle errors and return 500", async () => {
+      sandbox
+        .stub(cartRepositories, "findCartIdbyUserId")
+        .throws(new Error("Database error"));
+
+      await cartController.checkout(req, res);
+
+      expect(res.status).to.have.been.calledWith(500);
+      expect(res.json).to.have.been.calledWith({ message: "Database error" });
+    });
+  });
+});
+describe("paymentCheckoutSchema", () => {
+  it("should validate a valid cartId", () => {
+    const data = { cartId: "valid-cart-id" };
+    const { error } = paymentCheckoutSchema.validate(data);
+    expect(error).to.be.undefined;
+  });
+
+  it("should return an error if cartId is missing", () => {
+    const data = {};
+    const { error } = paymentCheckoutSchema.validate(data);
+    expect(error).to.not.be.undefined;
+    expect(error?.details[0].message).to.equal('"cartId" is required');
+  });
+
+  it("should return an error if cartId is not a string", () => {
+    const data = { cartId: 12345 };
+    const { error } = paymentCheckoutSchema.validate(data);
+    expect(error).to.not.be.undefined;
+    expect(error?.details[0].message).to.equal('"cartId" must be a string');
+  });
+
+  it("should return an error if cartId is an empty string", () => {
+    const data = { cartId: "" };
+    const { error } = paymentCheckoutSchema.validate(data);
+    expect(error).to.not.be.undefined;
+    expect(error?.details[0].message).to.equal(
+      '"cartId" is not allowed to be empty'
+    );
   });
 });

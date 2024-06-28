@@ -200,6 +200,7 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
     const { productsDetails, cartTotal } = getProductDetails(cartProducts);
 
     res.status(httpStatus.CREATED).json({
+      status:httpStatus.CREATED,
       message: "Cart added successfully",
       data: {
         cartId: createdCart.id,
@@ -379,5 +380,8 @@ export {
   buyerClearCartProduct,
   buyerCheckout,
   checkout,
-  webhook
+  webhook,
+  updateCartProduct,
+  calculateDiscountedPrice,
+  getProductDetails
 };
