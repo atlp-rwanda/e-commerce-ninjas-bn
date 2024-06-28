@@ -39,6 +39,8 @@
       "src/types/*.*",
       "src/services/googleAuth.ts",
       "src/services/chat.ts",
+      "src/services/cronJob.ts",
+      "src/helpers/passwordExpiryNotifications.ts",
       "src/services/notificationSocket.ts",
       "src/helpers/notifications.ts",
       "src/services/stripe.ts",
@@ -109,7 +111,8 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

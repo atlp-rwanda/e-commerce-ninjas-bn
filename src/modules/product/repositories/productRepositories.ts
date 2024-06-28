@@ -196,6 +196,9 @@ const expiredProductsByUserId = async (userId: string) => {
     where: { expiryDate: { [Op.lt]: new Date() } }
   });
 };
+const userCreateReview = async (body: any) => {
+  return await db.ProductReviews.create(body)
+}
 
 export default {
   createProduct,
@@ -220,5 +223,6 @@ export default {
   deleteAllWishListByUserId,
   getProductByIdAndShopId,
   deleteProductFromWishListById,
-  expiredProductsByUserId
+  expiredProductsByUserId,
+  userCreateReview
 };

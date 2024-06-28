@@ -7,7 +7,9 @@ import cartRepositories from "../repositories/cartRepositories";
 import productRepositories from "../../product/repositories/productRepositories";
 import { ExtendRequest, IExtendedCartProduct } from "../../../types";
 import { cartStatusEnum } from "../../../enums";
+import { eventEmitter } from "../../../helpers/notifications";
 import { Stripe } from "stripe";
+
 const getProductDetails = (
   cartProducts: IExtendedCartProduct[]
 ): { productsDetails: any[]; cartTotal: number } => {
@@ -289,7 +291,7 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
   }
 };
 const stripe = new Stripe(process.env.STRIPE_SECRET);
- const checkout = async (req: ExtendRequest, res: Response) => {
+const checkout = async (req: ExtendRequest, res: Response) => {
     try {
         const { id } = req.user;
         const cart: any = await cartRepositories.findCartIdbyUserId(id);
@@ -332,6 +334,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET);
         res.status(500).json({ message: error.message });
     }
 };
+
 export {
   buyerGetCart,
   buyerGetCarts,
