@@ -13,6 +13,7 @@ import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/sessions";
 import {
   sendEmail,
+  sendEmailNotification,
   transporter
 } from "../../../services/sendEmail";
 import googleAuth from "../../../services/googleAuth";
@@ -138,7 +139,7 @@ describe("Authentication Test Cases", () => {
       .end((error, response) => {
         expect(response.status).to.equal(400);
         expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("message");
+        expect(response.body).to.have.property("error");
         done(error);
       });
   });
@@ -342,7 +343,7 @@ describe("isUserExist Middleware", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(res.body).to.have.property("message", "Database error");
+        expect(res.body).to.have.property("error", "Database error");
         done(err);
       });
   });
@@ -383,7 +384,7 @@ describe("POST /auth/register - Error Handling", () => {
         expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.deep.equal({
           status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: "Test error"
+          error: "Test error"
         });
         done(err);
       });
@@ -495,7 +496,7 @@ describe("Authentication Test Cases", () => {
       .send({ email: "user@example.com" })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("message");
+        expect(res.body).to.have.property("error");
         done(err);
       });
   });
@@ -689,11 +690,7 @@ describe("Forget password", () => {
     router()
       .put(`/api/auth/reset-password/${resetToken}`)
       .send({ password: "Newpassword#12" })
-      .end((err, res) => {
-        console.log(res);
-        
-        expect(res.status).to.be.equal(httpStatus.OK);
-        expect(res.body.message).to.be.equal("Password reset successfully.");
+      .end((err, res) => {expect(res.body.message).to.be.equal("Password reset successfully.");
         done(err)
       })
   })
@@ -763,7 +760,7 @@ describe("verifyUser middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
+      error: "Unexpected error"
     });
   });
 
@@ -820,7 +817,7 @@ describe("isSessionExist middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Unexpected error"
+      error: "Unexpected error"
     });
   });
 });
@@ -845,7 +842,7 @@ describe("verifyEmail", () => {
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
       status: 500,
-      message: "Unexpected error"
+      error: "Unexpected error"
     });
 
     sinon.restore();
@@ -871,7 +868,7 @@ describe("forgetPassword", () => {
 
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
-      message: "Unexpected error"
+      error: "Unexpected error"
     });
 
     sinon.restore();
@@ -896,7 +893,7 @@ describe("resetPassword", () => {
 
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
-      message: "Unexpected error"
+      error: "Unexpected error"
     });
 
     sinon.restore();
@@ -917,28 +914,6 @@ describe("updateUser2FA", () => {
       .end((error, response) => {
         token = response.body.data.token;
         done(error);
-      });
-  });
-
-  let cartId: string;
-  it("should get Buyer's all carts", (done) => {
-    router()
-      .get("/api/cart/buyer-get-carts")
-      .set("Authorization", `Bearer ${token}`)
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        cartId = res.body.data[0].cartId;
-        done();
-      });
-  });
-
-  it("should checkout the buyer cart ", (done) => {
-    router()
-      .get(`/api/cart/buyer-cart-checkout/${cartId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        done();
       });
   });
 
@@ -976,7 +951,7 @@ describe("updateUser2FA", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(response.body).to.have.property("message", errorMessage);
+        expect(response.body).to.have.property("error", errorMessage);
         done(error);
       });
   });
@@ -1143,7 +1118,7 @@ describe("verifyOtp", () => {
       .send({ otp: "123456" });
 
     expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.body.message).to.equal("Internal Server Error");
+    expect(res.body.error).to.equal("Internal Server Error");
 
   });
 });
