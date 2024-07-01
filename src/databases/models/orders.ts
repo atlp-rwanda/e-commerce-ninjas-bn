@@ -9,8 +9,9 @@ import Carts from "./carts";
 export interface OrderAttributes {
     id: string;
     shopId: string;
+    products: any;
     cartId: string;
-    paymentMethodId: number;
+    paymentMethodId: string;
     orderDate: Date;
     status: string;
     createdAt: Date;
@@ -20,8 +21,9 @@ export interface OrderAttributes {
 class Orders extends Model<OrderAttributes> implements OrderAttributes {
     declare id: string;
     declare cartId: string;
+    declare products: any;
     declare shopId: string;
-    declare paymentMethodId: number;
+    declare paymentMethodId: string;
     declare orderDate: Date;
     declare status: string;
     declare createdAt: Date;
@@ -41,6 +43,10 @@ Orders.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
           },
+          products: {
+            type: new DataTypes.JSONB,
+            allowNull: false
+        },
         shopId: {
             type: new DataTypes.UUID,
             allowNull: false
@@ -50,7 +56,7 @@ Orders.init(
             allowNull: false
         },
         paymentMethodId: {
-            type: new DataTypes.INTEGER,
+            type: new DataTypes.STRING,
             allowNull: false
         },
         orderDate: {

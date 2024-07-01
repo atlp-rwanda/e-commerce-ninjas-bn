@@ -1,5 +1,5 @@
 import { QueryInterface } from "sequelize";
-import { cartOneId, cartTwoId, userTenId, userTwoId } from "../../types/uuid";
+import { cartOneId, cartTwoId, userTenId, userTwoId , cartThreeId, userElevenId } from "../../types/uuid";
 
 module.exports = {
   async up(queryInterface: QueryInterface) {
@@ -14,6 +14,13 @@ module.exports = {
       {
         id: cartTwoId,
         userId: userTenId,
+        status: "pending",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: cartThreeId,
+        userId: userElevenId,
         status: "pending",
         createdAt: new Date(),
         updatedAt: new Date()

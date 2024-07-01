@@ -257,31 +257,6 @@
             "type": "string"
           }
         }
-      },
-      "Notifications": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "isRead": {
-            "type": "boolean"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
       }
     },
     "securitySchemes": {
@@ -369,7 +344,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -922,7 +897,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1114,7 +1089,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1137,7 +1112,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1208,7 +1183,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1231,7 +1206,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1240,7 +1215,7 @@
                   "serverError": {
                     "summary": "Internal Server Error",
                     "value": {
-                      "message": "Internal Server error"
+                      "error": "Internal Server error"
                     }
                   }
                 }
@@ -1323,7 +1298,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1332,7 +1307,7 @@
                   "userNotFound": {
                     "summary": "User Not Found",
                     "value": {
-                      "message": "User doesn't exist."
+                      "error": "User doesn't exist."
                     }
                   }
                 }
@@ -1346,7 +1321,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1355,7 +1330,7 @@
                   "userNotFound": {
                     "summary": "Invalid user ID",
                     "value": {
-                      "message": "Invalid user ID"
+                      "error": "Invalid user ID"
                     }
                   }
                 }
@@ -1369,7 +1344,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1378,7 +1353,7 @@
                   "serverError": {
                     "summary": "Server Error",
                     "value": {
-                      "message": "Server error"
+                      "error": "Server error"
                     }
                   }
                 }
@@ -1465,7 +1440,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1484,7 +1459,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1503,7 +1478,7 @@
                       "type": "boolean",
                       "example": false
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1607,7 +1582,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1788,7 +1763,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -1977,7 +1952,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2056,7 +2031,7 @@
                         "schema": {
                           "type": "object",
                           "properties": {
-                            " message": {
+                            " error": {
                               "type": "string",
                               "description": "Error message",
                               "example": "Item not found"
@@ -2200,7 +2175,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2289,7 +2264,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2307,7 +2282,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2570,7 +2545,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2666,7 +2641,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2684,7 +2659,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -2999,7 +2974,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3066,7 +3041,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3084,7 +3059,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3162,7 +3137,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3180,7 +3155,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3247,7 +3222,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3265,7 +3240,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3343,7 +3318,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3361,7 +3336,7 @@
                     "status": {
                       "type": "integer"
                     },
-                    "message": {
+                    "error": {
                       "type": "string"
                     }
                   }
@@ -3386,179 +3361,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/user/user-get-notifications": {
-      "get": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Get all notifications for the user",
-        "description": "Retrieve all notifications for the user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of notifications for the authenticated user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "notifications": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Notifications"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Notifications not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/api/user/user-get-notification/{id}": {
-      "get": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Get a specific notification by ID for the authenticated user",
-        "description": "Retrieve a specific notification by its ID for the authenticated user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "description": "ID of the notification to retrieve",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The requested notification",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Notifications"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Notification not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/api/user/user-mark-notification/{id}": {
-      "put": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Mark a specific notification as read",
-        "description": "Mark a specific notification by its ID as read",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "description": "ID of the notification to mark as read",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The requested notification marked as read",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Notifications"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Notification not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/api/user/user-mark-all-notifications": {
-      "put": {
-        "tags": [
-          "User Routes"
-        ],
-        "summary": "Mark all notifications as read",
-        "description": "Mark all notifications for the authenticated user as read",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All notifications marked as read",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Notifications"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Notifications not found"
-          },
-          "500": {
-            "description": "Internal server error"
           }
         }
       }
@@ -3650,6 +3452,43 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/cart/checkout": {
+      "post": {
+        "tags": ["Buyer Routes"],
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "required": true,
+            "description": "Cart ID to get",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Buyer pay cart",
+        "description": "Buyer's payment details ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buyer's cart"
+          },
+          "404": {
+            "description": "No cart."
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "500": {
+            "description": "Internal Server error"
           }
         }
       }

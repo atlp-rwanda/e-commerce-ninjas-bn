@@ -12,6 +12,7 @@ import {
   userEightId,
   userNineId,
   userTenId,
+  userElevenId
 } from "../../types/uuid";
 
 const userOne = {
@@ -205,9 +206,30 @@ const userTen = {
   id: userTenId,
   createdAt: new Date(),
   updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
   firstName: "F Buyer3",
   lastName: "L Buyer3",
   email: "buyer3@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767899,
+  profilePicture: "",
+  gender: "female",
+  birthDate: "2-2-2014",
+  language: "english",
+  currency: "USD",
+  role: "buyer",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false,
+};
+const userEleven = {
+  id: userElevenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
+  firstName: "F Buyer3",
+  lastName: "L Buyer3",
+  email: "buyer4@gmail.com",
   password: hashPassword("Password@123"),
   phone: 25089767899,
   profilePicture: "",
@@ -233,6 +255,7 @@ export const up = (queryInterface: QueryInterface) =>
     userEight,
     userNine,
     userTen,
+    userEleven
   ]);
 
 export const down = async (queryInterface: QueryInterface) => {

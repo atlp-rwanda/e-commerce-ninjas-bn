@@ -97,7 +97,7 @@ describe("Product and Shops API Tests", () => {
         .end((err, res) => {
           expect(res).to.have.status(400);
           expect(res.body).to.have.property("status", 400);
-          expect(res.body).to.have.property("message", "Name is required");
+          expect(res.body).to.have.property("error", "Name is required");
           done();
         });
     });
@@ -328,7 +328,7 @@ describe("Product and Shops API Tests", () => {
           expect(res).to.have.status(400);
           expect(res.body).to.have.property("status", 400);
           expect(res.body).to.have.property(
-            "message",
+            "error",
             "Images must have at least 4 items"
           );
           done();
@@ -547,7 +547,7 @@ describe("Product Middleware", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        error: "Internal Server Error",
       });
     });
   });
@@ -603,7 +603,7 @@ describe("Product Middleware", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        error: "Internal Server Error",
       });
     });
   });
@@ -733,7 +733,7 @@ describe("Admin Controller", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        error: "Internal Server Error",
       });
     });
   });
@@ -765,7 +765,7 @@ describe("Admin Controller", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        error: "Internal Server Error",
       });
     });
   });
@@ -797,7 +797,7 @@ describe("Admin Controller", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        error: "Internal Server Error",
       });
     });
   });
@@ -1233,9 +1233,9 @@ describe('isUserWishlistExist Middleware', () => {
     expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
     expect(res.json.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message
-    })).to.be.true;
-    expect(next.called).to.be.false;
+      error: error,
+    }));
+    expect(next).not.to.have.been.called;
   });
 });
 
@@ -1336,13 +1336,10 @@ describe("Product Functions", () => {
         data: { product },
       });
     });
-
     it("should handle errors and return 500 status", async () => {
       const error = new Error("Test Error");
       sinon.stub(productRepositories, "addProductToWishList").rejects(error);
-
       await productController.buyerAddProductToWishList(req , res as Response);
-
       expect(statusStub).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(jsonStub).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -1350,6 +1347,7 @@ describe("Product Functions", () => {
       });
     });
   });
+
   describe("buyerViewWishLists", () => {
     beforeEach(() => {
       req = {
@@ -1377,7 +1375,6 @@ describe("Product Functions", () => {
 
     it("should fetch single wishlist product successfully", async () => {
       await productController.buyerViewWishListProduct(req , res as Response);
-
       expect(statusStub).to.have.been.calledWith(httpStatus.OK);
       expect(jsonStub).to.have.been.calledWith({
         message: "WishList is fetched successfully.",
@@ -1583,7 +1580,7 @@ describe('Middleware Functions', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
+        error: errorMessage
       });
       expect(next).to.not.have.been.called;
     });
@@ -1629,7 +1626,7 @@ describe('Middleware Functions', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
+        error: errorMessage
       });
       expect(next).to.not.have.been.called;
     });

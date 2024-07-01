@@ -43,7 +43,7 @@ const validation =
     } catch (error) {
       res
         .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
+        .json({ status: httpStatus.BAD_REQUEST, error: error.message });
     }
   };
 
@@ -87,7 +87,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -158,7 +158,7 @@ const isAccountVerified = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -265,7 +265,7 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -288,14 +288,14 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
       session.token
     );
     if (destroy) {
-      const hashedPassword = await hashPassword(req.body.newPassword);
+      const hashedPassword = await hashPassword(req.body.password);
       req.user.password = hashedPassword;
       next();
     }
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -331,7 +331,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -363,7 +363,7 @@ const credential = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -386,7 +386,7 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -412,7 +412,7 @@ const isSellerShopExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -485,7 +485,7 @@ const verifyOtp = async (
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -539,7 +539,7 @@ const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -562,17 +562,30 @@ const isProductIdExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
 
+
 const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
-  if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  const cartId = req.params.cartId || req.body.cartId;
+  if (!cartId) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      status: httpStatus.BAD_REQUEST,
+      message: "Cart ID is required."
+    });
+  }
+  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, cartId);
+  if (!cart) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      message: "Cart not found. Please add items to your cart."
+    });
+  }
   req.cart = cart;
   return next();
-}
+};
 
 
 const isCartProductExist = async (
@@ -595,7 +608,7 @@ const isCartProductExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -688,7 +701,7 @@ const isProductExistById = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -730,7 +743,7 @@ const isWishListProductExist = async (req:ExtendRequest , res:Response, next:Nex
    }catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
 }
 }
@@ -756,7 +769,7 @@ const isUserWishlistExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -778,7 +791,7 @@ const isProductExistIntoWishList= async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -801,7 +814,7 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
     (req as any).notifications = notifications;
     return next();
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
 
