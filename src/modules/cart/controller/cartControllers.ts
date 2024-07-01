@@ -306,7 +306,7 @@ const buyerPayCart = async (req: ExtendRequest, res: Response) => {
       console.log(productDetails.name)
       let unitAmount = productDetails.price * 100;
 
-      const discountPercentage = parseFloat(productDetails.discount.replace('%', ''));
+      const discountPercentage = parseFloat(productDetails.discount.replace("%", ""));
 
       unitAmount = unitAmount * (1 - (discountPercentage / 100));
 
