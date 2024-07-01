@@ -66,5 +66,7 @@ router.get(
 
   router.post("/checkout", userAuthorization(["buyer"]),cartControllers.checkout)
   router.post("/webhook",webhook)
+  router.get("/payment-success", userAuthorization(["buyer"]),cartControllers.paymentSuccess)
+  router.get("/payment-canceled", userAuthorization(["buyer"]),cartControllers.paymentCanceled)
 
 export default router;

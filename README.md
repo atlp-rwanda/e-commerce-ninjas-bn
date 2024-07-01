@@ -59,10 +59,10 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - Buyer clear cart product Endpoint
 - Buyer create-update cart Endpoint
 - buyer add product to wish list Endpoint
-- buyer delete products from wishlist
-- buyer delete product from wishlist
-- buyer view All products fromwishList Endpoint
-- buyer view single product fromwishList Endpoint
+- buyer view All products from wishList Endpoint
+- buyer view single product from wishList Endpoint
+- buyer delete products from wishlist Endpoint
+- buyer delete product from wishlist Endpoint
 - User get notifications Endpoint
 - User get notification Endpoint
 - User mark All notifications Endpoint
@@ -108,16 +108,17 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 33  | DELETE | /api/cart/buyer-clear-carts                           | 200 OK      | private | Buyer clear carts                   |
 | 34  | DELETE | /api/cart/buyer-clear-cart/:id                        | 200 OK      | private | Buyer clear cart                    |
 | 35  | POST   | /api/cart/create-update-cart                          | 201 CREATED | private | Buyer create-update cart            |
-| 36  | POST   | /api/shop/buyer-add-product-wishList/:id              | 200 OK      | private | buyer add product to wish list      |
-| 37  | delete | /api/shop/delete-whishlist-products                   | 200 OK      | private | buyer delete products from wishlist |
-| 38  | delete | /api/shop/delete-whishlist-product:id                 | 200 OK      | private | buyer delete product from wishlist  |
-| 39  | get    | /buyer-view-whishlist-product              | 200 ok      | private | buyer view All product from wishList|
-| 40  | get    | /api/shop/buyer-view-whishlist-product/{id}| 200 ok      | private | buyer view  product from wishList   |
-| 41  | GET    | /api/user/user-get-notifications           | 200 OK      | private | user get notifications              |
-| 42  | GET    | /api/user/user-get-notification/:id        | 200 OK      | private | user get notification               |
-| 43  | PUT    | /api/user/user-mark-all-notifications      | 200 OK      | private | user mark all notifications         |
-| 44  | PUT    | /api/user/user-mark-notification/:id       | 200 OK      | private | user mark notification              |
-| 45  | POST   | /api/shop/buyer-review-product/:id         | 200 OK      | private | Buyer Create review                 |
+| 36  | POST   |  /api/shop/buyer-add-product-wishList/:id             | 200 OK      | private | buyer add product to wish list      |
+| 37  | delete | /api/shop/delete-wishlist                             | 200 OK      | private | buyer delete products from wishlist |
+| 38  | delete | /api/shop/delete-wishlist-product:id                  | 200 OK      | private | buyer delete product from wishlist  |
+| 39  | GET    | /api/shop/buyer-view-wishlist-products                | 200 ok      | private | buyer view All product from wishList|
+| 40  | GET    | /api/shop/buyer-view-wishlist-product/:id             | 200 ok      | private | buyer view  product from wishList   |
+| 41  | GET    | /api/user/user-get-notifications                      | 200 OK      | private | user get notifications              |
+| 42  | GET    | /api/user/user-get-notification/:id                   | 200 OK      | private | user get notification               |
+| 43  | PUT    | /api/user/user-mark-all-notifications                 | 200 OK      | private | user mark all notifications         |
+| 44  | PUT    | /api/user/user-mark-notification/:id                  | 200 OK      | private | user mark notification              |
+| 45  | POST   | /api/shop/buyer-review-product/:id         | 200 OK      | private | Buyer Create review  
+
 
 ## INSTALLATION
 

@@ -12,7 +12,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import sinon, {mock}  from "sinon";
+import sinon, {SinonSandbox, SinonStub, mock}  from "sinon";
 import stripe, { Stripe } from "stripe";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
@@ -36,15 +36,16 @@ import { sendEmailNotification, transporter } from "../../../services/sendEmail"
 import authRepositories from "../../auth/repository/authRepositories";
 
 chai.use(chaiHttp);
-let token;
+let token1:string = null;
 const router = () => chai.request(app);
 let cartId;
 let cartId2;
+let token2:string = null;
 describe("Buyer Get Cart", () => {
   afterEach(() => {
     sinon.restore();
   });
-  it("should login user to get token",(done) => {
+  it("should login user to get token", (done) => {
     router()
       .post("/api/auth/login")
       .send({
@@ -52,47 +53,50 @@ describe("Buyer Get Cart", () => {
         password: "Password@123",
       })
       .end((error, response) => {
-        token = response.body.data.token;
+        console.log('Login Response:', response.body); // Add logging here
+        token1 = response.body.data.token;
         done(error);
       });
-  })
+  });
+  
   it("should return cart details when cart exists", (done) => {
+    if (!token1) {
+      throw new Error("Token is not set");
+    }
     router()
       .get("/api/cart/buyer-get-carts")
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {
+        console.log('Cart Details Response:', response.body); // Add logging here
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.OK);
         expect(response.body).to.have.property("message", "Buyer's all carts");
         expect(response.body).to.have.property("data");
         cartId = response.body.data.allCartsDetails[0].cartId;
-
         done(error);
       });
   });
+  
 
   it("should handle errors properly", (done) => {
-    sinon
-      .stub(cartRepositories, "getCartsByUserId")
-      .throws(new Error("Internal server error"));
+    if (!token1) {
+      throw new Error("Token is not set");
+    }
+    sinon.stub(cartRepositories, "getCartsByUserId").throws(new Error("Internal server error"));
     router()
       .get("/api/cart/buyer-get-carts")
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {
+        console.log('Error Handling Response:', response.body);
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property(
-          "status",
-          httpStatus.INTERNAL_SERVER_ERROR
-        );
-        expect(response.body).to.have.property(
-          "error",
-          "Internal server error"
-        );
+        expect(response.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.have.property("error", "Internal server error");
         done(error);
       });
   });
+  
 });
 
 describe("Cart Repositories", () => {
@@ -273,7 +277,7 @@ describe("Cart Controller - GetCart", () => {
   it(" buyer should get cart details by cart id ", (done) => {
     router()
       .get(`/api/cart/buyer-get-cart/${cartId}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -305,7 +309,6 @@ describe(" Cart Controller Tests ", () => {
   let productId;
   let sandbox;
   let cartId;
-  let token2;
   before(async () => {
     sandbox = sinon.createSandbox();
     req = {
@@ -332,6 +335,7 @@ describe(" Cart Controller Tests ", () => {
       .post("/api/auth/login")
       .send({ email: "buyer4@gmail.com", password: "Password@123" })
       .end((error, response) => {
+        console.log('Login Response: ' + response.body);
         token2 = response.body.data.token;
         done(error);
       });
@@ -539,7 +543,7 @@ describe("buyerClearCarts", () => {
   it("should clear all carts and return success message", (done) => {
     router()
       .delete(`/api/cart/buyer-clear-cart/${cartId}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {        
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
@@ -639,7 +643,8 @@ describe("Payment Controller", () => {
         .stub(stripe.checkout.sessions, "create")
         .resolves(mockSession as any);
 
-      await cartController.checkout(req, res);
+      const test = await cartController.checkout(req, res);
+      console.log("checkout =======>",test)
       expect(res.status).to.have.been.calledWith(200);
     });
 
@@ -1275,5 +1280,34 @@ describe('Cart Controller Tests', () => {
         error: error.message
       });
     });
+  });
+});
+
+describe("Payment Handlers", () => {
+
+  afterEach(() => {
+  });
+
+  it("should handle payment success", (done) => {
+    router()
+    .get("/api/cart/payment-success")
+    .set("authorization", `Bearer ${token2}`)
+    .end((error, response) => {
+       expect(response.status).to.equal(httpStatus.OK);
+       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
+       done(error)
+     });
+    })
+
+  it("should handle payment cancellation", (done) => {
+    router()
+    .get("/api/cart/payment-canceled")
+    .set("authorization", `Bearer ${token2}`)
+    .end((error, response) => {
+console.log(response)
+       expect(response.status).to.equal(httpStatus.OK);
+       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
+       done(error)
+     });
   });
 });

@@ -19,16 +19,6 @@ export = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      productId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: "products",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

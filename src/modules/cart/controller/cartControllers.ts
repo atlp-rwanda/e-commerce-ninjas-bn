@@ -165,7 +165,7 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
         }
       }
     }
-
+    
     if (carts.length > 0) {
       const productToAdd = await productRepositories.findProductById(productId);
       for (const cart of carts) {
@@ -238,7 +238,6 @@ const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
 const buyerClearCart = async (req: ExtendRequest, res: Response) => {
   try {
     await cartRepositories.deleteAllCartProducts(req.cart.id);
-
     await cartRepositories.deleteCartById(req.cart.id);
 
     res
@@ -321,8 +320,8 @@ const checkout = async (req: ExtendRequest, res: Response) => {
         const session = await stripe.checkout.sessions.create({
             line_items,
             mode: "payment",
-            success_url: process.env.SERVER_URL_SUCCESS,
-            cancel_url: process.env.SERVER_URL_CANCEL,
+            success_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-success`,
+            cancel_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-cancel`,
             metadata: {
                 cartId: cart.id.toString(),
                 shopIds: JSON.stringify(shopIds),
@@ -333,6 +332,22 @@ const checkout = async (req: ExtendRequest, res: Response) => {
     } catch (error: any) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status:httpStatus.INTERNAL_SERVER_ERROR , error: error.message });
     }
+};
+
+const paymentSuccess = (req: Request, res: Response) => {
+  try {
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  }
+};
+
+const paymentCanceled = (req: Request, res: Response) => {
+  try {
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  }
 };
 
 export {
@@ -346,5 +361,7 @@ export {
   checkout,
   updateCartProduct,
   calculateDiscountedPrice,
-  getProductDetails
+  getProductDetails,
+  paymentSuccess,
+  paymentCanceled,
 };

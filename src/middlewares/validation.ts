@@ -684,6 +684,7 @@ const isSearchFiltered = (
   req.searchQuery = searchQuery;
   return next();
 };
+
 const isProductExistById = async (
   req: Request,
   res: Response,
@@ -704,46 +705,67 @@ const isProductExistById = async (
     });
   }
 };
-const isProductExistToWishlist = async (
-  req: Request,
+
+
+const isWishListExist = async (
+  req: ExtendRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const product = await productRepositories.findProductfromWishList(
-      req.params.id,
-      req.user.id
-    );
-    if (product) {
-      return res.status(httpStatus.OK).json({
-        message: "Product is added to wishlist successfully.",
-        data: { product },
-      });
+    const wishList = await productRepositories.getWishListByUserId(req.user.id);
+  if (!wishList) {
+        const newWishList = await productRepositories.createWishList({userId: req.user.id});
+        req.wishList = newWishList.id;
     }
-    next();
+      else{
+      req.wishList = wishList.id 
+    }
+    next();    
   } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: httpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message, 
+     });
+   }
+};
+
+const isWishListProductExist = async (req:ExtendRequest , res:Response, next:NextFunction) => {
+   try{
+       const wishListProduct = await productRepositories.findProductfromWishList(req.params.id,req.wishList);
+       if(wishListProduct) {
+        return res.status(httpStatus.OK).json({
+          message: "Product is added to wishlist successfully.",
+          data: { wishListProduct },
+        });       
+       }
+       next()
+   }catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message,
     });
-  }
-};
+}
+}
+
 
 const isUserWishlistExist = async (
-  req: Request,
+  req: ExtendRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const wishList = await productRepositories.findProductFromWishListByUserId(
+    const wishList = await productRepositories.findWishListByUserId(
       req.user.id
     );
-    if (!wishList || wishList.length === 0) {
+    if (!wishList ) {
       return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
         message: "No wishlist Found",
       });
     }
-    next();
+   req.wishList = wishList;
+   next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -751,22 +773,20 @@ const isUserWishlistExist = async (
     });
   }
 };
-
-const isUserWishlistExistById = async (
-  req: Request,
+const isProductExistIntoWishList= async (
+  req: ExtendRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const product = await productRepositories.findProductfromWishList(
-      req.params.id,
-      req.user.id
-    );
+    const product = await productRepositories.findProductfromWishList(req.params.id, req.wishList.dataValues.id);
     if (!product) {
       return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
         message: "Product Not Found From WishList",
       });
     }
+    req.product = product;
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -851,9 +871,10 @@ export {
   isCartExist,
   isCartProductExist,
   isProductExistById,
-  isProductExistToWishlist,
+  isWishListExist,
   isUserWishlistExist,
-  isUserWishlistExistById,
   isNotificationsExist,
-  isProductOrdered
-};
+  isWishListProductExist,
+  isProductExistIntoWishList,
+  isProductOrdered,
+};    

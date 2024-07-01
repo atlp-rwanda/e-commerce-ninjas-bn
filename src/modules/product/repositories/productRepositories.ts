@@ -145,44 +145,67 @@ const sellerGetProductById = async (shopId: string, productId: string) => {
   });
 };
 
-const findProductfromWishList = async (productId: string, userId: string) => {
-  return await db.wishLists.findOne({
-    where: { productId, userId },
+const createWishList = async (body: any)=>{
+  return await db.wishLists.create(body);
+} 
+const addProductToWishList = async (body:any)=>{
+  return await db.wishListProducts.create(body);
+}
+const getWishListByUserId = async (userId: string) => {
+  return await db.wishLists.findOne({ where: { userId } });
+};
+const getProductsFromWishlist = async (wishListId:string) => {
+  return await db.wishListProducts.findAll({where : { wishListId } ,
     include: [
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"],
-      },
-    ],
-  });
-};
-const addProductToWishList = async (body: any) => {
-  return await db.wishLists.create(body);
-};
-
-const findProductFromWishListByUserId = async (userId: string) => {
-  return await db.wishLists.findAll({
+        attributes: ["id", "name", "price", "images", "shopId"]
+      }
+    ]
+  }
+  );
+}
+const findProductfromWishList = async (productId:string , wishListId:string) => {
+  return await db.wishListProducts.findOne({ where: { productId, wishListId },
+    include: [
+      {
+        model: db.Products,
+        as: "products",
+        attributes: ["id", "name", "price", "images", "shopId"]
+      }
+    ] });
+}
+const findWishListByUserId = async (userId: string) => {
+  return await db.wishLists.findOne({
     where: { userId },
     include: [
       {
-        model: db.Products,
-        as: "products",
-        attributes: ["id", "name", "price", "images", "shopId"],
+        model: db.wishListProducts,
+        as: "wishListProducts",
+        attributes: ["id", "productId", "createdAt", "updatedAt"],
+        include: [
+          {
+            model: db.Products,
+            as: "products",
+            attributes: ["id", "name", "price", "images", "shopId"],
+          },
+        ],
       },
     ],
   });
 };
-const deleteAllWishListByUserId = async (userId: string) => {
-  return await db.wishLists.destroy({ where: { userId: userId } });
-};
 
-const deleteProductFromWishListById = async (
-  productId: string,
-  userId: string
-) => {
-  return await db.wishLists.destroy({ where: { productId, userId } });
-};
+const deleteAllProductFromWishListById = async (wishListId:string) => {
+return await db.wishListProducts.destroy({ where: { wishListId: wishListId } });
+}
+const removeWishList = async(wishListId:string)=>{
+await db.wishLists.destroy({ where: { id: wishListId }});
+}
+
+const deleteProductFromWishList = async (productId:string, wishListId:string) => {
+  return await db.wishListProducts.destroy({ where: { productId:productId, wishListId: wishListId } });
+}
 
 const expiredProductsByUserId = async (userId: string) => {
   return await db.Products.findAll({
@@ -219,10 +242,16 @@ export default {
   sellerGetProductById,
   findProductfromWishList,
   addProductToWishList,
-  findProductFromWishListByUserId,
-  deleteAllWishListByUserId,
+  findWishListByUserId,
+  deleteAllProductFromWishListById,
+  deleteProductFromWishList,
+  getWishListByUserId,
+  createWishList,
+  getProductsFromWishlist,
   getProductByIdAndShopId,
-  deleteProductFromWishListById,
   expiredProductsByUserId,
-  userCreateReview
+  removeWishList,
+  userCreateReview  
 };
+  
+

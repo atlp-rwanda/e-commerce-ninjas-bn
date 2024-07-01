@@ -1,6 +1,7 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable quotes */
 import { Request, Response, NextFunction } from "express";
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
@@ -14,10 +15,11 @@ import {
   isShopExist,
   transformFilesToBody,
   isPaginated,
-  isProductExistToWishlist,
-  isUserWishlistExistById,
+  isWishListExist,
   isUserWishlistExist,
-  isProductOrdered
+  isWishListProductExist,
+  isProductOrdered,
+  
 } from "../../../middlewares/validation";
 import sinon, { SinonStub } from "sinon";
 import productRepositories from "../repositories/productRepositories";
@@ -32,6 +34,8 @@ import Shop from "../../../databases/models/shops";
 import User from "../../../databases/models/users";
 import { sendEmail, transporter } from "../../../services/sendEmail";
 import updateExpiredProducts from "../../../helpers/updateExpiredProducts";
+import db from "../../../databases/models";
+import { any } from "joi";
 import cartRepositories from "../../cart/repositories/cartRepositories";
 
 chai.use(chaiHttp);
@@ -1100,380 +1104,6 @@ describe("userGetProduct", () => {
     });
   });
 });
-
-describe("buyerAddProductToWishList", () => {
-  let mockReq: any;
-  let mockRes: Partial<Response>;
-  let addProductToWishListStub: SinonStub;
-
-  beforeEach(() => {
-    mockReq = {
-      params: { id: "validProductId" },
-      user: { id: "validUserId" },
-    };
-    mockRes = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub(),
-    } as Partial<Response>;
-
-    addProductToWishListStub = sinon.stub(
-      productRepositories,
-      "addProductToWishList"
-    );
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should add product to wishlist successfully", async () => {
-    const mockProduct = {
-      productId: "validProductId",
-      userId: "validUserId",
-    };
-    addProductToWishListStub.resolves(mockProduct);
-
-    await productController.buyerAddProductToWishList(
-      mockReq,
-      mockRes as Response
-    );
-
-    expect(mockRes.status).to.have.been.calledWith(httpStatus.OK);
-  });
-
-  it("should handle internal server error", async () => {
-    const errorMessage = "Database error";
-    addProductToWishListStub.rejects(new Error(errorMessage));
-
-    await productController.buyerAddProductToWishList(
-      mockReq,
-      mockRes as Response
-    );
-
-    expect(mockRes.status).to.have.been.calledWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(mockRes.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage,
-    });
-  });
-});
-
-describe("isProductExistToWishlist Middleware", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: NextFunction;
-  let findProductfromWishListStub: sinon.SinonStub;
-
-  beforeEach(() => {
-    req = {
-      params: { id: "productId" },
-      user: { id: "userId" } as any,
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as Partial<Response>;
-    next = sinon.stub() as unknown as NextFunction;
-    findProductfromWishListStub = sinon.stub(
-      productRepositories,
-      "findProductfromWishList"
-    );
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it("should return 200 and product data if product exists in wishlist", async () => {
-    const product = { id: "productId", name: "Product Name" };
-    findProductfromWishListStub.resolves(product);
-
-    await isProductExistToWishlist(req as Request, res as Response, next);
-
-    expect(findProductfromWishListStub).to.have.been.calledWith(
-      "productId",
-      "userId"
-    );
-    expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledWith({
-      message: "Product is added to wishlist successfully.",
-      data: { product },
-    });
-    expect(next).not.to.have.been.called;
-  });
-
-  it("should call next if product does not exist in wishlist", async () => {
-    findProductfromWishListStub.resolves(null);
-
-    await isProductExistToWishlist(req as Request, res as Response, next);
-
-    expect(findProductfromWishListStub).to.have.been.calledWith(
-      "productId",
-      "userId"
-    );
-    expect(next).to.have.been.called;
-    expect(res.status).not.to.have.been.called;
-    expect(res.json).not.to.have.been.called;
-  });
-
-  it("should return 500 if an error occurs", async () => {
-    const errorMessage = "Internal Server Error";
-    findProductfromWishListStub.rejects(new Error(errorMessage));
-
-    await isProductExistToWishlist(req as Request, res as Response, next);
-
-    expect(findProductfromWishListStub).to.have.been.calledWith(
-      "productId",
-      "userId"
-    );
-    expect(res.status).to.have.been.calledWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage,
-    });
-    expect(next).not.to.have.been.called;
-  });
-});
-describe("Wishlist Middlewares", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: NextFunction;
-  let findProductFromWishListByUserIdStub: SinonStub;
-  let findProductfromWishListStub: SinonStub;
-
-  beforeEach(() => {
-    req = {
-      user: { id: "userId" },
-      params: { id: "productId" },
-    } as any;
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as Partial<Response>;
-    next = sinon.stub() as unknown as NextFunction;
-    findProductFromWishListByUserIdStub = sinon.stub(
-      productRepositories,
-      "findProductFromWishListByUserId"
-    );
-    findProductfromWishListStub = sinon.stub(
-      productRepositories,
-      "findProductfromWishList"
-    );
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  describe("isUserWishlistExist Middleware", () => {
-    it("should return 404 if no wishlist is found", async () => {
-      findProductFromWishListByUserIdStub.resolves(null);
-
-      await isUserWishlistExist(req as Request, res as Response, next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-      expect(res.json).to.have.been.calledWith({
-        message: "No wishlist Found",
-      });
-      expect(next).not.to.have.been.called;
-    });
-
-    it("should return 404 if wishlist is an empty array", async () => {
-      findProductFromWishListByUserIdStub.resolves([]);
-
-      await isUserWishlistExist(req as Request, res as Response, next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-      expect(res.json).to.have.been.calledWith({
-        message: "No wishlist Found",
-      });
-      expect(next).not.to.have.been.called;
-    });
-
-    it("should call next if wishlist is found", async () => {
-      const wishList = [{ id: "item1" }];
-      findProductFromWishListByUserIdStub.resolves(wishList);
-
-      await isUserWishlistExist(req as Request, res as Response, next);
-
-      expect(next).to.have.been.called;
-      expect(res.status).not.to.have.been.called;
-      expect(res.json).not.to.have.been.called;
-    });
-
-    it("should return 500 if an error occurs", async () => {
-      const errorMessage = "Internal server error";
-      findProductFromWishListByUserIdStub.rejects(new Error(errorMessage));
-
-      await isUserWishlistExist(req as Request, res as Response, next);
-
-      expect(res.status).to.have.been.calledWith(
-        httpStatus.INTERNAL_SERVER_ERROR
-      );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: errorMessage,
-      });
-      expect(next).not.to.have.been.called;
-    });
-  });
-
-  describe("isUserWishlistExistById Middleware", () => {
-    it("should return 404 if product is not found in wishlist", async () => {
-      findProductfromWishListStub.resolves(null);
-
-      await isUserWishlistExistById(req as Request, res as Response, next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
-      expect(res.json).to.have.been.calledWith({
-        message: "Product Not Found From WishList",
-      });
-      expect(next).not.to.have.been.called;
-    });
-
-    it("should call next if product is found in wishlist", async () => {
-      const product = { id: "productId" };
-      findProductfromWishListStub.resolves(product);
-
-      await isUserWishlistExistById(req as Request, res as Response, next);
-
-      expect(next).to.have.been.called;
-      expect(res.status).not.to.have.been.called;
-      expect(res.json).not.to.have.been.called;
-    });
-
-    it("should return 500 if an error occurs", async () => {
-      const errorMessage = "Internal server error";
-      findProductfromWishListStub.rejects(new Error(errorMessage));
-
-      await isUserWishlistExistById(req as Request, res as Response, next);
-
-      expect(res.status).to.have.been.calledWith(
-        httpStatus.INTERNAL_SERVER_ERROR
-      );
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: errorMessage,
-      });
-      expect(next).not.to.have.been.called;
-    });
-  });
-});
-
-describe("Wishlist Routes", () => {
-  let deleteAllWishListByUserIdStub: SinonStub;
-  let deleteProductFromWishListByIdStub: SinonStub;
-
-  beforeEach(() => {
-    deleteAllWishListByUserIdStub = sinon.stub(
-      productRepositories,
-      "deleteAllWishListByUserId"
-    );
-    deleteProductFromWishListByIdStub = sinon.stub(
-      productRepositories,
-      "deleteProductFromWishListById"
-    );
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  describe("buyerDeleteAllProductFromWishlist", () => {
-    it("should clear all products from wishlist", async () => {
-      deleteAllWishListByUserIdStub.resolves();
-      const req = { user: { id: "user-id" } };
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub(),
-      };
-      await productController.buyerDeleteAllProductFromWishlist(
-        req as any,
-        res as any
-      );
-      expect(res.status.calledWith(200)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "Your wishlist is cleared successfully.",
-        })
-      ).to.be.true;
-    });
-
-    it("should return 500 if an error occurs", async () => {
-      const errorMessage = "Internal server error";
-      deleteAllWishListByUserIdStub.rejects(new Error(errorMessage));
-      const req = { user: { id: "user-id" } };
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub(),
-      };
-      await productController.buyerDeleteAllProductFromWishlist(
-        req as any,
-        res as any
-      );
-      expect(res.status.calledWith(500)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "Internal server error",
-          error: errorMessage,
-        })
-      ).to.be.true;
-    });
-  });
-
-  describe("buyerDeleteProductFromWishList", () => {
-    it("should remove a product from wishlist", async () => {
-      deleteProductFromWishListByIdStub.resolves();
-      const req = {
-        params: { id: "product-id" },
-        user: { id: "user-id" },
-      };
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub(),
-      };
-      await productController.buyerDeleteProductFromWishList(
-        req as any,
-        res as any
-      );
-      expect(res.status.calledWith(200)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "The product  removed from wishlist successfully.",
-        })
-      ).to.be.true;
-    });
-
-    it("should return 500 if an error occurs", async () => {
-      const errorMessage = "Internal server error";
-      deleteProductFromWishListByIdStub.rejects(new Error(errorMessage));
-      const req = {
-        params: { id: "product-id" },
-        user: { id: "user-id" },
-      };
-      const res = {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub(),
-      };
-      await productController.buyerDeleteProductFromWishList(
-        req as any,
-        res as any
-      );
-      expect(res.status.calledWith(500)).to.be.true;
-      expect(
-        res.json.calledWith({
-          message: "Internal server error",
-          error: errorMessage,
-        })
-      ).to.be.true;
-    });
-  });
-});
-
 describe("updateExpiredProducts", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -1549,130 +1179,460 @@ describe("updateExpiredProducts", () => {
   });
 });
 
-describe("buyerViewWishLists", () => {
-  let findProductFromWishListByUserIdStub: SinonStub;
+
+
+describe('isUserWishlistExist Middleware', () => {
+  let req, res, next;
 
   beforeEach(() => {
-    findProductFromWishListByUserIdStub = sinon.stub(
-      productRepositories,
-      "findProductFromWishListByUserId"
-    );
+    req = {
+      user: {
+        id: 'user-id'
+      }
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+    next = sinon.spy();
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  it("should fetch wishlist successfully", async () => {
-    const mockProducts = [{ id: 1, name: "Product 1", price: 100 }];
-    findProductFromWishListByUserIdStub.resolves(mockProducts);
+  it('should set the wishlist in req and call next if wishlist exists', async () => {
+    const wishlist:any = { id: 'wishlist-id', userId: 'user-id', wishListProducts: [] };
+    sinon.stub(productRepositories, 'findWishListByUserId').resolves(wishlist);
 
-    const req = {
-      user: { id: 1 },
-    } as ExtendRequest;
+    await isUserWishlistExist(req, res, next);
 
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as unknown as Response;
-
-    await productController.buyerViewWishLists(req, res);
-
-    expect(res.status).to.have.been.calledOnceWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledOnceWith({
-      message: "WishList is fetched successfully.",
-      data: { product: mockProducts },
-    });
-    expect(findProductFromWishListByUserIdStub).to.have.been.calledOnceWith(1);
+    expect(req.wishList).to.deep.equal(wishlist);
+    expect(next.calledOnce).to.be.true;
   });
 
-  it("should handle errors in fetching wishlist", async () => {
-    const errorMessage = "Something went wrong";
-    findProductFromWishListByUserIdStub.rejects(new Error(errorMessage));
+  it('should return 404 if wishlist does not exist', async () => {
+    sinon.stub(productRepositories, 'findWishListByUserId').resolves(null);
 
-    const req = {
-      user: { id: 1 },
-    } as ExtendRequest;
+    await isUserWishlistExist(req, res, next);
 
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as unknown as Response;
+    expect(res.status.calledWith(httpStatus.NOT_FOUND)).to.be.true;
+    expect(res.json.calledWith({
+      status: httpStatus.NOT_FOUND,
+      message: "No wishlist Found"
+    })).to.be.true;
+    expect(next.called).to.be.false;
+  });
 
-    await productController.buyerViewWishLists(req, res);
+  it('should return 500 if an error occurs', async () => {
+    const error = new Error('Something went wrong');
+    sinon.stub(productRepositories, 'findWishListByUserId').rejects(error);
 
-    expect(res.status).to.have.been.calledOnceWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(res.json).to.have.been.calledOnceWith({
+    await isUserWishlistExist(req, res, next);
+
+    expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+    expect(res.json.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage,
-    });
+      error: error,
+    }));
+    expect(next).not.to.have.been.called;
   });
 });
-describe("buyerViewWishList", () => {
-  let findProductfromWishListStub: SinonStub;
+
+describe("buyerAddProductToWishList Function", () => {
+  let req: any;
+  let res: Partial<Response>;
+  let statusStub: sinon.SinonStub;
+  let jsonStub: sinon.SinonStub;
 
   beforeEach(() => {
-    findProductfromWishListStub = sinon.stub(
-      productRepositories,
-      "findProductfromWishList"
-    );
+    req = {
+      params: { id: "testProductId" },
+      wishList: "testWishListId",
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    };
+    statusStub = res.status as sinon.SinonStub;
+    jsonStub = res.json as sinon.SinonStub;
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  it("should fetch wishlist successfully", async () => {
-    const mockProducts = [{ id: 1, name: "Product 1", price: 100 }];
-    findProductfromWishListStub.resolves(mockProducts);
+  it("should add product to wishlist successfully", async () => {
+    const product:any  = { id: "testProductId", name: "Test Product" };
+    sinon.stub(productRepositories, "addProductToWishList").resolves(product);
 
-    const req = {
-      params: { id: "1" },
-      user: { id: 1 },
-    } as unknown as ExtendRequest;
+    await productController.buyerAddProductToWishList(req , res as Response);
 
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as unknown as Response;
-
-    await productController.buyerViewWishList(req, res);
-    expect(res.status).to.have.been.calledOnceWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledOnceWith({
-      message: "WishList is fetched successfully.",
-      data: { product: mockProducts },
+    expect(productRepositories.addProductToWishList).to.have.been.calledWith({
+      productId: "testProductId",
+      wishListId: "testWishListId",
     });
-    expect(findProductfromWishListStub).to.have.been.calledOnceWith("1", 1);
+    expect(statusStub).to.have.been.calledWith(httpStatus.OK);
+    expect(jsonStub).to.have.been.calledWith({
+      message: "Product is added to wishlist successfully.",
+      data: { product },
+    });
   });
 
-  it("should handle errors in fetching wishlist", async () => {
-    const errorMessage = "Something went wrong";
-    findProductfromWishListStub.rejects(new Error(errorMessage));
+  it("should handle errors and return 500 status", async () => {
+    const error = new Error("Test Error");
+    sinon.stub(productRepositories, "addProductToWishList").rejects(error);
 
-    const req = {
-      params: { id: "1" },
-      user: { id: 1 },
-    } as unknown as ExtendRequest;
+    await productController.buyerAddProductToWishList(req , res as Response);
 
-    const res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-    } as unknown as Response;
-
-    await productController.buyerViewWishList(req, res);
-
-    expect(res.status).to.have.been.calledOnceWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(res.json).to.have.been.calledOnceWith({
+    expect(statusStub).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(jsonStub).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage,
+      error: error.message,
     });
   });
 });
 
+describe("Product Functions", () => {
+  let req: any;
+  let res: Partial<Response>;
+  let statusStub: sinon.SinonStub;
+  let jsonStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis(),
+    };
+    statusStub = res.status as sinon.SinonStub;
+    jsonStub = res.json as sinon.SinonStub;
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe("buyerAddProductToWishList", () => {
+    beforeEach(() => {
+      req = {
+        params: { id: "testProductId" },
+        wishList: "testWishListId",
+      };
+    });
+
+    it("should add product to wishlist successfully", async () => {
+      const product:any = { id: "testProductId", name: "Test Product" };
+      sinon.stub(productRepositories, "addProductToWishList").resolves(product);
+
+      await productController.buyerAddProductToWishList(req , res as Response);
+
+      expect(productRepositories.addProductToWishList).to.have.been.calledWith({
+        productId: "testProductId",
+        wishListId: "testWishListId",
+      });
+      expect(statusStub).to.have.been.calledWith(httpStatus.OK);
+      expect(jsonStub).to.have.been.calledWith({
+        message: "Product is added to wishlist successfully.",
+        data: { product },
+      });
+    });
+    it("should handle errors and return 500 status", async () => {
+      const error = new Error("Test Error");
+      sinon.stub(productRepositories, "addProductToWishList").rejects(error);
+      await productController.buyerAddProductToWishList(req , res as Response);
+      expect(statusStub).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(jsonStub).to.have.been.calledWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      });
+    });
+  });
+
+  describe("buyerViewWishLists", () => {
+    beforeEach(() => {
+      req = {
+        wishList: "testWishListId",
+      };
+    });
+  it("should fetch wishlist products successfully", async () => {
+      const wishListProducts:any = [{ products: { id: "product1" } }, { products: { id: "product2" } }];
+      sinon.stub(productRepositories, "getProductsFromWishlist").resolves(wishListProducts);
+
+      await productController.buyerViewWishListProducts(req , res as Response);
+
+     
+      expect(statusStub).to.have.been.calledWith(httpStatus.OK);
+      
+    });
+  });
+
+  describe("buyerViewWishList", () => {
+    beforeEach(() => {
+      req = {
+        product: { id: "product1", name: "Test Product" },
+      };
+    });
+
+    it("should fetch single wishlist product successfully", async () => {
+      await productController.buyerViewWishListProduct(req , res as Response);
+      expect(statusStub).to.have.been.calledWith(httpStatus.OK);
+      expect(jsonStub).to.have.been.calledWith({
+        message: "WishList is fetched successfully.",
+        data: { product: { id: "product1", name: "Test Product" } },
+      });
+    });
+  });
+});
+
+describe('Wishlist Functions', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('sellerGetProductById', () => {
+    it('should return product by shop ID and product ID', async () => {
+      const shopId = 'testShopId';
+      const productId = 'testProductId';
+      const expectedProduct = [{ id: 'product1' }];
+
+      sinon.stub(db.Products, 'findAll').resolves(expectedProduct as any);
+
+      const product = await productRepositories.sellerGetProductById(shopId, productId);
+
+      expect(db.Products.findAll).to.have.been.calledWith({
+        where: { shopId, id: productId },
+      });
+      expect(product).to.equal(expectedProduct);
+    });
+  });
+
+  describe('createWishList', () => {
+    it('should create a wishlist', async () => {
+      const body = { userId: 'testUserId' };
+      const expectedWishList = { id: 'wishlist1' };
+
+      sinon.stub(db.wishLists, 'create').resolves(expectedWishList as any);
+
+      const wishList = await productRepositories.createWishList(body);
+
+      expect(db.wishLists.create).to.have.been.calledWith(body);
+      expect(wishList).to.equal(expectedWishList);
+    });
+  });
+
+  describe('addProductToWishList', () => {
+    it('should add product to wishlist', async () => {
+      const body = { productId: 'testProductId', wishListId: 'testWishListId' };
+      const expectedWishListProduct = { id: 'wishlistProduct1' };
+
+      sinon.stub(db.wishListProducts, 'create').resolves(expectedWishListProduct as any);
+
+      const wishListProduct = await productRepositories.addProductToWishList(body);
+
+      expect(db.wishListProducts.create).to.have.been.calledWith(body);
+      expect(wishListProduct).to.equal(expectedWishListProduct);
+    });
+  });
+
+  describe('getWishListByUserId', () => {
+    it('should return wishlist by user ID', async () => {
+      const userId = 'testUserId';
+      const expectedWishList = { id: 'wishlist1' };
+
+      sinon.stub(db.wishLists, 'findOne').resolves(expectedWishList as any);
+
+      const wishList = await productRepositories.getWishListByUserId(userId);
+
+      expect(db.wishLists.findOne).to.have.been.calledWith({ where: { userId } });
+      expect(wishList).to.equal(expectedWishList);
+    });
+  });
+
+  describe('getProductsFromWishlist', () => {
+    it('should return products from wishlist by wishlist ID', async () => {
+      const wishListId = 'testWishListId';
+      const expectedProducts = [{ id: 'product1' }, { id: 'product2' }];
+
+      sinon.stub(db.wishListProducts, 'findAll').resolves(expectedProducts as any);
+
+      const products = await productRepositories.getProductsFromWishlist(wishListId);
+
+      expect(db.wishListProducts.findAll).to.have.been.calledWith({
+        where: { wishListId },
+        include: [
+          {
+            model: db.Products,
+            as: 'products',
+            attributes: ['id', 'name', 'price', 'images', 'shopId'],
+          },
+        ],
+      });
+      expect(products).to.equal(expectedProducts);
+    });
+  });
+
+  describe('findProductfromWishList', () => {
+    it('should find product from wishlist by product ID and wishlist ID', async () => {
+      const productId = 'testProductId';
+      const wishListId = 'testWishListId';
+      const expectedProduct = { id: 'product1' };
+
+      sinon.stub(db.wishListProducts, 'findOne').resolves(expectedProduct as any);
+
+      const product = await productRepositories.findProductfromWishList(productId, wishListId);
+
+      expect(db.wishListProducts.findOne).to.have.been.calledWith({
+        where: { productId, wishListId },
+        include: [
+          {
+            model: db.Products,
+            as: 'products',
+            attributes: ['id', 'name', 'price', 'images', 'shopId'],
+          },
+        ],
+      });
+      expect(product).to.equal(expectedProduct);
+    });
+  });
+
+  describe('findWishListByUserId', () => {
+    it('should find wishlist by user ID', async () => {
+      const userId = 'testUserId';
+      const expectedWishList = { id: 'wishlist1' };
+
+      sinon.stub(db.wishLists, 'findOne').resolves(expectedWishList as any);
+
+      const wishList = await productRepositories.findWishListByUserId(userId);
+
+      
+      expect(wishList).to.equal(expectedWishList);
+    });
+  });
+
+ 
+
+
+describe('Middleware Functions', () => {
+  let req: any;
+  let res: Partial<Response>;
+  let next: any;
+
+  beforeEach(() => {
+    req = {
+      params: {},
+      user: {},
+      wishList: null,
+      product: null
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.stub();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('isWishListProductExist', () => {
+    it('should return product if it exists in wishlist', async () => {
+      const productId = 'testProductId';
+      const wishListId = 'testWishListId';
+      const wishListProduct = { id: 'wishlistProduct1' };
+
+      req.params.id = productId;
+      req.wishList = wishListId;
+
+      sinon.stub(productRepositories, 'findProductfromWishList').resolves(wishListProduct as any);
+
+      await isWishListProductExist(req, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.OK);
+      expect(res.json).to.have.been.calledWith({
+        message: 'Product is added to wishlist successfully.',
+        data: { wishListProduct }
+      });
+      expect(next).to.not.have.been.called;
+    });
+
+    it('should call next if product does not exist in wishlist', async () => {
+      const productId = 'testProductId';
+      const wishListId = 'testWishListId';
+
+      req.params.id = productId;
+      req.wishList = wishListId;
+
+      sinon.stub(productRepositories, 'findProductfromWishList').resolves(null);
+
+      await isWishListProductExist(req, res as Response, next);
+
+      expect(next).to.have.been.called;
+    });
+
+    it('should handle errors and return 500 status', async () => {
+      const errorMessage = 'Internal server error';
+      
+      sinon.stub(productRepositories, 'findProductfromWishList').rejects(new Error(errorMessage));
+
+      await isWishListProductExist(req, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: errorMessage
+      });
+      expect(next).to.not.have.been.called;
+    });
+  });
+
+  describe('isUserWishlistExist', () => {
+    it('should return 404 if wishlist does not exist', async () => {
+      const userId = 'testUserId';
+
+      req.user.id = userId;
+
+      sinon.stub(productRepositories, 'findWishListByUserId').resolves(null);
+
+      await isUserWishlistExist(req, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
+      expect(res.json).to.have.been.calledWith({
+        status: httpStatus.NOT_FOUND,
+        message: 'No wishlist Found'
+      });
+      expect(next).to.not.have.been.called;
+    });
+
+    it('should set req.wishList and call next if wishlist exists', async () => {
+      const userId = 'testUserId';
+      const wishList = { id: 'wishlist1' };
+
+      req.user.id = userId;
+
+      sinon.stub(productRepositories, 'findWishListByUserId').resolves(wishList as any);
+
+      await isUserWishlistExist(req, res as Response, next);
+      expect(next).to.have.been.called;
+    });
+
+    it('should handle errors and return 500 status', async () => {
+      const errorMessage = 'Internal server error';
+      
+      sinon.stub(productRepositories, 'findWishListByUserId').rejects(new Error(errorMessage));
+
+      await isUserWishlistExist(req, res as Response, next);
+
+      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
+      expect(res.json).to.have.been.calledWith({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: errorMessage
+      });
+      expect(next).to.not.have.been.called;
+    });
+  });
+})
+})
 describe("isProductOrdered", () => {
   let req, res, next, sandbox;
 

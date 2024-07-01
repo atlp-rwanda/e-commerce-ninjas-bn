@@ -908,7 +908,7 @@ describe("updateUser2FA", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "buyer@gmail.com",
+        email: "seller4@gmail.com",
         password: "Password@123"
       })
       .end((error, response) => {
@@ -1019,7 +1019,7 @@ describe("verifyUserCredentials Middleware", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "buyer@gmail.com",
+        email: "seller4@gmail.com",
         password: "Password@123"
       })
       .end((error, response) => {

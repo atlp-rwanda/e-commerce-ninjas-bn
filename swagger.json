@@ -3003,7 +3003,7 @@
         }
       }
     },
-    "/api/shop/buyer-view-whishlist-product": {
+    "/api/shop/buyer-view-wishlist-products": {
       "get": {
         "tags": [
           "Buyer Routes"
@@ -3088,7 +3088,7 @@
         }
       }
     },
-    "/api/shop/buyer-view-whishlist-product/{id}": {
+    "/api/shop/buyer-view-wishlist-product/{id}": {
       "get": {
         "tags": [
           "Buyer Routes"
@@ -3184,7 +3184,7 @@
         }
       }
     },
-    "/api/shop/delete-whishlist-products": {
+    "/api/shop/delete-wishlist": {
       "delete": {
         "tags": [
           "Buyer Routes"
@@ -3269,7 +3269,7 @@
         }
       }
     },
-    "/api/shop/delete-whishlist-product/{id}": {
+    "/api/shop/delete-wishlist-product/{id}": {
       "delete": {
         "tags": [
           "Buyer Routes"
@@ -3361,43 +3361,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/cart/checkout": {
-      "post": {
-        "tags": ["Buyer Routes"],
-        "parameters": [
-          {
-            "name": "cartId",
-            "in": "path",
-            "required": true,
-            "description": "Cart ID to get",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "summary": "Buyer pay cart",
-        "description": "Buyer's payment details ",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Buyer's cart"
-          },
-          "404": {
-            "description": "No cart."
-          },
-          "401": {
-            "description": "Not logged in"
-          },
-          "500": {
-            "description": "Internal Server error"
           }
         }
       }
