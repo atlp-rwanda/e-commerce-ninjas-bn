@@ -3653,6 +3653,162 @@
           }
         }
       }
+    },
+    "/api/cart/user-get-order-status/{id}": {
+      "get": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Get order status for a buyer",
+        "description": "Retrieve the status of an order by order ID for a buyer.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the order to retrieve the status for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order status retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+ "type": "string",
+                      "example": "Order Status found successfully"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": "pending"
+                    }
+                  }
+                }
+              }
+ }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+}
+      }
+    },
+    "/api/cart/admin-update-order-status/{id}": {
+      "put": {
+        "tags": [
+          "Buyer Routes"
+        ],
+        "summary": "Admin update order status",
+        "description": "Update the status of an order by order ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the order to update the status for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated status of the order",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "example": "shipped"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status updated successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Status updated successfully!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "affectedRows": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+ "type": "integer",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

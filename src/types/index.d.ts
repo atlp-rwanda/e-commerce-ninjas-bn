@@ -31,6 +31,7 @@ export interface ExtendRequest extends Request {
     offset: number;
   };
   searchQuery?: any;
+  order?: any;
 }
 
 export interface IProduct {
@@ -117,4 +118,8 @@ export interface INotifications {
 
 export interface IProductsWithShop extends IProduct {
   shops?: IShops;
+}
+
+export interface IOrderWithCart extends OrderAttributes {
+  carts?: CartAttributes;
 }

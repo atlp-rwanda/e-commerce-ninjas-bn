@@ -28,24 +28,24 @@ import db from "../databases/models";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = schema.validate(req.body, { abortEarly: false });
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { error } = schema.validate(req.body, { abortEarly: false });
 
-      if (error) {
-        throw new Error(
-          error.details
-            .map((detail) => detail.message.replace(/"/g, ""))
-            .join(", ")
-        );
+        if (error) {
+          throw new Error(
+            error.details
+              .map((detail) => detail.message.replace(/"/g, ""))
+              .join(", ")
+          );
+        }
+        return next();
+      } catch (error) {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ status: httpStatus.BAD_REQUEST, message: error.message });
       }
-      return next();
-    } catch (error) {
-      res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
-    }
-  };
+    };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -193,8 +193,7 @@ const verifyUserCredentials = async (
       await sendEmail(
         user.email,
         "E-Commerce Ninja Login",
-        `Dear ${
-          user.lastName || user.email
+        `Dear ${user.lastName || user.email
         }\n\nUse This Code To Confirm Your Account: ${otp}`
       );
 
@@ -529,13 +528,13 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 
 const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
-    const cart = await cartRepositories.getCartsByUserId (req.user.id);
+    const cart = await cartRepositories.getCartsByUserId(req.user.id);
     if (!cart) {
-    return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
-  }
-  req.cart = cart;
-  return next();
-    
+      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+    }
+    req.cart = cart;
+    return next();
+
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -804,6 +803,39 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
+const isOrderExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
+  try {
+    let order;
+    if (req.user.role === "buyer") {
+
+      order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
+      if (!order) {
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "order Not Found",
+        });
+      }
+    }
+    if(req.user.role === "admin"){
+      order = await cartRepositories.getOrderById(req.params.id)
+      if (!order) {
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "order Not Found",
+        });
+      }
+    }
+    req.order = order
+
+    return next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      er: error.message,
+    });
+  }
+}
+
 
 const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunction) => {
   try {
@@ -864,4 +896,5 @@ export {
   isWishListProductExist,
   isProductExistIntoWishList,
   isProductOrdered,
-};    
+  isOrderExist
+};

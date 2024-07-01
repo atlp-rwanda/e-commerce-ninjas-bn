@@ -47,4 +47,21 @@ const sendEmailNotification = async (userId: string, message: string) => {
   }
 };
 
-export {  sendEmail, transporter, sendEmailNotification };
+const sendEmailOrderStatus = async (userId: string, message: string) => {
+  try {
+    const user = await authRepository.findUserByAttributes("id", userId);
+    const mailOptions: SendMailOptions = {
+    from: process.env.MAIL_ID,
+    to: user.email,
+    subject: "Order status",
+    text: message
+  };
+
+  await transporter.sendMail(mailOptions);
+    
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export {  sendEmail, transporter, sendEmailNotification, sendEmailOrderStatus };

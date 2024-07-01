@@ -13,7 +13,11 @@ const cartSchema = Joi.object({
         "any.required": "quantity is required"
     })
 });
+  const updateOrderStatusSchema = Joi.object({
+    status: Joi.string().required()
+  });
 
 export {
-    cartSchema
+    cartSchema,
+    updateOrderStatusSchema
 }
