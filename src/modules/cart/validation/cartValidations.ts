@@ -19,4 +19,4 @@ const paymentCheckoutSchema = Joi.object({
 export {
     cartSchema,
     paymentCheckoutSchema
-}
+}   

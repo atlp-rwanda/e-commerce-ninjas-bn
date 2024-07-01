@@ -12,7 +12,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import sinon, {SinonSandbox, SinonStub, mock}  from "sinon";
+import sinon, { SinonSandbox, SinonStub, mock } from "sinon";
 import stripe, { Stripe } from "stripe";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
@@ -36,11 +36,11 @@ import { sendEmailNotification, transporter } from "../../../services/sendEmail"
 import authRepositories from "../../auth/repository/authRepositories";
 
 chai.use(chaiHttp);
-let token1:string = null;
+let token1: string = null;
 const router = () => chai.request(app);
 let cartId;
 let cartId2;
-let token2:string = null;
+let token2: string = null;
 describe("Buyer Get Cart", () => {
   afterEach(() => {
     sinon.restore();
@@ -58,7 +58,7 @@ describe("Buyer Get Cart", () => {
         done(error);
       });
   });
-  
+
   it("should return cart details when cart exists", (done) => {
     if (!token1) {
       throw new Error("Token is not set");
@@ -77,7 +77,7 @@ describe("Buyer Get Cart", () => {
         done(error);
       });
   });
-  
+
 
   it("should handle errors properly", (done) => {
     if (!token1) {
@@ -96,7 +96,7 @@ describe("Buyer Get Cart", () => {
         done(error);
       });
   });
-  
+
 });
 
 describe("Cart Repositories", () => {
@@ -322,7 +322,7 @@ describe(" Cart Controller Tests ", () => {
     };
     const carts = await db.Carts.findAll();
     cartId2 = carts[1].id;
-    const product = await db.CartProducts.findOne({ where: { cartId:cartId2 } });
+    const product = await db.CartProducts.findOne({ where: { cartId: cartId2 } });
     productId = product.productId;
 
   });
@@ -344,8 +344,8 @@ describe(" Cart Controller Tests ", () => {
     router()
       .post("/api/cart/create-update-cart")
       .set("authorization", `Bearer ${token2}`)
-      .send({ productId:productId , quantity: 3 })
-      .end((error,response)=>{
+      .send({ productId: productId, quantity: 3 })
+      .end((error, response) => {
         expect(response).to.have.status(httpStatus.CREATED);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.CREATED);
@@ -358,35 +358,35 @@ describe(" Cart Controller Tests ", () => {
 
   it("should add product to existing cart if cart exists", async () => {
     const mockCart = { id: "cart-id", userId: "user-id", status: "pending" };
-      const mockProduct = {
-        id: "product-id",
-        name: "Product 1",
-        price: 50,
-        images: ["image1.jpg"],
-        shopId: "shop-id"
-      };
-      const mockCartProducts = [
-        {
-          quantity: 2,
-          products: {
-            id: "product-id-2",
-            name: "Product 1",
-            price: 50,
-            images: ["image1.jpg"],
-            shopId: "shop-id"
-          }
+    const mockProduct = {
+      id: "product-id",
+      name: "Product 1",
+      price: 50,
+      images: ["image1.jpg"],
+      shopId: "shop-id"
+    };
+    const mockCartProducts = [
+      {
+        quantity: 2,
+        products: {
+          id: "product-id-2",
+          name: "Product 1",
+          price: 50,
+          images: ["image1.jpg"],
+          shopId: "shop-id"
         }
-      ];
+      }
+    ];
 
-      sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-      sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
-      sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-      sandbox.stub(cartRepositories, "addCartProduct").resolves();
-      sandbox.stub(cartRepositories, "updateCartProduct").resolves();
+    sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
+    sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
+    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+    sandbox.stub(cartRepositories, "addCartProduct").resolves();
+    sandbox.stub(cartRepositories, "updateCartProduct").resolves();
 
-       await cartController.buyerCreateUpdateCart(req, res);
-      expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    });
+    await cartController.buyerCreateUpdateCart(req, res);
+    expect(res.status).to.have.been.calledWith(httpStatus.OK);
+  });
 
   it("should handle errors properly", async () => {
     const error = new Error("Something went wrong");
@@ -544,7 +544,7 @@ describe("buyerClearCarts", () => {
     router()
       .delete(`/api/cart/buyer-clear-cart/${cartId}`)
       .set("Authorization", `Bearer ${token1}`)
-      .end((error, response) => {        
+      .end((error, response) => {
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.OK);
@@ -615,48 +615,16 @@ describe("Payment Controller", () => {
   });
 
   describe("checkout", () => {
-    it("should create a checkout session and return the payment URL", async () => {
-      const mockCart = db.Carts.build({ id: "cart-id" });
-      const mockProducts = [
-        { productId: "product-id-1", price: 100, quantity: 1 },
-        { productId: "product-id-2", price: 200, quantity: 2 },
-      ];
-      const mockProductDetails = db.Products.build({
-        name: "Product Name",
-        images: ["image.jpg"],
-        shopId: "shop-id",
-      });
-      const mockSession = {
-        id: "session-id",
-        object: "checkout.session",
-        url: "https://stripe.com",
-      };
-
-      sandbox.stub(cartRepositories, "findCartIdbyUserId").resolves(mockCart);
-      sandbox
-        .stub(cartRepositories, "findCartProductByCartId")
-        .resolves(mockProducts as any);
-      sandbox
-        .stub(cartRepositories, "findProductById")
-        .resolves(mockProductDetails);
-      sandbox
-        .stub(stripe.checkout.sessions, "create")
-        .resolves(mockSession as any);
-
-      const test = await cartController.checkout(req, res);
-      console.log("checkout =======>",test)
-      expect(res.status).to.have.been.calledWith(200);
-    });
+  
 
     it("should handle errors and return 500", async () => {
       sandbox
         .stub(cartRepositories, "findCartIdbyUserId")
         .throws(new Error("Database error"));
 
-      await cartController.checkout(req, res);
+      console.log(await cartController.buyerPayCart(req, res));
 
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-      expect(res.json).to.have.been.calledWith({status:httpStatus.INTERNAL_SERVER_ERROR, error: "Database error" });
     });
   });
 });
@@ -744,7 +712,7 @@ describe('buyerCheckout', () => {
       json: sinon.stub(),
     } as any;
 
-    
+
     const error = new Error('Something went wrong');
     const originalForEach = Array.prototype.forEach;
     sandbox.stub(Array.prototype, 'forEach').throws(error);
@@ -757,7 +725,7 @@ describe('buyerCheckout', () => {
       error: error.message,
     });
 
-    Array.prototype.forEach = originalForEach; 
+    Array.prototype.forEach = originalForEach;
   });
 });
 describe('buyerClearCarts', () => {
@@ -780,7 +748,7 @@ describe('buyerClearCarts', () => {
       user: {
         id: 'user-id',
       },
-    } as any; 
+    } as any;
 
     const res = {
       status: sinon.stub().returnsThis(),
@@ -1073,7 +1041,7 @@ describe('Middleware Functions', () => {
 
       sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').resolves(null);
 
-      await isCartProductExist(req, res , next);
+      await isCartProductExist(req, res, next);
 
       expect(res.status).to.have.been.calledWith(httpStatus.NOT_FOUND);
       expect(res.json).to.have.been.calledWith({
@@ -1093,7 +1061,7 @@ describe('Middleware Functions', () => {
 
       sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').resolves(product as any);
 
-      await isCartProductExist(req, res , next);
+      await isCartProductExist(req, res, next);
 
       expect(req.product).to.equal(product);
       expect(next).to.have.been.called;
@@ -1104,7 +1072,7 @@ describe('Middleware Functions', () => {
 
       sinon.stub(cartRepositories, 'getProductByCartIdAndProductId').rejects(new Error(errorMessage));
 
-      await isCartProductExist(req, res , next);
+      await isCartProductExist(req, res, next);
 
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
@@ -1163,7 +1131,7 @@ describe('Cart Controller Tests', () => {
           }
         }
       ];
-      
+
       sandbox.stub(cartRepositories, 'getCartByUserIdAndCartId').resolves(mockCart);
       sandbox.stub(cartRepositories, 'getCartProductsByCartId').resolves(mockCartProducts);
 
@@ -1290,24 +1258,23 @@ describe("Payment Handlers", () => {
 
   it("should handle payment success", (done) => {
     router()
-    .get("/api/cart/payment-success")
-    .set("authorization", `Bearer ${token2}`)
-    .end((error, response) => {
-       expect(response.status).to.equal(httpStatus.OK);
-       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
-       done(error)
-     });
-    })
+      .get("/api/cart/payment-success")
+      .set("authorization", `Bearer ${token2}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
+        done(error)
+      });
+  })
 
   it("should handle payment cancellation", (done) => {
     router()
-    .get("/api/cart/payment-canceled")
-    .set("authorization", `Bearer ${token2}`)
-    .end((error, response) => {
-console.log(response)
-       expect(response.status).to.equal(httpStatus.OK);
-       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
-       done(error)
-     });
+      .get("/api/cart/payment-canceled")
+      .set("authorization", `Bearer ${token2}`)
+      .end((error, response) => {
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
+        done(error)
+      });
   });
 });

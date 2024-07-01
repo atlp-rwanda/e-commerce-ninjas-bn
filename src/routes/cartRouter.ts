@@ -9,7 +9,7 @@ import {
   validation,
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema } from "../modules/cart/validation/cartValidations";
+import { cartSchema,paymentCheckoutSchema } from "../modules/cart/validation/cartValidations";
 import { webhook } from "../services/stripe";
 
 const router: Router = Router();
@@ -64,7 +64,7 @@ router.get(
   cartControllers.buyerCheckout
   );
 
-  router.post("/checkout", userAuthorization(["buyer"]),cartControllers.checkout)
+  router.post("/buyer-pay-cart", userAuthorization(["buyer"]),validation(paymentCheckoutSchema),isCartIdExist,cartControllers.buyerPayCart)
   router.post("/webhook",webhook)
   router.get("/payment-success", userAuthorization(["buyer"]),cartControllers.paymentSuccess)
   router.get("/payment-canceled", userAuthorization(["buyer"]),cartControllers.paymentCanceled)
