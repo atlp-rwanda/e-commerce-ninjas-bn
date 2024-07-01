@@ -151,7 +151,7 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
         }
       }
     }
-
+    
     if (carts.length > 0) {
       const productToAdd = await productRepositories.findProductById(productId);
       for (const cart of carts) {
@@ -222,7 +222,6 @@ const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
 const buyerClearCart = async (req: ExtendRequest, res: Response) => {
   try {
     await cartRepositories.deleteAllCartProducts(req.cart.id);
-
     await cartRepositories.deleteCartById(req.cart.id);
 
     res

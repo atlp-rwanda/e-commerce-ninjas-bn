@@ -3028,7 +3028,7 @@
         }
       }
     },
-    "/api/shop/buyer-view-whishlist-product": {
+    "/api/shop/buyer-view-wishlist-products": {
       "get": {
         "tags": [
           "Buyer Routes"
@@ -3113,7 +3113,7 @@
         }
       }
     },
-    "/api/shop/buyer-view-whishlist-product/{id}": {
+    "/api/shop/buyer-view-wishlist-product/{id}": {
       "get": {
         "tags": [
           "Buyer Routes"
@@ -3209,7 +3209,7 @@
         }
       }
     },
-    "/api/shop/delete-whishlist-products": {
+    "/api/shop/delete-wishlist": {
       "delete": {
         "tags": [
           "Buyer Routes"
@@ -3294,7 +3294,7 @@
         }
       }
     },
-    "/api/shop/delete-whishlist-product/{id}": {
+    "/api/shop/delete-wishlist-product/{id}": {
       "delete": {
         "tags": [
           "Buyer Routes"
