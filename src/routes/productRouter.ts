@@ -12,10 +12,12 @@ import {
   isPaginated,
   isSearchFiltered,
   isProductExistById,
-  isProductExistToWishlist,
+  isWishListExist,
   isUserWishlistExist,
-  isUserWishlistExistById,
-  isProductOrdered
+  isProductOrdered,
+  isProductExistIntoWishList,
+  isWishListProductExist
+  
 } from "../middlewares/validation";
 import {
   shopSchema,
@@ -108,36 +110,11 @@ router.get(
   productController.sellerGetProduct
 );
 
-router.post(
-  "/buyer-add-product-wishList/:id",
-  userAuthorization(["buyer"]),
-  isProductExistToWishlist,
-  productController.buyerAddProductToWishList
-);
-router.get(
-  "/buyer-view-whishlist-product",
-  userAuthorization(["buyer"]),
-  isUserWishlistExist,
-  productController.buyerViewWishLists
-);
-router.get(
-  "/buyer-view-whishlist-product/:id",
-  userAuthorization(["buyer"]),
-  isUserWishlistExistById,
-  productController.buyerViewWishList
-);
-router.delete(
-  "/delete-whishlist-products",
-  userAuthorization(["buyer"]),
-  isUserWishlistExist,
-  productController.buyerDeleteAllProductFromWishlist
-);
-router.delete(
-  "/delete-whishlist-product/:id",
-  userAuthorization(["buyer"]),
-  isUserWishlistExistById,
-  productController.buyerDeleteProductFromWishList
-);
+router.post("/buyer-add-product-wishList/:id",userAuthorization(["buyer"]),isWishListExist,isWishListProductExist,productController.buyerAddProductToWishList)
+router.get("/buyer-view-wishlist-products",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerViewWishListProducts)
+router.get("/buyer-view-wishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExist,isProductExistIntoWishList,productController.buyerViewWishListProduct)
+router.delete("/delete-wishlist",userAuthorization(["buyer"]),isUserWishlistExist,productController.buyerDeleteWishListProducts)
+router.delete("/delete-wishlist-product/:id",userAuthorization(["buyer"]),isUserWishlistExist,isProductExistIntoWishList,productController.buyerDeleteWishListProduct)
 
 router.post(
   "/buyer-review-product/:id",
