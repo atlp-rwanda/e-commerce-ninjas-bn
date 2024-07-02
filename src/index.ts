@@ -11,6 +11,7 @@ import chat from "./services/chat";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import "./services/cronJob"
+import setupSocket from "./services/notificationSocket";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ export const io = new Server(server, {
   }
 });
 chat(io);
+setupSocket(io);
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.originalUrl === "/api/cart/webhook") {
     express.raw({ type: "application/json" })(req, res, next);

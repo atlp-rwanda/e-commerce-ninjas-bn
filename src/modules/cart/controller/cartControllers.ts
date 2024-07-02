@@ -85,7 +85,7 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       message: "Buyer's all carts",
-      data: { allCartsDetails }
+      data: { carts: allCartsDetails }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -290,10 +290,6 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
   }
 };
 const stripe = new Stripe(process.env.STRIPE_SECRET);
-
-
-
-
 const buyerPayCart = async (req: ExtendRequest, res: Response) => {
   try {
     const cartData: any = req.cart;
@@ -303,15 +299,10 @@ const buyerPayCart = async (req: ExtendRequest, res: Response) => {
 
     for (const cartProduct of cartData.cartProducts) {
       const productDetails = cartProduct.products;
-      console.log(productDetails.name)
       let unitAmount = productDetails.price * 100;
-
       const discountPercentage = parseFloat(productDetails.discount.replace("%", ""));
-
       unitAmount = unitAmount * (1 - (discountPercentage / 100));
-
       unitAmount = Math.round(unitAmount);
-
       line_items.push({
         price_data: {
           currency: "usd",
@@ -323,11 +314,9 @@ const buyerPayCart = async (req: ExtendRequest, res: Response) => {
         },
         quantity: cartProduct.quantity
       });
-
       shopIds.push(productDetails.shopId);
       productIds.push(cartProduct.productId);
     }
-
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",
@@ -339,61 +328,11 @@ const buyerPayCart = async (req: ExtendRequest, res: Response) => {
         productIds: JSON.stringify(productIds)
       }
     });
-
     res.status(httpStatus.OK).json({ payment_url: session.url });
   } catch (error: any) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
-
-
-
-
-// const checkout = async (req: ExtendRequest, res: Response) => {
-//     try {
-//         const { id } = req.user;
-//         // const : any = await cartRepositories.findCartIdbyUserId(id);
-//         // const products: any[] = await cartRepositories.findCartProductByCartId(cart.id);
-//         const cartData: any = req.cart
-//         const line_items: any[] = [];
-//         const shopIds: any[] = [];
-//         const productIds: any[] = [];
-// console.log(cartData.cartProducts);
-//         // await Promise.all(cartData.cartProducts.)
-//         await Promise.all(cartData.cartProducts.map(async (item) => {
-//             const productDetails = await cartRepositories.findProductById(item.productId);
-//             line_items.push({
-//                 price_data: {
-//                     currency: "usd",
-//                     product_data: {
-//                         name: productDetails.name,
-//                         images: [productDetails.images[0]]
-//                     },
-//                     unit_amount: Math.round(item.price * 100 * item.discount)
-//                 },
-//                 quantity: item.quantity
-//             });
-//             shopIds.push(productDetails.shopId);
-//             productIds.push(item.productId);  
-
-//         }));
-//         const session = await stripe.checkout.sessions.create({
-//             line_items,
-//             mode: "payment",
-//             success_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-success`,
-//             cancel_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-cancel`,
-//             metadata: {
-//                 cartId: cartData  .id.toString(),
-//                 shopIds: JSON.stringify(shopIds),
-//                 productIds: JSON.stringify(productIds) 
-//             }
-//         });
-//         res.status(httpStatus.OK).json({ payment_url: session.url });
-//     } catch (error: any) {
-//         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status:httpStatus.INTERNAL_SERVER_ERROR , error: error.message });
-//     }
-// };
-
 const paymentSuccess = (req: Request, res: Response) => {
   try {
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
@@ -401,7 +340,6 @@ const paymentSuccess = (req: Request, res: Response) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
-
 const paymentCanceled = (req: Request, res: Response) => {
   try {
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });

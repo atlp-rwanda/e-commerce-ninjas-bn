@@ -73,7 +73,7 @@ describe("Buyer Get Cart", () => {
         expect(response.body).to.have.property("status", httpStatus.OK);
         expect(response.body).to.have.property("message", "Buyer's all carts");
         expect(response.body).to.have.property("data");
-        cartId = response.body.data.allCartsDetails[0].cartId;
+        cartId = response.body.data.carts[0].cartId;
         done(error);
       });
   });
@@ -1217,7 +1217,7 @@ describe('Cart Controller Tests', () => {
         status: httpStatus.OK,
         message: "Buyer's all carts",
         data: {
-          allCartsDetails: [
+          carts: [
             {
               cartId: mockCart.id,
               products: mockCartProducts.map(product => ({
