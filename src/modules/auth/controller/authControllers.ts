@@ -33,7 +33,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message
+      error: error.message
     });
   }
 };
@@ -52,7 +52,7 @@ const sendVerifyEmail = async (req: any, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message
+      error: error.message
     });
   }
 };
@@ -68,7 +68,7 @@ const verifyEmail = async (req: any, res: Response) => {
     await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 }
 
@@ -123,7 +123,7 @@ const forgetPassword = async (req: any, res: Response): Promise<void> => {
       await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
       res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password."});
   } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 }
 
@@ -132,7 +132,7 @@ const resetPassword = async (req: any, res: Response): Promise<void> => {
     await authRepositories.updateUserByAttributes("password", req.user.password, "id", req.user.id);  
       res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -152,7 +152,7 @@ const updateUser2FA = async (req: any, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message
+      error: error.message
     });
   }
 };

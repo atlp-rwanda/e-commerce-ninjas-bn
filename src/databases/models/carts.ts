@@ -16,6 +16,7 @@ export interface CartAttributes {
 }
 
 class Carts extends Model<CartAttributes> implements CartAttributes {
+    [x: string]: any;
     declare id: string;
     declare userId: string;
     declare status: string;

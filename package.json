@@ -39,9 +39,14 @@
       "src/types/*.*",
       "src/services/googleAuth.ts",
       "src/services/chat.ts",
+      "src/services/cronJob.ts",
+      "src/helpers/passwordExpiryNotifications.ts",
       "src/services/notificationSocket.ts",
+      "src/helpers/notifications.ts",
+      "src/services/stripe.ts",
       "src/services/cronJob.ts",
       "src/helpers/passwordExpiryNotifications.ts"
+
     ],
     "reporter": [
       "html",
@@ -61,7 +66,6 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/mocha": "^10.0.6",
     "@types/multer": "^1.4.11",
-    "@types/node-cron": "^3.0.11",
     "@types/sinon": "^17.0.3",
     "@types/sinon-chai": "^3.2.12",
     "bcrypt": "^5.1.1",
@@ -100,6 +104,7 @@
     "sinon-chai": "^3.7.0",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
+    "stripe": "^15.12.0",
     "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

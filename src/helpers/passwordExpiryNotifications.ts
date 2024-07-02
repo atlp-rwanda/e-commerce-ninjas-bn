@@ -42,7 +42,7 @@ export const checkPasswordExpirations = async () => {
       const salutation = getSalutation(user.lastName);
       const emailMessage = `${salutation}, your password will expire in 10 minutes. Please update your password to continue using the E-commerce Ninja. You can reset your password using the following link: ${PASSWORD_RESET_URL}`;
       await sendEmail(user.email, "Password Expiration Warning", emailMessage)
-        // .then(() => console.log(`10-minute warning sent to user: ${user.email}`))
+        .then(() => console.log(`10-minute warning sent to user: ${user.email}`))
         .catch((err) =>
           console.error(`Failed to send 10-minute warning to ${user.email}:`, err.message)
         );
