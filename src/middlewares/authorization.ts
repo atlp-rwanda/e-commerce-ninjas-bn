@@ -62,7 +62,7 @@ export const userAuthorization = function (roles: string[]) {
     } catch (error: any) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        error: error.message,
       });
     }
   };

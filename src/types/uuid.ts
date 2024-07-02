@@ -10,6 +10,7 @@ export const userSevenId = uuidv4();
 export const userEightId = uuidv4();
 export const userNineId = uuidv4();
 export const userTenId = uuidv4();
+export const userElevenId = uuidv4();
 
 export const shopOneId = uuidv4();
 export const shopTwoId = uuidv4();
@@ -23,6 +24,7 @@ export const orderTwoId = uuidv4();
 
 export const cartOneId = uuidv4();
 export const cartTwoId = uuidv4();
+export const cartThreeId = uuidv4();
 
 export const orderProductOneId = uuidv4();
 export const orderProductTwoId = uuidv4();

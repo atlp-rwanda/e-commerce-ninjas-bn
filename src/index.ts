@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, Response ,NextFunction} from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import compression from "compression";
@@ -10,8 +10,8 @@ import httpStatus from "http-status";
 import chat from "./services/chat";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import setupSocket from "./services/notificationSocket";
 import "./services/cronJob"
+import setupSocket from "./services/notificationSocket";
 
 dotenv.config();
 
@@ -27,7 +27,13 @@ export const io = new Server(server, {
 });
 chat(io);
 setupSocket(io);
-app.use(express.json());
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.originalUrl === "/api/cart/webhook") {
+    express.raw({ type: "application/json" })(req, res, next);
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(morgan(process.env.NODE_EN));
 app.use(compression());
 app.use(cors());
