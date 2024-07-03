@@ -1698,7 +1698,7 @@ describe("isProductOrdered", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage
+      message: errorMessage
     });
   });
 });

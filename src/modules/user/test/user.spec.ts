@@ -353,7 +353,7 @@ describe("Middleware: isUsersExist", () => {
     await isUsersExist(req, res, next);
 
     expect(res.status.calledWith(404)).to.be.true;
-    expect(res.json.calledWith({ error: "No users found in the database." })).to
+    expect(res.json.calledWith({ status: httpStatus.NOT_FOUND, message: "No users found in the database." })).to
       .be.true;
     expect(next.called).to.be.false;
     userCountStub.restore();
@@ -372,7 +372,7 @@ describe("Middleware: isUsersExist", () => {
 
     await isUsersExist(req, res, next);
 
-    expect(res.status.calledWith(500)).to.be.true;
+    expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
     userCountStub.restore();
   });
 });
@@ -524,10 +524,10 @@ describe('postChatMessage', () => {
     expect(hasUsers).to.be.true;
     const hasValidUserAttributes = pastChats.every(chat =>
       chat.dataValues.user &&
-      chat.dataValues.user.id && 
-      chat.dataValues.user.firstName && 
-      chat.dataValues.user.lastName && 
-      chat.dataValues.user.email && 
+      chat.dataValues.user.id &&
+      chat.dataValues.user.firstName &&
+      chat.dataValues.user.lastName &&
+      chat.dataValues.user.email &&
       chat.dataValues.user.role
     );
     expect(hasValidUserAttributes).to.be.true;
