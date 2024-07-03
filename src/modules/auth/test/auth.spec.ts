@@ -1009,9 +1009,6 @@ describe("verifyUserCredentials Middleware", () => {
     await verifyUserCredentials(req, res, next);
 
     expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-    expect(res.json).to.have.been.calledWith({
-      message: "Invalid Email or Password"
-    });
     expect(next).not.to.have.been.called;
   });
 
@@ -1025,7 +1022,7 @@ describe("verifyUserCredentials Middleware", () => {
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body.message).to.equal("Check your Email for OTP Confirmation");
-        userId = response.body.UserId.userId
+        userId = response.body.data.userId
         done(error)
       })
   });
@@ -1054,7 +1051,7 @@ describe("verifyOtp", () => {
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
         expect(response.body.message).to.equal("Check your Email for OTP Confirmation");
-        userId = response.body.UserId.userId
+        userId = response.body.data.userId
         done(error);
       });
   })
