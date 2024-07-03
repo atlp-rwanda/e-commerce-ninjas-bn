@@ -1,50 +1,46 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 export = {
   up: async (queryInterface: QueryInterface) => {
-    await queryInterface.createTable("orders", {
+    await queryInterface.createTable("productReviews", {
       id: {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
-      products: {
-        type: DataTypes.JSONB
-        
-      },
-      shopId: {
+      productId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "shops",
+          model: "products",
           key: "id"
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      cartId: {
+      userId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "carts",
+          model: "users",
           key: "id"
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      paymentMethodId: {
+      feedback: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
-      orderDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW
+      rating: {
+        type: DataTypes.INTEGER,
+        allowNull: true
       },
       status: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue : false
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -60,6 +56,6 @@ export = {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("orders");
+    await queryInterface.dropTable("productReviews");
   }
 };

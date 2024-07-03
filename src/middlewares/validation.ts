@@ -17,7 +17,7 @@ import {
 import productRepositories from "../modules/product/repositories/productRepositories";
 import Shops from "../databases/models/shops";
 import Products from "../databases/models/products";
-import { ExtendRequest } from "../types";
+import { ExtendRequest, IExtendedCartProduct } from "../types";
 import { sendEmail } from "../services/sendEmail";
 import { Op } from "sequelize";
 
@@ -43,7 +43,7 @@ const validation =
     } catch (error) {
       res
         .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
+        .json({ status: httpStatus.BAD_REQUEST, error: error.message });
     }
   };
 
@@ -87,7 +87,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -158,7 +158,7 @@ const isAccountVerified = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -265,7 +265,7 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -288,14 +288,14 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
       session.token
     );
     if (destroy) {
-      const hashedPassword = await hashPassword(req.body.newPassword);
+      const hashedPassword = await hashPassword(req.body.password);
       req.user.password = hashedPassword;
       next();
     }
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -331,7 +331,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -363,7 +363,7 @@ const credential = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -386,7 +386,7 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -412,7 +412,7 @@ const isSellerShopExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -485,7 +485,7 @@ const verifyOtp = async (
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -539,7 +539,7 @@ const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -562,17 +562,30 @@ const isProductIdExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
 
+
 const isCartIdExist = async (req: any, res: Response, next: NextFunction) => {
-  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, req.params.cartId);
-  if (!cart) return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "Cart not found. Please add items to your cart." })
+  const cartId = req.params.cartId || req.body.cartId;
+  if (!cartId) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      status: httpStatus.BAD_REQUEST,
+      message: "Cart ID is required."
+    });
+  }
+  const cart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, cartId);
+  if (!cart) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      message: "Cart not found. Please add items to your cart."
+    });
+  }
   req.cart = cart;
   return next();
-}
+};
 
 
 const isCartProductExist = async (
@@ -595,7 +608,7 @@ const isCartProductExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -671,6 +684,7 @@ const isSearchFiltered = (
   req.searchQuery = searchQuery;
   return next();
 };
+
 const isProductExistById = async (
   req: Request,
   res: Response,
@@ -687,78 +701,97 @@ const isProductExistById = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
-    });
-  }
-};
-const isProductExistToWishlist = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const product = await productRepositories.findProductfromWishList(
-      req.params.id,
-      req.user.id
-    );
-    if (product) {
-      return res.status(httpStatus.OK).json({
-        message: "Product is added to wishlist successfully.",
-        data: { product },
-      });
-    }
-    next();
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
 
-const isUserWishlistExist = async (
-  req: Request,
+
+const isWishListExist = async (
+  req: ExtendRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const wishList = await productRepositories.findProductFromWishListByUserId(
+    const wishList = await productRepositories.getWishListByUserId(req.user.id);
+  if (!wishList) {
+        const newWishList = await productRepositories.createWishList({userId: req.user.id});
+        req.wishList = newWishList.id;
+    }
+      else{
+      req.wishList = wishList.id 
+    }
+    next();    
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: httpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message, 
+     });
+   }
+};
+
+const isWishListProductExist = async (req:ExtendRequest , res:Response, next:NextFunction) => {
+   try{
+       const wishListProduct = await productRepositories.findProductfromWishList(req.params.id,req.wishList);
+       if(wishListProduct) {
+        return res.status(httpStatus.OK).json({
+          message: "Product is added to wishlist successfully.",
+          data: { wishListProduct },
+        });       
+       }
+       next()
+   }catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+}
+}
+
+
+const isUserWishlistExist = async (
+  req: ExtendRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const wishList = await productRepositories.findWishListByUserId(
       req.user.id
     );
-    if (!wishList || wishList.length === 0) {
+    if (!wishList ) {
       return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
         message: "No wishlist Found",
       });
     }
-    next();
+   req.wishList = wishList;
+   next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
-
-const isUserWishlistExistById = async (
-  req: Request,
+const isProductExistIntoWishList= async (
+  req: ExtendRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const product = await productRepositories.findProductfromWishList(
-      req.params.id,
-      req.user.id
-    );
+    const product = await productRepositories.findProductfromWishList(req.params.id, req.wishList.dataValues.id);
     if (!product) {
       return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
         message: "Product Not Found From WishList",
       });
     }
+    req.product = product;
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -781,9 +814,38 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
     (req as any).notifications = notifications;
     return next();
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
   }
 };
+
+const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunction) => {
+  try {
+    const cart = await cartRepositories.getCartsByProductId(req.params.id, req.user.id);
+    console.log("Order info: ",cart);
+    if (!cart) {
+      return res
+       .status(httpStatus.NOT_FOUND)
+       .json({
+          status: httpStatus.NOT_FOUND,
+          message: "Product is not ordered",
+        });
+    }
+
+    if(cart.status !== "completed") {
+      return res.status(httpStatus.BAD_REQUEST).json({ 
+        status: httpStatus.BAD_REQUEST,
+        message: "Order is not Completed"
+      })
+    }
+    req.cart = cart;
+    return next();
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  }
+};
+
 
 export {
   validation,
@@ -809,8 +871,10 @@ export {
   isCartExist,
   isCartProductExist,
   isProductExistById,
-  isProductExistToWishlist,
+  isWishListExist,
   isUserWishlistExist,
-  isUserWishlistExistById,
-  isNotificationsExist
-};
+  isNotificationsExist,
+  isWishListProductExist,
+  isProductExistIntoWishList,
+  isProductOrdered,
+};    

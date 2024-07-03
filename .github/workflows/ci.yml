@@ -26,6 +26,8 @@ env:
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
   Session_secret: ${{ secrets.Session_secret }}
+  WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+  STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
 
 jobs:
   build:

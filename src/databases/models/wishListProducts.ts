@@ -3,34 +3,33 @@
 /* eslint-disable require-jsdoc */
 import { Model, DataTypes } from "sequelize";
 import sequelizeConnection from "../config/db.config";
-import CartProducts from "./cartProducts";
-import Users from "./users";
-import Orders from "./orders";
+import wishLists from "./wishLists";
+import Products from "./products";
 
-export interface CartAttributes {
+
+export interface wishListProductAttributes {
     id: string;
-    userId: string;
-    status: string;
+    wishListId: string;
+    productId: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-class Carts extends Model<CartAttributes> implements CartAttributes {
+class wishListProducts extends Model<wishListProductAttributes> implements wishListProductAttributes {
     [x: string]: any;
     declare id: string;
-    declare userId: string;
-    declare status: string;
+    declare productId: string;
+    declare wishListId: string;
     declare createdAt: Date;
     declare updatedAt: Date;
 
     static associate() {
-        Carts.belongsTo(Users, { foreignKey: "userId", as: "buyer" });
-        Carts.hasMany(CartProducts, { foreignKey: "cartId", as: "cartProducts" });
-        Carts.hasMany(Orders,{foreignKey: "cartId", as: "order"})
+        wishListProducts.belongsTo(wishLists, { foreignKey: "wishListId", as: "wishLists" });
+        wishListProducts.belongsTo(Products, { foreignKey: "productId", as: "products" });
     }
 }
 
-Carts.init(
+wishListProducts.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -38,12 +37,12 @@ Carts.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
           },
-        userId: {
+        productId: {
             type: new DataTypes.UUID,
             allowNull: false
         },
-        status: {
-            type: new DataTypes.STRING,
+        wishListId: {
+            type: new DataTypes.UUID,
             allowNull: false
         },
         createdAt: {
@@ -61,10 +60,10 @@ Carts.init(
     },
     {
         sequelize: sequelizeConnection,
-        tableName: "carts",
+        tableName: "wishListProducts",
         timestamps: true,
-        modelName: "Carts"
+        modelName: "wishListProducts"
     }
 );
 
-export default Carts;
+export default wishListProducts;
