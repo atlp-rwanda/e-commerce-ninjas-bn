@@ -655,7 +655,7 @@ describe("Product Controller", () => {
     );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   });
 
@@ -699,7 +699,7 @@ describe("Product Controller", () => {
       );
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: "File upload error",
+        message: "File upload error",
       });
     });
   });
@@ -1028,7 +1028,7 @@ describe("sellerViewSpecificProduct", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Product fetched successfully.",
-      data: productData,
+      data: {products: productData},
     });
   });
 
@@ -1045,7 +1045,7 @@ describe("sellerViewSpecificProduct", () => {
     );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   });
 });
@@ -1085,7 +1085,7 @@ describe("userGetProduct", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Products is fetched successfully.",
-      product: mockProduct,
+      data: {product: mockProduct},
     });
   });
 
@@ -1100,7 +1100,7 @@ describe("userGetProduct", () => {
     );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   });
 });
@@ -1274,8 +1274,9 @@ describe("buyerAddProductToWishList Function", () => {
     });
     expect(statusStub).to.have.been.calledWith(httpStatus.OK);
     expect(jsonStub).to.have.been.calledWith({
+      status: httpStatus.OK,
       message: "Product is added to wishlist successfully.",
-      data: { product },
+      data: { product }
     });
   });
 
@@ -1288,7 +1289,7 @@ describe("buyerAddProductToWishList Function", () => {
     expect(statusStub).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(jsonStub).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   });
 });
@@ -1343,7 +1344,7 @@ describe("Product Functions", () => {
       expect(statusStub).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(jsonStub).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message,
+        message: error.message,
       });
     });
   });
@@ -1377,6 +1378,7 @@ describe("Product Functions", () => {
       await productController.buyerViewWishListProduct(req , res as Response);
       expect(statusStub).to.have.been.calledWith(httpStatus.OK);
       expect(jsonStub).to.have.been.calledWith({
+        status:httpStatus.OK,
         message: "WishList is fetched successfully.",
         data: { product: { id: "product1", name: "Test Product" } },
       });
@@ -1737,6 +1739,7 @@ describe("buyerReviewProduct", () => {
     });
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
+      status:httpStatus.OK,
       message: "Product reviewed successfully",
       data: { productReview: mockReview }
     });
@@ -1751,7 +1754,7 @@ describe("buyerReviewProduct", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: errorMessage
+      message: errorMessage
     });
   });
 });
