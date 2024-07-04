@@ -25,6 +25,7 @@ const currentDate = new Date();
 
 import cartRepositories from "../modules/cart/repositories/cartRepositories";
 import db from "../databases/models";
+import userRepositories from "../modules/user/repository/userRepositories";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
@@ -846,6 +847,50 @@ const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunct
   }
 };
 
+const isUserProfileComplete = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user.id; 
+    const user = await userRepositories.findUserById(userId);
+
+    const requiredFields = ["firstName", "lastName", "email", "phone", "gender", "birthDate", "language", "currency"];
+    const isProfileComplete = requiredFields.every(field => user[field]);
+
+    if (!isProfileComplete) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "User profile is incomplete. Please fill out all required fields.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+
+const isSellerRequestExist = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user.id;
+    const existingRequest = await userRepositories.findSellerRequestByUserId(userId);
+
+    if (existingRequest) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: httpStatus.BAD_REQUEST,
+        message: "User has already submitted a seller request",
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
 
 export {
   validation,
@@ -877,4 +922,6 @@ export {
   isWishListProductExist,
   isProductExistIntoWishList,
   isProductOrdered,
+  isUserProfileComplete,
+  isSellerRequestExist
 };    

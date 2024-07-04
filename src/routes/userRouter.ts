@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userControllers from "../modules/user/controller/userControllers";
-import { isUserExist, validation, isUsersExist, credential, isNotificationsExist } from "../middlewares/validation";
+import { isUserExist, validation, isUsersExist, credential, isNotificationsExist, isUserProfileComplete, isSellerRequestExist } from "../middlewares/validation";
 import { userAuthorization } from "../middlewares/authorization";
 import { statusSchema, roleSchema, userSchema, changePasswordSchema } from "../modules/user/validation/userValidations";
 import upload from "../helpers/multer";
@@ -22,6 +22,6 @@ router.get("/user-get-notification/:id", userAuthorization(["seller"]),isNotific
 router.put("/user-mark-notification/:id", userAuthorization(["seller"]), isNotificationsExist, userControllers.markNotificationAsRead);
 router.put("/user-mark-all-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
 
-router.post("user/submit-seller-request", userAuthorization(["seller"]));
+router.post("/user-submit-seller-request", userAuthorization(["buyer"]), isUserProfileComplete,isSellerRequestExist, userControllers.submitSellerRequest)
 
 export default router;
