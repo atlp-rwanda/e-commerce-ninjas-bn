@@ -893,6 +893,44 @@ describe("updateUser2FA", () => {
       });
   });
 
+  let cartId;
+
+  it("should get Buyer's all carts", (done) => {
+    router()
+      .get("/api/cart/buyer-get-carts")
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        if (err) {
+          console.error("Error:", err);
+          return done(err);
+        }
+        try {
+          expect(res).to.have.status(httpStatus.OK);
+          cartId = res.body.data.allCartsDetails[0].cartId
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+  });
+  
+  it("should checkout the buyer cart", (done) => {
+    router()
+      .get(`/api/cart/buyer-cart-checkout/${cartId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        try {
+          expect(res).to.have.status(httpStatus.OK);
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+  });
+  
   afterEach(() => {
     sinon.restore();
   });
