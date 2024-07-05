@@ -236,5 +236,5 @@ export default {
   getSingleNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  submitSellerRequest
+  submitSellerRequest,
 };

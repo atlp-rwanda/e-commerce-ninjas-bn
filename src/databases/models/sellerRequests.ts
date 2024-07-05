@@ -59,7 +59,7 @@ SellerRequest.init(
   },
   {
     sequelize: sequelizeConnection,
-    tableName: "seller_requests",
+    tableName: "sellerRequests",
     timestamps: true,
     modelName: "SellerRequest",
   }

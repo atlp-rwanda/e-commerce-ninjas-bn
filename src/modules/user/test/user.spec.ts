@@ -16,6 +16,7 @@ import fs from "fs";
 import userRepositories from "../repository/userRepositories";
 import db from "../../../databases/models";
 import { hashPassword } from "../../../helpers";
+
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
 
@@ -51,8 +52,8 @@ describe("Update User Status test case ", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -228,8 +229,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -383,8 +384,8 @@ describe("Admin Controllers", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         token = response.body.data.token;

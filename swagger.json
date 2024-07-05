@@ -3557,7 +3557,7 @@
         }
       },
       "400": {
-        "description": "User profile is incomplete or user has already submitted a seller request",
+        "description": "User profile is incomplete or Seller request already submitted",
         "content": {
           "application/json": {
             "schema": {
@@ -3569,7 +3569,27 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User profile is incomplete. Please fill out all required fields or User has already submitted a seller request"
+                  "example": "User profile is incomplete. Please fill out all required fields or Seller request already submitted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not authorized"
                 }
               }
             }
@@ -3596,11 +3616,10 @@
           }
         }
       }
+
     }
   }
 }
-
-
     
   }
 }
