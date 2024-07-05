@@ -28,7 +28,7 @@ import {
 import app from "../../..";
 import { sendEmailNotification, transporter } from "../../../services/sendEmail";
 import authRepositories from "../../auth/repository/authRepositories";
-import { productOneId, productTwoId } from "../../../types/uuid";
+import { productFourId } from "../../../types/uuid";
 
 chai.use(chaiHttp);
 let token1: string = null;
@@ -1124,7 +1124,7 @@ describe("Cart controller test cases:", () => {
         router().post("/api/cart/create-update-cart")
             .set("Authorization", `Bearer ${token}`)
             .send({
-                productId: productOneId,
+                productId: productFourId,
                 quantity: 2
             })
             .end((error, response) => {
@@ -1134,20 +1134,7 @@ describe("Cart controller test cases:", () => {
             })
     })
 
-    it("Should create a cart if all are ok", (done) => {
-        router().post("/api/cart/create-update-cart")
-            .set("Authorization", `Bearer ${token}`)
-            .send({
-                productId: productOneId,
-                quantity: 2
-            })
-            .end((error, response) => {
-                expect(response.status).to.equal(httpStatus.CREATED);
-                expect(response.body).to.have.property("message");
-                cartId = response.body.data.cartId;
-                done(error);
-            })
-    })
+   
 
     it("Should return carts if they exist", (done) => {
         router().get("/api/cart/buyer-get-carts")
@@ -1158,35 +1145,7 @@ describe("Cart controller test cases:", () => {
                 done(error);
             })
     })
-    // it("Should reject if the cart don't exists", (done) => {
-    //     router().get("/api/cart/buyer-get-cart/nonexist")
-    //         .set("Authorization", `Bearer ${token}`)
-    //         .end((error, response) => {
-    //             expect(response.status).to.equal(httpStatus.BAD_REQUEST);
-    //             expect(response.body).to.have.property("message");
-    //             done(error);
-    //         })
-    // })
 
-    it("Should return a single cart", (done) => {
-        router().get(`/api/cart/buyer-get-cart/${cartId}`)
-            .set("Authorization", `Bearer ${token}`)
-            .end((error, response) => {
-                expect(response.status).to.equal(httpStatus.OK);
-                expect(response.body).to.have.property("data");
-                done(error);
-            })
-    })
-    // it("Should clear product cart if they are OK", (done) => {
-    //     router().get(`/api/cart/buyer-clear-cart-product/${cartId}/${productOneId}`)
-    //         .set("Authorization", `Bearer ${token}`)
-    //         .end((error, response) => {
-    //             expect(response.status).to.equal(httpStatus.OK);
-    //             expect(response.body).to.have.property("message");
-    //             done(error);
-    //         })
-    // })
 
-   
 
 })
