@@ -297,33 +297,13 @@ describe("Cart Controller - GetCart", () => {
         });
     });
 });
-describe(" Cart Controller Tests ", () => {
+describe("Cart Controller Tests", () => {
     let req;
     let res;
     let productId;
     let sandbox;
     let cartId;
-    before(async () => {
-        sandbox = sinon.createSandbox();
-        req = {
-            user: { id: "user-id" },
-            body: { productId: "product-id", quantity: 2 },
-            params: { cartId: "cart-id" }
-        };
-        res = {
-            status: sinon.stub().returnsThis(),
-            json: sinon.stub().returnsThis()
-        };
-        const carts = await db.Carts.findAll();
-        cartId2 = carts[0].id;
-        const product = await db.CartProducts.findOne({ where: { cartId: cartId2 } });
-        productId = product.productId;
 
-    });
-
-    afterEach(() => {
-        sandbox.restore();
-    });
     it("should login user", (done) => {
         router()
             .post("/api/auth/login")
@@ -334,6 +314,7 @@ describe(" Cart Controller Tests ", () => {
                 done(error);
             });
     });
+
     it("should update cart product if already exist", (done) => {
         router()
             .post("/api/cart/create-update-cart")
@@ -346,8 +327,7 @@ describe(" Cart Controller Tests ", () => {
                 expect(response.body).to.have.property("message", "Cart added successfully");
                 expect(response.body).to.have.property("data")
                 done(error);
-            })
-
+            });
     });
 
     it("should add product to existing cart if cart exists", async () => {
@@ -397,6 +377,7 @@ describe(" Cart Controller Tests ", () => {
         });
     });
 });
+
 
 describe("buyerClearCartProduct", () => {
     let req, res, deleteCartProductStub;
