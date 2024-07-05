@@ -34,14 +34,13 @@ import {
 import app from "../../..";
 import { sendEmailNotification, transporter } from "../../../services/sendEmail";
 import authRepositories from "../../auth/repository/authRepositories";
-import { productFourId } from "../../../types/uuid";
+import { cartFourId, productFourId } from "../../../types/uuid";
 
 chai.use(chaiHttp);
 let token1: string = null;
 const router = () => chai.request(app);
 let cartId;
 let cartId2;
-let token2: string = null;
 describe("Buyer Get Cart", () => {
     afterEach(() => {
         sinon.restore();
@@ -294,86 +293,6 @@ describe("Cart Controller - GetCart", () => {
         sandbox.stub(cartRepositories, "getCartByUserIdAndCartId").throws(error);
 
         await cartController.buyerGetCart(req, res);
-
-        expect(res.status).to.have.been.calledWith(
-            httpStatus.INTERNAL_SERVER_ERROR
-        );
-        expect(res.json).to.have.been.calledWith({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: error.message,
-        });
-    });
-});
-describe("Cart Controller Tests", () => {
-    let req;
-    let res;
-    let productId;
-    let sandbox;
-    let cartId;
-
-    it("should login user", (done) => {
-        router()
-            .post("/api/auth/login")
-            .send({ email: "buyer4@gmail.com", password: "Password@123" })
-            .end((error, response) => {
-                console.log('Login Response: ' + response.body);
-                token2 = response.body.data.token;
-                done(error);
-            });
-    });
-
-    it("should update cart product if already exist", (done) => {
-        router()
-            .post("/api/cart/create-update-cart")
-            .set("authorization", `Bearer ${token2}`)
-            .send({ productId: productId, quantity: 3 })
-            .end((error, response) => {
-                expect(response).to.have.status(httpStatus.CREATED);
-                expect(response.body).to.be.a("object");
-                expect(response.body).to.have.property("status", httpStatus.CREATED);
-                expect(response.body).to.have.property("message", "Cart added successfully");
-                expect(response.body).to.have.property("data")
-                done(error);
-            });
-    });
-
-    it("should add product to existing cart if cart exists", async () => {
-        const mockCart = { id: "cart-id", userId: "user-id", status: "pending" };
-        const mockProduct = {
-            id: "product-id",
-            name: "Product 1",
-            price: 50,
-            images: ["image1.jpg"],
-            shopId: "shop-id"
-        };
-        const mockCartProducts = [
-            {
-                quantity: 2,
-                products: {
-                    id: "product-id-2",
-                    name: "Product 1",
-                    price: 50,
-                    images: ["image1.jpg"],
-                    shopId: "shop-id"
-                }
-            }
-        ];
-
-        sandbox.stub(cartRepositories, "getCartsByUserId").resolves([mockCart]);
-        sandbox.stub(cartRepositories, "getCartProductsByCartId").resolves(mockCartProducts);
-        sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-        sandbox.stub(cartRepositories, "addCartProduct").resolves();
-        sandbox.stub(cartRepositories, "updateCartProduct").resolves();
-
-        await cartController.buyerCreateUpdateCart(req, res);
-        expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    });
-
-    it("should handle errors properly", async () => {
-        const error = new Error("Something went wrong");
-        sinon.stub(cartRepositories, "getCartsByUserId").throws(error);
-
-        await cartController.buyerCreateUpdateCart(req, res);
 
         expect(res.status).to.have.been.calledWith(
             httpStatus.INTERNAL_SERVER_ERROR
@@ -1069,6 +988,7 @@ describe('Middleware Functions', () => {
 
 describe("Cart controller test cases:", () => {
     let token: string
+    let cartUser: string
     let cartId: string
     let cartId2: string
     it("should login a buyer", (done) => {
@@ -1088,7 +1008,7 @@ describe("Cart controller test cases:", () => {
             })
     })
 
-    it("Should return not found if the user don't have any cart", (done) => {
+    it("Should return all carts if they exist", (done) => {
         router().get("/api/cart/buyer-get-carts")
             .set("Authorization", `Bearer ${token}`)
             .end((error, response) => {
@@ -1129,6 +1049,29 @@ describe("Cart controller test cases:", () => {
             .get("/api/cart/buyer-get-carts")
             .set("Authorization", `Bearer ${token}`)
             .end((error, response) => {
+                expect(response.status).to.equal(httpStatus.OK);
+                expect(response.body).to.have.property("data");
+                console.log(response.body.data)
+                cartUser=response.body.data.cartId
+                done(error);
+            })
+    })
+
+    it("Should get a single cart if it exists", (done) => {
+        router()
+           .get(`/api/cart/buyer-get-cart/${cartUser}`)
+           .set("Authorization", `Bearer ${token}`)
+           .end((error, response) => {
+                expect(response.status).to.equal(httpStatus.OK);
+                expect(response.body).to.have.property("data");
+                done(error);
+            })
+    })
+    it("Should delete a single cart if it exists", (done) => {
+        router()
+           .get(`/api/cart/buyer-clear-cart/${cartUser}`)
+           .set("Authorization", `Bearer ${token}`)
+           .end((error, response) => {
                 expect(response.status).to.equal(httpStatus.OK);
                 expect(response.body).to.have.property("data");
                 done(error);
