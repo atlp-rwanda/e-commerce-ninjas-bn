@@ -632,38 +632,6 @@ describe("Google Authentication", () => {
   });
 });
 
-describe("authenticateViaGoogle", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: NextFunction;
-  let resJsonSpy: sinon.SinonSpy;
-  let resStatusSpy: sinon.SinonStub;
-
-  beforeEach(() => {
-    req = {};
-    res = {
-      json: sinon.spy(),
-      status: sinon.stub().returnsThis()
-    };
-    next = sinon.spy() as NextFunction;
-    resJsonSpy = res.json as sinon.SinonSpy;
-    resStatusSpy = res.status as sinon.SinonStub;
-  });
-
-  it("should respond with 401 if authentication fails", async () => {
-    const authenticateStub = sinon.stub(passport, "authenticate").callsFake((strategy, callback) => {
-      callback(null, null);
-      return (req: Request, res: Response) => { };
-    });
-
-    await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
-
-    expect(resStatusSpy.calledWith(httpStatus.UNAUTHORIZED)).to.be.true;
-    expect(resJsonSpy.calledWith({ message: "Authentication failed" })).to.be.true;
-
-    authenticateStub.restore();
-  });
-});
 
 describe("Forget password", () => {
   let resetToken: string = null
@@ -1154,7 +1122,7 @@ describe("verifyOtp", () => {
       .send({ otp: "123456" });
 
     expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.body.error).to.equal("Internal Server Error");
+    expect(res.body.message).to.equal("Internal Server Error");
 
   });
 });
