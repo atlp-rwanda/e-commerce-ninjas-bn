@@ -165,7 +165,7 @@ describe("userAuthorization middleware", () => {
     );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: "Unexpected error",
+      message: "Unexpected error",
     });
   });
 });
@@ -409,7 +409,7 @@ describe("checkPasswordExpiration middleware", () => {
     );
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: "Database error",
+      message: "Database error",
     });
     expect(next).to.not.have.been.called;
   });
