@@ -76,6 +76,18 @@ const findSellerRequestByUserId = async (userId: string) => {
   return await db.SellerRequest.findOne({ where: { userId } });
 };
 
+const getAllSellerRequests = async () => {
+  return db.SellerRequest.findAll({
+    include: [
+      {
+        model: db.Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email","phone", "gender","currency","profilePicture", "language", "birthDate","createdAt" ]
+      }
+    ]
+  });
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -88,5 +100,6 @@ export default {
   markNotificationAsRead,
   findUserById,
   createSellerRequest,
-  findSellerRequestByUserId
+  findSellerRequestByUserId,
+  getAllSellerRequests
 };

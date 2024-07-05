@@ -69,6 +69,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 - User mark notification Endpoint
 - Buyer review product Endpoint
 - Submit a seller request
+- Admin view all seller requests
 
 ## TABLE OF API ENDPOINTS SPECIFICATION AND DESCRIPTION
 
@@ -120,6 +121,7 @@ Our e-commerce web application server, developed by Team Ninjas, facilitates smo
 | 44  | PUT    | /api/user/user-mark-notification/:id                  | 200 OK      | private | user mark notification              |
 | 45  | POST   | /api/shop/buyer-review-product/:id                    | 200 OK      | private | Buyer Create review                 |
 | 46  | POST   | /api/user/user-submit-seller-request                  | 200 OK      | private | Submit a seller request             |
+| 47  | GET    | /api/user/admin-get-seller-requests                   | 200 OK      | private | Admin view all seller requests      |
 
 ## INSTALLATION
 

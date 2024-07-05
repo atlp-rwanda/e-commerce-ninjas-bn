@@ -224,6 +224,23 @@ const submitSellerRequest = async (req: Request, res: Response) => {
   }
 };
 
+const getSellerRequests = async (req: Request, res: Response) => {
+  try {
+    const sellerRequests = await userRepositories.getAllSellerRequests();
+
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Seller requests fetched successfully",
+      data: {sellerRequests},
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -236,5 +253,6 @@ export default {
   getSingleNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  submitSellerRequest
+  submitSellerRequest,
+  getSellerRequests
 };

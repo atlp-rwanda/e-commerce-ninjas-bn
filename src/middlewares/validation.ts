@@ -822,7 +822,6 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
 const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunction) => {
   try {
     const cart = await cartRepositories.getCartsByProductId(req.params.id, req.user.id);
-    console.log("Order info: ",cart);
     if (!cart) {
       return res
        .status(httpStatus.NOT_FOUND)
@@ -879,7 +878,7 @@ const isSellerRequestExist = async (req: Request, res: Response, next: NextFunct
     if (existingRequest) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "User has already submitted a seller request",
+        message: "Seller request already submitted",
       });
     }
 

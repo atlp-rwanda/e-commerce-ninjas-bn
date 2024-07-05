@@ -3557,7 +3557,7 @@
         }
       },
       "400": {
-        "description": "User profile is incomplete or user has already submitted a seller request",
+        "description": "User profile is incomplete or Seller request already submitted",
         "content": {
           "application/json": {
             "schema": {
@@ -3569,7 +3569,120 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User profile is incomplete. Please fill out all required fields or User has already submitted a seller request"
+                  "example": "User profile is incomplete. Please fill out all required fields or Seller request already submitted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not authorized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Internal Server error"
+                }
+              }
+            }
+          }
+        }
+      }
+
+    }
+  }
+}
+,
+"/api/user/admin-get-seller-requests": {
+  "get": {
+    "tags": ["Admin Routes"],
+    "summary": "Get all seller requests",
+    "description": "Fetches all seller requests submitted by users.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of seller requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "uuid"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "uuid"
+                  },
+                  "requestStatus": {
+                    "type": "string",
+                    "example": "Pending"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-07-04T12:34:56Z"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-07-04T12:34:56Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not authorized"
                 }
               }
             }

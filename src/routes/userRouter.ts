@@ -23,5 +23,6 @@ router.put("/user-mark-notification/:id", userAuthorization(["seller"]), isNotif
 router.put("/user-mark-all-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
 
 router.post("/user-submit-seller-request", userAuthorization(["buyer"]), isUserProfileComplete,isSellerRequestExist, userControllers.submitSellerRequest)
+router.get("/admin-get-seller-requests", userAuthorization(["admin"]), userControllers.getSellerRequests)
 
 export default router;

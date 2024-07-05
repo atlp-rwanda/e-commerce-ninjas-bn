@@ -16,6 +16,7 @@ import fs from "fs";
 import userRepositories from "../repository/userRepositories";
 import db from "../../../databases/models";
 import { hashPassword } from "../../../helpers";
+
 const imagePath = path.join(__dirname, "../test/testImage.jpg");
 const imageBuffer = fs.readFileSync(imagePath);
 
@@ -51,8 +52,8 @@ describe("Update User Status test case ", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -228,8 +229,8 @@ describe("Admin update User roles", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.OK);
@@ -383,8 +384,8 @@ describe("Admin Controllers", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
-        password: "NewPassword!123",
+        email: "newadmin@gmail.com",
+        password: "AdminPassword@123",
       })
       .end((error, response) => {
         token = response.body.data.token;
@@ -402,6 +403,35 @@ describe("Admin Controllers", () => {
         expect(response.body).to.be.an("object");
         done(error);
       });
+  });
+
+  it("should fetch all seller requests successfully", async () => {
+    const res = await router()
+      .get("/api/user/admin-get-seller-requests")
+      .set("authorization", `Bearer ${token}`);
+
+    expect(res).to.have.status(httpStatus.OK);
+  });
+
+  it("should return 401 for unauthorized access", async () => {
+    const res = await router()
+      .get("/api/user/admin-get-seller-requests");
+
+    expect(res).to.have.status(httpStatus.UNAUTHORIZED);
+    expect(res.body).to.be.an("object");
+    expect(res.body).to.have.property("message", "Not authorized");
+  });
+
+  it("should return 500 for internal server error", async () => {
+    sinon.stub(userRepositories, "getAllSellerRequests").throws(new Error("Internal server error"));
+
+    const res = await router()
+      .get("/api/user/admin-get-seller-requests")
+      .set("authorization", `Bearer ${token}`);
+
+    expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.body).to.be.an("object");
+    expect(res.body).to.have.property("error", "Internal server error");
   });
 
   it("should return one user", (done) => {
