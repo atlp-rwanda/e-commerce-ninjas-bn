@@ -1141,10 +1141,11 @@ describe("Cart controller test cases:", () => {
             })
     })
 
-   
+
 
     it("Should return carts if they exist", (done) => {
-        router().get("/api/cart/buyer-get-carts")
+        router()
+            .get("/api/cart/buyer-get-carts")
             .set("Authorization", `Bearer ${token}`)
             .end((error, response) => {
                 expect(response.status).to.equal(httpStatus.OK);
@@ -1152,7 +1153,4 @@ describe("Cart controller test cases:", () => {
                 done(error);
             })
     })
-
-
-
 })
