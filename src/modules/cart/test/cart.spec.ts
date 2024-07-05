@@ -1051,21 +1051,29 @@ describe("Cart controller test cases:", () => {
             .end((error, response) => {
                 expect(response.status).to.equal(httpStatus.OK);
                 expect(response.body).to.have.property("data");
-                console.log(response.body.data)
-                cartUser=response.body.data.cartId
+                cartUser = response.body.data.cartId
                 done(error);
             })
     })
 
     it("Should get a single cart if it exists", (done) => {
         router()
-           .get(`/api/cart/buyer-get-cart/${cartUser}`)
-           .set("Authorization", `Bearer ${token}`)
-           .end((error, response) => {
-                expect(response.status).to.equal(httpStatus.OK);
-                expect(response.body).to.have.property("data");
-                done(error);
-            })
+            .get(`/api/cart/buyer-get-cart/${cartUser}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((error, response) => {
+                if (error) {
+                    console.error("Request error:", error);
+                    return done(error);
+                }
+
+                try {
+                    expect(response.status).to.equal(httpStatus.OK);
+                    expect(response.body).to.have.property("data");
+                    done();
+                } catch (assertionError) {
+                    done(assertionError);
+                }
+            });
     })
     it("Should delete a single cart if it exists", (done) => {
         router()
@@ -1076,7 +1084,7 @@ describe("Cart controller test cases:", () => {
                     console.error("Request error:", error);
                     return done(error);
                 }
-    
+
                 try {
                     expect(response.status).to.equal(httpStatus.OK);
                     expect(response.body).to.have.property("data");
@@ -1090,5 +1098,5 @@ describe("Cart controller test cases:", () => {
             done(new Error("Test timed out"));
         }, 5000);
     });
-    
+
 })
