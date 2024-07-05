@@ -12,7 +12,8 @@ import {
   userEightId,
   userNineId,
   userTenId,
-  userElevenId
+  userElevenId,
+  userTwelveId
 } from "../../types/uuid";
 
 const userOne = {
@@ -242,6 +243,26 @@ const userEleven = {
   isVerified: true,
   is2FAEnabled: false,
 };
+const userTwelve = {
+  id: userTwelveId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
+  firstName: "F Buyer3",
+  lastName: "L Buyer3",
+  email: "buyer12@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767899,
+  profilePicture: "",
+  gender: "female",
+  birthDate: "2-2-2014",
+  language: "english",
+  currency: "USD",
+  role: "buyer",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false,
+};
 
 export const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [
@@ -255,7 +276,7 @@ export const up = (queryInterface: QueryInterface) =>
     userEight,
     userNine,
     userTen,
-    userEleven
+    userEleven,userTwelve
   ]);
 
 export const down = async (queryInterface: QueryInterface) => {
