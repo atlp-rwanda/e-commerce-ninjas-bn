@@ -1062,12 +1062,26 @@ describe("Cart controller test cases:", () => {
     })
     it("Should delete a single cart if it exists", (done) => {
         router()
-           .get(`/api/cart/buyer-clear-cart/${cartUser}`)
-           .set("Authorization", `Bearer ${token}`)
-           .end((error, response) => {
-                expect(response.status).to.equal(httpStatus.OK);
-                expect(response.body).to.have.property("data");
-                done(error);
-            })
-    })
+            .get(`/api/cart/buyer-clear-cart/${cartUser}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((error, response) => {
+                if (error) {
+                    console.error("Request error:", error);
+                    return done(error);
+                }
+    
+                try {
+                    expect(response.status).to.equal(httpStatus.OK);
+                    expect(response.body).to.have.property("data");
+                    done();
+                } catch (assertionError) {
+                    done(assertionError);
+                }
+            });
+
+        setTimeout(() => {
+            done(new Error("Test timed out"));
+        }, 5000);
+    });
+    
 })
