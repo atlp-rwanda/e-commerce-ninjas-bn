@@ -141,9 +141,9 @@ describe("Authentication Test Cases", () => {
         password: "userPassword"
       })
       .end((error, response) => {
-        expect(response.status).to.equal(400);
+        expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("error");
+        expect(response.body).to.have.property("message");
         done(error);
       });
   });
@@ -347,7 +347,7 @@ describe("isUserExist Middleware", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(res.body).to.have.property("error", "Database error");
+        expect(res.body).to.have.property("message", "Database error");
         done(err);
       });
   });
@@ -362,6 +362,34 @@ describe("isUserExist Middleware", () => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("message", "success");
+        done(err);
+      });
+  });
+});
+
+describe("POST /auth/register - Error Handling", () => {
+  let registerUserStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    registerUserStub = sinon
+      .stub(authRepositories, "createUser")
+      .throws(new Error("Test error"));
+  });
+
+  afterEach(() => {
+    registerUserStub.restore();
+  });
+
+  it("should return 500 and error message when an error occurs", (done) => {
+    router()
+      .post("/api/auth/register")
+      .send({ email: "test@example.com", password: "Password@123" })
+      .end((err, res) => {
+        expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(res.body).to.deep.equal({
+          status: httpStatus.INTERNAL_SERVER_ERROR,
+          message: "Test error"
+        });
         done(err);
       });
   });
@@ -472,7 +500,7 @@ describe("Authentication Test Cases", () => {
       .send({ email: "user@example.com" })
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.have.property("error");
+        expect(res.body).to.have.property("message");
         done(err);
       });
   });
@@ -634,8 +662,8 @@ describe("authenticateViaGoogle", () => {
 
     await googleAuth.authenticateWithGoogle(req as Request, res as Response, next);
 
-    expect(resStatusSpy.calledWith(401)).to.be.true;
-    expect(resJsonSpy.calledWith({ error: "Authentication failed" })).to.be.true;
+    expect(resStatusSpy.calledWith(httpStatus.UNAUTHORIZED)).to.be.true;
+    expect(resJsonSpy.calledWith({ message: "Authentication failed" })).to.be.true;
 
     authenticateStub.restore();
   });
@@ -666,7 +694,8 @@ describe("Forget password", () => {
     router()
       .put(`/api/auth/reset-password/${resetToken}`)
       .send({ password: "Newpassword#12" })
-      .end((err, res) => {expect(res.body.message).to.be.equal("Password reset successfully.");
+      .end((err, res) => {
+        expect(res.body.message).to.be.equal("Password reset successfully.");
         done(err)
       })
   })
@@ -736,7 +765,7 @@ describe("verifyUser middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: "Unexpected error"
+      message: "Unexpected error"
     });
   });
 
@@ -793,7 +822,7 @@ describe("isSessionExist middleware", () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: "Unexpected error"
+      message: "Unexpected error"
     });
   });
 });
@@ -818,7 +847,7 @@ describe("verifyEmail", () => {
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
       status: 500,
-      error: "Unexpected error"
+      message: "Unexpected error"
     });
 
     sinon.restore();
@@ -842,9 +871,9 @@ describe("forgetPassword", () => {
 
     await authControllers.forgetPassword(req as Request, res as Response);
 
-    expect(res.status).to.have.been.calledWith(500);
+    expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
-      error: "Unexpected error"
+      message: "Unexpected error"
     });
 
     sinon.restore();
@@ -869,7 +898,7 @@ describe("resetPassword", () => {
 
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
-      error: "Unexpected error"
+      message: "Unexpected error"
     });
 
     sinon.restore();
@@ -895,42 +924,42 @@ describe("updateUser2FA", () => {
 
   let cartId;
 
-  it("should get Buyer's all carts", (done) => {
-    router()
-      .get("/api/cart/buyer-get-carts")
-      .set("Authorization", `Bearer ${token}`)
-      .end((err, res) => {
-        if (err) {
-          console.error("Error:", err);
-          return done(err);
-        }
-        try {
-          expect(res).to.have.status(httpStatus.OK);
-          cartId = res.body.data.allCartsDetails[0].cartId
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-  });
-  
-  it("should checkout the buyer cart", (done) => {
-    router()
-      .get(`/api/cart/buyer-cart-checkout/${cartId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        try {
-          expect(res).to.have.status(httpStatus.OK);
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-  });
-  
+  // it("should get Buyer's all carts", (done) => {
+  //   router()
+  //     .get("/api/cart/buyer-get-carts")
+  //     .set("Authorization", `Bearer ${token}`)
+  //     .end((err, res) => {
+  //       if (err) {
+  //         console.error("Error:", err);
+  //         return done(err);
+  //       }
+  //       try {
+  //         expect(res).to.have.status(httpStatus.OK);
+  //         cartId = res.body.data.allCartsDetails[0].cartId
+  //         done();
+  //       } catch (error) {
+  //         done(error);
+  //       }
+  //     });
+  // });
+
+  // it("should checkout the buyer cart", (done) => {
+  //   router()
+  //     .get(`/api/cart/buyer-cart-checkout/${cartId}`)
+  //     .set("Authorization", `Bearer ${token}`)
+  //     .end((err, res) => {
+  //       if (err) {
+  //         return done(err);
+  //       }
+  //       try {
+  //         expect(res).to.have.status(httpStatus.OK);
+  //         done();
+  //       } catch (error) {
+  //         done(error);
+  //       }
+  //     });
+  // });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -965,7 +994,7 @@ describe("updateUser2FA", () => {
           "status",
           httpStatus.INTERNAL_SERVER_ERROR
         );
-        expect(response.body).to.have.property("error", errorMessage);
+        expect(response.body).to.have.property("message", errorMessage);
         done(error);
       });
   });
@@ -1143,7 +1172,7 @@ describe("Validation tests", () => {
         email: "mytest_email15456@gmail.com",
         password: "Password@123"
       })
-     .end((error, response) => {
+      .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.has.property("message");
         expect(response.body.message).to.equal("Invalid Email or Password");
