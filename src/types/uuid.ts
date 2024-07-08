@@ -18,6 +18,11 @@ export const shopTwoId = uuidv4();
 export const productOneId = uuidv4();
 export const productTwoId = uuidv4();
 export const productThreeId = uuidv4();
+export const productFourId = uuidv4();
+export const productFiveId = uuidv4();
+export const productSixId = uuidv4();
+export const productSevenId = uuidv4();
+export const productEightId = uuidv4();
 
 export const orderOneId = uuidv4();
 export const orderTwoId = uuidv4();
