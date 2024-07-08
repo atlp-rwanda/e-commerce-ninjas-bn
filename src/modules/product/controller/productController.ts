@@ -14,9 +14,9 @@ const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
     const uploadPromises = req.files.map((file) => uploadImages(file));
     const images = await Promise.all(uploadPromises);
     const productData = {
+      ...req.body,
       shopId: req.shop.id,
       images: images.map((image) => image.secure_url),
-      ...req.body,
     };
     const product = await productRepositories.createProduct(productData);
     res.status(httpStatus.CREATED).json({
