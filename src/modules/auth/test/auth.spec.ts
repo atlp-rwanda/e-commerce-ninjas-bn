@@ -279,7 +279,7 @@ describe("Authentication Test Cases", () => {
 describe("isUserExist Middleware", () => {
   before(() => {
     app.post("/auth/register", isUserExist, (req: Request, res: Response) => {
-      res.status(200).json({ message: "success" });
+      res.status(httpStatus.OK).json({status:httpStatus.OK, message: "success" });
     });
   });
 
@@ -841,6 +841,7 @@ describe("forgetPassword", () => {
 
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
+      status:httpStatus.INTERNAL_SERVER_ERROR,
       message: "Unexpected error"
     });
 
