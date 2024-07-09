@@ -24,6 +24,7 @@ import {
     buyerClearCart,
     buyerClearCarts,
     buyerClearCartProduct,
+    addProductToExistingCart
 } from "../controller/cartControllers";
 import app from "../../..";
 import { sendEmailNotification, transporter } from "../../../services/sendEmail";
@@ -66,6 +67,7 @@ describe("Buyer Get Cart", () => {
                 expect(response.body).to.have.property("status", httpStatus.OK);
                 expect(response.body).to.have.property("message", "Buyer's all carts");
                 expect(response.body).to.have.property("data");
+                console.log(response.body);
                 cartId = response.body.data.carts[0].cartId;
                 done(error);
             });
@@ -1048,7 +1050,5 @@ describe("Cart controller test cases:", () => {
                 done(error);
             })
     })
-
- 
-
 })
+

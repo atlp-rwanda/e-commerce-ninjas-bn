@@ -362,4 +362,5 @@ export {
   getProductDetails,
   paymentSuccess,
   paymentCanceled,
+  addProductToExistingCart,
 };
