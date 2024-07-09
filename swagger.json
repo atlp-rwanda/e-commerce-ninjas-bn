@@ -3492,6 +3492,62 @@
           }
         }
       }
+    },
+    "/api/shop/user-get-product-reviews/{productId}": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "product Id for getting reviews",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "User view product reviews",
+        "description": "View Product's reviews",
+        "responses": {
+          "200": {
+            "description": "Product reviews"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
+    },
+    "/api/shop/user-get-shop-info/{shopId}": {
+      "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "path",
+            "required": true,
+            "description": "Shop Id for getting info",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "User view Shop informations",
+        "description": "View Shop's shop",
+        "responses": {
+          "200": {
+            "description": "Shop informations"
+          },
+          "500": {
+            "description": "Internal Server error"
+          }
+        }
+      }
     }
   }
 }

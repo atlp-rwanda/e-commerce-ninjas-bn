@@ -405,6 +405,37 @@ const buyerReviewProduct = async (req: ExtendRequest, res: Response) => {
 }
 }
 
+const userGetProductReviews = async (req: ExtendRequest, res: Response) => {
+  try{
+  const productReviews = await productRepositories.userGetProductReviews(req.params.productId)
+  return res.status(httpStatus.OK).json({
+    message: "Product reviews fetched successfully",
+    data: {productReviews}
+  })
+} catch(error){
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    status: httpStatus.INTERNAL_SERVER_ERROR,
+    error: error.message
+  })
+}
+}
+
+const userGetShopInfo = async (req: ExtendRequest, res: Response) => {
+  try{
+  const shopInfo = await productRepositories.userGetShopInfo(req.params.shopId)
+  return res.status(httpStatus.OK).json({
+    message: "Shop informations fetched successfully",
+    data: {shopInfo}
+  })
+} catch(error){
+  console.log(error)
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    status: httpStatus.INTERNAL_SERVER_ERROR,
+    error: error.message
+  })
+}
+}
+
 export {
   sellerCreateProduct,
   sellerCreateShop,
@@ -422,5 +453,7 @@ export {
   buyerDeleteWishListProducts,
   buyerViewWishListProduct,
   buyerViewWishListProducts,
-  buyerDeleteWishListProduct  
+  buyerDeleteWishListProduct,
+  userGetProductReviews,
+  userGetShopInfo
 };
