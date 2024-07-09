@@ -710,7 +710,7 @@ describe('buyerCheckout', () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
 
     Array.prototype.forEach = originalForEach;
@@ -782,7 +782,7 @@ describe('buyerClearCarts', () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   });
 });
@@ -1065,7 +1065,7 @@ describe('Middleware Functions', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: errorMessage
+        message: errorMessage
       });
       expect(next).to.not.have.been.called;
     });
@@ -1233,7 +1233,7 @@ describe('Cart Controller Tests', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
+        message: error.message
       });
     });
   });
