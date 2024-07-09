@@ -3492,6 +3492,134 @@
           }
         }
       }
+    },
+    "/api/user/user-submit-seller-request": {
+  "post": {
+    "tags": ["User Routes"],
+    "summary": "Submit a seller request",
+    "description": "Allows a user to submit a request to become a seller. Only buyers can submit this request. The user's profile must be complete and they must not have an existing seller request.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Seller request submitted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Seller request submitted successfully"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "sellerRequest": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "uuid"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "uuid"
+                        },
+                        "requestStatus": {
+                          "type": "string",
+                          "example": "Pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-07-04T12:34:56Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-07-04T12:34:56Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "User profile is incomplete or Seller request already submitted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User profile is incomplete. Please fill out all required fields or Seller request already submitted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not authorized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Internal Server error"
+                }
+              }
+            }
+          }
+        }
+      }
+
     }
+  }
+}
+    
   }
 }

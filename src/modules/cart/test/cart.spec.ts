@@ -2,14 +2,8 @@
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable comma-dangle */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable require-jsdoc */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-shadow */
-/* eslint-disable comma-dangle */
 /* eslint quotes: "off" */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import sinon, { SinonSandbox, SinonStub, mock } from "sinon";
@@ -53,7 +47,6 @@ describe("Buyer Get Cart", () => {
         password: "Password@123",
       })
       .end((error, response) => {
-        console.log('Login Response:', response.body); // Add logging here
         token1 = response.body.data.token;
         done(error);
       });
@@ -67,7 +60,6 @@ describe("Buyer Get Cart", () => {
       .get("/api/cart/buyer-get-carts")
       .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {
-        console.log('Cart Details Response:', response.body); // Add logging here
         expect(response).to.have.status(httpStatus.OK);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.OK);
@@ -88,7 +80,6 @@ describe("Buyer Get Cart", () => {
       .get("/api/cart/buyer-get-carts")
       .set("Authorization", `Bearer ${token1}`)
       .end((error, response) => {
-        console.log('Error Handling Response:', response.body);
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.a("object");
         expect(response.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
@@ -335,7 +326,6 @@ describe(" Cart Controller Tests ", () => {
       .post("/api/auth/login")
       .send({ email: "buyer4@gmail.com", password: "Password@123" })
       .end((error, response) => {
-        console.log('Login Response: ' + response.body);
         token2 = response.body.data.token;
         done(error);
       });
@@ -621,9 +611,7 @@ describe("Payment Controller", () => {
       sandbox
         .stub(cartRepositories, "findCartIdbyUserId")
         .throws(new Error("Database error"));
-
       console.log(await cartController.buyerPayCart(req, res));
-
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     });
   });

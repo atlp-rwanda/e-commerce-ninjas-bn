@@ -64,6 +64,18 @@ const markAllNotificationsAsRead = async (userId: string) => {
   return await db.Notifications.findAll({where: { userId } })
 };
 
+const findUserById = async (id: string) => {
+  return await db.Users.findOne({ where: { id } });
+};
+
+const createSellerRequest = async (request: { userId: string; requestStatus: string }) => {
+  return await db.SellerRequest.create(request);
+};
+
+const findSellerRequestByUserId = async (userId: string) => {
+  return await db.SellerRequest.findOne({ where: { userId } });
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -73,5 +85,8 @@ export default {
   findNotificationsByuserId,
   findNotificationById,
   markAllNotificationsAsRead,
-  markNotificationAsRead
+  markNotificationAsRead,
+  findUserById,
+  createSellerRequest,
+  findSellerRequestByUserId
 };

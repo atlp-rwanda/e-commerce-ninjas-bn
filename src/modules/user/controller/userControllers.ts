@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
+import { sendEmail } from "../../../services/sendEmail";
 
 const adminGetUsers = async (req: Request, res: Response) => {
   try {
@@ -190,6 +191,39 @@ const markAllNotificationsAsRead = async (req: Request, res: Response) => {
   }
 };
 
+const submitSellerRequest = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const sellerRequest = await userRepositories.createSellerRequest({
+      userId,
+      requestStatus: "Pending",
+    });
+
+    await sendEmail(
+      process.env.ADMIN_EMAIL,
+      "New Seller Request",
+      `A new seller request has been submitted by user ID: ${userId}.`
+    );
+
+    await sendEmail(
+      req.user.email,
+      "Seller Request Submitted",
+      "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
+    );
+
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Seller request submitted successfully",
+      data: {sellerRequest},
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message,
+    });
+  }
+};
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -201,5 +235,6 @@ export default {
   getAllNotifications,
   getSingleNotification,
   markNotificationAsRead,
-  markAllNotificationsAsRead
+  markAllNotificationsAsRead,
+  submitSellerRequest,
 };
