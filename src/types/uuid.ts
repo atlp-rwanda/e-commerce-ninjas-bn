@@ -11,6 +11,7 @@ export const userEightId = uuidv4();
 export const userNineId = uuidv4();
 export const userTenId = uuidv4();
 export const userElevenId = uuidv4();
+export const userTwelveId = uuidv4();
 
 export const shopOneId = uuidv4();
 export const shopTwoId = uuidv4();

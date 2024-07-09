@@ -118,3 +118,10 @@ export interface INotifications {
 export interface IProductsWithShop extends IProduct {
   shops?: IShops;
 }
+export interface SellerRequestAttribute {
+  id: string;
+  userId: string;
+  requestStatus: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
