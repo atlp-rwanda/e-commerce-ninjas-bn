@@ -314,7 +314,7 @@ describe(" Cart Controller Tests ", () => {
     const carts = await db.Carts.findAll();
     cartId2 = carts[1].id;
     const product = await db.CartProducts.findOne({ where: { cartId: cartId2 } });
-    productId = product.productId;
+    productId = await  product.productId;
 
   });
 
