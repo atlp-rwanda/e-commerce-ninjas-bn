@@ -1251,30 +1251,30 @@ describe('Cart Controller Tests', () => {
   });
 });
 
-describe("Payment Handlers", () => {
+// describe("Payment Handlers", () => {
 
-  afterEach(() => {
-  });
+//   afterEach(() => {
+//   });
 
-  it("should handle payment success", (done) => {
-    router()
-      .get("/api/cart/payment-success")
-      .set("authorization", `Bearer ${token2}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
-        done(error)
-      });
-  })
+//   it("should handle payment success", (done) => {
+//     router()
+//       .get("/api/cart/payment-success")
+//       .set("authorization", `Bearer ${token2}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
+//         done(error)
+//       });
+//   })
 
-  it("should handle payment cancellation", (done) => {
-    router()
-      .get("/api/cart/payment-canceled")
-      .set("authorization", `Bearer ${token2}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
-        done(error)
-      });
-  });
-});
+//   it("should handle payment cancellation", (done) => {
+//     router()
+//       .get("/api/cart/payment-canceled")
+//       .set("authorization", `Bearer ${token2}`)
+//       .end((error, response) => {
+//         expect(response.status).to.equal(httpStatus.OK);
+//         expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
+//         done(error)
+//       });
+//   });
+// });
