@@ -226,23 +226,29 @@ const userCreateReview = async (body: any) => {
   return await db.ProductReviews.create(body)
 }
 
-const userGetProductReviews = async (productId: string) => {
-  return await db.ProductReviews.findAll({
-    where: { productId }
-    ,
+const findSingleProductById = async (id: string) => {
+  return await db.Products.findOne({
+    where: { id },
     include: [
       {
-        model: db.Users,
-        as: "user",
-        attributes: ["id", "firstName", "lastName"]
+        model: db.Shops,
+        as: "shops"
+      },
+      {
+        model: db.ProductReviews,
+        as: "productReviews",
+        include: [
+          {
+            model: db.Users,
+            as: "user",
+            attributes: ["firstName", "lastName", "profilePicture"]
+          }
+        ]
       }
     ]
-  })
-}
+  });
+};
 
-const userGetShopInfo = async (id: string) => {
-  return await db.Shops.findOne({ where: { id } })
-}
 
 export default {
   createProduct,
@@ -273,8 +279,7 @@ export default {
   expiredProductsByUserId,
   removeWishList,
   userCreateReview,
-  userGetProductReviews,
-  userGetShopInfo
+  findSingleProductById
 };
 
 

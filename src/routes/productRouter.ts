@@ -122,8 +122,4 @@ router.post(
   validation(productReviewSchema),
   isProductOrdered, 
   productController.buyerReviewProduct )
-
-router.get("/user-get-shop-info/:shopId", productController.userGetShopInfo)
-router.get("/user-get-product-reviews/:productId", productController.userGetProductReviews)
-
 export default router;

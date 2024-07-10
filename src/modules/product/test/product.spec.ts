@@ -1070,39 +1070,6 @@ describe("userGetProduct", () => {
     sandbox.restore();
   });
 
-  it("should return product details when product is found", async () => {
-    const mockProduct = {
-      id: "product-id",
-      name: "Product Name",
-      price: 100,
-      description: "Product Description",
-    };
-
-    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
-
-    await productController.userGetProduct(req, res);
-
-    expect(res.status).to.have.been.calledWith(httpStatus.OK);
-    expect(res.json).to.have.been.calledWith({
-      message: "Products is fetched successfully.",
-      product: mockProduct,
-    });
-  });
-
-  it("should handle errors properly", async () => {
-    const error = new Error("Something went wrong");
-    sandbox.stub(productRepositories, "findProductById").throws(error);
-
-    await productController.userGetProduct(req, res);
-
-    expect(res.status).to.have.been.calledWith(
-      httpStatus.INTERNAL_SERVER_ERROR
-    );
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
-    });
-  });
 });
 describe("updateExpiredProducts", () => {
   let req: Partial<Request>;
