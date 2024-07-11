@@ -1078,20 +1078,20 @@ describe("userGetProduct", () => {
       description: "Product Description",
     };
 
-    sandbox.stub(productRepositories, "findProductById").resolves(mockProduct);
+    sandbox.stub(productRepositories, "findSingleProductById").resolves(mockProduct);
 
     await productController.userGetProduct(req, res);
 
     expect(res.status).to.have.been.calledWith(httpStatus.OK);
     expect(res.json).to.have.been.calledWith({
       message: "Products is fetched successfully.",
-      product: mockProduct,
+      data: { product: mockProduct },
     });
   });
 
   it("should handle errors properly", async () => {
     const error = new Error("Something went wrong");
-    sandbox.stub(productRepositories, "findProductById").throws(error);
+    sandbox.stub(productRepositories, "findSingleProductById").throws(error);
 
     await productController.userGetProduct(req, res);
 

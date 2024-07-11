@@ -223,6 +223,29 @@ const userCreateReview = async (body: any) => {
   return await db.ProductReviews.create(body)
 }
 
+const findSingleProductById = async (id: string) => {
+  return await db.Products.findOne({
+    where: { id },
+    include: [
+      {
+        model: db.Shops,
+        as: "shops"
+      },
+      {
+        model: db.ProductReviews,
+        as: "productReviews",
+        include: [
+          {
+            model: db.Users,
+            as: "user",
+            attributes: ["firstName", "lastName", "profilePicture"]
+          }
+        ]
+      }
+    ]
+  });
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -251,7 +274,8 @@ export default {
   getProductByIdAndShopId,
   expiredProductsByUserId,
   removeWishList,
-  userCreateReview  
+  userCreateReview,
+  findSingleProductById
 };
   
 

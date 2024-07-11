@@ -277,10 +277,10 @@ const userSearchProducts = async (req: ExtendRequest, res: Response) => {
 
 const userGetProduct = async (req: ExtendRequest, res: Response) => {
   try {
-    const product = await productRepositories.findProductById(req.params.id);
+    const product = await productRepositories.findSingleProductById(req.params.id);
     res.status(httpStatus.OK).json({
       message: "Products is fetched successfully.",
-      product,
+      data: {product},
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
