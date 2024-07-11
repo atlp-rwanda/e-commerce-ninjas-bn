@@ -273,7 +273,7 @@ const userThirteen = {
   passwordUpdatedAt: new Date(),
   firstName: "Ecommerce",
   lastName: "Ninjas",
-  email: "ecommerceninjas45@gmail.com",
+  email: "ecommerceninjas@gmail.com",
   password: hashPassword("Password@123"),
   phone: 25089767999,
   profilePicture: "https://res.cloudinary.com/djrmfg6k9/image/upload/v1720294521/cce1ffu7uw3j2vg9s2vl.jpg",
