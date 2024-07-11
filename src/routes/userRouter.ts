@@ -16,12 +16,12 @@ import upload from "../helpers/multer";
   router.put("/user-update-profile", userAuthorization(["admin", "buyer", "seller"]), upload.single("profilePicture"), validation(userSchema), userControllers.updateUserProfile);
   router.put("/change-password", userAuthorization(["admin", "buyer", "seller"]), validation(changePasswordSchema), credential, userControllers.changePassword);
 
-router.get("/user-get-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.getAllNotifications);
-router.get("/user-get-notification/:id", userAuthorization(["seller"]),isNotificationsExist, userControllers.getSingleNotification);
+router.get("/user-get-notifications", userAuthorization(["admin", "buyer", "seller"]), isNotificationsExist, userControllers.getAllNotifications);
+router.get("/user-get-notification/:id", userAuthorization(["admin", "buyer", "seller"]),isNotificationsExist, userControllers.getSingleNotification);
 
-router.put("/user-mark-notification/:id", userAuthorization(["seller"]), isNotificationsExist, userControllers.markNotificationAsRead);
-router.put("/user-mark-all-notifications", userAuthorization(["seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
+router.put("/user-mark-notification/:id", userAuthorization(["admin", "buyer", "seller"]), isNotificationsExist, userControllers.markNotificationAsRead);
+router.put("/user-mark-all-notifications", userAuthorization(["admin", "buyer", "seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
 
-router.post("/user-submit-seller-request", userAuthorization(["buyer"]), isUserProfileComplete,isSellerRequestExist, userControllers.submitSellerRequest)
+router.post("/user-submit-seller-request", userAuthorization(["admin", "buyer", "seller"]), isUserProfileComplete,isSellerRequestExist, userControllers.submitSellerRequest)
 
 export default router;
