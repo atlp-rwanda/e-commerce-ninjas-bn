@@ -16,15 +16,12 @@ const addMinutes = (date: Date, minutes: number): Date => {
   return result;
 };
 
-
 const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next: NextFunction) => {
   try {
     const user = await Users.findByPk(req.user.id);
     const now = new Date();
     const passwordExpirationDate = addMinutes(user.passwordUpdatedAt, PASSWORD_EXPIRATION_MINUTES);
     const minutesRemaining = Math.floor((passwordExpirationDate.getTime() - now.getTime()) / (1000 * 60));
-    console.log(`Password expiration in ${minutesRemaining} minutes.`);
-
 
     if (minutesRemaining <= 0) {
       await sendEmail(
@@ -33,7 +30,6 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
         `Your password has expired. Please reset your password using the following link: ${PASSWORD_RESET_URL}`
       );
 
-
       return res.status(httpStatus.FORBIDDEN).json({
         status: httpStatus.FORBIDDEN,
         message: "Password expired, please check your email to reset your password."
@@ -41,7 +37,6 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
     } else if (minutesRemaining <= 10) {
       res.setHeader("Password-Expiry-Notification", `Your password will expire in ${minutesRemaining} minutes. Please update your password.`);
     }
-
 
     next();
   } catch (error: any) {

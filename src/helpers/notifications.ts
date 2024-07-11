@@ -12,66 +12,68 @@ import { io } from "../index";
 export const eventEmitter = new EventEmitter();
 
 const fetchProductWithShop = async (productId: string): Promise<IProductsWithShop> => {
-    return (await Products.findOne({
-      where: { id: productId },
-      include: { model: Shops, as: "shops" }
-    })) as IProductsWithShop;
+  return (await Products.findOne({
+    where: { id: productId },
+    include: { model: Shops, as: "shops" }
+  })) as IProductsWithShop;
 };
-  
+
+const saveAndEmitNotification = async (userId: string, message: string, event: string) => {
+  await userRepositories.addNotification(userId, message); 
+  io.to(userId).emit(event, message);
+  await sendEmailNotification(userId, message);
+};
+
 eventEmitter.on("productAdded", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
   const message = `Product ${product.name} has been added.`;
-  await userRepositories.addNotification(userId, message);
-  await sendEmailNotification(userId, message);
-  io.to(userId).emit("productAdded", message);
+  await saveAndEmitNotification(userId, message, "productAdded");
 });
-  
+
 eventEmitter.on("productRemoved", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId; 
   const message = "A Product has been removed in your shop.";
-  await userRepositories.addNotification(userId, message);
-  await sendEmailNotification(userId, message);
-  io.to(userId).emit("productRemoved", message);
+  await saveAndEmitNotification(userId, message, "productRemoved");
 });
-  
+
 eventEmitter.on("productExpired", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
   const message = `Product ${product.name} has expired.`;
-  await userRepositories.addNotification(userId, message);
-  sendEmailNotification(userId, message);
-  io.to(userId).emit("productExpired", message);
+  await saveAndEmitNotification(userId, message, "productExpired");
 });
-  
+
 eventEmitter.on("productUpdated", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
   const message = `Product ${product.name} has been updated.`;
-  await userRepositories.addNotification(userId, message);
-  await sendEmailNotification(userId, message);
-  io.to(userId).emit("productUpdated", message);
+  await saveAndEmitNotification(userId, message, "productUpdated");
 });
-  
+
 eventEmitter.on("productStatusChanged", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
   const message = `Product ${product.name} status changed to ${product.status}.`;
-  await userRepositories.addNotification(userId, message);
-  await sendEmailNotification(userId, message);
-  io.to(userId).emit("productStatusChanged", message);
+  await saveAndEmitNotification(userId, message, "productStatusChanged");
 });
 
 eventEmitter.on("productBought", async (product) => {
   const productWithShop = await fetchProductWithShop(product.id);
   const userId = productWithShop.shops.userId;
   const message = `Product ${product.name} has been bought.`;
-  await userRepositories.addNotification(userId, message);
-  await sendEmailNotification(userId, message);
-  io.to(userId).emit("productBought", message);
+  await saveAndEmitNotification(userId, message, "productBought");
 });
-  
+
+eventEmitter.on("passwordChanged", async ({ userId, message }) => {
+  await saveAndEmitNotification(userId, message, "passwordChanged");
+});
+
+eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
+  await saveAndEmitNotification(userId, message, "passwordExpiry");
+});
+
 cron.schedule("0 0 * * *", async () => {
   const users = await Users.findAll();
   for (const user of users) {
