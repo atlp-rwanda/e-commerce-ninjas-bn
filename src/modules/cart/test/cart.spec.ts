@@ -314,7 +314,7 @@ describe(" Cart Controller Tests ", () => {
     const carts = await db.Carts.findAll();
     cartId2 = carts[1].id;
     const product = await db.CartProducts.findOne({ where: { cartId: cartId2 } });
-    productId = await  product.productId;
+    productId = product.productId;
 
   });
 
@@ -710,7 +710,7 @@ describe('buyerCheckout', () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
 
     Array.prototype.forEach = originalForEach;
@@ -782,7 +782,7 @@ describe('buyerClearCarts', () => {
     expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).to.have.been.calledWith({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message,
+      error: error.message,
     });
   });
 });
@@ -1065,7 +1065,7 @@ describe('Middleware Functions', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: errorMessage
+        error: errorMessage
       });
       expect(next).to.not.have.been.called;
     });
@@ -1159,7 +1159,7 @@ describe('Cart Controller Tests', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message
+        error: error.message
       });
     });
   });
@@ -1233,49 +1233,36 @@ describe('Cart Controller Tests', () => {
       expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
       expect(res.json).to.have.been.calledWith({
         status: httpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message
+        error: error.message
       });
     });
   });
 });
 
 describe("Payment Handlers", () => {
-  let token2;
-  it("should login user to get token", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({
-        email: "buyer@gmail.com",
-        password: "Password@123",
-      })
-      .end((error, response) => {
-        token2 = response.body.data.token;
-        done(error);
-      });
+
+  afterEach(() => {
   });
-  
 
   it("should handle payment success", (done) => {
     router()
       .get("/api/cart/payment-success")
       .set("authorization", `Bearer ${token2}`)
       .end((error, response) => {
-        expect([httpStatus.OK, httpStatus.INTERNAL_SERVER_ERROR]).to.include(response.status);
-        expect(response.body).to.have.property("status", response.status);
-        expect(response.body).to.have.property("message");
-        done(error);
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
+        done(error)
       });
-  });
+  })
 
   it("should handle payment cancellation", (done) => {
     router()
       .get("/api/cart/payment-canceled")
       .set("authorization", `Bearer ${token2}`)
       .end((error, response) => {
-        expect([httpStatus.OK, httpStatus.INTERNAL_SERVER_ERROR]).to.include(response.status);
-        expect(response.body).to.have.property("status", response.status);
-        expect(response.body).to.have.property("message");
-        done(error);
+        expect(response.status).to.equal(httpStatus.OK);
+        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
+        done(error)
       });
   });
 });
