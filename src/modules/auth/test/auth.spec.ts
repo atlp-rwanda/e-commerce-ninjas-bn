@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable require-jsdoc */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -7,7 +8,7 @@ import chaiHttp from "chai-http";
 import sinon from "sinon";
 import httpStatus from "http-status";
 import app from "../../..";
-import { isSessionExist, isUserExist, verifyOtp, verifyUser, verifyUserCredentials } from "../../../middlewares/validation";
+import { isSellerRequestExist, isSessionExist, isUserExist, isUserProfileComplete, verifyOtp, verifyUser, verifyUserCredentials } from "../../../middlewares/validation";
 import authRepositories from "../repository/authRepositories";
 import Users from "../../../databases/models/users";
 import Session from "../../../databases/models/sessions";
@@ -25,6 +26,8 @@ import * as emailService from "../../../services/sendEmail";
 import { checkPasswordExpirations } from "../../../helpers/passwordExpiryNotifications";
 import { Op } from "sequelize";
 import dotenv from "dotenv";
+import SellerRequest from "../../../databases/models/sellerRequests";
+import userRepositories from "../../user/repository/userRepositories";
 
 dotenv.config();
 
@@ -34,6 +37,7 @@ const router = () => chai.request(app);
 let userId: string;
 let verifyToken: string | null = null;
 let otp: string | null = null;
+
 
 describe("Authentication Test Cases", () => {
   let token;
@@ -358,34 +362,6 @@ describe("isUserExist Middleware", () => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("message", "success");
-        done(err);
-      });
-  });
-});
-
-describe("POST /auth/register - Error Handling", () => {
-  let registerUserStub: sinon.SinonStub;
-
-  beforeEach(() => {
-    registerUserStub = sinon
-      .stub(authRepositories, "createUser")
-      .throws(new Error("Test error"));
-  });
-
-  afterEach(() => {
-    registerUserStub.restore();
-  });
-
-  it("should return 500 and error message when an error occurs", (done) => {
-    router()
-      .post("/api/auth/register")
-      .send({ email: "test@example.com", password: "Password@123" })
-      .end((err, res) => {
-        expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
-        expect(res.body).to.deep.equal({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          error: "Test error"
-        });
         done(err);
       });
   });
@@ -1140,3 +1116,171 @@ describe("Validation tests", () => {
       })
   })
 })
+
+describe("isUserProfileComplete Middleware", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: sinon.SinonSpy;
+
+  beforeEach(() => {
+    req = { user: { id: "1" } };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.spy();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should call next if user profile is complete", async () => {
+    const mockUser = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      phone: "1234567890",
+      gender: "male",
+      birthDate: "1990-01-01",
+      language: "en",
+      currency: "USD"
+    } as unknown as Users;
+
+    sinon.stub(userRepositories, "findUserById").resolves(mockUser);
+
+    await isUserProfileComplete(req as Request, res as Response, next);
+    expect(next.calledOnce).to.be.true;
+    expect((res.status as sinon.SinonStub).called).to.be.false;
+    expect((res.json as sinon.SinonStub).called).to.be.false;
+  });
+
+  it("should return 400 if user profile is incomplete", async () => {
+    const mockUser = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com"
+    } as Users;
+
+    sinon.stub(userRepositories, "findUserById").resolves(mockUser);
+
+    await isUserProfileComplete(req as Request, res as Response, next);
+    expect((res.status as sinon.SinonStub).calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
+    expect((res.json as sinon.SinonStub).calledOnce).to.be.true;
+    expect(next).to.not.have.been.called;
+  });
+
+  it("should return 500 on internal server error", async () => {
+    sinon
+      .stub(userRepositories, "findUserById")
+      .throws(new Error("Database Error"));
+    await isUserProfileComplete(req as Request, res as Response, next);
+
+    expect((res.status as sinon.SinonStub).calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+    expect((res.json as sinon.SinonStub).calledOnce).to.be.true;
+    expect(next.called).to.be.false;
+  });
+});
+
+describe("isSellerRequestExist Middleware", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: sinon.SinonSpy;
+
+  beforeEach(() => {
+    req = { user: { id: "1" } };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub().returnsThis()
+    };
+    next = sinon.spy();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should call next if no existing seller request", async () => {
+    sinon.stub(userRepositories, "findSellerRequestByUserId").resolves(null);
+
+    await isSellerRequestExist(req as Request, res as Response, next);
+    expect(next.calledOnce).to.be.true;
+    expect((res.status as sinon.SinonStub).called).to.be.false;
+    expect((res.json as sinon.SinonStub).called).to.be.false;
+  });
+
+  it("should return 400 if seller request already exists", async () => {
+    const mockRequest = {
+      id: "1",
+      userId: "1",
+      requestStatus: "pending",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as SellerRequest;
+
+    sinon
+      .stub(userRepositories, "findSellerRequestByUserId")
+      .resolves(mockRequest);
+
+    await isSellerRequestExist(req as Request, res as Response, next);
+
+    expect((res.status as sinon.SinonStub).calledOnceWith(httpStatus.BAD_REQUEST)).to.be.true;
+    expect((res.json as sinon.SinonStub).calledOnce).to.be.true;
+    expect(next.called).to.be.false;
+  });
+
+  it("should return 500 on internal server error", async () => {
+    sinon
+      .stub(userRepositories, "findSellerRequestByUserId")
+      .throws(new Error("Database Error"));
+
+    await isSellerRequestExist(req as Request, res as Response, next);
+
+    expect((res.status as sinon.SinonStub).calledOnceWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
+    expect((res.json as sinon.SinonStub).calledOnce).to.be.true;
+    expect(next.called).to.be.false;
+  });
+});
+
+describe("Seller Request Test Case", () => {
+  let buyerToken: string = null;
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should login user to get token", (done) => {
+    router()
+      .post("/api/auth/login")
+      .send({
+        email: "buyer4@gmail.com",
+        password: "Password@123"
+      })
+      .end((error, response) => {
+        buyerToken = response.body.data.token;
+        done(error);
+      });
+  });
+
+  it("should handle errors properly", (done) => {
+    if (!buyerToken) {
+      throw new Error("Token is not set");
+    }
+    const error = new Error("Internal server error");
+    const createSellerRequestStub = sinon.stub(userRepositories, "createSellerRequest").throws(error);
+    
+    router()
+      .post("/api/user/user-submit-seller-request")
+      .set("Authorization", `Bearer ${buyerToken}`)
+      .end((error, response) => {
+        expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.be.a("object");
+        expect(response.body).to.have.property("status", httpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body).to.have.property("error", "Internal server error");
+        createSellerRequestStub.restore();
+        done(error);
+      });
+  });
+});

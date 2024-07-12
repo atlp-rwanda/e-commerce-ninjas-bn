@@ -6,6 +6,7 @@ import sequelizeConnection from "../config/db.config";
 import Shop from "./shops";
 import CartProducts from "./cartProducts";
 import { IProduct } from "../../types";
+import ProductReviews from "./productReviews";
 
 class Products extends Model<IProduct> {
   declare id: string;
@@ -27,6 +28,7 @@ class Products extends Model<IProduct> {
   static associate() {
     Products.belongsTo(Shop, { foreignKey: "shopId", as: "shops" });
     Products.hasMany(CartProducts, { foreignKey: "productId", as: "cartProducts" });
+    Products.hasMany(ProductReviews, { foreignKey: "productId", as: "productReviews" });
   }
 }
 
@@ -52,7 +54,7 @@ Products.init(
       type: DataTypes.STRING,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     price: {

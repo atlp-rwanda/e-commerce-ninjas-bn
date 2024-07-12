@@ -8,6 +8,7 @@ import { hashPassword } from "../../helpers";
 import Sessions from "./sessions";
 import Shops from "./shops";
 import Notifications from "./notifications";
+import SellerRequest from "./sellerRequests";
 export interface usersAttributes {
   id: string;
   firstName?: string;
@@ -56,6 +57,7 @@ class Users extends Model<usersAttributes, UsersCreationAttributes> implements u
     Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions" });
     Users.hasOne(Shops, { foreignKey: "userId", as: "shops" });
     Users.hasMany(Notifications, { foreignKey: "userId", as: "notifications" });
+    Users.hasMany(SellerRequest, { foreignKey: "userId", as: "sellerRequests" });
   }
 }
 

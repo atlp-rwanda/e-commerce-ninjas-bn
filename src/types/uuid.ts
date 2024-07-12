@@ -11,6 +11,8 @@ export const userEightId = uuidv4();
 export const userNineId = uuidv4();
 export const userTenId = uuidv4();
 export const userElevenId = uuidv4();
+export const userTwelveId = uuidv4();
+export const userThirteenId = uuidv4();
 
 export const shopOneId = uuidv4();
 export const shopTwoId = uuidv4();
@@ -18,6 +20,11 @@ export const shopTwoId = uuidv4();
 export const productOneId = uuidv4();
 export const productTwoId = uuidv4();
 export const productThreeId = uuidv4();
+export const productFourId = uuidv4();
+export const productFiveId = uuidv4();
+export const productSixId = uuidv4();
+export const productSevenId = uuidv4();
+export const productEightId = uuidv4();
 
 export const orderOneId = uuidv4();
 export const orderTwoId = uuidv4();
@@ -36,11 +43,20 @@ export const wishListTwoId = uuidv4();
 
 export const notificationOneId = uuidv4();
 export const notificationTwoId = uuidv4();
+export const notificationThreeId = uuidv4();
+export const notificationFourId = uuidv4();
+export const notificationFiveId = uuidv4();
+export const notificationSixId = uuidv4();
+export const notificationSevenId = uuidv4();
+export const notificationEightId = uuidv4();
+export const notificationNineId = uuidv4();
+export const notificationTenId = uuidv4();
+export const notificationElevenId = uuidv4();
+export const notificationTwelveId = uuidv4();
 
 
 export const productReviewOneId = uuidv4();
 export const productReviewTwoId = uuidv4();
 
-export const notificationThreeId = uuidv4();
 export const wishListProductsOneId = uuidv4();
 export const wishListProductsTwoId  = uuidv4();

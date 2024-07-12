@@ -14,9 +14,9 @@ const sellerCreateProduct = async (req: ExtendRequest, res: Response) => {
     const uploadPromises = req.files.map((file) => uploadImages(file));
     const images = await Promise.all(uploadPromises);
     const productData = {
+      ...req.body,
       shopId: req.shop.id,
       images: images.map((image) => image.secure_url),
-      ...req.body,
     };
     const product = await productRepositories.createProduct(productData);
     res.status(httpStatus.CREATED).json({
@@ -277,10 +277,10 @@ const userSearchProducts = async (req: ExtendRequest, res: Response) => {
 
 const userGetProduct = async (req: ExtendRequest, res: Response) => {
   try {
-    const product = await productRepositories.findProductById(req.params.id);
+    const product = await productRepositories.findSingleProductById(req.params.id);
     res.status(httpStatus.OK).json({
       message: "Products is fetched successfully.",
-      product,
+      data: {product},
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
