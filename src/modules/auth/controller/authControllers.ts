@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import { usersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
+import { eventEmitter } from "../../../helpers/notifications";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -129,7 +130,8 @@ const forgetPassword = async (req: any, res: Response): Promise<void> => {
 
 const resetPassword = async (req: any, res: Response): Promise<void> => {
   try {
-    await authRepositories.updateUserByAttributes("password", req.user.password, "id", req.user.id);  
+    await authRepositories.updateUserByAttributes("password", req.user.password, "id", req.user.id);
+      eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });  
       res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });

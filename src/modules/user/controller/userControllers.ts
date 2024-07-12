@@ -7,6 +7,7 @@ import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
+import { eventEmitter } from "../../../helpers/notifications";
 
 const adminGetUsers = async (req: Request, res: Response) => {
   try {
@@ -120,6 +121,7 @@ const changePassword = async (req: any, res: Response) => {
       "id",
       req.user.id
     );
+    eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });
     return res
       .status(httpStatus.OK)
       .json({ message: "Password updated successfully", data: { user: user } });
