@@ -13,7 +13,8 @@ import {
   userNineId,
   userTenId,
   userElevenId,
-  userTwelveId
+  userTwelveId,
+  userThirteenId,
 } from "../../types/uuid";
 
 const userOne = {
@@ -265,6 +266,26 @@ const userTwelve = {
   is2FAEnabled: false,
 };
 
+const userThirteen = {
+  id: userThirteenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
+  firstName: "Ecommerce",
+  lastName: "Ninjas",
+  email: "ecommerceninjas@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767999,
+  profilePicture: "https://res.cloudinary.com/djrmfg6k9/image/upload/v1720294521/cce1ffu7uw3j2vg9s2vl.jpg",
+  gender: "male",
+  birthDate: "1-1-1980",
+  language: "english",
+  currency: "USD",
+  role: "buyer",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false
+};
 
 export const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [
@@ -279,7 +300,8 @@ export const up = (queryInterface: QueryInterface) =>
     userNine,
     userTen,
     userEleven,
-    userTwelve
+    userTwelve,
+    userThirteen
   ]);
 
 export const down = async (queryInterface: QueryInterface) => {

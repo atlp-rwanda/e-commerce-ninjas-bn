@@ -35,7 +35,7 @@ Notifications.init(
       },
       message: {
           allowNull: false,
-          type: DataTypes.STRING
+          type: DataTypes.TEXT
       },
       isRead: {
           type: DataTypes.BOOLEAN,
