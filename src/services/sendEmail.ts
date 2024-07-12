@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Request, Response } from "express";
 import nodemailer, { SendMailOptions } from "nodemailer";
 import dotenv from "dotenv";
 import authRepository from "../modules/auth/repository/authRepositories";
@@ -36,7 +34,7 @@ const sendEmailNotification = async (userId: string, message: string) => {
     const mailOptions: SendMailOptions = {
     from: process.env.MAIL_ID,
     to: user.email,
-    subject: "Product Notification",
+    subject: "Ninja E-commerce",
     text: message
   };
 
