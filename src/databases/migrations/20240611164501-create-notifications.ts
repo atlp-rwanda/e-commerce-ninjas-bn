@@ -21,7 +21,7 @@ export default {
       },
       message: {
         allowNull: false,
-        type: DataTypes.STRING(128)
+        type: DataTypes.TEXT
       },
       isRead: {
         type: DataTypes.BOOLEAN,
