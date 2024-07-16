@@ -31,6 +31,7 @@ export interface ExtendRequest extends Request {
     offset: number;
   };
   searchQuery?: any;
+  order?: any;
 }
 
 export interface IProduct {
@@ -124,4 +125,8 @@ export interface SellerRequestAttribute {
   requestStatus: string;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface IOrderWithCart extends OrderAttributes {
+  carts?: CartAttributes;
 }

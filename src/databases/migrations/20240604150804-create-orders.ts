@@ -46,6 +46,14 @@ export = {
         type: DataTypes.STRING,
         allowNull: false
       },
+      shippingProcess: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      expectedDeliveryDate:{
+        type:DataTypes.DATE,
+        allowNull: false
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
