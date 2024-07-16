@@ -16,7 +16,7 @@ cron.schedule(
 );
  
 cron.schedule(
-  "*/2 * * * *",
+  "0 0 * * SUN",
   async () => {
     try {
       console.log("Cron Job Started..");

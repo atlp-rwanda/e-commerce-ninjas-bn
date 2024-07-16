@@ -1,12 +1,11 @@
-// src/helpers/passwordExpiryNotifications.ts
 import { Op } from "sequelize";
 import Users from "../databases/models/users";
 import { eventEmitter } from "./notifications";
 
 const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
-const EXPIRATION_GRACE_PERIOD_MINUTES = 3;
+const EXPIRATION_GRACE_PERIOD_MINUTES = 1;
 
-const WARNING_INTERVALS = [6,4,2,1];
+const WARNING_INTERVALS = [4,3,2,1];
 
 const subtractMinutes = (date: Date, minutes: number) => {
   const result = new Date(date);
@@ -35,7 +34,8 @@ export const checkPasswordExpirations = async () => {
             ]
           },
           isVerified: true,
-          status: "enabled"
+          status: "enabled",
+          isGoogleAccount: false
         }
       });
 
@@ -57,7 +57,8 @@ export const checkPasswordExpirations = async () => {
           ]
         },
         isVerified: true,
-        status: "enabled"
+        status: "enabled",
+        isGoogleAccount: false
       }
     });
 
