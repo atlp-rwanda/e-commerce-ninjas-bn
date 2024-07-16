@@ -34,10 +34,7 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
         status: httpStatus.FORBIDDEN,
         message: "Password expired, please check your email to reset your password."
       });
-    } else if (minutesRemaining <= 10) {
-      res.setHeader("Password-Expiry-Notification", `Your password will expire in ${minutesRemaining} minutes. Please update your password.`);
     }
-
     next();
   } catch (error: any) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
