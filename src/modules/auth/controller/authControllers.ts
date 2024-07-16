@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import userRepositories from "../repository/authRepositories";
-import { generateToken} from "../../../helpers";
+import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { usersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
@@ -27,6 +27,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
       `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${token}`
     );
     res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
       message:
         "Account created successfully. Please check email to verify account.",
       data: { user: register }
@@ -34,7 +35,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -53,7 +54,7 @@ const sendVerifyEmail = async (req: any, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -69,7 +70,7 @@ const verifyEmail = async (req: any, res: Response) => {
     await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 }
 
@@ -101,7 +102,7 @@ const logoutUser = async (req: any, res: Response) => {
       "token",
       req.session.token
     );
-    res.status(httpStatus.OK).json({ message: "Successfully logged out" });
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -113,18 +114,18 @@ const logoutUser = async (req: any, res: Response) => {
 };
 const forgetPassword = async (req: any, res: Response): Promise<void> => {
   try {
-      const token = generateToken(req.user.id);
-      const session = {
-        userId: req.user.id,
-        device: req.headers["user-device"],
-        token: token,
-        otp: null
-      };
-      await authRepositories.createSession(session);
-      await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
-      res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password."});
+    const token = generateToken(req.user.id);
+    const session = {
+      userId: req.user.id,
+      device: req.headers["user-device"],
+      token: token,
+      otp: null
+    };
+    await authRepositories.createSession(session);
+    await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password." });
   } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 }
 
@@ -134,7 +135,7 @@ const resetPassword = async (req: any, res: Response): Promise<void> => {
       eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });  
       res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -154,7 +155,7 @@ const updateUser2FA = async (req: any, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
