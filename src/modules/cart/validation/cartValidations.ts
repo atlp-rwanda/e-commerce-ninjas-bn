@@ -16,7 +16,13 @@ const cartSchema = Joi.object({
 const paymentCheckoutSchema = Joi.object({
     cartId: Joi.string().required()
 })
+
+const updateOrderStatusSchema = Joi.object({
+    status: Joi.string().required(),
+    shippingProcess :Joi.string().required()
+  });
 export {
     cartSchema,
-    paymentCheckoutSchema
+    paymentCheckoutSchema,
+    updateOrderStatusSchema
 }   

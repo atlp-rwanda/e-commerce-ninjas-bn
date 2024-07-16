@@ -348,6 +348,56 @@ const paymentCanceled = (req: Request, res: Response) => {
   }
 };
 
+const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+    const order = req.order.shippingProcess
+    return res.status(httpStatus.OK).json({
+      message: "Order Status found successfully",
+      data: {order}
+    })
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+
+const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
+  try{
+    const orders = req.order
+    return res.status(httpStatus.OK).json({
+      message: "Orders found successfully",
+      data: {orders}
+    })
+  }
+  catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+
+const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+    const order = req.order
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status,req.body.shippingProcess);
+    eventEmitter.emit("orderStatusUpdated", order);
+    return res.status(httpStatus.OK).json({
+      message: "Status updated successfully!",
+      data: { order }
+    })
+  }catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+  
+}
+
 export {
   buyerGetCart,
   buyerGetCarts,
@@ -363,4 +413,7 @@ export {
   paymentSuccess,
   paymentCanceled,
   addProductToExistingCart,
+  buyerGetOrderStatus,
+  buyerGetOrders,
+  adminUpdateOrderStatus
 };

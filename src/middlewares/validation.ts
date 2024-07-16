@@ -893,6 +893,50 @@ const isSellerRequestExist = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const isOrderExist = async (req: Request, res:Response, next:NextFunction)=>{
+  try{
+    let order: any;
+    if (req.user.role === "buyer") {
+    if(req.params.id){
+      order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
+      if(!order){
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "order not found"
+        })
+      }
+    }else{
+        order = await cartRepositories.getOrdersByUserId(req.user.id)
+        if(!order.orders || order.orders.length === 0){
+          return res.status(httpStatus.NOT_FOUND).json({
+            status: httpStatus.NOT_FOUND,
+            error: "orders not found"
+          })
+        }
+      }
+      
+    }
+      if(req.user.role === "admin"){
+        order = await cartRepositories.getOrderById(req.params.id)
+        if (!order) {
+          return res.status(httpStatus.NOT_FOUND).json({
+            status: httpStatus.NOT_FOUND,
+            error: "order Not Found",
+          });
+        }
+      }
+      (req as any).order = order
+      return next();
+    }
+    catch(error){
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+      })
+    }
+}
+
+
 export {
   validation,
   isUserExist,
@@ -924,5 +968,6 @@ export {
   isProductExistIntoWishList,
   isProductOrdered,
   isUserProfileComplete,
-  isSellerRequestExist
+  isSellerRequestExist,
+  isOrderExist
 };    
