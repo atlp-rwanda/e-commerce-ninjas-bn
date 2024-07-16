@@ -36,10 +36,10 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
       });
     }
     next();
-  } catch (error: any) {
+  } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };

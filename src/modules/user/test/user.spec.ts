@@ -108,10 +108,10 @@ describe("Update User Status test case ", () => {
       .send({ status: "disableddd" })
       .set("authorization", `Bearer ${token}`)
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(httpStatus.BAD_REQUEST);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property(
-          "error",
+          "message",
           "Status must be either 'enabled' or 'disabled'"
         );
         done(err);
@@ -143,7 +143,7 @@ describe("Update User Status test case ", () => {
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("error", "Internal server error");
+        expect(res.body).to.have.property("message");
         done(err);
       });
   });
@@ -251,7 +251,7 @@ describe("Admin update User roles", () => {
       .end((error, response) => {
         expect(response.status).to.equal(httpStatus.BAD_REQUEST);
         expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("error", "The 'role' parameter is required.");
+        expect(response.body).to.have.property("message", "The 'role' parameter is required.");
         done(error);
       });
   });
@@ -263,7 +263,7 @@ describe("Admin update User roles", () => {
       .set("authorization", `Bearer ${token}`);
     expect(response.status).to.equal(httpStatus.BAD_REQUEST);
     expect(response.body).to.have.property(
-      "error",
+      "message",
       "Only admin, buyer and seller are allowed."
     );
   });
@@ -322,7 +322,7 @@ describe("Admin update User roles", () => {
       .end((err, res) => {
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("error", "Internal server error");
+        expect(res.body).to.have.property("message");
         done(err);
       });
   });
@@ -353,7 +353,7 @@ describe("Middleware: isUsersExist", () => {
     await isUsersExist(req, res, next);
 
     expect(res.status.calledWith(404)).to.be.true;
-    expect(res.json.calledWith({ error: "No users found in the database." })).to
+    expect(res.json.calledWith({ status: httpStatus.NOT_FOUND, message: "No users found in the database." })).to
       .be.true;
     expect(next.called).to.be.false;
     userCountStub.restore();
@@ -372,7 +372,7 @@ describe("Middleware: isUsersExist", () => {
 
     await isUsersExist(req, res, next);
 
-    expect(res.status.calledWith(500)).to.be.true;
+    expect(res.status.calledWith(httpStatus.INTERNAL_SERVER_ERROR)).to.be.true;
     userCountStub.restore();
   });
 });
@@ -456,7 +456,7 @@ describe("Admin Controllers", () => {
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property(
-          "error",
+          "message",
           "Internal server error"
         );
         done(error);
@@ -474,7 +474,7 @@ describe("Admin Controllers", () => {
         expect(response).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property(
-          "error",
+          "message",
           "Internal server error"
         );
         done(error);
@@ -524,10 +524,10 @@ describe('postChatMessage', () => {
     expect(hasUsers).to.be.true;
     const hasValidUserAttributes = pastChats.every(chat =>
       chat.dataValues.user &&
-      chat.dataValues.user.id && 
-      chat.dataValues.user.firstName && 
-      chat.dataValues.user.lastName && 
-      chat.dataValues.user.email && 
+      chat.dataValues.user.id &&
+      chat.dataValues.user.firstName &&
+      chat.dataValues.user.lastName &&
+      chat.dataValues.user.email &&
       chat.dataValues.user.role
     );
     expect(hasValidUserAttributes).to.be.true;

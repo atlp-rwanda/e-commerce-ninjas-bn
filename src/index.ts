@@ -49,7 +49,7 @@ app.use("/api", router);
 
 app.get("**", (req: Request, res: Response) => {
   res.status(httpStatus.OK).json({
-    status: true,
+    status: httpStatus.OK,
     message: "Welcome to the e-Commerce Ninjas BackEnd."
   });
 });
