@@ -135,6 +135,47 @@ const saveOrder = async(lineItems: any, shopIds: any, productIds: any, session: 
 return await db.Orders.create(order)
 }
 
+const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
+  return await db.Orders.findOne({
+    where: { id: orderId },
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ]
+  })
+}
+
+const getOrderById = async (orderId: string) => {
+  return await db.Orders.findOne({ where: { id: orderId } })
+}
+
+const updateOrderStatus = async (orderId: string, status: string, shippingProcess: string) => {
+  return await db.Orders.update(
+    {
+      status: status,
+      shippingProcess: shippingProcess
+    },
+    { where: { id: orderId } }
+  );
+};
+const getOrdersByUserId = async (userId: string) => {
+  return await db.Carts.findOne(
+    {
+      where:
+        { userId: userId },
+      include: [
+        {
+          model: db.Orders,
+          as: "orders",
+        }
+      ]
+    });
+};
+
+
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
@@ -154,5 +195,9 @@ export default {
   findCartProductByCartId,
   findCartIdbyUserId,
   findProductById,
-  saveOrder
+  saveOrder,
+  getOrderByOrderIdAndUserId,
+  getOrderById,
+  getOrdersByUserId,
+  updateOrderStatus
 };
