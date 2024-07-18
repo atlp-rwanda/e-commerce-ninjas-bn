@@ -81,7 +81,7 @@ const googleVerify = passport.authenticate("google", {
 const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("google", async (err: unknown, user: userInfo | null) => {
     if (!user) {
-      return res.status(401).json({ error: "Authentication failed" });
+      return res.status(httpStatus.UNAUTHORIZED).json({status:httpStatus.UNAUTHORIZED, message: "Authentication failed" });
     }
     const email = user.email;
     try {
@@ -95,7 +95,7 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
           otp: null
         };
         await authRepositories.createSession(sessions);
-        res.status(httpStatus.OK).json({ message: "Logged in successfully", data: { token } });
+        res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token } });
       } else {
         const newUser = await authRepositories.createUser({
           email: user.email,
@@ -115,10 +115,10 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
           otp: null
         };
         await authRepositories.createSession(session);
-        res.status(httpStatus.OK).json({ message: "Logged in successfully", data: { token } });
+        res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token } });
       }
     } catch (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal Server error", data: error.message });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status:httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
   })(req, res, next);
 };

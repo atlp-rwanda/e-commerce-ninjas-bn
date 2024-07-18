@@ -7,18 +7,21 @@ import uploadImages from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
+import { eventEmitter } from "../../../helpers/notifications";
+import { userChangeRole, userChangeStatus } from "../../../services/emailTemplate";
 
 const adminGetUsers = async (req: Request, res: Response) => {
   try {
     const user = await userRepositories.getAllUsers();
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Successfully",
-      data: { user: user },
+      data: { user }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -30,13 +33,14 @@ const adminGetUser = async (req: Request, res: Response) => {
       req.params.id
     );
     return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "Successfully",
-      data: { user: user },
+      data: { user }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -49,14 +53,24 @@ const updateUserRole = async (req: Request, res: Response) => {
       "id",
       req.params.id
     );
-    return res.status(httpStatus.OK).json({
+    eventEmitter.emit("UserChangeRole", 
+      { 
+        userId: user.id,
+        message: `Hi ${user.firstName}, your role has been updated to ${req.body.role}. Enjoy your new privileges!` 
+      });
+      await sendEmail(
+        user.email,
+        "Your Role Has Been Updated",
+        await userChangeRole(user))
+        return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
       message: "User role updated successfully",
-      data: { user: user },
+      data: { user }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -70,13 +84,17 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
       "id",
       userId
     );
+      await sendEmail(
+        user.email,
+        user.status === "disabled" ? "Your Account Has Been Suspended" : "Your Account Has Been re-enabled",
+        await userChangeStatus(user))
     res
       .status(httpStatus.OK)
-      .json({ message: "Status updated successfully.", data: { user: user } });
+      .json({ status: httpStatus.OK, message: "Status updated successfully.", data: { user } });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -85,11 +103,11 @@ const getUserDetails = async (req: Request, res: Response) => {
     const user = await authRepositories.findUserByAttributes("id", req.user.id);
     res
       .status(httpStatus.OK)
-      .json({ status: httpStatus.OK, data: { user: user } });
+      .json({ status: httpStatus.OK, data: { user } });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -104,11 +122,15 @@ const updateUserProfile = async (req: Request, res: Response) => {
     );
     res
       .status(httpStatus.OK)
-      .json({ status: httpStatus.OK, data: { user: user } });
+      .json({
+        status: httpStatus.OK,
+        message: "User profile updated successfully",
+        data: { user }
+      });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -120,43 +142,47 @@ const changePassword = async (req: any, res: Response) => {
       "id",
       req.user.id
     );
+    eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });
     return res
       .status(httpStatus.OK)
-      .json({ message: "Password updated successfully", data: { user: user } });
+      .json({status:httpStatus.OK,
+         message: "Password updated successfully", 
+         data: { user } });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
 
-const getAllNotifications = async ( req: Request, res: Response ) => {
+const getAllNotifications = async (req: Request, res: Response) => {
   try {
     const notifications = await userRepositories.findNotificationsByuserId(req.user.id);
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      data: { notifications: notifications },
+      data: { notifications }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
 
-const getSingleNotification = async ( req: Request, res: Response ) => {
+const getSingleNotification = async (req: Request, res: Response) => {
   try {
     const notification = await userRepositories.findNotificationById(req.user.id, req.params.id);
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      data: { notification: notification },
+      message:"Notification fetched successfully",
+      data: { notification },
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message
     });
   }
 };
@@ -164,14 +190,15 @@ const getSingleNotification = async ( req: Request, res: Response ) => {
 const markNotificationAsRead = async (req: Request, res: Response) => {
   try {
     const notification = await userRepositories.markNotificationAsRead("id", req.params.id);
-    res.status(httpStatus.OK).json({ 
+    res.status(httpStatus.OK).json({
+      status:httpStatus.OK,
       message: "Notification marked as read",
       data: { notification: notification }
-     });
+    });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -179,14 +206,15 @@ const markNotificationAsRead = async (req: Request, res: Response) => {
 const markAllNotificationsAsRead = async (req: Request, res: Response) => {
   try {
     const notifications = await userRepositories.markAllNotificationsAsRead(req.user.id);
-    res.status(httpStatus.OK).json({ 
+    res.status(httpStatus.OK).json({
+      status:httpStatus.OK,
       message: "All notifications marked as read",
-      data: { notifications: notifications }
+      data: { notifications }
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };

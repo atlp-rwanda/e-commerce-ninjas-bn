@@ -44,7 +44,7 @@ const validation =
     } catch (error) {
       res
         .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, error: error.message });
+        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
     }
   };
 
@@ -88,7 +88,7 @@ const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -103,13 +103,13 @@ const isUsersExist = async (
     if (userCount === 0) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ error: "No users found in the database." });
+        .json({ status:httpStatus.NOT_FOUND, message: "No users found in the database." });
     }
     next();
   } catch (err) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internet Server error." });
+      .json({status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internet Server error." });
   }
 };
 
@@ -134,13 +134,13 @@ const isAccountVerified = async (
     if (!user) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ message: "Account not found." });
+        .json({ status:httpStatus.NOT_FOUND, message: "Account not found." });
     }
 
     if (user.isVerified) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Account already verified." });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Account already verified." });
     }
 
     const session = await authRepositories.findSessionByAttributes(
@@ -150,7 +150,7 @@ const isAccountVerified = async (
     if (!session) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid token." });
+        .json({status:httpStatus.BAD_REQUEST, message: "Invalid token." });
     }
 
     req.session = session;
@@ -159,7 +159,7 @@ const isAccountVerified = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -177,7 +177,7 @@ const verifyUserCredentials = async (
     if (!user) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
+        .json({status:httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
     if (user.is2FAEnabled) {
       const { otp, expirationTime } = generateOTP();
@@ -206,14 +206,16 @@ const verifyUserCredentials = async (
       if (isTokenExist) {
         return res.status(httpStatus.OK).json({
           message: "Check your Email for OTP Confirmation",
-          UserId: { userId: user.id },
-          data: { token: isTokenExist },
+          data: { 
+            UserId:  user.id,
+            token: isTokenExist }
         });
       }
 
       return res.status(httpStatus.OK).json({
+        status:httpStatus.OK,
         message: "Check your Email for OTP Confirmation",
-        UserId: { userId: user.id },
+        data: { userId: user.id },
       });
     }
     const passwordMatches = await comparePassword(
@@ -223,7 +225,7 @@ const verifyUserCredentials = async (
     if (!passwordMatches) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "Invalid Email or Password" });
+        .json({status:httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
 
     req.user = user;
@@ -231,7 +233,7 @@ const verifyUserCredentials = async (
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal Server error", data: error.message });
+      .json({status:httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -257,7 +259,7 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
     if (!user.isVerified) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
-        message: "Account is not verified.",
+        message: "Account is not verified."
       });
     }
 
@@ -266,7 +268,7 @@ const verifyUser = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message
     });
   }
 };
@@ -296,7 +298,7 @@ const isSessionExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -332,7 +334,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -364,7 +366,7 @@ const credential = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -380,14 +382,14 @@ const isShopExist = async (req: any, res: Response, next: NextFunction) => {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
         message: "Already have a shop.",
-        data: { shop: shop },
+        data: { shop: shop }
       });
     }
     return next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message
     });
   }
 };
@@ -413,7 +415,7 @@ const isSellerShopExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -425,8 +427,8 @@ const transformFilesToBody = (
 ) => {
   if (!req.files) {
     return res
-      .status(400)
-      .json({ status: 400, message: "Images are required" });
+      .status(httpStatus.BAD_REQUEST)
+      .json({ status: httpStatus.BAD_REQUEST, message: "Images are required" });
   }
 
   const files = req.files as Express.Multer.File[];
@@ -486,7 +488,7 @@ const verifyOtp = async (
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -499,7 +501,7 @@ const isUserVerified = async (req: any, res: Response, next: NextFunction) => {
   if (!user)
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ message: "Invalid Email or Password" });
+      .json({ status: httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
   if (user.isVerified === false)
     return res.status(httpStatus.UNAUTHORIZED).json({
       status: httpStatus.UNAUTHORIZED,
@@ -540,7 +542,7 @@ const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -563,7 +565,7 @@ const isProductIdExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -609,7 +611,7 @@ const isCartProductExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -702,7 +704,7 @@ const isProductExistById = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -744,7 +746,7 @@ const isWishListProductExist = async (req:ExtendRequest , res:Response, next:Nex
    }catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
 }
 }
@@ -770,7 +772,7 @@ const isUserWishlistExist = async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -792,7 +794,7 @@ const isProductExistIntoWishList= async (
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -815,7 +817,7 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
     (req as any).notifications = notifications;
     return next();
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -842,7 +844,7 @@ const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunct
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -891,6 +893,50 @@ const isSellerRequestExist = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const isOrderExist = async (req: Request, res:Response, next:NextFunction)=>{
+  try{
+    let order: any;
+    if (req.user.role === "buyer") {
+    if(req.params.id){
+      order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
+      if(!order){
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "order not found"
+        })
+      }
+    }else{
+        order = await cartRepositories.getOrdersByUserId(req.user.id)
+        if(!order.orders || order.orders.length === 0){
+          return res.status(httpStatus.NOT_FOUND).json({
+            status: httpStatus.NOT_FOUND,
+            error: "orders not found"
+          })
+        }
+      }
+      
+    }
+      if(req.user.role === "admin"){
+        order = await cartRepositories.getOrderById(req.params.id)
+        if (!order) {
+          return res.status(httpStatus.NOT_FOUND).json({
+            status: httpStatus.NOT_FOUND,
+            error: "order Not Found",
+          });
+        }
+      }
+      (req as any).order = order
+      return next();
+    }
+    catch(error){
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message
+      })
+    }
+}
+
+
 export {
   validation,
   isUserExist,
@@ -922,5 +968,6 @@ export {
   isProductExistIntoWishList,
   isProductOrdered,
   isUserProfileComplete,
-  isSellerRequestExist
+  isSellerRequestExist,
+  isOrderExist
 };    

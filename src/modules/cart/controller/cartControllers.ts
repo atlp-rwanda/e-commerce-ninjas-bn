@@ -58,7 +58,7 @@ const buyerGetCart = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -90,7 +90,7 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -213,7 +213,7 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -230,7 +230,7 @@ const buyerClearCartProduct = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -246,7 +246,7 @@ const buyerClearCart = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -265,7 +265,7 @@ const buyerClearCarts = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -285,7 +285,7 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
+      message: error.message
     });
   }
 };
@@ -329,24 +329,74 @@ const buyerPayCart = async (req: ExtendRequest, res: Response) => {
       }
     });
     res.status(httpStatus.OK).json({ payment_url: session.url });
-  } catch (error: any) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 const paymentSuccess = (req: Request, res: Response) => {
   try {
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 const paymentCanceled = (req: Request, res: Response) => {
   try {
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });
   } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message });
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
+
+const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+    const order = req.order.shippingProcess
+    return res.status(httpStatus.OK).json({
+      message: "Order Status found successfully",
+      data: {order}
+    })
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+
+const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
+  try{
+    const orders = req.order
+    return res.status(httpStatus.OK).json({
+      message: "Orders found successfully",
+      data: {orders}
+    })
+  }
+  catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+
+const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
+  try {
+    const order = req.order
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status,req.body.shippingProcess);
+    eventEmitter.emit("orderStatusUpdated", order);
+    return res.status(httpStatus.OK).json({
+      message: "Status updated successfully!",
+      data: { order }
+    })
+  }catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+  
+}
 
 export {
   buyerGetCart,
@@ -362,4 +412,8 @@ export {
   getProductDetails,
   paymentSuccess,
   paymentCanceled,
+  addProductToExistingCart,
+  buyerGetOrderStatus,
+  buyerGetOrders,
+  adminUpdateOrderStatus
 };

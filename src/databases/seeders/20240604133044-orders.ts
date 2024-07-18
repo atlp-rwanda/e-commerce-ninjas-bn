@@ -22,6 +22,8 @@ module.exports = {
         paymentMethodId: 1,
         orderDate: new Date("2024-01-01"),
         status: "completed",
+        shippingProcess : "your order have been completed",
+        expectedDeliveryDate: new Date("2024-08-01"),
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -42,6 +44,8 @@ module.exports = {
         paymentMethodId: 2,
         orderDate: new Date("2024-01-15"),
         status: "completed",
+        shippingProcess : "your order have reached Kigali in 30 minutes it will be reached to you",
+        expectedDeliveryDate: new Date("2024-08-05"),
         createdAt: new Date(),
         updatedAt: new Date()
       }

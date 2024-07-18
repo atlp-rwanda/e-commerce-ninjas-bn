@@ -26,7 +26,7 @@ class Carts extends Model<CartAttributes> implements CartAttributes {
     static associate() {
         Carts.belongsTo(Users, { foreignKey: "userId", as: "buyer" });
         Carts.hasMany(CartProducts, { foreignKey: "cartId", as: "cartProducts" });
-        Carts.hasMany(Orders,{foreignKey: "cartId", as: "order"})
+        Carts.hasMany(Orders,{foreignKey: "cartId", as: "orders"})
     }
 }
 

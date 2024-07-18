@@ -39,7 +39,7 @@ export const webhook = async (req: Request, res: Response) => {
                 return res.status(httpStatus.BAD_REQUEST).json({ status: httpStatus.BAD_REQUEST, message:"Error: Unknow error occured"})
         }
         res.json({ received: true });
-    } catch (error: any) {
-        return res.status(400).send(`Webhook Error: ${error.message}`);
+    } catch (error) {
+        return res.status(httpStatus.BAD_REQUEST).send(`Webhook Error: ${error.message}`);
     }
 };

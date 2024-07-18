@@ -7,9 +7,10 @@ import {
   isCartProductExist,
   isProductIdExist,
   validation,
+  isOrderExist
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema,paymentCheckoutSchema } from "../modules/cart/validation/cartValidations";
+import { cartSchema,paymentCheckoutSchema,updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
 import { webhook } from "../services/stripe";
 
 const router: Router = Router();
@@ -68,5 +69,9 @@ router.get(
   router.post("/webhook",webhook)
   router.get("/payment-success", userAuthorization(["buyer"]),cartControllers.paymentSuccess)
   router.get("/payment-canceled", userAuthorization(["buyer"]),cartControllers.paymentCanceled)
+
+router.get("/user-get-order-status/:id",userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus )
+router.put("/admin-update-order-status/:id", userAuthorization(["admin"]),validation(updateOrderStatusSchema),isOrderExist, cartControllers.adminUpdateOrderStatus)
+router.get("/buyer-get-order-history", userAuthorization(["buyer"]),isOrderExist, cartControllers.buyerGetOrders)
 
 export default router;
