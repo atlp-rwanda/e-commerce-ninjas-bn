@@ -536,7 +536,7 @@ const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction
     if (!cart) {
     return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
   }
-  req.cart = cart;
+  req.carts = cart;
   return next();
     
   } catch (error) {
