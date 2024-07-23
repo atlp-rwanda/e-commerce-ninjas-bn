@@ -68,6 +68,7 @@ const verifyEmail = async (req: any, res: Response) => {
       req.session.token
     );
     await authRepositories.updateUserByAttributes("isVerified", true, "id", req.user.id);
+    eventEmitter.emit("accountVerified", req.user);
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Account verified successfully, now login." });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });

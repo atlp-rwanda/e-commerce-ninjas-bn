@@ -1,15 +1,16 @@
-import { sendEmailNotification, sendEmailOrderStatus } from "../services/sendEmail";
+import { sendEmail, sendEmailNotification, sendEmailOrderStatus } from "../services/sendEmail";
 import userRepositories from "../modules/user/repository/userRepositories";
 import { EventEmitter } from "events";
 import cron from "node-cron";
 import productRepository from "../modules/product/repositories/productRepositories";
 import Products from "../databases/models/products";
 import Shops from "../databases/models/shops";
-import Users from "../databases/models/users";
+import Users, { usersAttributes } from "../databases/models/users";
 import { IProductsWithShop, IOrderWithCart } from "../types/index";
 import { io } from "../index";
 import Orders from "../databases/models/orders";
 import Carts from "../databases/models/carts";
+import { userChangeRole, userChangeStatus, welcomeEmail } from "../services/emailTemplate";
 
 export const eventEmitter = new EventEmitter();
 
@@ -88,11 +89,27 @@ eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
   await saveAndEmitNotification(userId, message, "passwordExpiry");
 });
 
-eventEmitter.on("UserChangeRole", async ({userId,message}) => {
-  await emitNotification(userId, message, "UserChangeRole");
+eventEmitter.on("UserChangeRole", async (user:usersAttributes) => {
+  const  message = `Hi ${user.firstName}, your role has been updated to ${user.role}. Enjoy your new privileges!`;
+  await emitNotification(user.id, message, "UserChangeRole");
+  await sendEmail(
+    user.email,
+    "Your Role Has Been Updated",
+    await userChangeRole(user))
 })
-eventEmitter.on("UserChangeStatus", async ({userId,message}) => {
-  await emitNotification(userId, message, "UserChangeStatus");
+eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
+  const  message = `Hi ${user.firstName}, Your Account Has Been re-enabled.`;
+  await emitNotification(user.id, message, "UserChangeStatus");
+  await sendEmail(
+    user.email,
+    user.status === "disabled" ? "Your Account Has Been Suspended" : "Your Account Has Been re-enabled",
+    await userChangeStatus(user))
+})
+eventEmitter.on("accountVerified", async (user:usersAttributes) => {
+  const message = `Welcome to E-commerce Ninjas, ${user.firstName}! Your account has been successfully created. We're excited to have you on board. Explore our features and enjoy your experience. If you have any questions, feel free to reach out to us. Happy shopping!
+`
+  await emitNotification(user.id, message, "accountVerified");
+  await sendEmail(user.email, "Welcome to E-commerce Ninjas!",await welcomeEmail(user))
 })
 
 eventEmitter.on("orderStatusUpdated", async (order) => {
