@@ -45,6 +45,7 @@
       "src/helpers/notifications.ts",
       "src/services/stripe.ts",
       "src/services/cronJob.ts",
+      "src/services/emailTemplate.ts",
       "src/helpers/passwordExpiryNotifications.ts"
     ],
     "reporter": [

@@ -852,7 +852,7 @@ describe("Change Password Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
+        email: "ecommerceninjas45@gmail.com",
         password: "Newpassword#12",
       })
       .end((error, response) => {

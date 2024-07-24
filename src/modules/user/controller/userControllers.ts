@@ -52,7 +52,8 @@ const updateUserRole = async (req: Request, res: Response) => {
       "id",
       req.params.id
     );
-    return res.status(httpStatus.OK).json({
+    eventEmitter.emit("UserChangeRole",user);
+      return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       message: "User role updated successfully",
       data: { user }
@@ -74,6 +75,7 @@ const updateUserStatus = async (req: Request, res: Response): Promise<void> => {
       "id",
       userId
     );
+    eventEmitter.emit("UserChangeStatus", user);
     res
       .status(httpStatus.OK)
       .json({ status: httpStatus.OK, message: "Status updated successfully.", data: { user } });
