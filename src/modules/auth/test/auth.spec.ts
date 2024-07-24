@@ -57,7 +57,6 @@ describe("Authentication Test Cases", () => {
         password: "userPassword@123"
       })
       .end((error, response) => {
-        console.log(response);
         expect(response.status).to.equal(httpStatus.CREATED);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("data");
