@@ -44,8 +44,6 @@ export const checkPasswordExpirations = async () => {
         const emailMessage = `${salutation}, your password will expire in ${interval} minutes. Please update your password to continue using the platform.`;
         eventEmitter.emit("passwordExpiry", { userId: user.id, message: emailMessage, minutes: interval });
       }
-
-      // console.log(`${usersToWarn.length} users warned for ${interval}-minute password expiration.`);
     }
 
     const usersToNotifyExpired = await Users.findAll({
@@ -68,7 +66,7 @@ export const checkPasswordExpirations = async () => {
       eventEmitter.emit("passwordExpiry", { userId: user.id, message: emailMessage, minutes: 0 });
     }
 
-    // console.log(`${usersToNotifyExpired.length} users notified for password expiration.`);
+ 
 
   } catch (error) {
     console.error("Error checking password expiration:", error);
