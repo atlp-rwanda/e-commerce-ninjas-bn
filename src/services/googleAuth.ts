@@ -86,7 +86,9 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
     const email = user.email;
     try {
       const register = await authRepositories.findUserByAttributes("email", email);
+      
       if (register) {
+        if(register.dataValues.isGoogleAccount){
         const token = generateToken(register.id);
         const sessions = {
           userId: register.id,
@@ -96,6 +98,10 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
         };
         await authRepositories.createSession(sessions);
         res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token } });
+      }
+      else{
+        res.status(httpStatus.BAD_REQUEST).json({status:httpStatus.BAD_REQUEST, message: "Google account not exist"});
+      }
       } else {
         const newUser = await authRepositories.createUser({
           email: user.email,
@@ -115,7 +121,7 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
           otp: null
         };
         await authRepositories.createSession(session);
-        res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token } });
+        res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token} });
       }
     } catch (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({status:httpStatus.INTERNAL_SERVER_ERROR, message: error.message });

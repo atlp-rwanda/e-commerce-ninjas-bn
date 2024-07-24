@@ -356,7 +356,7 @@ describe("checkPasswordExpiration middleware", () => {
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
       "Password Expired - Reset Required",
-      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/api/auth/forget-password`
+      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/api/auth/reset-password`
     );
     expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
     expect(res.json).to.have.been.calledWith({
