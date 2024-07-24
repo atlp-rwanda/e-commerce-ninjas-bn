@@ -50,7 +50,7 @@ export const welcomeEmail = async (user:usersAttributes)=>{
     : user.email.split("@")[0];
     return (`
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <p>👋 Dear ${username}},</p>
+    <p>👋 Dear ${username},</p>
     <p>Welcome to <strong>E-commerce ninjas</strong>! Your account has been successfully created, and we are thrilled to have you on board. 🎉</p>
     <p>Explore our features and enjoy your experience. If you have any questions or need assistance, please don't hesitate to reach out to us at this email.</p>
     <p>Happy shopping! 🛍️</p>

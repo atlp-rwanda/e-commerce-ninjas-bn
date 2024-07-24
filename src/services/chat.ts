@@ -13,7 +13,7 @@ const Chat = (io: Server) => {
     socket.on("chatMessage", async (message) => {
       try {
         const fullChat = await userRepositories.postChatMessage(user.id, message);
-        socket.broadcast.emit("chatMessage", { user, message: fullChat.message });
+        socket.broadcast.emit("chatMessage", { user, message: {message:fullChat.message,createdAt:fullChat.createdAt} });
       } catch (error) {
         console.error("Error in chatMessage:", error);
       }
