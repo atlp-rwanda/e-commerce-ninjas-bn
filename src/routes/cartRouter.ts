@@ -65,7 +65,8 @@ router.get(
   cartControllers.buyerCheckout
   );
 
-  router.post("/buyer-pay-cart", userAuthorization(["buyer"]),validation(paymentCheckoutSchema),isCartIdExist,cartControllers.buyerPayCart)
+  // router.post("/buyer-pay-cart", userAuthorization(["buyer"]),validation(paymentCheckoutSchema),isCartIdExist,cartControllers.buyerPayCart)
+  router.post("/buyer-checkout-cart", userAuthorization(["buyer"]),validation(paymentCheckoutSchema),isCartIdExist,cartControllers.stripCheckoutSession)
   router.post("/webhook",webhook)
   router.get("/payment-success", userAuthorization(["buyer"]),cartControllers.paymentSuccess)
   router.get("/payment-canceled", userAuthorization(["buyer"]),cartControllers.paymentCanceled)
