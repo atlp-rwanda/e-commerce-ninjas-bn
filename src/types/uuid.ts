@@ -61,3 +61,6 @@ export const productReviewTwoId = uuidv4();
 
 export const wishListProductsOneId = uuidv4();
 export const wishListProductsTwoId  = uuidv4();
+
+export const addressOneId = uuidv4();
+export const addressTwoId  = uuidv4();

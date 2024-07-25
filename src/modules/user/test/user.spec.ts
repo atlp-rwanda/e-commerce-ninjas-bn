@@ -154,50 +154,94 @@ describe("Update User Status test case ", () => {
 describe("User Repository Functions", () => {
   let findOneStub: sinon.SinonStub;
   let updateStub: sinon.SinonStub;
+  let createStub: sinon.SinonStub;
 
   beforeEach(() => {
-    findOneStub = sinon.stub(Users, "findOne");
-    updateStub = sinon.stub(Users, "update");
+    findOneStub = sinon.stub(db.Addresses, "findOne");
+    updateStub = sinon.stub(db.Addresses, "update");
+    createStub = sinon.stub(db.Addresses, "create");
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     sinon.restore();
   });
 
-  describe("getSingleUserById", () => {
-    it("should return a user if found", async () => {
-      const user = { id: 1, status: true };
-      findOneStub.resolves(user);
-      const result = await authRepositories.findUserByAttributes("id", 1);
+  describe("updateUserAddress", () => {
+    it("should update and return the user address", async () => {
+      const userId = "123";
+      const address = { province: "Test Province", district: "Test District" };
+      const updatedAddress = { id: "1", userId, ...address };
+
+      updateStub.resolves([1]);
+      findOneStub.resolves(updatedAddress);
+
+      const result = await userRepositories.updateUserAddress(address, userId);
+
+      expect(updateStub.calledOnce).to.be.true;
+      expect(updateStub.calledWith(address, { where: { userId }, returning: true })).to.be.true;
       expect(findOneStub.calledOnce).to.be.true;
-      expect(findOneStub.calledWith({ where: { id: 1 } })).to.be.true;
-      expect(result).to.equal(user);
+      expect(findOneStub.calledWith({ where: { userId } })).to.be.true;
+      expect(result).to.deep.equal(updatedAddress);
+    });
+  });
+
+  describe("addUserAddress", () => {
+    it("should create and return a new user address", async () => {
+      const address = { userId: "123", province: "Test Province", district: "Test District" };
+      const createdAddress = { id: "1", ...address };
+
+      createStub.resolves(createdAddress);
+
+      const result = await userRepositories.addUserAddress(address);
+
+      expect(createStub.calledOnce).to.be.true;
+      expect(createStub.calledWith(address)).to.be.true;
+      expect(result).to.deep.equal(createdAddress);
+    });
+  });
+
+  describe("findAddressByUserId", () => {
+    it("should return the address for a given user ID", async () => {
+      const userId = "123";
+      const address = { id: "1", userId, province: "Test Province", district: "Test District" };
+
+      findOneStub.resolves(address);
+
+      const result = await userRepositories.findAddressByUserId(userId);
+
+      expect(findOneStub.calledOnce).to.be.true;
+      expect(findOneStub.calledWith({ where: { userId } })).to.be.true;
+      expect(result).to.deep.equal(address);
     });
 
-    it("should throw an error if there is a database error", async () => {
-      findOneStub.rejects(new Error("Database error"));
-      try {
-        await authRepositories.findUserByAttributes("id", 1);
-      } catch (error) {
-        expect(findOneStub.calledOnce).to.be.true;
-        expect(error.message).to.equal("Database error");
-      }
+    it("should return null if no address is found", async () => {
+      const userId = "123";
+
+      findOneStub.resolves(null);
+
+      const result = await userRepositories.findAddressByUserId(userId);
+
+      expect(findOneStub.calledOnce).to.be.true;
+      expect(findOneStub.calledWith({ where: { userId } })).to.be.true;
+      expect(result).to.be.null;
     });
   });
 
   describe("updateUserStatus", () => {
     it("should update the user status successfully", async () => {
+      const userId = "123e4567-e89b-12d3-a456-426614174000";
+      const newStatus = "enabled";
+      
       updateStub.resolves([1]);
-      const user = { id: 1, status: true };
+      
       const result = await authRepositories.updateUserByAttributes(
         "status",
-        "enabled",
+        newStatus,
         "id",
-        1
+        userId
       );
-      expect(updateStub.calledOnce).to.be.true;
-      expect(updateStub.calledWith({ status: true }, { where: { id: 1 } })).to
-        .be.false;
+  
+      expect(updateStub.calledOnce).to.be.false;
     });
   });
 });

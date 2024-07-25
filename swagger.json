@@ -4075,6 +4075,64 @@
           }
         }
       }
+    },
+    "/api/user/user-change-address": {
+      "post": {
+        "summary": "User add/update address",
+        "description": "Add or update address for user",
+        "tags": [
+          "User Routes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "province": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "type": "string"
+                  },
+                  "sector": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  }                  
+                },
+                "required": [
+                  "province",
+                  "district",
+                  "sector",
+                  "street"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Address changed successfully"
+          },
+          "400": {
+            "description": "Bad request. Invalid inputs."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   }
 }
