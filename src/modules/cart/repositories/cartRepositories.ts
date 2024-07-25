@@ -237,9 +237,20 @@ const getStripeSessionByAttribute = async (attribute, value) => {
   });
   return sessions.data.length ? sessions.data[0] : null;
 }
-const createStripeSession = async (session) => {
-  return await stripe.checkout.sessions.create(session);
-}
+const createStripeSession = async (sessionInfo: any) => {
+  return await stripe.checkout.sessions.create({
+    payment_method_types: sessionInfo.payment_method_types,
+    mode: sessionInfo.mode,
+    line_items: [
+      {
+        quantity: sessionInfo.quantity,
+        price: sessionInfo.price,
+      },
+    ],
+    success_url: sessionInfo.success_url, 
+    cancel_url: sessionInfo.cancel_url,  
+  });
+};
 
 
 
