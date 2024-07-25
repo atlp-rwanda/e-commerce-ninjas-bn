@@ -90,7 +90,10 @@ eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
 });
 
 eventEmitter.on("UserChangeRole", async (user:usersAttributes) => {
-  const  message = `Hi ${user.firstName}, your role has been updated to ${user.role}. Enjoy your new privileges!`;
+  const username = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.email.split("@")[0];
+  const  message = `Hi ${username}, your role has been updated to ${user.role}. Enjoy your new privileges!`;
   await emitNotification(user.id, message, "UserChangeRole");
   await sendEmail(
     user.email,
@@ -98,7 +101,10 @@ eventEmitter.on("UserChangeRole", async (user:usersAttributes) => {
     await userChangeRole(user))
 })
 eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
-  const  message = `Hi ${user.firstName}, Your Account Has Been re-enabled.`;
+  const username = user.firstName && user.lastName
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
+  const  message = `Hi ${username}, Your Account Has Been re-enabled.`;
   await emitNotification(user.id, message, "UserChangeStatus");
   await sendEmail(
     user.email,
@@ -106,7 +112,10 @@ eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
     await userChangeStatus(user))
 })
 eventEmitter.on("accountVerified", async (user:usersAttributes) => {
-  const message = `Welcome to E-commerce Ninjas, ${user.firstName}! Your account has been successfully created. We're excited to have you on board. Explore our features and enjoy your experience. If you have any questions, feel free to reach out to us. Happy shopping!
+  const username = user.firstName && user.lastName
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
+  const message = `Welcome to E-commerce Ninjas, ${username}! Your account has been successfully created. We're excited to have you on board. Explore our features and enjoy your experience. If you have any questions, feel free to reach out to us. Happy shopping!
 `
   await emitNotification(user.id, message, "accountVerified");
   await sendEmail(user.email, "Welcome to E-commerce Ninjas!",await welcomeEmail(user))

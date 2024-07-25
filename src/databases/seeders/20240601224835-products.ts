@@ -9,6 +9,10 @@ import {
   productSixId,
   productSevenId,
   productEightId,
+  productNineId,
+  productTenId,
+  productElevenId,
+  productTwelveId,
   shopOneId,
   shopTwoId,
 } from "../../types/uuid";
@@ -203,6 +207,104 @@ const productEight = {
   createdAt: new Date(),
   updatedAt: new Date(),
 };
+const productNine = {
+  id: productNineId,
+  shopId: shopTwoId,
+  name: "Fashion T-Cross Paints",
+  description:
+    "Fashion Solid Color Work Casual Multiple Pockets Men's Cargo Pants Classic Waist Drawcord Pure Cotton Youth Tide Male Trousers",
+  price: 7.99,
+  discount: "7%",
+  category: "Men's Clothes",
+  expiryDate: new Date("2050-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: [
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721923392/auilcu7ibtttacjonozl.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721923393/egibnnshd2jmt335yzma.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721923396/jojvqx5z6dunixeep1vd.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721923392/gem1f2uotaw3rgcpd95z.jpg"
+  ],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const productTen = {
+  id: productTenId,
+  shopId: shopOneId,
+  name: "Solid Black Label Paints",
+  description:
+    "Fashion Solid Color Work Casual Multiple Pockets Men's Cargo Pants Classic Waist Drawcord Pure Cotton Youth Tide Male Trousers",
+  price: 15.99,
+  discount: "15%",
+  category: "Men's Clothes",
+  expiryDate: new Date("2050-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: [
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/eoknuaiwroxnvg7zhuvm.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/xm6k5zjjbmy8viz01y0w.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/tfxcklr1dxrlyczwz0uv.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/ucazormu3vd452t0ijv2.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/smxezgpkcps3cb0fvdq7.webp"
+  ],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const productEleven = {
+  id: productElevenId,
+  shopId: shopTwoId,
+  name: "Red Sneakers",
+  description:
+    "Red Sneakers Women Shoes Woman Tennis Shoes Canvas Shoe Female Casual Shoes Ladies Sport Shoes Platform Sneaker Hollow Out Shoes",
+  price: 20.99,
+  discount: "6%",
+  category: "Women's Shoes",
+  expiryDate: new Date("2050-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  "images": [
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924368/ckqqguqwcg6gplhpp2za.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924368/itheprnho9dfqioddpmi.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924368/klb3npd418trkupivlnd.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924368/rxsfmonky2iegr7hnsbu.jpg",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924368/n8g2jwvsqip1d947flql.jpg"
+  ],
+  quantity: 5,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const productTwelve = {
+  id: productTwelveId,
+  shopId: shopOneId,
+  name: "Second Hand 4G Vivo Fone",
+  description:
+    "[Need more Clearance fee per phone] Second-hand Vivo S1 4G LTE Cell Phone Helio P70 Android 9.0 6.38 2340X1080 6GB RAM 256GB ROM 32.0MP NFC Screen Fingerprint",
+  price: 199.99,
+  discount: "25%",
+  category: "Electronic Devices",
+  expiryDate: new Date("2050-12-31"),
+  expired: false,
+  bonus: "Bonus 1",
+  images: [
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/eoknuaiwroxnvg7zhuvm.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/xm6k5zjjbmy8viz01y0w.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/tfxcklr1dxrlyczwz0uv.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/ucazormu3vd452t0ijv2.webp",
+    "https://res.cloudinary.com/du0vvcuiz/image/upload/v1721924072/smxezgpkcps3cb0fvdq7.webp"
+  ],
+  quantity: 50,
+  status: "available",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
 
 export const up = async (queryInterface: QueryInterface) => {
   await queryInterface.bulkInsert("products", [
@@ -214,6 +316,10 @@ export const up = async (queryInterface: QueryInterface) => {
     productSix,
     productSeven,
     productEight,
+    productNine,
+    productTen,
+    productEleven,
+    productTwelve
   ]);
 };
 
