@@ -402,22 +402,28 @@ const stripCheckoutSession = async (req: ExtendRequest, res: Response) => {
   try {
     let product = null;
     let price = null;
+    let session = null;
     const cartDetails = req.cart
     let customer = await cartRepositories.getStripeCustomerByAttribute("email", req.user.email);
     if (!customer) customer = await cartRepositories.createStripeCustomer(customer);
 
     for (const cartProduct of cartDetails.cartProducts) {
       const productDetails = cartProduct.products;
-     
 
-       product = await cartRepositories.getStripeProductByAttribute("name", productDetails.name);
-      
-       
+
+      product = await cartRepositories.getStripeProductByAttribute("name", productDetails.name);
+
+
       if (!product) product = await cartRepositories.createStripeProduct(productDetails);
 
       price = await cartRepositories.getStripePriceByAttribute("product", product.id);
       if (!price) price = await cartRepositories.createStripePrice(product);
+
+
+      session = await cartRepositories.getStripeSessionByAttribute("customer", customer.id);
+      if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
     }
+
 
 
 
@@ -428,11 +434,8 @@ const stripCheckoutSession = async (req: ExtendRequest, res: Response) => {
     // //   price: req.body.price.price,
     // }];
 
-    // let session = await cartRepositories.getStripeSessionByAttribute("customer", customer.id);
-    // if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
-
     return res.status(httpStatus.OK).json({
-      customer,product,price
+      customer, product, price, session
 
     })
   } catch (error) {
