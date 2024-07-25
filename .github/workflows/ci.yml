@@ -54,7 +54,7 @@ jobs:
 
       - run: npm run build --if-present
 
-      - run: npm test --if-present
+      - run: npm test --if-present -- --verbose
 
       - run: npm run coverage --if-present
 

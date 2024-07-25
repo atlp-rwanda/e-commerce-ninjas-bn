@@ -100,7 +100,7 @@ const authenticateWithGoogle = (req: Request, res: Response, next: NextFunction)
         res.status(httpStatus.OK).json({status:httpStatus.OK, message: "Logged in successfully", data: { token } });
       }
       else{
-        res.status(httpStatus.BAD_REQUEST).json({status:httpStatus.BAD_REQUEST, message: "Google account not exist"});
+        res.status(httpStatus.BAD_REQUEST).json({status:httpStatus.BAD_REQUEST, message: "this is not google account, please login with Normal Account"});
       }
       } else {
         const newUser = await authRepositories.createUser({

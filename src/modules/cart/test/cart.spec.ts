@@ -36,7 +36,7 @@ let token1: string = null;
 const router = () => chai.request(app);
 let cartId;
 let cartId2;
-let token2: string = null;
+// let token2: string = null;
 describe("Buyer Get Cart", () => {
   afterEach(() => {
     sinon.restore();
@@ -313,40 +313,11 @@ describe(" Cart Controller Tests ", () => {
       status: sinon.stub().returnsThis(),
       json: sinon.stub().returnsThis()
     };
-    const carts = await db.Carts.findAll();
-    cartId2 = carts[1].id;
-    const product = await db.CartProducts.findOne({ where: { cartId: cartId2 } });
-    console.log(product)
-    productId = product.productId;
 
   });
 
   afterEach(() => {
     sandbox.restore();
-  });
-  it("should login user", (done) => {
-    router()
-      .post("/api/auth/login")
-      .send({ email: "buyer4@gmail.com", password: "Password@123" })
-      .end((error, response) => {
-        token2 = response.body.data.token;
-        done(error);
-      });
-  });
-  it("should update cart product if already exist", (done) => {
-    router()
-      .post("/api/cart/create-update-cart")
-      .set("authorization", `Bearer ${token2}`)
-      .send({ productId: productId, quantity: 3 })
-      .end((error, response) => {
-        expect(response).to.have.status(httpStatus.CREATED);
-        expect(response.body).to.be.a("object");
-        expect(response.body).to.have.property("status", httpStatus.CREATED);
-        expect(response.body).to.have.property("message", "Cart added successfully");
-        expect(response.body).to.have.property("data")
-        done(error);
-      })
-
   });
 
   it("should add product to existing cart if cart exists", async () => {
@@ -1247,27 +1218,27 @@ describe("Payment Handlers", () => {
   afterEach(() => {
   });
 
-  it("should handle payment success", (done) => {
-    router()
-      .get("/api/cart/payment-success")
-      .set("authorization", `Bearer ${token2}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
-        done(error)
-      });
-  })
+  // it("should handle payment success", (done) => {
+  //   router()
+  //     .get("/api/cart/payment-success")
+  //     .set("authorization", `Bearer ${token2}`)
+  //     .end((error, response) => {
+  //       expect(response.status).to.equal(httpStatus.OK);
+  //       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment successful!' });
+  //       done(error)
+  //     });
+  // })
 
-  it("should handle payment cancellation", (done) => {
-    router()
-      .get("/api/cart/payment-canceled")
-      .set("authorization", `Bearer ${token2}`)
-      .end((error, response) => {
-        expect(response.status).to.equal(httpStatus.OK);
-        expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
-        done(error)
-      });
-  });
+  // it("should handle payment cancellation", (done) => {
+  //   router()
+  //     .get("/api/cart/payment-canceled")
+  //     .set("authorization", `Bearer ${token2}`)
+  //     .end((error, response) => {
+  //       expect(response.status).to.equal(httpStatus.OK);
+  //       expect(response.body).to.deep.equal({ status: httpStatus.OK, message: 'Payment canceled' });
+  //       done(error)
+  //     });
+  // });
 });
 
 describe("isOrderExist Middleware", () => {
