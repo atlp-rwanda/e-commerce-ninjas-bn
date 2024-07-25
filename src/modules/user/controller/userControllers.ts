@@ -240,6 +240,29 @@ const submitSellerRequest = async (req: Request, res: Response) => {
   }
 };
 
+const changeUserAddress = async (req: any, res: Response) => {
+  try {
+    const isAddressFound = await userRepositories.findAddressByUserId(req.user.id)
+    let createdAddress;
+    if(!isAddressFound){
+      createdAddress = await userRepositories.addUserAddress({ ...req.body, userId: req.user.id})
+    }
+    else {
+      createdAddress = await userRepositories.updateUserAddress(req.body, req.user.id)
+    }
+    return res
+      .status(httpStatus.OK)
+      .json({status:httpStatus.OK,
+         message: `${isAddressFound ? "Address updated successfully" : "Address added successfully"}`, 
+         data: { address: createdAddress } });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -253,4 +276,5 @@ export default {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   submitSellerRequest,
+  changeUserAddress,
 };

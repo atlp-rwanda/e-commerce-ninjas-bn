@@ -92,3 +92,10 @@ export const changePasswordSchema = Joi.object({
     "any.required": "Confirm password is required"
   })
 });
+
+export const changeAddressSchema = Joi.object({
+  province: Joi.string().required(),
+  district: Joi.string().required(),
+  sector: Joi.string().required(),
+  street: Joi.string().required()
+});

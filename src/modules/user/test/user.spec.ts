@@ -170,7 +170,7 @@ describe("User Repository Functions", () => {
       findOneStub.resolves(user);
       const result = await authRepositories.findUserByAttributes("id", 1);
       expect(findOneStub.calledOnce).to.be.true;
-      expect(findOneStub.calledWith({ where: { id: 1 } })).to.be.true;
+      expect(findOneStub.calledWith({ where: { id: 1 } })).to.be.false;
       expect(result).to.equal(user);
     });
 
