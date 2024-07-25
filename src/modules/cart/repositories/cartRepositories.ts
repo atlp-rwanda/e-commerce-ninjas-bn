@@ -1,9 +1,12 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+import Stripe from "stripe";
 import db from "../../../databases/models";
 import CartProduct from "../../../databases/models/cartProducts";
 import Products from "../../../databases/models/products";
+const stripe = new Stripe(process.env.STRIPE_SECRET);
 const getCartsByUserId = async (userId: string) => {
   return await db.Carts.findAll({ where: { userId, status: "pending" } });
 };
@@ -174,6 +177,72 @@ const getOrdersByUserId = async (userId: string) => {
       ]
     });
 };
+const getStripeCustomerByAttribute =  async (attribute, value) => {
+  const customers = await stripe.customers.list({
+    [attribute]: value,
+    limit: 1,
+  });
+  return customers.data.length ? customers.data[0] : null;
+};
+const createStripeCustomer=  async (customer) => {
+  return await stripe.customers.create(customer);
+}
+const getStripeProductByAttribute = async (attribute, value) => {
+  const products = await stripe.products.list({
+    limit: 100, // Adjust limit based on your needs
+  });
+
+  return products.data.find(product => product[attribute] === value) || null;
+}
+const createStripeProduct = async (productInfo) => {
+  const discountPercentage = parseFloat(productInfo.discount.replace("%", ""));
+  const unitAmount = Math.round(productInfo.price * 100 * (1 - discountPercentage / 100)); // Calculate the discounted amount in cents
+
+  return await stripe.products.create({
+    name: productInfo.name,
+    description: productInfo.description,
+    images: productInfo.images.slice(0, 4), // Limit to 4 images
+    default_price_data: {
+      unit_amount: unitAmount,
+      currency: "usd",
+    },
+  });
+};
+
+const getStripePriceByAttribute = async (attribute, value) => {
+  const prices = await stripe.prices.list({
+    [attribute]: value,
+    limit: 1,
+  });
+
+  return prices.data.length ? prices.data[0] : null;
+};
+
+const createStripePrice = async (priceInfo) => {
+  const discountPercentage = parseFloat(priceInfo.discount.replace("%", ""));
+  const unitAmount = Math.round(priceInfo.price * 100 * (1 - discountPercentage / 100)); // Calculate the discounted amount in cents
+
+  return await stripe.prices.create({
+    product: priceInfo.product,
+    unit_amount: unitAmount,
+    currency: "usd",
+  });
+};
+
+
+const getStripeSessionByAttribute = async (attribute, value) => {
+  const sessions = await stripe.checkout.sessions.list({
+    [attribute]: value,
+    limit: 1,
+  });
+  return sessions.data.length ? sessions.data[0] : null;
+}
+const createStripeSession = async (session) => {
+  return await stripe.checkout.sessions.create(session);
+}
+
+
+
 
 
 export default {
@@ -199,5 +268,14 @@ export default {
   getOrderByOrderIdAndUserId,
   getOrderById,
   getOrdersByUserId,
-  updateOrderStatus
+  updateOrderStatus,
+  getStripeCustomerByAttribute,
+  createStripeCustomer,
+  getStripeProductByAttribute,
+  createStripeProduct,
+  getStripePriceByAttribute,
+  createStripePrice,
+  getStripeSessionByAttribute,
+  createStripeSession
+
 };

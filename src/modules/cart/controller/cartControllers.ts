@@ -353,7 +353,7 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
     const order = req.order.shippingProcess
     return res.status(httpStatus.OK).json({
       message: "Order Status found successfully",
-      data: {order}
+      data: { order }
     })
 
   } catch (error) {
@@ -364,15 +364,15 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   }
 }
 
-const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
-  try{
+const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
+  try {
     const orders = req.order
     return res.status(httpStatus.OK).json({
       message: "Orders found successfully",
-      data: {orders}
+      data: { orders }
     })
   }
-  catch(error){
+  catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
@@ -383,21 +383,65 @@ const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order
-    await cartRepositories.updateOrderStatus(req.params.id, req.body.status,req.body.shippingProcess);
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status, req.body.shippingProcess);
     eventEmitter.emit("orderStatusUpdated", order);
     return res.status(httpStatus.OK).json({
       message: "Status updated successfully!",
       data: { order }
     })
-  }catch(error){
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
     })
   }
-  
+
 }
 
+const stripCheckoutSession = async (req: ExtendRequest, res: Response) => {
+  try {
+    let product = null;
+    let price = null;
+    const cartDetails = req.cart
+    let customer = await cartRepositories.getStripeCustomerByAttribute("email", req.user.email);
+    if (!customer) customer = await cartRepositories.createStripeCustomer(customer);
+
+    for (const cartProduct of cartDetails.cartProducts) {
+      const productDetails = cartProduct.products;
+     
+
+       product = await cartRepositories.getStripeProductByAttribute("name", productDetails.name);
+      
+       
+      if (!product) product = await cartRepositories.createStripeProduct(productDetails);
+
+      price = await cartRepositories.getStripePriceByAttribute("product", product.id);
+      if (!price) price = await cartRepositories.createStripePrice(product);
+    }
+
+
+
+    // req.body.price.product = product.id;
+    // req.body.session.customer = customer.id;
+    // req.body.session.line_items = [{
+    //   quantity: req.body.price.quantity,
+    // //   price: req.body.price.price,
+    // }];
+
+    // let session = await cartRepositories.getStripeSessionByAttribute("customer", customer.id);
+    // if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
+
+    return res.status(httpStatus.OK).json({
+      customer,product,price
+
+    })
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
 export {
   buyerGetCart,
   buyerGetCarts,
@@ -415,5 +459,6 @@ export {
   addProductToExistingCart,
   buyerGetOrderStatus,
   buyerGetOrders,
-  adminUpdateOrderStatus
+  adminUpdateOrderStatus,
+  stripCheckoutSession
 };

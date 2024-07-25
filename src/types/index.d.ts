@@ -16,6 +16,7 @@ export interface ILogin {
 }
 
 export interface ExtendRequest extends Request {
+  productDetails: any;
   product?: any;
   cart?: any;
   carts?: any;
