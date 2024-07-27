@@ -398,53 +398,61 @@ const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
 
 }
 
+
 const stripCheckoutSession = async (req: ExtendRequest, res: Response) => {
   try {
     let product = null;
     let price = null;
-    let session = null;
-    const cartDetails = req.cart
+    const cartDetails = req.cart;
+    
+    if (!req.user || !req.user.email) {
+      throw new Error("User email is missing");
+    }
+    
     let customer = await cartRepositories.getStripeCustomerByAttribute("email", req.user.email);
-    if (!customer) customer = await cartRepositories.createStripeCustomer(customer);
-
+    if (!customer) customer = await cartRepositories.createStripeCustomer({ email: req.user.email });
+    
+    const lineItems = [];
+    
     for (const cartProduct of cartDetails.cartProducts) {
       const productDetails = cartProduct.products;
-
-
       product = await cartRepositories.getStripeProductByAttribute("name", productDetails.name);
-
-
       if (!product) product = await cartRepositories.createStripeProduct(productDetails);
-
       price = await cartRepositories.getStripePriceByAttribute("product", product.id);
-      if (!price) price = await cartRepositories.createStripePrice(product);
-
-
-      session = await cartRepositories.getStripeSessionByAttribute("customer", customer.id);
-      if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
+      if (!price) price = await cartRepositories.createStripePrice({ product: product.id, price: productDetails.price, discount: productDetails.discount });
+      
+      lineItems.push({
+        quantity: 1,
+        price: price.id
+      });
     }
+    
+    const sessionInfo = {
+      success_url: "http://localhost:5000/api/cart/buyer-checkout/return-url-succeeded",
+      cancel_url: "http://localhost:5000/api/cart/buyer-checkout/return-url-cancelled",
+      customer: customer.id,
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: lineItems
+    };
 
-
-
-
-    // req.body.price.product = product.id;
-    // req.body.session.customer = customer.id;
-    // req.body.session.line_items = [{
-    //   quantity: req.body.price.quantity,
-    // //   price: req.body.price.price,
-    // }];
+    // Create the session using the sessionInfo
+    const session = await cartRepositories.createStripeSession(sessionInfo);
 
     return res.status(httpStatus.OK).json({
-      customer, product, price, session
-
-    })
+      customer,
+      product,
+      price,
+      session 
+    });
   } catch (error) {
+    console.error("Error creating Stripe session:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      error: error.message
-    })
+  
+    });
   }
-}
+};
 export {
   buyerGetCart,
   buyerGetCarts,

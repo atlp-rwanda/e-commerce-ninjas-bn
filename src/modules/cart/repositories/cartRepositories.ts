@@ -177,31 +177,33 @@ const getOrdersByUserId = async (userId: string) => {
       ]
     });
 };
-const getStripeCustomerByAttribute =  async (attribute, value) => {
+const getStripeCustomerByAttribute = async (attribute: string, value: string) => {
   const customers = await stripe.customers.list({
-    [attribute]: value,
     limit: 1,
+    [attribute]: value
   });
   return customers.data.length ? customers.data[0] : null;
 };
-const createStripeCustomer=  async (customer) => {
-  return await stripe.customers.create(customer);
+
+const createStripeCustomer = async (customerInfo) => {
+  return await stripe.customers.create(customerInfo);
 }
+
 const getStripeProductByAttribute = async (attribute, value) => {
   const products = await stripe.products.list({
-    limit: 100, // Adjust limit based on your needs
+    limit: 100,
   });
-
   return products.data.find(product => product[attribute] === value) || null;
 }
+
 const createStripeProduct = async (productInfo) => {
   const discountPercentage = parseFloat(productInfo.discount.replace("%", ""));
-  const unitAmount = Math.round(productInfo.price * 100 * (1 - discountPercentage / 100)); // Calculate the discounted amount in cents
+  const unitAmount = Math.round(productInfo.price * 100 * (1 - discountPercentage / 100));
 
   return await stripe.products.create({
     name: productInfo.name,
     description: productInfo.description,
-    images: productInfo.images.slice(0, 4), // Limit to 4 images
+    images: productInfo.images.slice(0, 4),
     default_price_data: {
       unit_amount: unitAmount,
       currency: "usd",
@@ -214,13 +216,12 @@ const getStripePriceByAttribute = async (attribute, value) => {
     [attribute]: value,
     limit: 1,
   });
-
   return prices.data.length ? prices.data[0] : null;
 };
 
 const createStripePrice = async (priceInfo) => {
   const discountPercentage = parseFloat(priceInfo.discount.replace("%", ""));
-  const unitAmount = Math.round(priceInfo.price * 100 * (1 - discountPercentage / 100)); // Calculate the discounted amount in cents
+  const unitAmount = Math.round(priceInfo.price * 100 * (1 - discountPercentage / 100));
 
   return await stripe.prices.create({
     product: priceInfo.product,
@@ -230,32 +231,31 @@ const createStripePrice = async (priceInfo) => {
 };
 
 
-const getStripeSessionByAttribute = async (attribute, value) => {
+const getStripeSessionByAttribute = async (attribute: string, value: string) => {
   const sessions = await stripe.checkout.sessions.list({
     [attribute]: value,
     limit: 1,
   });
   return sessions.data.length ? sessions.data[0] : null;
-}
-const createStripeSession = async (sessionInfo: any) => {
-  return await stripe.checkout.sessions.create({
-    payment_method_types: sessionInfo.payment_method_types,
-    mode: sessionInfo.mode,
-    line_items: [
-      {
-        quantity: sessionInfo.quantity,
-        price: sessionInfo.price,
-      },
-    ],
-    success_url: sessionInfo.success_url, 
-    cancel_url: sessionInfo.cancel_url,  
-  });
 };
 
+const createStripeSession = async (sessionInfo: any) => {
+  const sessionData: any = {
+    payment_method_types: sessionInfo.payment_method_types,
+    mode: sessionInfo.mode,
+    line_items: sessionInfo.line_items,
+    success_url: sessionInfo.success_url,
+    cancel_url: sessionInfo.cancel_url,
+    customer: sessionInfo.customer,
+  };
 
+  // Remove any unwanted properties if they are present
+  delete sessionData.ui_mode;
+  delete sessionData.return_url;
 
-
-
+  const session = await stripe.checkout.sessions.create(sessionData);
+  return session;
+};
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
