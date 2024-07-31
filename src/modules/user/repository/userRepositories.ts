@@ -76,6 +76,20 @@ const findSellerRequestByUserId = async (userId: string) => {
   return await db.SellerRequest.findOne({ where: { userId } });
 };
 
+const updateUserAddress = async (address: any, userId: string) => {
+  await db.Addresses.update({ ...address }, { where: { userId }, returning: true });
+  const updateAddress = await db.Addresses.findOne({ where: { userId } });
+  return updateAddress;
+};
+
+const addUserAddress = async (address: any) => {
+  return await db.Addresses.create(address);
+};
+
+const findAddressByUserId = async (userId: string) => {
+  return await db.Addresses.findOne({ where: { userId } });
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -88,5 +102,8 @@ export default {
   markNotificationAsRead,
   findUserById,
   createSellerRequest,
-  findSellerRequestByUserId
+  findSellerRequestByUserId,
+  updateUserAddress,
+  addUserAddress,
+  findAddressByUserId
 };

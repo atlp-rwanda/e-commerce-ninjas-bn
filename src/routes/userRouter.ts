@@ -2,7 +2,7 @@ import { Router } from "express";
 import userControllers from "../modules/user/controller/userControllers";
 import { isUserExist, validation, isUsersExist, credential, isNotificationsExist, isUserProfileComplete, isSellerRequestExist } from "../middlewares/validation";
 import { userAuthorization } from "../middlewares/authorization";
-import { statusSchema, roleSchema, userSchema, changePasswordSchema } from "../modules/user/validation/userValidations";
+import { statusSchema, roleSchema, userSchema, changePasswordSchema, changeAddressSchema } from "../modules/user/validation/userValidations";
 import upload from "../helpers/multer";
 
   const router = Router();
@@ -23,5 +23,7 @@ router.put("/user-mark-notification/:id", userAuthorization(["admin", "buyer", "
 router.put("/user-mark-all-notifications", userAuthorization(["admin", "buyer", "seller"]), isNotificationsExist, userControllers.markAllNotificationsAsRead);
 
 router.post("/user-submit-seller-request", userAuthorization(["admin", "buyer", "seller"]), isUserProfileComplete,isSellerRequestExist, userControllers.submitSellerRequest)
+
+router.post("/user-change-address", userAuthorization(["admin", "buyer", "seller"]), validation(changeAddressSchema), userControllers.changeUserAddress);
 
 export default router;

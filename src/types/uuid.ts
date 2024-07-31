@@ -25,6 +25,18 @@ export const productFiveId = uuidv4();
 export const productSixId = uuidv4();
 export const productSevenId = uuidv4();
 export const productEightId = uuidv4();
+export const productNineId = uuidv4();
+export const productTenId = uuidv4();
+export const productElevenId = uuidv4();
+export const productTwelveId = uuidv4();
+export const productThirteenId = uuidv4();
+export const productFourteenId = uuidv4();
+export const productFifteenId = uuidv4();
+export const productSixteenId = uuidv4();
+export const productSeventeenId = uuidv4();
+export const productEighteenId = uuidv4();
+export const productNineteenId = uuidv4();
+export const productTwentyId = uuidv4();
 
 export const orderOneId = uuidv4();
 export const orderTwoId = uuidv4();
@@ -61,3 +73,6 @@ export const productReviewTwoId = uuidv4();
 
 export const wishListProductsOneId = uuidv4();
 export const wishListProductsTwoId  = uuidv4();
+
+export const addressOneId = uuidv4();
+export const addressTwoId  = uuidv4();

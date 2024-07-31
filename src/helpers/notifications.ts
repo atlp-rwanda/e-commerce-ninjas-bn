@@ -102,8 +102,8 @@ eventEmitter.on("UserChangeRole", async (user:usersAttributes) => {
 })
 eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
   const username = user.firstName && user.lastName
-    ? `${user.firstName} ${user.lastName}`
-    : user.email.split("@")[0];
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
   const  message = `Hi ${username}, Your Account Has Been re-enabled.`;
   await emitNotification(user.id, message, "UserChangeStatus");
   await sendEmail(
@@ -113,8 +113,8 @@ eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
 })
 eventEmitter.on("accountVerified", async (user:usersAttributes) => {
   const username = user.firstName && user.lastName
-    ? `${user.firstName} ${user.lastName}`
-    : user.email.split("@")[0];
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
   const message = `Welcome to E-commerce Ninjas, ${username}! Your account has been successfully created. We're excited to have you on board. Explore our features and enjoy your experience. If you have any questions, feel free to reach out to us. Happy shopping!
 `
   await emitNotification(user.id, message, "accountVerified");

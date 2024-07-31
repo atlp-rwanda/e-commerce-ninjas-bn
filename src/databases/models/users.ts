@@ -9,6 +9,7 @@ import Sessions from "./sessions";
 import Shops from "./shops";
 import Notifications from "./notifications";
 import SellerRequest from "./sellerRequests";
+import Addresses from "./addresses";
 export interface usersAttributes {
   id: string;
   firstName?: string;
@@ -55,6 +56,7 @@ class Users extends Model<usersAttributes, UsersCreationAttributes> implements u
 
   static associate() {
     Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions" });
+    Users.hasOne(Addresses, { foreignKey: "userId", as: "addresses" });
     Users.hasOne(Shops, { foreignKey: "userId", as: "shops" });
     Users.hasMany(Notifications, { foreignKey: "userId", as: "notifications" });
     Users.hasMany(SellerRequest, { foreignKey: "userId", as: "sellerRequests" });

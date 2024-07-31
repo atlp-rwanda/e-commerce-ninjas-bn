@@ -1,12 +1,13 @@
 import { usersAttributes } from "../databases/models/users";
 
 
-export const userChangeRole = async(user:usersAttributes)=>{
-    const username = user.firstName && user.lastName
+
+export const userChangeRole = async (user: usersAttributes) => {
+  const username = user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName}`
     : user.email.split("@")[0];
-   return (
-`<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+  return (
+    `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <p>Dear ${username},</p>
     <p>We are pleased to inform you that your ${user.role} within our system has been updated to <span style="color: green;">${user.role}</span>.</p>
     <p>With this role, you will now have access to additional features and responsibilities. If you have any questions or need further assistance,</p>
@@ -17,12 +18,12 @@ export const userChangeRole = async(user:usersAttributes)=>{
   </div>`)
 }
 
-export const userChangeStatus = async(user:usersAttributes)=>{
-    const username = user.firstName && user.lastName
+export const userChangeStatus = async (user: usersAttributes) => {
+  const username = user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName}`
     : user.email.split("@")[0];
-   return user.status === "disabled" ?(
-`<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+  return user.status === "disabled" ? (
+    `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <p>Dear ${username},</p>
     <p>We regret to inform you that your account has been <strong style="color: red;">disabled / suspended</strong> due to a violation of our terms of service or suspicious activity.</p>
     <p>If you believe this is a mistake or need further assistance, please contact our support team at this email.</p>
@@ -42,13 +43,13 @@ export const userChangeStatus = async(user:usersAttributes)=>{
   </div>
     `
   )
-   }
+}
 
-export const welcomeEmail = async (user:usersAttributes)=>{
-    const username = user.firstName && user.lastName
+export const welcomeEmail = async (user: usersAttributes) => {
+  const username = user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName}`
     : user.email.split("@")[0];
-    return (`
+  return (`
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <p>👋 Dear ${username},</p>
     <p>Welcome to <strong>E-commerce ninjas</strong>! Your account has been successfully created, and we are thrilled to have you on board. 🎉</p>
