@@ -1,6 +1,7 @@
 import { usersAttributes } from "../databases/models/users";
 
 
+
 export const userChangeRole = async (user: usersAttributes) => {
   const username = user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName}`

@@ -35,7 +35,7 @@ const getAllPastChats = async () => {
       {
         model: db.Users,
         as: "user",
-        attributes: ["id", "firstName", "lastName", "email", "role"]
+        attributes: ["id", "firstName", "lastName", "email", "role","profilePicture"]
       }
     ]
   });
