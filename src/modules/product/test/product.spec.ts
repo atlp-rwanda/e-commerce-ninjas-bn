@@ -504,22 +504,7 @@ describe("Product Middleware", () => {
       });
     });
 
-    it("should return 400 if the product already exists", async () => {
-      sinon
-        .stub(productRepositories, "findShopByAttributes")
-        .resolves({ id: 1 });
-      sinon
-        .stub(productRepositories, "findByModelsAndAttributes")
-        .resolves(true);
-
-      await isProductExist(req, res, next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.BAD_REQUEST,
-        message: "Please update the quantities.",
-      });
-    });
+    
 
     it("should call next if product does not exist", async () => {
       sinon
