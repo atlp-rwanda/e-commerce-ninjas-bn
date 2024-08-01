@@ -102,8 +102,12 @@ const getUserDetails = async (req: Request, res: Response) => {
 
 const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const upload = await uploadImages(req.file);
-    const userData = { ...req.body, profilePicture: upload.secure_url };
+    let profilePicture;
+    if (req.file) {
+      const upload = await uploadImages(req.file);
+      profilePicture = upload.secure_url;
+    }
+    const userData = { ...req.body, profilePicture };
     const user = await userRepositories.updateUserProfile(
       userData,
       req.user.id
