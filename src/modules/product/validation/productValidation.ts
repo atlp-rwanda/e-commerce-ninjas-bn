@@ -54,6 +54,7 @@ const productUpdateSchema = Joi.object({
   expiryDate: Joi.date().optional(),
   expired: Joi.boolean().default(false).optional(),
   bonus: Joi.string().optional(),
+  quantity: Joi.string().optional(),
 });
 
 const shopSchema = Joi.object({

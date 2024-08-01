@@ -204,15 +204,14 @@ const sellerUpdateProduct = async (req: ExtendRequest, res: Response) => {
 
     const images = uploadPromises && (await Promise.all(uploadPromises));
 
-    const imagesArr = images
+    const imagesArr = (images && images.length > 0)
       ? images.map((image) => image.secure_url)
       : product.images;
 
     const updatedProductData = {
       ...product,
       ...req.body,
-      imagesArr,
-      expiryDate: new Date(),
+      images: imagesArr,
     };
 
     const updatedProduct = await productRepositories.updateProduct(

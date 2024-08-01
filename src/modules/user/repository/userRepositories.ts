@@ -29,7 +29,6 @@ const postChatMessage = async (userId, message) => {
 
 const getAllPastChats = async () => {
   const chats = await db.Chats.findAll({
-    limit: 50,
     order: [["createdAt", "ASC"]],
     include: [
       {
