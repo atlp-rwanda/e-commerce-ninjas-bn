@@ -315,20 +315,7 @@ const isProductExist = async (req: any, res: Response, next: NextFunction) => {
         .status(httpStatus.NOT_FOUND)
         .json({ status: httpStatus.NOT_FOUND, message: "Not shop found." });
     }
-    const isProductAvailable =
-      await productRepositories.findByModelsAndAttributes(
-        Products,
-        "name",
-        "shopId",
-        req.body.name,
-        shop.id
-      );
-    if (isProductAvailable) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: httpStatus.BAD_REQUEST,
-        message: "Please update the quantities.",
-      });
-    }
+
     req.shop = shop;
     next();
   } catch (error) {
