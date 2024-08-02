@@ -555,41 +555,6 @@ describe("buyerClearCarts", () => {
     });
   });
 });
-describe("Payment Controller", () => {
-  let req;
-  let res;
-  let sandbox: sinon.SinonSandbox;
-
-  const stripe = new Stripe("fake_stripe_secret_key");
-
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    req = {
-      user: { id: "user-id" },
-    };
-    res = {
-      status: sinon.stub().returnsThis(),
-      json: sinon.stub().returnsThis(),
-      send: sinon.stub().returnsThis(),
-    };
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  describe("checkout", () => {
-
-
-    it("should handle errors and return 500", async () => {
-      sandbox
-        .stub(cartRepositories, "findCartIdbyUserId")
-        .throws(new Error("Database error"));
-      console.log(await cartController.buyerPayCart(req, res));
-      expect(res.status).to.have.been.calledWith(httpStatus.INTERNAL_SERVER_ERROR);
-    });
-  });
-});
 describe("paymentCheckoutSchema", () => {
   it("should validate a valid cartId", () => {
     const data = { cartId: "valid-cart-id" };

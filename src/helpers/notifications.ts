@@ -104,11 +104,11 @@ eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
   const username = user.firstName && user.lastName
   ? `${user.firstName} ${user.lastName}`
   : user.email.split("@")[0];
-  const  message = `Hi ${username}, Your Account Has Been re-enabled.`;
+  const  message = `Hi ${username}, Your Account Has Been re-enabled / re-activated.`;
   await emitNotification(user.id, message, "UserChangeStatus");
   await sendEmail(
     user.email,
-    user.status === "disabled" ? "Your Account Has Been Suspended" : "Your Account Has Been re-enabled",
+    user.status === "disabled" ? "Your Account Has Been Suspended" : "Your Account Has Been re-enabled / re-activated",
     await userChangeStatus(user))
 })
 eventEmitter.on("accountVerified", async (user:usersAttributes) => {
