@@ -863,14 +863,12 @@ const isSellerRequestExist = async (req: Request, res: Response, next: NextFunct
   try {
     const userId = req.user.id;
     const existingRequest = await userRepositories.findSellerRequestByUserId(userId);
-
     if (existingRequest) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
         message: "Seller request already submitted",
       });
     }
-
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -923,6 +921,43 @@ const isOrderExist = async (req: Request, res:Response, next:NextFunction)=>{
     }
 }
 
+const isOrderEmpty = async (req: Request, res: Response, next: NextFunction) => {
+  const orders = await cartRepositories.getOrdersHistory();
+  if(!orders){
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      error: "order Not Found"
+    })
+  }
+  (req as any).orders = orders;
+    next();
+}
+
+const isShopEmpty = async (req: Request, res: Response, next: NextFunction) => {
+  const shops = await userRepositories.getAllShops();
+  if(!shops){
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      error: "Shops Not Found"
+    })
+  }
+  (req as any).shops = shops;
+    next();
+}
+
+const isOroderExistByShopId = async (req: Request, res: Response, next: NextFunction) => {
+  const shop = await productRepositories.findShopByUserId(req.user.id);
+  const orders = await productRepositories.sellerGetOrdersHistory(shop.id);
+ 
+  if(!orders){
+    return res.status(httpStatus.NOT_FOUND).json({
+      status: httpStatus.NOT_FOUND,
+      error: "Order Not Found"
+    })
+  }
+  (req as any).ordersHistory = orders;
+    next();
+}
 
 export {
   validation,
@@ -956,5 +991,8 @@ export {
   isProductOrdered,
   isUserProfileComplete,
   isSellerRequestExist,
-  isOrderExist
+  isOrderExist,
+  isOrderEmpty,
+  isShopEmpty,
+  isOroderExistByShopId
 };    
