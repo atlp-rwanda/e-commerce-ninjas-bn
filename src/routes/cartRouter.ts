@@ -10,7 +10,7 @@ import {
   isOrderExist
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema,paymentCheckoutSchema,updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
+import { cartSchema, checkoutSessionSchema, paymentCheckoutSchema, productDetailsSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
 import { webhook } from "../services/stripe";
 
 const router: Router = Router();
@@ -63,15 +63,18 @@ router.get(
   userAuthorization(["buyer"]),
   isCartIdExist,
   cartControllers.buyerCheckout
-  );
+);
 
-  router.post("/buyer-pay-cart", userAuthorization(["buyer"]),validation(paymentCheckoutSchema),isCartIdExist,cartControllers.buyerPayCart)
-  router.post("/webhook",webhook)
-  router.get("/payment-success", userAuthorization(["buyer"]),cartControllers.paymentSuccess)
-  router.get("/payment-canceled", userAuthorization(["buyer"]),cartControllers.paymentCanceled)
+router.post("/buyer-pay-cart", userAuthorization(["buyer"]), validation(paymentCheckoutSchema), isCartIdExist, cartControllers.buyerPayCart)
+router.post("/webhook", webhook)
+router.get("/payment-success", userAuthorization(["buyer"]), cartControllers.paymentSuccess)
+router.get("/payment-canceled", userAuthorization(["buyer"]), cartControllers.paymentCanceled)
 
-router.get("/user-get-order-status/:id",userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus )
-router.put("/admin-update-order-status/:id", userAuthorization(["admin"]),validation(updateOrderStatusSchema),isOrderExist, cartControllers.adminUpdateOrderStatus)
-router.get("/buyer-get-order-history", userAuthorization(["buyer"]),isOrderExist, cartControllers.buyerGetOrders)
+router.get("/user-get-order-status/:id", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus)
+router.put("/admin-update-order-status/:id", userAuthorization(["admin"]), validation(updateOrderStatusSchema), isOrderExist, cartControllers.adminUpdateOrderStatus)
+router.get("/buyer-get-order-history", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrders)
+
+router.post("/create-stripe-product", userAuthorization(["buyer"]), validation(productDetailsSchema), cartControllers.stripeCreateProduct);
+router.post("/checkout-stripe-session", userAuthorization(["buyer"]), validation(checkoutSessionSchema), cartControllers.stripeCheckoutSession);
 
 export default router;

@@ -359,7 +359,7 @@ describe("Product and Shops API Tests", () => {
       const cb = (err: Error | null) => {
         try {
           expect(err).to.be.an("error");
-          expect(err!.message).to.equal("Only images are allowed");
+          expect(err!.message).to.equal("Only image files are allowed");
           done();
         } catch (error) {
           done(error);
