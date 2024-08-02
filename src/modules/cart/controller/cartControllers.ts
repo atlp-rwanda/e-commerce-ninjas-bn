@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable comma-dangle */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 import { Response, Request } from "express";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
@@ -353,7 +351,7 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
     const order = req.order.shippingProcess
     return res.status(httpStatus.OK).json({
       message: "Order Status found successfully",
-      data: {order}
+      data: { order }
     })
 
   } catch (error) {
@@ -364,15 +362,15 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   }
 }
 
-const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
-  try{
+const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
+  try {
     const orders = req.order
     return res.status(httpStatus.OK).json({
       message: "Orders found successfully",
-      data: {orders}
+      data: { orders }
     })
   }
-  catch(error){
+  catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
@@ -383,20 +381,44 @@ const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order
-    await cartRepositories.updateOrderStatus(req.params.id, req.body.status,req.body.shippingProcess);
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status, req.body.shippingProcess);
     eventEmitter.emit("orderStatusUpdated", order);
     return res.status(httpStatus.OK).json({
       message: "Status updated successfully!",
       data: { order }
     })
-  }catch(error){
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
     })
   }
-  
+
 }
+
+const stripeCreateProduct = async (req, res) => {
+  try {
+    let product = await cartRepositories.getStripeProductByAttribute('name', req.body.planInfo.name);
+    if (!product) product = await cartRepositories.createStripeProduct(req.body.planInfo);
+    return res.status(httpStatus.OK).json({ message: "Success.", data: { product } });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
+  }
+};
+
+const stripeCheckoutSession = async (req, res) => {
+  try {
+    let customer = await cartRepositories.getStripeCustomerByAttribute('email', req.body.sessionInfo.customer_email);
+    if (!customer) customer = await cartRepositories.createStripeCustomer({ email: req.body.sessionInfo.customer_email });
+    delete req.body.sessionInfo.customer_email;
+    req.body.sessionInfo.customer = customer.id;
+    let session = await cartRepositories.getStripeSessionByAttribute('customer', customer.id);
+    if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
+    return res.status(httpStatus.OK).json({ message: "Success.", data: { session } });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
+  }
+};
 
 export {
   buyerGetCart,
@@ -415,5 +437,6 @@ export {
   addProductToExistingCart,
   buyerGetOrderStatus,
   buyerGetOrders,
-  adminUpdateOrderStatus
+  adminUpdateOrderStatus,
+  stripeCreateProduct, stripeCheckoutSession
 };
