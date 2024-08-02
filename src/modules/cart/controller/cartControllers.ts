@@ -287,65 +287,6 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
-const stripe = new Stripe(process.env.STRIPE_SECRET);
-const buyerPayCart = async (req: ExtendRequest, res: Response) => {
-  try {
-    const cartData: any = req.cart;
-    const line_items: any[] = [];
-    const shopIds: any[] = [];
-    const productIds: any[] = [];
-
-    for (const cartProduct of cartData.cartProducts) {
-      const productDetails = cartProduct.products;
-      let unitAmount = productDetails.price * 100;
-      const discountPercentage = parseFloat(productDetails.discount.replace("%", ""));
-      unitAmount = unitAmount * (1 - (discountPercentage / 100));
-      unitAmount = Math.round(unitAmount);
-      line_items.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: productDetails.name,
-            images: productDetails.images
-          },
-          unit_amount: unitAmount
-        },
-        quantity: cartProduct.quantity
-      });
-      shopIds.push(productDetails.shopId);
-      productIds.push(cartProduct.productId);
-    }
-    const session = await stripe.checkout.sessions.create({
-      line_items,
-      mode: "payment",
-      success_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-success`,
-      cancel_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-cancel`,
-      metadata: {
-        cartId: cartData.id.toString(),
-        shopIds: JSON.stringify(shopIds),
-        productIds: JSON.stringify(productIds)
-      }
-    });
-    res.status(httpStatus.OK).json({ payment_url: session.url });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-const paymentSuccess = (req: Request, res: Response) => {
-  try {
-    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-const paymentCanceled = (req: Request, res: Response) => {
-  try {
-    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-
 const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order.shippingProcess
@@ -396,29 +337,7 @@ const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
 
 }
 
-const stripeCreateProduct = async (req, res) => {
-  try {
-    let product = await cartRepositories.getStripeProductByAttribute('name', req.body.planInfo.name);
-    if (!product) product = await cartRepositories.createStripeProduct(req.body.planInfo);
-    return res.status(httpStatus.OK).json({ message: "Success.", data: { product } });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
-  }
-};
 
-const stripeCheckoutSession = async (req, res) => {
-  try {
-    let customer = await cartRepositories.getStripeCustomerByAttribute('email', req.body.sessionInfo.customer_email);
-    if (!customer) customer = await cartRepositories.createStripeCustomer({ email: req.body.sessionInfo.customer_email });
-    delete req.body.sessionInfo.customer_email;
-    req.body.sessionInfo.customer = customer.id;
-    let session = await cartRepositories.getStripeSessionByAttribute('customer', customer.id);
-    if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
-    return res.status(httpStatus.OK).json({ message: "Success.", data: { session } });
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
-  }
-};
 
 export {
   buyerGetCart,
@@ -427,16 +346,12 @@ export {
   buyerClearCarts,
   buyerCreateUpdateCart,
   buyerClearCartProduct,
-  buyerCheckout,
-  buyerPayCart,
   updateCartProduct,
   calculateDiscountedPrice,
   getProductDetails,
-  paymentSuccess,
-  paymentCanceled,
   addProductToExistingCart,
   buyerGetOrderStatus,
   buyerGetOrders,
+  buyerCheckout,
   adminUpdateOrderStatus,
-  stripeCreateProduct, stripeCheckoutSession
 };

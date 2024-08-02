@@ -28,6 +28,7 @@ env:
   Session_secret: ${{ secrets.Session_secret }}
   WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
   STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 jobs:
   build:
