@@ -319,6 +319,22 @@ const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
     })
   }
 }
+const buyerGetOrders2 = (req, res) => {
+  try {
+    const orders = req.orders
+
+    return res.status(httpStatus.OK).json({
+      message: "Orders found successfully",
+      data: { orders }
+    })
+  }
+  catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
 
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
@@ -411,6 +427,7 @@ export {
   stripeCreateProduct,
   stripeCheckoutSession,
   buyerUpdateCartStatus,
-  userCreateOrder
+  userCreateOrder,
+  buyerGetOrders2
   
 };

@@ -108,8 +108,7 @@ export const webhook = async (req: Request, res: Response) => {
 
 export const stripeCreateProduct = async (req, res) => {
   try {
-    let product = await cartRepositories.getStripeProductByAttribute("name", req.body.planInfo.name);
-    if (!product) product = await cartRepositories.createStripeProduct(req.body.planInfo);
+    const product = await cartRepositories.createStripeProduct(req.body.planInfo);
     return res.status(httpStatus.OK).json({ message: "Success.", data: { product } });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })

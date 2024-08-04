@@ -937,43 +937,6 @@ const isOrderExist = async (req: Request, res: Response, next: NextFunction) => 
   }
 }
 
-const isOrderEmpty = async (req: Request, res: Response, next: NextFunction) => {
-  const orders = await cartRepositories.getOrdersHistory();
-  if(!orders){
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      error: "order Not Found"
-    })
-  }
-  (req as any).orders = orders;
-    next();
-}
-
-const isShopEmpty = async (req: Request, res: Response, next: NextFunction) => {
-  const shops = await userRepositories.getAllShops();
-  if(!shops){
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      error: "Shops Not Found"
-    })
-  }
-  (req as any).shops = shops;
-    next();
-}
-
-const isOroderExistByShopId = async (req: Request, res: Response, next: NextFunction) => {
-  const shop = await productRepositories.findShopByUserId(req.user.id);
-  const orders = await productRepositories.sellerGetOrdersHistory(shop.id);
- 
-  if(!orders){
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      error: "Order Not Found"
-    })
-  }
-  (req as any).ordersHistory = orders;
-    next();
-}
 
 export {
   validation,
@@ -1011,5 +974,6 @@ export {
   isOrderExist,
   isOrderEmpty,
   isShopEmpty,
-  isOroderExistByShopId
+  isOroderExistByShopId,
+  isOrdersExist
 };    

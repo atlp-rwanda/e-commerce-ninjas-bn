@@ -9,7 +9,8 @@ import {
   validation,
   isOrderExist,
   isOrderEmpty,
-  isCartExist1
+  isCartExist1,
+  isOrdersExist
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
 import { cartSchema, checkoutSessionSchema, orderSchema, productDetailsSchema, updateCartStatusSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
@@ -71,6 +72,7 @@ router.get(
 router.get("/user-get-order-status/:id", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus)
 router.put("/admin-update-order-status/:id", userAuthorization(["admin"]), validation(updateOrderStatusSchema), isOrderExist, cartControllers.adminUpdateOrderStatus)
 router.get("/buyer-get-order-history", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrders)
+router.get("/buyer-get-orders-history", userAuthorization(["buyer"]), isOrdersExist, cartControllers.buyerGetOrders2)
 
 router.post("/create-stripe-product", userAuthorization(["buyer"]), validation(productDetailsSchema), stripeCreateProduct);
 router.post("/checkout-stripe-session", userAuthorization(["buyer"]), validation(checkoutSessionSchema), stripeCheckoutSession);

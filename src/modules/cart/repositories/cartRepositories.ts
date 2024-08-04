@@ -172,6 +172,18 @@ const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
   })
 }
 
+const getOrdersByCartId = async (userId: string) => {
+  return await db.Orders.findOne({
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ]
+  })
+}
+
 const getOrderById = async (orderId: string) => {
   return await db.Orders.findOne({ where: { id: orderId } })
 }
@@ -266,5 +278,6 @@ export default {
   createStripeSession, getStripeSessionByAttribute,
   getOrdersHistory
   updateCartStatus,
-  userSaveOrder
+  userSaveOrder,
+  getOrdersByCartId
 };
