@@ -322,7 +322,6 @@ const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
 const buyerGetOrders2 = (req, res) => {
   try {
     const orders = req.orders
-
     return res.status(httpStatus.OK).json({
       message: "Orders found successfully",
       data: { orders }

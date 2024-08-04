@@ -173,7 +173,7 @@ const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
 }
 
 const getOrdersByCartId = async (userId: string) => {
-  return await db.Orders.findOne({
+  return await db.Orders.findAll({
     include: [
       {
         model: db.Carts,
