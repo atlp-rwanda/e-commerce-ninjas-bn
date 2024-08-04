@@ -7,7 +7,24 @@ import CartProduct from "../../../databases/models/cartProducts";
 import Products from "../../../databases/models/products";
 import { stripe } from "../../../services/stripe.service";
 const getCartsByUserId = async (userId: string) => {
-  return await db.Carts.findAll({ where: { userId, status: "pending" } });
+  return await db.Carts.findOne({
+    where: { userId },
+    include: [
+      {
+        model: db.CartProducts,
+        as: "cartProducts",
+        include: [
+          {
+            model: db.Products,
+            as: "products"
+          },
+        ],
+      }
+    ]
+  });
+};
+const getCartsByUserId1 = async (userId: string) => {
+  return await db.Carts.findAll({ where: { userId } });
 };
 
 const addCart = async (body: Record<string, string | number>) => {
@@ -32,7 +49,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "discount", "images", "shopId"],
+        attributes: ["id", "name", "price", "discount", "images", "shopId", "description"],
       },
     ],
   });
@@ -98,9 +115,9 @@ const findCartProductsByCartId = async (value: any) => {
   return result;
 };
 
-const getCartByUserIdAndCartId = async (userId: string, cartId: string, status: string = "pending") => {
+const getCartByUserIdAndCartId = async (userId: string, cartId: string) => {
   return await db.Carts.findOne({
-    where: { id: cartId, userId, status },
+    where: { id: cartId, userId },
     include: [
       {
         model: db.CartProducts,
@@ -209,8 +226,16 @@ const getStripeSessionByAttribute = async (primaryKey: string, primaryValue: num
 const createStripeSession = async (body: Stripe.Checkout.SessionCreateParams): Promise<Stripe.Checkout.Session> => {
   return await stripe.checkout.sessions.create(body);
 };
+const updateCartStatus = async (cartId: string, status: string) => {
+
+  return await db.Carts.update({ status: status },
+    { where: { id: cartId } })
+}
 
 
+const userSaveOrder = async (body) => {
+  return await db.Orders.create(body);
+}
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
@@ -225,6 +250,7 @@ export default {
   deleteAllCartProducts,
   findCartByAttributes,
   getCartsByProductId,
+  getCartsByUserId1,
   findCartProductsByCartId,
   getCartByUserIdAndCartId,
   findCartProductByCartId,
@@ -239,4 +265,6 @@ export default {
   createStripeCustomer, getStripeCustomerByAttribute,
   createStripeSession, getStripeSessionByAttribute,
   getOrdersHistory
+  updateCartStatus,
+  userSaveOrder
 };

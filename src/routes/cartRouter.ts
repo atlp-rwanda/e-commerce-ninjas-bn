@@ -8,11 +8,12 @@ import {
   isProductIdExist,
   validation,
   isOrderExist,
-  isOrderEmpty
+  isOrderEmpty,
+  isCartExist1
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema, checkoutSessionSchema, productDetailsSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
-import {stripeCreateProduct,stripeCheckoutSession } from "../services/stripe";
+import { cartSchema, checkoutSessionSchema, orderSchema, productDetailsSchema, updateCartStatusSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
+import { stripeCreateProduct, stripeCheckoutSession } from "../services/stripe";
 
 const router: Router = Router();
 
@@ -56,7 +57,7 @@ router.delete(
 router.delete(
   "/buyer-clear-carts",
   userAuthorization(["buyer"]),
-  isCartExist,
+  isCartExist1,
   cartControllers.buyerClearCarts
 );
 router.get(
@@ -74,6 +75,4 @@ router.get("/buyer-get-order-history", userAuthorization(["buyer"]), isOrderExis
 router.post("/create-stripe-product", userAuthorization(["buyer"]), validation(productDetailsSchema), stripeCreateProduct);
 router.post("/checkout-stripe-session", userAuthorization(["buyer"]), validation(checkoutSessionSchema), stripeCheckoutSession);
 
-router.get("/admin-get-order-history",userAuthorization(["admin"]),isOrderEmpty,cartControllers.adminGetOrdersHistory)
-router.get("/seller-get-order-history",userAuthorization(["seller"]),isOrderEmpty,cartControllers.adminGetOrdersHistory)
 export default router;

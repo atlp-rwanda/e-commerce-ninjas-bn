@@ -115,9 +115,30 @@ const checkoutSessionSchema = Joi.object({
     })
 });
 
+const updateCartStatusSchema = Joi.object({
+    cartId: Joi.string().required().messages({
+        'any.required': 'cartId is required',
+        'string.base': 'cartId must be a string',
+        'string.empty': 'cartId is not allowed to be empty',
+    }),
+    status: Joi.string().required().messages({
+        'any.required': 'status is required',
+        'string.base': 'status must be a string',
+        'string.empty': 'status is not allowed to be empty',
+    })
+})
+
+const orderSchema = Joi.object({
+    cartId: Joi.string().guid({ version: 'uuidv4' }).required(),
+    paymentMethodId: Joi.string().required(),
+    products: Joi.array().required(),
+    status: Joi.string().valid('pending', 'completed', 'shipped', 'cancelled').required(),
+});
 export {
     cartSchema,
     paymentCheckoutSchema,
     updateOrderStatusSchema,
-    productDetailsSchema, checkoutSessionSchema
+    productDetailsSchema, checkoutSessionSchema,
+    updateCartStatusSchema,
+    orderSchema
 }   
