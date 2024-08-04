@@ -8,7 +8,7 @@ import Products from "../../../databases/models/products";
 import { stripe } from "../../../services/stripe.service";
 const getCartsByUserId = async (userId: string) => {
   return await db.Carts.findOne({
-    where: { userId },
+    where: { userId, status: "pending" },
     include: [
       {
         model: db.CartProducts,
@@ -24,7 +24,7 @@ const getCartsByUserId = async (userId: string) => {
   });
 };
 const getCartsByUserId1 = async (userId: string) => {
-  return await db.Carts.findAll({ where: { userId } });
+  return await db.Carts.findAll({ where: { userId, status: "pending" } });
 };
 
 const addCart = async (body: Record<string, string | number>) => {
@@ -117,7 +117,7 @@ const findCartProductsByCartId = async (value: any) => {
 
 const getCartByUserIdAndCartId = async (userId: string, cartId: string) => {
   return await db.Carts.findOne({
-    where: { id: cartId, userId },
+    where: { id: cartId, userId, status: "pending" },
     include: [
       {
         model: db.CartProducts,
