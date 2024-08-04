@@ -14,7 +14,7 @@ import {
   isOrderExists
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
-import { cartSchema, checkoutSessionSchema, orderSchema, productDetailsSchema, updateCartStatusSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
+import { cartSchema, checkoutSessionSchema, productDetailsSchema, updateCartStatusSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
 import { stripeCreateProduct, stripeCheckoutSession } from "../services/stripe";
 
 const router: Router = Router();
