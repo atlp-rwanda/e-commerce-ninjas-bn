@@ -8,7 +8,15 @@ const createUser = async (body: any) => {
 };
 
 const findUserByAttributes = async (key: string, value: any) => {
-  return await db.Users.findOne({ where: { [key]: value } });
+  return await db.Users.findOne({ where: { [key]: value }, 
+    include: [
+      {
+        model: db.Addresses,
+        as: "addresses",
+        attributes: [ "province", "district", "sector", "street" ]
+      }
+    ]
+   });
 };
 
 const updateUserByAttributes = async (

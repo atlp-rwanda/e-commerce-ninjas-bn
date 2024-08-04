@@ -1,9 +1,11 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import Stripe from "stripe";
 import db from "../../../databases/models";
 import CartProduct from "../../../databases/models/cartProducts";
 import Products from "../../../databases/models/products";
+import { stripe } from "../../../services/stripe.service";
 const getCartsByUserId = async (userId: string) => {
   return await db.Carts.findAll({ where: { userId, status: "pending" } });
 };
@@ -62,36 +64,41 @@ const deleteAllUserCarts = async (userId: string) => {
 const deleteCartById = async (id: string) => {
   await db.Carts.destroy({ where: { id } });
 };
-const findCartByAttributes = async(key1: string, value1:any, key2: string, value2:any): Promise<any> => {
+const findCartByAttributes = async (key1: string, value1: any, key2: string, value2: any): Promise<any> => {
   return await db.Carts.findOne({ where: { [key1]: value1, [key2]: value2 } })
 }
 
 const getCartsByProductId = async (productId: string, userId: string) => {
   return await db.Carts.findOne(
-    { where: 
-    { userId: userId }, 
-    include: [ 
-      { model: db.CartProducts, 
-        as: "cartProducts", 
-        where: { productId: productId } }, 
-        { model: db.Orders, 
-          as: "order" } ]
-  });
+    {
+      where:
+        { userId: userId },
+      include: [
+        {
+          model: db.CartProducts,
+          as: "cartProducts",
+          where: { productId: productId }
+        },
+        {
+          model: db.Orders,
+          as: "order"
+        }]
+    });
 };
 const findCartProductsByCartId = async (value: any) => {
   const result = await CartProduct.findAll({
-    where: {"cartId":value },
+    where: { "cartId": value },
     include: [{
-      model: Products, 
+      model: Products,
       as: "products",
-      attributes: [ "id" , "name", "discount", "description" , "category" , "images" ]
+      attributes: ["id", "name", "discount", "description", "category", "images"]
     }],
-    attributes: [ "id" , "quantity" , "discount", "price" , "totalPrice" ]
-  }) 
+    attributes: ["id", "quantity", "discount", "price", "totalPrice"]
+  })
   return result;
 };
 
-const getCartByUserIdAndCartId = async (userId: string,cartId: string,status: string = "pending") => {
+const getCartByUserIdAndCartId = async (userId: string, cartId: string, status: string = "pending") => {
   return await db.Carts.findOne({
     where: { id: cartId, userId, status },
     include: [
@@ -108,31 +115,31 @@ const getCartByUserIdAndCartId = async (userId: string,cartId: string,status: st
     ]
   });
 };
-const findCartIdbyUserId = async(userId: string)=>{
-  return await db.Carts.findOne({where:{userId}})
+const findCartIdbyUserId = async (userId: string) => {
+  return await db.Carts.findOne({ where: { userId } })
 }
-const findCartProductByCartId = async(cartId: string)=>{
-  return await db.CartProducts.findAll({where:{cartId:cartId}})
+const findCartProductByCartId = async (cartId: string) => {
+  return await db.CartProducts.findAll({ where: { cartId: cartId } })
 }
-const findProductById = async(productId: string)=>{
-  return  await db.Products.findByPk(productId)
+const findProductById = async (productId: string) => {
+  return await db.Products.findByPk(productId)
 }
-const saveOrder = async(lineItems: any, shopIds: any, productIds: any, session: any, cartId: any,paymentMethodId:any)=> {
+const saveOrder = async (lineItems: any, shopIds: any, productIds: any, session: any, cartId: any, paymentMethodId: any) => {
   const products = productIds.map((productId: any) => ({
-      productId,
-      status: "pending"
+    productId,
+    status: "pending"
   }));
-  const order =  {
-      shopId: shopIds[0], 
-      products: products,
-      cartId: cartId,
-      paymentMethodId: paymentMethodId,
-      orderDate: new Date(),
-      status: "pending",
-      createdAt: new Date(),
-      updatedAt: new Date()
+  const order = {
+    shopId: shopIds[0],
+    products: products,
+    cartId: cartId,
+    paymentMethodId: paymentMethodId,
+    orderDate: new Date(),
+    status: "pending",
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
-return await db.Orders.create(order)
+  return await db.Orders.create(order)
 }
 
 const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
@@ -176,6 +183,30 @@ const getOrdersByUserId = async (userId: string) => {
 };
 
 
+const getStripeProductByAttribute = async (primaryKey: string, primaryValue: number | string | boolean): Promise<Stripe.Product> => {
+  const product = await stripe.products.search({ query: `${primaryKey}: '${primaryValue}'` });
+  return product.data[0];
+};
+const createStripeProduct = async (body: Stripe.ProductCreateParams): Promise<Stripe.Product> => {
+  return await stripe.products.create(body);
+};
+
+const getStripeCustomerByAttribute = async (primaryKey: string, primaryValue: number | string | boolean): Promise<Stripe.Customer> => {
+  const customer = await stripe.customers.search({ query: `${primaryKey}: '${primaryValue}'` });
+  return customer.data[0];
+};
+const createStripeCustomer = async (body: Stripe.CustomerCreateParams): Promise<Stripe.Customer> => {
+  return await stripe.customers.create(body);
+};
+const getStripeSessionByAttribute = async (primaryKey: string, primaryValue: number | string | boolean): Promise<Stripe.Checkout.Session> => {
+  const subscription = await stripe.checkout.sessions.list({ [primaryKey]: primaryValue });
+  return subscription.data[0];
+};
+const createStripeSession = async (body: Stripe.Checkout.SessionCreateParams): Promise<Stripe.Checkout.Session> => {
+  return await stripe.checkout.sessions.create(body);
+};
+
+
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
@@ -199,5 +230,8 @@ export default {
   getOrderByOrderIdAndUserId,
   getOrderById,
   getOrdersByUserId,
-  updateOrderStatus
+  updateOrderStatus,
+  createStripeProduct, getStripeProductByAttribute,
+  createStripeCustomer, getStripeCustomerByAttribute,
+  createStripeSession, getStripeSessionByAttribute,
 };

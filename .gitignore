@@ -3,3 +3,5 @@ node_modules
 .cache__ggshield
 coverage
 .vscode
+dist
+.nyc_output

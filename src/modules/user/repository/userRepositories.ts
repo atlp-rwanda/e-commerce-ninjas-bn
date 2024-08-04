@@ -29,13 +29,12 @@ const postChatMessage = async (userId, message) => {
 
 const getAllPastChats = async () => {
   const chats = await db.Chats.findAll({
-    limit: 50,
     order: [["createdAt", "ASC"]],
     include: [
       {
         model: db.Users,
         as: "user",
-        attributes: ["id", "firstName", "lastName", "email", "role"]
+        attributes: ["id", "firstName", "lastName", "email", "role","profilePicture"]
       }
     ]
   });
@@ -76,6 +75,20 @@ const findSellerRequestByUserId = async (userId: string) => {
   return await db.SellerRequest.findOne({ where: { userId } });
 };
 
+const updateUserAddress = async (address: any, userId: string) => {
+  await db.Addresses.update({ ...address }, { where: { userId }, returning: true });
+  const updateAddress = await db.Addresses.findOne({ where: { userId } });
+  return updateAddress;
+};
+
+const addUserAddress = async (address: any) => {
+  return await db.Addresses.create(address);
+};
+
+const findAddressByUserId = async (userId: string) => {
+  return await db.Addresses.findOne({ where: { userId } });
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -88,5 +101,8 @@ export default {
   markNotificationAsRead,
   findUserById,
   createSellerRequest,
-  findSellerRequestByUserId
+  findSellerRequestByUserId,
+  updateUserAddress,
+  addUserAddress,
+  findAddressByUserId
 };

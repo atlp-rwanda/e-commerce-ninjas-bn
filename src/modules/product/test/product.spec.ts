@@ -359,7 +359,7 @@ describe("Product and Shops API Tests", () => {
       const cb = (err: Error | null) => {
         try {
           expect(err).to.be.an("error");
-          expect(err!.message).to.equal("Only images are allowed");
+          expect(err!.message).to.equal("Only image files are allowed");
           done();
         } catch (error) {
           done(error);
@@ -504,22 +504,7 @@ describe("Product Middleware", () => {
       });
     });
 
-    it("should return 400 if the product already exists", async () => {
-      sinon
-        .stub(productRepositories, "findShopByAttributes")
-        .resolves({ id: 1 });
-      sinon
-        .stub(productRepositories, "findByModelsAndAttributes")
-        .resolves(true);
-
-      await isProductExist(req, res, next);
-
-      expect(res.status).to.have.been.calledWith(httpStatus.BAD_REQUEST);
-      expect(res.json).to.have.been.calledWith({
-        status: httpStatus.BAD_REQUEST,
-        message: "Please update the quantities.",
-      });
-    });
+    
 
     it("should call next if product does not exist", async () => {
       sinon
@@ -852,7 +837,7 @@ describe("Change Password Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "admin@gmail.com",
+        email: "ecommerceninjas45@gmail.com",
         password: "Newpassword#12",
       })
       .end((error, response) => {

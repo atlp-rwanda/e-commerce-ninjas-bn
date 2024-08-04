@@ -1,15 +1,16 @@
-import { sendEmailNotification, sendEmailOrderStatus } from "../services/sendEmail";
+import { sendEmail, sendEmailNotification, sendEmailOrderStatus } from "../services/sendEmail";
 import userRepositories from "../modules/user/repository/userRepositories";
 import { EventEmitter } from "events";
 import cron from "node-cron";
 import productRepository from "../modules/product/repositories/productRepositories";
 import Products from "../databases/models/products";
 import Shops from "../databases/models/shops";
-import Users from "../databases/models/users";
+import Users, { usersAttributes } from "../databases/models/users";
 import { IProductsWithShop, IOrderWithCart } from "../types/index";
 import { io } from "../index";
 import Orders from "../databases/models/orders";
 import Carts from "../databases/models/carts";
+import { userChangeRole, userChangeStatus, welcomeEmail } from "../services/emailTemplate";
 
 export const eventEmitter = new EventEmitter();
 
@@ -25,6 +26,11 @@ const saveAndEmitNotification = async (userId: string, message: string, event: s
   io.to(userId).emit(event, message);
   await sendEmailNotification(userId, message);
 };
+
+const emitNotification = async (userId:string, message:string, event:string) => {
+  await userRepositories.addNotification(userId,message)
+  io.to(userId).emit(event, message);
+}
 
 const fetchOrderWithCarts = async (orderId: string): Promise<IOrderWithCart> => {
   return (await Orders.findOne({
@@ -82,6 +88,38 @@ eventEmitter.on("passwordChanged", async ({ userId, message }) => {
 eventEmitter.on("passwordExpiry", async ({ userId, message }) => {
   await saveAndEmitNotification(userId, message, "passwordExpiry");
 });
+
+eventEmitter.on("UserChangeRole", async (user:usersAttributes) => {
+  const username = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.email.split("@")[0];
+  const  message = `Hi ${username}, your role has been updated to ${user.role}. Enjoy your new privileges!`;
+  await emitNotification(user.id, message, "UserChangeRole");
+  await sendEmail(
+    user.email,
+    "Your Role Has Been Updated",
+    await userChangeRole(user))
+})
+eventEmitter.on("UserChangeStatus", async (user:usersAttributes) => {
+  const username = user.firstName && user.lastName
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
+  const  message = `Hi ${username}, Your Account Has Been re-enabled / re-activated.`;
+  await emitNotification(user.id, message, "UserChangeStatus");
+  await sendEmail(
+    user.email,
+    user.status === "disabled" ? "Your Account Has Been Suspended" : "Your Account Has Been re-enabled / re-activated",
+    await userChangeStatus(user))
+})
+eventEmitter.on("accountVerified", async (user:usersAttributes) => {
+  const username = user.firstName && user.lastName
+  ? `${user.firstName} ${user.lastName}`
+  : user.email.split("@")[0];
+  const message = `Welcome to E-commerce Ninjas, ${username}! Your account has been successfully created. We're excited to have you on board. Explore our features and enjoy your experience. If you have any questions, feel free to reach out to us. Happy shopping!
+`
+  await emitNotification(user.id, message, "accountVerified");
+  await sendEmail(user.email, "Welcome to E-commerce Ninjas!",await welcomeEmail(user))
+})
 
 eventEmitter.on("orderStatusUpdated", async (order) => {
   const orderStatus = await fetchOrderWithCarts(order.id)

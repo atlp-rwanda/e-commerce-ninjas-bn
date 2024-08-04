@@ -19,7 +19,7 @@ const sendEmail = async(email: string, subject: string, message: string) => {
             from: process.env.MAIL_ID,
             to: email,
             subject: subject,
-            text: message
+            html: message
         };
     
         await transporter.sendMail(mailOptionsVerify);

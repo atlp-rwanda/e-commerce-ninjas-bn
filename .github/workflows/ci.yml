@@ -28,6 +28,7 @@ env:
   Session_secret: ${{ secrets.Session_secret }}
   WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
   STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 jobs:
   build:
@@ -54,7 +55,7 @@ jobs:
 
       - run: npm run build --if-present
 
-      - run: npm test --if-present
+      - run: npm test --if-present -- --verbose
 
       - run: npm run coverage --if-present
 

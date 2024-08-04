@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable comma-dangle */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 import { Response, Request } from "express";
 import httpStatus from "http-status";
 import cartRepositories from "../repositories/cartRepositories";
@@ -289,71 +287,12 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
     });
   }
 };
-const stripe = new Stripe(process.env.STRIPE_SECRET);
-const buyerPayCart = async (req: ExtendRequest, res: Response) => {
-  try {
-    const cartData: any = req.cart;
-    const line_items: any[] = [];
-    const shopIds: any[] = [];
-    const productIds: any[] = [];
-
-    for (const cartProduct of cartData.cartProducts) {
-      const productDetails = cartProduct.products;
-      let unitAmount = productDetails.price * 100;
-      const discountPercentage = parseFloat(productDetails.discount.replace("%", ""));
-      unitAmount = unitAmount * (1 - (discountPercentage / 100));
-      unitAmount = Math.round(unitAmount);
-      line_items.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: productDetails.name,
-            images: productDetails.images
-          },
-          unit_amount: unitAmount
-        },
-        quantity: cartProduct.quantity
-      });
-      shopIds.push(productDetails.shopId);
-      productIds.push(cartProduct.productId);
-    }
-    const session = await stripe.checkout.sessions.create({
-      line_items,
-      mode: "payment",
-      success_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-success`,
-      cancel_url: `${process.env.SERVER_URL_PRO}/api/cart/payment-cancel`,
-      metadata: {
-        cartId: cartData.id.toString(),
-        shopIds: JSON.stringify(shopIds),
-        productIds: JSON.stringify(productIds)
-      }
-    });
-    res.status(httpStatus.OK).json({ payment_url: session.url });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-const paymentSuccess = (req: Request, res: Response) => {
-  try {
-    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-const paymentCanceled = (req: Request, res: Response) => {
-  try {
-    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });
-  } catch (error) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
-  }
-};
-
 const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order.shippingProcess
     return res.status(httpStatus.OK).json({
       message: "Order Status found successfully",
-      data: {order}
+      data: { order }
     })
 
   } catch (error) {
@@ -364,15 +303,15 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
   }
 }
 
-const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
-  try{
+const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
+  try {
     const orders = req.order
     return res.status(httpStatus.OK).json({
       message: "Orders found successfully",
-      data: {orders}
+      data: { orders }
     })
   }
-  catch(error){
+  catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
@@ -383,20 +322,22 @@ const buyerGetOrders = async(req:ExtendRequest, res:Response)=>{
 const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
   try {
     const order = req.order
-    await cartRepositories.updateOrderStatus(req.params.id, req.body.status,req.body.shippingProcess);
+    await cartRepositories.updateOrderStatus(req.params.id, req.body.status, req.body.shippingProcess);
     eventEmitter.emit("orderStatusUpdated", order);
     return res.status(httpStatus.OK).json({
       message: "Status updated successfully!",
       data: { order }
     })
-  }catch(error){
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: error.message
     })
   }
-  
+
 }
+
+
 
 export {
   buyerGetCart,
@@ -405,15 +346,12 @@ export {
   buyerClearCarts,
   buyerCreateUpdateCart,
   buyerClearCartProduct,
-  buyerCheckout,
-  buyerPayCart,
   updateCartProduct,
   calculateDiscountedPrice,
   getProductDetails,
-  paymentSuccess,
-  paymentCanceled,
   addProductToExistingCart,
   buyerGetOrderStatus,
   buyerGetOrders,
-  adminUpdateOrderStatus
+  buyerCheckout,
+  adminUpdateOrderStatus,
 };

@@ -53,7 +53,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/register")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -73,7 +73,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -88,7 +88,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -103,7 +103,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -152,7 +152,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -182,7 +182,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((error, response) => {
@@ -217,7 +217,7 @@ describe("Authentication Test Cases", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "ecommerceninjas45@gmail.com",
+        email: "ecommerceninjas8@gmail.com",
         password: "userPassword@123"
       })
       .end((err, res) => {
@@ -640,7 +640,7 @@ describe("Google Authentication", () => {
 describe("Forget password", () => {
   let resetToken: string = null
   afterEach(async () => {
-    const user = await Users.findOne({ where: { email: "admin@gmail.com" } });
+    const user = await Users.findOne({ where: { email: "ecommerceninjas45@gmail.com" } });
     if (user) {
       const tokenRecord = await Session.findOne({ where: { userId: user.dataValues.id } })
       if (tokenRecord) {
@@ -651,7 +651,7 @@ describe("Forget password", () => {
   it("should return send email for reset password", (done) => {
     router()
       .post("/api/auth/forget-password")
-      .send({ email: "admin@gmail.com" })
+      .send({ email: "ecommerceninjas45@gmail.com" })
       .end((err, res) => {
         expect(res.status).to.be.equal(httpStatus.OK);
         expect(res.body.message).to.be.equal("Check email for reset password.");

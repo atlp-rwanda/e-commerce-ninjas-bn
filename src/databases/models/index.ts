@@ -11,6 +11,7 @@ import Notifications from "./notifications";
 import ProductReviews from "./productReviews";
 import wishListProducts from "./wishListProducts";
 import SellerRequest from "./sellerRequests";
+import Addresses from "./addresses";
 
 const db = {
   CartProducts,
@@ -25,7 +26,8 @@ const db = {
   Notifications,
   ProductReviews,
   wishListProducts,
-  SellerRequest
+  SellerRequest,
+  Addresses
 };
 
 Object.values(db).forEach(model => {
