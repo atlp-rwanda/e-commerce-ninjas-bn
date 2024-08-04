@@ -172,7 +172,7 @@ const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
   })
 }
 
-const getOrdersByCartId = async (userId: string) => {
+const getOrdersByCartId = async (userId) => {
   return await db.Orders.findAll({
     include: [
       {
@@ -180,9 +180,12 @@ const getOrdersByCartId = async (userId: string) => {
         as: "carts",
         where: { userId: userId }
       }
+    ],
+    order: [
+      ["createdAt", "DESC"]
     ]
-  })
-}
+  });
+};
 
 const getOrderById = async (orderId: string) => {
   return await db.Orders.findOne({ where: { id: orderId } })
