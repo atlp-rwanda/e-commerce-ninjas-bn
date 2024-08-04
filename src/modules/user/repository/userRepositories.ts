@@ -89,6 +89,10 @@ const findAddressByUserId = async (userId: string) => {
   return await db.Addresses.findOne({ where: { userId } });
 };
 
+const getAllShops = async () => {
+  return await db.Shops.findAll();
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -104,5 +108,6 @@ export default {
   findSellerRequestByUserId,
   updateUserAddress,
   addUserAddress,
-  findAddressByUserId
+  findAddressByUserId,
+  getAllShops
 };

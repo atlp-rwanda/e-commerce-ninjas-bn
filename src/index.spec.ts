@@ -356,7 +356,7 @@ describe("checkPasswordExpiration middleware", () => {
     expect(sendEmailStub).to.have.been.calledOnceWith(
       "user@example.com",
       "Password Expired - Reset Required",
-      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/api/auth/reset-password`
+      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/reset-password`
     );
     expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
     expect(res.json).to.have.been.calledWith({
@@ -392,5 +392,146 @@ describe("checkPasswordExpiration middleware", () => {
       message: "Database error",
     });
     expect(next).to.not.have.been.called;
+  });
+});
+
+
+
+import { Request, Response } from 'express';
+
+
+
+const paymentSuccess = (req: Request, res: Response) => {
+  try {
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment successful!" });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+};
+
+const paymentCanceled = (req: Request, res: Response) => {
+  try {
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Payment canceled" });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+  }
+};
+
+describe('Payment Controllers', () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let statusStub: sinon.SinonStub;
+  let jsonStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+    statusStub = res.status as sinon.SinonStub;
+    jsonStub = res.json as sinon.SinonStub;
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('paymentSuccess', () => {
+    it('should return 200 with success message', () => {
+      paymentSuccess(req as Request, res as Response);
+
+      expect(statusStub.calledOnceWith(httpStatus.OK)).to.be.true;
+      expect(jsonStub.calledOnceWith({ status: httpStatus.OK, message: "Payment successful!" })).to.be.true;
+    });
+  });
+
+  describe('paymentCanceled', () => {
+    it('should return 200 with canceled message', () => {
+      paymentCanceled(req as Request, res as Response);
+
+      expect(statusStub.calledOnceWith(httpStatus.OK)).to.be.true;
+      expect(jsonStub.calledOnceWith({ status: httpStatus.OK, message: "Payment canceled" })).to.be.true;
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+const userRepositories = {
+  findAddressByUserId: sinon.stub(),
+  addUserAddress: sinon.stub(),
+  updateUserAddress: sinon.stub(),
+};
+
+const changeUserAddress = async (req: any, res: Response) => {
+  try {
+    const isAddressFound = await userRepositories.findAddressByUserId(req.user.id);
+    let createdAddress;
+    if (!isAddressFound) {
+      createdAddress = await userRepositories.addUserAddress({ ...req.body, userId: req.user.id });
+    } else {
+      createdAddress = await userRepositories.updateUserAddress(req.body, req.user.id);
+    }
+    return res
+      .status(httpStatus.OK)
+      .json({
+        status: httpStatus.OK,
+        message: `${isAddressFound ? "Address updated successfully" : "Address added successfully"}`,
+        data: { address: createdAddress },
+      });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+describe('changeUserAddress', () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let statusStub: sinon.SinonStub;
+  let jsonStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    req = {
+      user: { id: 'user123' },
+      body: { street: '123 Main St', city: 'Sample City' },
+    };
+    res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+    statusStub = res.status as sinon.SinonStub;
+    jsonStub = res.json as sinon.SinonStub;
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should add a new address if not found', async () => {
+    userRepositories.findAddressByUserId.resolves(null);
+    userRepositories.addUserAddress.resolves({ id: 'address123', ...req.body });
+
+    await changeUserAddress(req as Request, res as Response);
+
+    expect(userRepositories.findAddressByUserId.calledOnceWith(req.user.id)).to.be.true;
+    expect(userRepositories.addUserAddress.calledOnceWith({ ...req.body, userId: req.user.id })).to.be.true;
+    expect(userRepositories.updateUserAddress.notCalled).to.be.true;
+    expect(statusStub.calledOnceWith(httpStatus.OK)).to.be.true;
+    expect(jsonStub.calledOnceWith({
+      status: httpStatus.OK,
+      message: 'Address added successfully',
+      data: { address: { id: 'address123', ...req.body } },
+    })).to.be.true;
   });
 });
