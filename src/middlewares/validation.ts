@@ -937,6 +937,37 @@ const isOrderExist = async (req: Request, res: Response, next: NextFunction) => 
   }
 }
 
+const isOrdersExist = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrdersByCartId(req.user.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.orders = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+const isOrderExists = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrderByCartId(req.user.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.order = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+
 
 export {
   validation,
@@ -975,5 +1006,6 @@ export {
   isOrderEmpty,
   isShopEmpty,
   isOroderExistByShopId,
-  isOrdersExist
+  isOrdersExist,
+  isOrderExists
 };    

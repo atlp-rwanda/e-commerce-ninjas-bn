@@ -10,7 +10,8 @@ import {
   isOrderExist,
   isOrderEmpty,
   isCartExist1,
-  isOrdersExist
+  isOrdersExist,
+  isOrderExists
 } from "../middlewares/validation";
 import * as cartControllers from "../modules/cart/controller/cartControllers";
 import { cartSchema, checkoutSessionSchema, orderSchema, productDetailsSchema, updateCartStatusSchema, updateOrderStatusSchema } from "../modules/cart/validation/cartValidations";
@@ -69,7 +70,7 @@ router.get(
 );
 
 
-router.get("/user-get-order-status/:id", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrderStatus)
+router.get("/user-get-order-status/:id", userAuthorization(["buyer"]), isOrderExists, cartControllers.buyerGetOrderStatus2)
 router.put("/admin-update-order-status/:id", userAuthorization(["admin"]), validation(updateOrderStatusSchema), isOrderExist, cartControllers.adminUpdateOrderStatus)
 router.get("/buyer-get-order-history", userAuthorization(["buyer"]), isOrderExist, cartControllers.buyerGetOrders)
 router.get("/buyer-get-orders-history", userAuthorization(["buyer"]), isOrdersExist, cartControllers.buyerGetOrders2)

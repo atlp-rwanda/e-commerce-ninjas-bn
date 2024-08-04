@@ -303,7 +303,20 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
     })
   }
 }
+const buyerGetOrderStatus2 = async (req, res) => {
+  try {
+    const order = await req.order
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK, message: "Order retrieved successfully",
+      data: {
+        order
+      }
+    })
+  } catch (error) {
 
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
 const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
   try {
     const orders = req.order
@@ -396,7 +409,7 @@ const userCreateOrder = (req, res) => {
       paymentMethodId: req.body.paymentMethodId,
       orderDate: new Date(),
       status: req.body.status,
-      shippingProcess: "Not yet started",
+      shippingProcess: "Order placed successfully",
       shopId: req.body.shopId,
       expectedDeliveryDate: new Date(new Date().setDate(new Date().getDate() + 7))
     }
@@ -427,6 +440,7 @@ export {
   stripeCheckoutSession,
   buyerUpdateCartStatus,
   userCreateOrder,
-  buyerGetOrders2
+  buyerGetOrders2,
+  buyerGetOrderStatus2
   
 };
