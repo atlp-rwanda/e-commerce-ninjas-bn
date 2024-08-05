@@ -465,6 +465,7 @@ describe("internal server error", () => {
         description: "A new Shops description",
       })
       .end((err, res) => {
+        console.log(res)
         expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
         expect(res.body).to.have.property("message");
         done(err);
