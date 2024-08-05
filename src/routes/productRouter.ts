@@ -18,7 +18,7 @@ import {
   isProductExistIntoWishList,
   isWishListProductExist,
   isShopEmpty,
-  isOroderExistByShopId
+  isOrderExistByShopId
   
 } from "../middlewares/validation";
 import {
@@ -125,5 +125,5 @@ router.post(
   isProductOrdered, 
   productController.buyerReviewProduct )
   router.get("/admin-get-shops",userAuthorization(["admin"]),isShopEmpty,productController.adminGetShops);
-  router.get("/seller-get-orderHistory",userAuthorization(["seller"]),isOroderExistByShopId,productController.sellerGetOrdersHistory);
+  router.get("/seller-get-orderHistory",userAuthorization(["seller"]),isOrderExistByShopId,productController.sellerGetOrdersHistory);
 export default router;

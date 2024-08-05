@@ -27,6 +27,8 @@ const getProductDetails = (
       image: product.images[0],
       quantity: cartProduct.quantity,
       totalPrice: totalPrice,
+      shopId: product.shopId,
+      description: product.description
     };
   });
 
@@ -63,7 +65,7 @@ const buyerGetCart = async (req: ExtendRequest, res: Response) => {
 
 const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
   try {
-    const carts = await cartRepositories.getCartsByUserId(req.user.id);
+    const carts = await cartRepositories.getCartsByUserId1(req.user.id);
 
     const allCartsDetails = await Promise.all(
       carts.map(async (cart) => {
@@ -74,12 +76,12 @@ const buyerGetCarts = async (req: ExtendRequest, res: Response) => {
 
         return {
           cartId: cart.id,
+          status: cart.status,
           products: productsDetails,
           total: cartTotal,
         };
       })
     );
-
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       message: "Buyer's all carts",
@@ -150,7 +152,7 @@ const buyerCreateUpdateCart = async (req: ExtendRequest, res: Response) => {
   try {
     const { productId, quantity } = req.body;
     const userId = req.user.id;
-    const carts = await cartRepositories.getCartsByUserId(userId);
+    const carts = await cartRepositories.getCartsByUserId1(userId);
 
     for (const cart of carts) {
       const cartProducts = await cartRepositories.getCartProductsByCartId(
@@ -275,7 +277,6 @@ const buyerCheckout = async (req: ExtendRequest, res: Response) => {
     cart.cartProducts.forEach(product => {
       totalAmount += product.totalPrice;
     });
-
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       data: { totalAmount, cart }
@@ -302,10 +303,38 @@ const buyerGetOrderStatus = async (req: ExtendRequest, res: Response) => {
     })
   }
 }
+const buyerGetOrderStatus2 = async (req, res) => {
+  try {
+    const order = await req.order
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK, message: "Order retrieved successfully",
+      data: {
+        order
+      }
+    })
+  } catch (error) {
 
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
 const buyerGetOrders = async (req: ExtendRequest, res: Response) => {
   try {
     const orders = req.order
+    return res.status(httpStatus.OK).json({
+      message: "Orders found successfully",
+      data: { orders }
+    })
+  }
+  catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
+}
+const buyerGetOrders2 = (req, res) => {
+  try {
+    const orders = req.orders
     return res.status(httpStatus.OK).json({
       message: "Orders found successfully",
       data: { orders }
@@ -337,6 +366,15 @@ const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
 
 }
 
+const stripeCreateProduct = async (req, res) => {
+  try {
+    let product = await cartRepositories.getStripeProductByAttribute('name', req.body.planInfo.name);
+    if (!product) product = await cartRepositories.createStripeProduct(req.body.planInfo);
+    return res.status(httpStatus.OK).json({ message: "Success.", data: { product } });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
+  }
+};
 
 const stripeCheckoutSession = async (req, res) => {
   try {
@@ -344,20 +382,48 @@ const stripeCheckoutSession = async (req, res) => {
     if (!customer) customer = await cartRepositories.createStripeCustomer({ email: req.body.sessionInfo.customer_email });
     delete req.body.sessionInfo.customer_email;
     req.body.sessionInfo.customer = customer.id;
-    let session = await cartRepositories.getStripeSessionByAttribute('customer', customer.id);
-    if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
+    const session = await cartRepositories.createStripeSession(req.body.sessionInfo);
     return res.status(httpStatus.OK).json({ message: "Success.", data: { session } });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
   }
 };
-const adminGetOrdersHistory = async(req: ExtendRequest, res:Response)=>{
-  const OrderHistory = (req as any).orders
-  return res.status(httpStatus.OK).json({
-    message: "Order History",
-    data: { OrderHistory }
- })
+
+const buyerUpdateCartStatus = async (req, res) => {
+  try {
+    const { cartId, status } = req.body
+    await cartRepositories.updateCartStatus(cartId, status);
+    const updatedCart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, cartId)
+    return res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Cart status updated successfully", data: { updatedCart } })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
 }
+const userCreateOrder = (req, res) => {
+  try {
+    const userId = req.user.id;
+    const body = {
+      userId: userId,
+      products: req.body.products,
+      cartId: req.body.cartId,
+      paymentMethodId: req.body.paymentMethodId,
+      orderDate: new Date(),
+      status: req.body.status,
+      shippingProcess: "Order placed successfully!",
+      shopId: req.body.shopId,
+      expectedDeliveryDate: new Date(new Date().setDate(new Date().getDate() + 7))
+    }
+
+    const order = cartRepositories.userSaveOrder(body)
+    return res.status(httpStatus.CREATED).json({ status: httpStatus.CREATED, message: "Order created succesfully", data: { order } })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+
+
 
 export {
   buyerGetCart,
@@ -374,6 +440,11 @@ export {
   buyerGetOrders,
   buyerCheckout,
   adminUpdateOrderStatus,
+  stripeCreateProduct,
   stripeCheckoutSession,
-  adminGetOrdersHistory
+  buyerUpdateCartStatus,
+  userCreateOrder,
+  buyerGetOrders2,
+  buyerGetOrderStatus2
+  
 };
