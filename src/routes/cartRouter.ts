@@ -31,7 +31,6 @@ router.post(
 router.get(
   "/buyer-get-carts",
   userAuthorization(["buyer"]),
-  isCartExist,
   cartControllers.buyerGetCarts
 );
 
@@ -79,5 +78,7 @@ router.get("/buyer-get-orders-history", userAuthorization(["buyer"]), isOrdersEx
 
 router.post("/create-stripe-product", userAuthorization(["buyer"]), validation(productDetailsSchema), stripeCreateProduct);
 router.post("/checkout-stripe-session", userAuthorization(["buyer"]), validation(checkoutSessionSchema), stripeCheckoutSession);
+router.post("/user-create-order",userAuthorization(["buyer"]), cartControllers.userCreateOrder)
+router.put("/update-cart-status",userAuthorization(["buyer"]), cartControllers.buyerUpdateCartStatus)
 
 export default router;

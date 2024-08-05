@@ -396,6 +396,7 @@ const buyerUpdateCartStatus = async (req, res) => {
     const updatedCart = await cartRepositories.getCartByUserIdAndCartId(req.user.id, cartId)
     return res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Cart status updated successfully", data: { updatedCart } })
   } catch (error) {
+    console.log(error.message)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
   }
 }
@@ -417,9 +418,12 @@ const userCreateOrder = (req, res) => {
     const order = cartRepositories.userSaveOrder(body)
     return res.status(httpStatus.CREATED).json({ status: httpStatus.CREATED, message: "Order created succesfully", data: { order } })
   } catch (error) {
+    console.log(error.message)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
   }
 }
+
+
 
 export {
   buyerGetCart,
