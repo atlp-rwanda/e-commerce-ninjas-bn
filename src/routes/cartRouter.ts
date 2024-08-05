@@ -31,7 +31,6 @@ router.post(
 router.get(
   "/buyer-get-carts",
   userAuthorization(["buyer"]),
-  isCartExist,
   cartControllers.buyerGetCarts
 );
 
