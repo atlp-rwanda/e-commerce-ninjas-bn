@@ -271,6 +271,7 @@ const updateCartStatus = async (cartId: string, status: string) => {
 }
 
 
+
 const userSaveOrder = async (body) => {
   return await db.Orders.create(body);
 }
@@ -302,7 +303,7 @@ export default {
   createStripeProduct, getStripeProductByAttribute,
   createStripeCustomer, getStripeCustomerByAttribute,
   createStripeSession, getStripeSessionByAttribute,
-  getOrdersHistory
+  getOrdersHistory,
   updateCartStatus,
   userSaveOrder,
   getOrdersByCartId,
