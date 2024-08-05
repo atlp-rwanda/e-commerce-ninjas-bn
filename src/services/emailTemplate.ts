@@ -7,7 +7,7 @@ export const userChangeRole = async (user: usersAttributes) => {
   return (
     `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <p>Dear ${username},</p>
-    <p>We are pleased to inform you that your ${user.role} within our system has been updated to <span style="color: green;">${user.role}</span>.</p>
+    <p>We are pleased to inform you that your role within our system has been updated to <span style="color: green;">${user.role}</span>.</p>
     <p>With this role, you will now have access to additional features and responsibilities. If you have any questions or need further assistance,</p>
     <p>please do not hesitate to contact us.</p>
     <p>Thank you for being a valued member of our community.</p>

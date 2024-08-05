@@ -295,10 +295,10 @@ const productTwelve = {
   expired: false,
   bonus: "Bonus 1",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61ZBxbrVF0L._AC_UY218_.jpg",
+    "https://m.media-amazon.com/images/I/61ZBxbrVF0L._SX425_.jpg",
+    "https://m.media-amazon.com/images/I/61ZBxbrVF0L._SX425_.jpg",
+    "https://m.media-amazon.com/images/I/51u0EwClwkL._SL1200_.jpg"
   ],
   quantity: 50,
   status: "available",
@@ -318,10 +318,10 @@ const productThirteen = {
   expired: false,
   bonus: "Free knife sharpener",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71WgsPCbfpL._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/61HTJjDOk9L._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/717Slt7NB-L._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71nL425Q-dL._AC_SL1500_.jpg"
   ],
   quantity: 40,
   status: "available",
@@ -341,10 +341,10 @@ const productFourteen = {
   expired: false,
   bonus: "Free hand towel",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/811pV4BCp8L._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/81jS3yV68HL._AC_SX466_.jpg",
+    "https://m.media-amazon.com/images/I/51d+uaPNhoL._AC_SX450_.jpg",
+    "https://m.media-amazon.com/images/I/81Xo1RLXOHL._AC_SY679_.jpg"
   ],
   quantity: 75,
   status: "available",
@@ -364,10 +364,10 @@ const productFifteen = {
   expired: false,
   bonus: "Free mousepad",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71CdNUA46fL._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/81SpZ0I3VsL._AC_SY355_.jpg",
+    "https://m.media-amazon.com/images/I/71Tu9wPQBmL._AC_SY355_.jpg",
+    "https://m.media-amazon.com/images/I/81w1d1EA4PL._AC_SY355_.jpg"
   ],
   quantity: 100,
   status: "available",
@@ -387,10 +387,10 @@ const productSixteen = {
   expired: false,
   bonus: "Free carrying case",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61nNxaKDi+L._AC_SY355_.jpg",
+    "https://m.media-amazon.com/images/I/61TtyCx5uRL._AC_SX355_.jpg",
+    "https://m.media-amazon.com/images/I/71OwhqoZ91L._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/61kVGgL4wHL._AC_SX355_.jpg"
   ],
   quantity: 60,
   status: "available",
@@ -410,10 +410,10 @@ const productSeventeen = {
   expired: false,
   bonus: "Free yoga block",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81SNpiAhomL._AC_SX522_.jpg",
+    "https://m.media-amazon.com/images/I/91MfCBLpTHL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81a94wiXlHL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81Z+8EmGDsL._AC_SX425_.jpg"
   ],
   quantity: 120,
   status: "available",
@@ -433,10 +433,10 @@ const productEighteen = {
   expired: false,
   bonus: "Free bottle brush",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61ao0EKAJVL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71GkO9JEloL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81W14co9TFL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81HnygZnY3L._AC_SX425_.jpg"
   ],
   quantity: 200,
   status: "available",
@@ -456,10 +456,10 @@ const productNineteen = {
   expired: false,
   bonus: "Free travel case",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/51V1bf76cML.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/819v7Kl1vOL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81uJSwMRy+L._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/61I93KdTjvL._AC_UF350,350_QL80_FMwebp_.jpg"
   ],
   quantity: 50,
   status: "available",
@@ -479,10 +479,10 @@ const productTwenty = {
   expired: false,
   bonus: "1-month free cloud storage",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61uMgGd9F2L._SX425_.jpg",
+    "https://m.media-amazon.com/images/I/31tp0vzZwRL._SY355_.jpg",
+    "https://m.media-amazon.com/images/I/61fblR+WX+L._SY355_.jpg",
+    "https://m.media-amazon.com/images/I/61WAFlrR8lL._SY355_.jpg"
   ],
   quantity: 80,
   status: "available",
@@ -502,10 +502,10 @@ const productTwentyOne = {
   expired: false,
   bonus: "Free collar stays",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81ZRSoC3NjL._AC_SY500_.jpg",
+    "https://m.media-amazon.com/images/I/91IKWiX-fTL._AC_SX385_.jpg",
+    "https://m.media-amazon.com/images/I/81skTJnu1tL._AC_SY445_.jpg",
+    "https://m.media-amazon.com/images/I/81HAvVMzgXL._AC_SY445_.jpg"
   ],
   quantity: 100,
   status: "available",
@@ -525,10 +525,10 @@ const productTwentyTwo = {
   expired: false,
   bonus: "Free pair of running socks",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/818VN+2UJ1L._AC_SY395_.jpg",
+    "https://m.media-amazon.com/images/I/71EseWePchL._AC_SY395_.jpg",
+    "https://m.media-amazon.com/images/I/71Tf1fKo56L._AC_SY395_.jpg",
+    "https://m.media-amazon.com/images/I/71JzFFahOTL._AC_SY395_.jpg"
   ],
   quantity: 75,
   status: "available",
@@ -548,10 +548,10 @@ const productTwentyThree = {
   expired: false,
   bonus: "Free recipe e-book",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61hEtbJv3YL._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/81Fk2GoyzxL._AC_SX466_.jpg",
+    "https://m.media-amazon.com/images/I/81jW5if9hVL._AC_SX466_.jpg",
+    "https://m.media-amazon.com/images/I/71rIQgts5VL._AC_SX466_.jpg"
   ],
   quantity: 120,
   status: "available",
@@ -571,10 +571,10 @@ const productTwentyFour = {
   expired: false,
   bonus: "Free travel pouch",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/51WeopkrVXL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/61eveVnNt-L._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/712P5VDLrdL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/711Ot6dTKgL._AC_SX425_.jpg"
   ],
   quantity: 90,
   status: "available",
@@ -594,10 +594,10 @@ const productTwentyFive = {
   expired: false,
   bonus: "Free workout guide",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71BE37ZZfLL._AC_SX522_.jpg",
+    "https://m.media-amazon.com/images/I/71IvvSJaVKL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71MKlnbX1OL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/717tPaaj+WL._AC_SX425_.jpg"
   ],
   quantity: 30,
   status: "available",
@@ -617,10 +617,10 @@ const productTwentySix = {
   expired: false,
   bonus: "Free desk mat",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71jeulFxQ9L._AC_SY679_.jpg",
+    "https://m.media-amazon.com/images/I/61C33xw7O1L._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/61OKjqrqS8L._AC_SX450_.jpg",
+    "https://m.media-amazon.com/images/I/71U7PpAeQNL._AC_SY450_.jpg"
   ],
   quantity: 50,
   status: "available",
@@ -640,10 +640,10 @@ const productTwentySeven = {
   expired: false,
   bonus: "Free smart plug",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71cORaWaIjL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/61c799hs0BL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/715yoih6zkL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/716bTfE9d-L._AC_SX425_.jpg"
   ],
   quantity: 150,
   status: "available",
@@ -663,10 +663,10 @@ const productTwentyEight = {
   expired: false,
   bonus: "Free money clip",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81BqpJqfb0L._AC_SX466_.jpg",
+    "https://m.media-amazon.com/images/I/91WMzMO7sEL._AC_SX385_.jpg",
+    "https://m.media-amazon.com/images/I/81P2-qgBIrL._AC_SX385_.jpg",
+    "https://m.media-amazon.com/images/I/91tZ7AzVqoL._AC_SX385_.jpg"
   ],
   quantity: 100,
   status: "available",
@@ -686,10 +686,10 @@ const productTwentyNine = {
   expired: false,
   bonus: "Free coffee scoop",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61o+Ocx9bEL._AC_SY879_.jpg",
+    "https://m.media-amazon.com/images/I/81yrepDdufL._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/91gmMyxEPYL._AC_SY450_.jpg",
+    "https://m.media-amazon.com/images/I/91HnlUd8a1L._AC_SY450_.jpg"
   ],
   quantity: 80,
   status: "available",
@@ -709,10 +709,10 @@ const productThirty = {
   expired: false,
   bonus: "Free USB car charger",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61+HUksN4kL._AC_SX522_.jpg",
+    "https://m.media-amazon.com/images/I/71VfjPWsJaL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/71VfjPWsJaL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/71rI7Z23mlL._AC_SX425_.jpg"
   ],
   quantity: 70,
   status: "available",
@@ -732,10 +732,10 @@ const productThirtyOne = {
   expired: false,
   bonus: "Free carrying case",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61b-Kz+go7L._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81+AzZk8XYL._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/91Q19m20j3L._AC_SX425_.jpg",
+    "https://m.media-amazon.com/images/I/81LnVpenhlL._AC_SX425_.jpg"
   ],
   quantity: 40,
   status: "available",
@@ -755,10 +755,10 @@ const productThirtyTwo = {
   expired: false,
   bonus: "Free phone clip",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81a7j-yI4fL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71aPcPyycTL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71aPcPyycTL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71rbXxnsD4L._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 100,
   status: "available",
@@ -778,10 +778,10 @@ const productThirtyThree = {
   expired: false,
   bonus: "Free strategy guide",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/51EZxgMWp6L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/51ybceeIxGL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/51hNYZzJuLL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/51dwIAfxRGL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 30,
   status: "available",
@@ -801,10 +801,10 @@ const productThirtyFour = {
   expired: false,
   bonus: "Free herb seed pack",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/915h+rx-IPL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81iOaqPKZkL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/91O4AOsy9ZL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/813fmDPwZKL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 60,
   status: "available",
@@ -824,10 +824,10 @@ const productThirtyFive = {
   expired: false,
   bonus: "Free software bundle",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61eG0iYBj+L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71uJgklbrWL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71PjwM4GPXL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71M3iPoRppL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 40,
   status: "available",
@@ -847,10 +847,10 @@ const productThirtySix = {
   expired: false,
   bonus: "Free replacement filters",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61RNw+-A3ZL._AC_SR350,526_FMwebp_QL65_.jpg",
+    "https://m.media-amazon.com/images/I/81Tx60qVJUL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81OX1-9pXiL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81PdDi27V-L._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 25,
   status: "available",
@@ -870,10 +870,10 @@ const productThirtySeven = {
   expired: false,
   bonus: "Free leather care kit",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81-NI2QPiuL._AC_UY1000_.jpg",
+    "https://m.media-amazon.com/images/I/81Lkm487xWL._AC_UY1000_.jpg",
+    "https://m.media-amazon.com/images/I/81HOL4GmRQL._AC_UY1000_.jpg",
+    "https://m.media-amazon.com/images/I/81saNPKx14L._AC_UY1000_.jpg"
   ],
   quantity: 50,
   status: "available",
@@ -893,10 +893,10 @@ const productThirtyEight = {
   expired: false,
   bonus: "Free grill mitt",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71xNVR+bC-L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/717434yqMLL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71gDfDKO3YL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71NDzFiuqrL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 75,
   status: "available",
@@ -916,10 +916,10 @@ const productThirtyNine = {
   expired: false,
   bonus: "Free installation guide",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81cQsOTh8lL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81XHSWNDozL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81PRyrbd57L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81i64SMgOHL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 40,
   status: "available",
@@ -939,10 +939,10 @@ const productForty = {
   expired: false,
   bonus: "Free coffee sampler",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61QEILMuuUL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61QEILMuuUL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61TWH5Weu4L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61lshDGadEL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 60,
   status: "available",
@@ -962,10 +962,10 @@ const productFortyOne = {
   expired: false,
   bonus: "Free silicone ear tips set",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/81MFfvWGAjL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71p1AqYSZJL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71QRKXPptOL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81hHLSbh-QL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 100,
   status: "available",
@@ -985,10 +985,10 @@ const productFortyTwo = {
   expired: false,
   bonus: "Free yoga strap",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71fDg0xg-AL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61kNrW72WYL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/619jeV12eNL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/717tdw6XgfL._AC_UF1000,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 80,
   status: "available",
@@ -1008,10 +1008,10 @@ const productFortyThree = {
   expired: false,
   bonus: "Free replacement filter",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71Qdt55G77L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81X1WOgrVqL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81ZVCj8DlZL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71Xgi97OfgL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 50,
   status: "available",
@@ -1031,10 +1031,10 @@ const productFortyFour = {
   expired: false,
   bonus: "Free wine stopper",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61x-GTZmVeL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/61x-GTZmVeL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/5185rWwoqlL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/51lBKX3PBnL._AC_SL1500_.jpg",
   ],
   quantity: 120,
   status: "available",
@@ -1054,10 +1054,10 @@ const productFortyFive = {
   expired: false,
   bonus: "Free microfiber cleaning cloth",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71m5Vsxvd5L._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71SFDlgVRwL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71NFPp2MMYL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71VAQ7fIVUL._AC_SL1500_.jpg"
   ],
   quantity: 40,
   status: "available",
@@ -1077,10 +1077,10 @@ const productFortySix = {
   expired: false,
   bonus: "Free carrying case",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/7185pOyF43L._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71RazL1p3fL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71aozVY2PtL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71AQ3dXl8nL._AC_UF1000,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 70,
   status: "available",
@@ -1100,10 +1100,10 @@ const productFortySeven = {
   expired: false,
   bonus: "Free body tape measure",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/61bAnOXDl7L._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61lfPOhZ9TL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61aYPAPfbrL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61eyKWTHUXL._AC_UF1000,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 90,
   status: "available",
@@ -1123,10 +1123,10 @@ const productFortyEight = {
   expired: false,
   bonus: "Free carabiner clip",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71V9tML-zxL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81Uc6UYiieL._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81AHZG4Nr7L._AC_UF1000,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81I35txcM2L._AC_UF1000,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 150,
   status: "available",
@@ -1146,10 +1146,10 @@ const productFortyNine = {
   expired: false,
   bonus: "Free cable organizer",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/71G8rdQin3L._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/81dPKo1DPdL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71pTnwyCmML._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/71aUyb+rHNL._AC_SL1500_.jpg"
   ],
   quantity: 80,
   status: "available",
@@ -1169,10 +1169,10 @@ const productFifty = {
   expired: false,
   bonus: "Free sleep mask",
   images: [
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100",
-    "https://placehold.co/100x100"
+    "https://m.media-amazon.com/images/I/51q7d1TAcQL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61eeL5JROTL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/71jwX-21cTL._AC_UF894,1000_QL80_FMwebp_.jpg",
+    "https://m.media-amazon.com/images/I/61Ce21ys7EL._AC_UF894,1000_QL80_FMwebp_.jpg"
   ],
   quantity: 60,
   status: "available",
