@@ -197,6 +197,18 @@ const getOrderByCartId = async (userId) => {
     ]
   });
 };
+const getOrderByCartId2 = async (userId,orderId) => {
+  return await db.Orders.findOne({
+    where: {id: orderId },
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ]
+  });
+};
 
 const getOrderById = async (orderId: string) => {
   return await db.Orders.findOne({ where: { id: orderId } })
@@ -294,5 +306,6 @@ export default {
   updateCartStatus,
   userSaveOrder,
   getOrdersByCartId,
-  getOrderByCartId
+  getOrderByCartId,
+  getOrderByCartId2
 };

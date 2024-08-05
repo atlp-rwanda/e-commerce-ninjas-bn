@@ -967,6 +967,21 @@ const isOrderExists = async (req: any, res: Response, next: NextFunction) => {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
   }
 }
+const isOrderExists2 = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrderByCartId2(req.user.id,req.params.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.order = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
 
 
 export {
@@ -1007,5 +1022,6 @@ export {
   isShopEmpty,
   isOroderExistByShopId,
   isOrdersExist,
-  isOrderExists
+  isOrderExists,
+  isOrderExists2
 };    

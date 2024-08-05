@@ -409,7 +409,7 @@ const userCreateOrder = (req, res) => {
       paymentMethodId: req.body.paymentMethodId,
       orderDate: new Date(),
       status: req.body.status,
-      shippingProcess: "Order placed successfully",
+      shippingProcess: "Order placed successfully!",
       shopId: req.body.shopId,
       expectedDeliveryDate: new Date(new Date().setDate(new Date().getDate() + 7))
     }
