@@ -942,7 +942,7 @@ describe("updateUser2FA", () => {
         expect(response.body).to.have.property("status", httpStatus.OK);
         expect(response.body).to.have.property(
           "message",
-          "2FA enabled successfully."
+          "2FA Enabled successfully."
         );
         expect(response.body).to.have.property("data");
         done(error);

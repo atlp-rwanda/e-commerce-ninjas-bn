@@ -16,11 +16,13 @@ import {
   productTwelveId,
   shopOneId,
   shopTwoId,
+  shopThreeId,
+  shopFourId,
 } from "../../types/uuid";
 
 const productOne = {
   id: productOneId,
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Shoes",
   description:
     "Shoes are a crucial part of your wardrobe, providing not only style but also comfort and support for your feet.",
@@ -44,7 +46,7 @@ const productOne = {
 
 const productTwo = {
   id: productTwoId,
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Women Bag",
   description: "A women's bag is a fashionable and functional accessory designed to carry personal belongings. Available in various styles, sizes, and materials, women's bags cater to diverse needs and preferences. From elegant clutches and chic handbags to spacious totes and practical backpacks, each type serves a unique purpose. High-quality women's bags offer a blend of style, durability, and convenience, making them essential for everyday use, special occasions, and professional settings.",
   price: 19.99,
@@ -115,7 +117,7 @@ const productFour = {
 
 const productFive = {
   id: productFiveId,
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Watch",
   description:
     "A watch is a timeless accessory that combines functionality with style, offering a convenient way to tell time while also making a fashion statement. Available in various designs, from classic analog to sleek digital models, watches cater to different preferences and occasions. They often feature durable materials like stainless steel or leather, with advanced features such as water resistance and additional functionalities like chronographs or smart capabilities.",
@@ -139,7 +141,7 @@ const productFive = {
 
 const productSix = {
   id: productSixId,
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Necklace",
   description:
     "A necklace is a versatile piece of jewelry worn around the neck, enhancing one's attire with elegance and personal flair. Available in an array of styles and materials, necklaces range from delicate chains adorned with pendants to elaborate designs featuring gemstones or precious metals. They serve as symbols of fashion, sentimentality, or cultural significance, complementing both casual and formal outfits with grace. Whether chosen for everyday wear or special occasions, a necklace adds a touch of sophistication and individuality to any ensemble.",
@@ -163,7 +165,7 @@ const productSix = {
 
 const productSeven = {
   id: productSevenId,
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Microphone",
   description:
     "A microphone, commonly referred to as a mic, is an essential audio device used to capture sound. It converts sound waves into electrical signals, making it crucial for a wide range of applications including recording, broadcasting, public speaking, and communication. Microphones come in various types, such as dynamic, condenser, and ribbon, each designed for specific uses and environments. With advancements in technology, modern microphones offer high-fidelity audio capture, noise reduction, and wireless capabilities, ensuring clear and accurate sound reproduction.",
@@ -187,7 +189,7 @@ const productSeven = {
 
 const productEight = {
   id: productEightId,
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Camera",
   description:
     "A camera is a versatile device used to capture and record images and videos, preserving moments with clarity and detail. Cameras come in various types, including digital, DSLR, mirrorless, and action cameras, each catering to different photography needs and skill levels. Equipped with advanced features like high-resolution sensors, optical zoom, and various shooting modes, modern cameras allow users to capture everything from stunning landscapes to fast-moving action with precision. Whether for professional photography, personal memories, or creative projects, a camera is an indispensable tool for visual storytelling.",
@@ -210,7 +212,7 @@ const productEight = {
 };
 const productNine = {
   id: productNineId,
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Fashion T-Cross Paints",
   description:
     "Fashion Solid Color Work Casual Multiple Pockets Men's Cargo Pants Classic Waist Drawcord Pure Cotton Youth Tide Male Trousers",
@@ -234,7 +236,7 @@ const productNine = {
 
 const productTen = {
   id: productTenId,
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Solid Black Label Paints",
   description:
     "Fashion Solid Color Work Casual Multiple Pockets Men's Cargo Pants Classic Waist Drawcord Pure Cotton Youth Tide Male Trousers",
@@ -259,7 +261,7 @@ const productTen = {
 
 const productEleven = {
   id: productElevenId,
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Red Sneakers",
   description:
     "Red Sneakers Women Shoes Woman Tennis Shoes Canvas Shoe Female Casual Shoes Ladies Sport Shoes Platform Sneaker Hollow Out Shoes",
@@ -284,7 +286,7 @@ const productEleven = {
 
 const productTwelve = {
   id: productTwelveId,
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Second Hand 4G Vivo Fone",
   description:
     "[Need more Clearance fee per phone] Second-hand Vivo S1 4G LTE Cell Phone Helio P70 Android 9.0 6.38 2340X1080 6GB RAM 256GB ROM 32.0MP NFC Screen Fingerprint",
@@ -308,7 +310,7 @@ const productTwelve = {
 
 const productThirteen = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Stainless Steel Kitchen Knife Set",
   description: "Professional-grade 6-piece knife set with ergonomic handles and a wooden block.",
   price: 149.99,
@@ -331,7 +333,7 @@ const productThirteen = {
 
 const productFourteen = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Organic Cotton Bath Towel Set",
   description: "Luxurious 4-piece towel set made from 100% organic cotton, soft and absorbent.",
   price: 59.99,
@@ -354,7 +356,7 @@ const productFourteen = {
 
 const productFifteen = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Wireless Gaming Mouse",
   description: "High-precision optical sensor, customizable RGB lighting, and ergonomic design for extended gaming sessions.",
   price: 79.99,
@@ -377,7 +379,7 @@ const productFifteen = {
 
 const productSixteen = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopFourId,
   name: "Portable Bluetooth Speaker",
   description: "Waterproof, 20-hour battery life, and rich, immersive sound for outdoor adventures.",
   price: 89.99,
@@ -400,7 +402,7 @@ const productSixteen = {
 
 const productSeventeen = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopFourId,
   name: "Yoga Mat with Carrying Strap",
   description: "Eco-friendly, non-slip yoga mat with alignment lines and a convenient carrying strap.",
   price: 39.99,
@@ -423,7 +425,7 @@ const productSeventeen = {
 
 const productEighteen = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Stainless Steel Water Bottle",
   description: "Vacuum-insulated, 24oz capacity, keeps drinks cold for 24 hours or hot for 12 hours.",
   price: 29.99,
@@ -446,7 +448,7 @@ const productEighteen = {
 
 const productNineteen = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Wireless Noise-Cancelling Headphones",
   description: "Over-ear headphones with active noise cancellation, 30-hour battery life, and premium audio quality.",
   price: 249.99,
@@ -469,7 +471,7 @@ const productNineteen = {
 
 const productTwenty = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Smart Home Security Camera",
   description: "1080p HD video, two-way audio, night vision, and mobile app control for home security.",
   price: 129.99,
@@ -492,7 +494,7 @@ const productTwenty = {
 
 const productTwentyOne = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Men's Slim Fit Dress Shirt",
   description: "Wrinkle-resistant cotton blend dress shirt, perfect for office or formal events.",
   price: 45.99,
@@ -515,7 +517,7 @@ const productTwentyOne = {
 
 const productTwentyTwo = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Women's Running Shoes",
   description: "Lightweight, breathable running shoes with superior cushioning and support.",
   price: 89.99,
@@ -538,7 +540,7 @@ const productTwentyTwo = {
 
 const productTwentyThree = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Digital Kitchen Scale",
   description: "Precise measuring up to 11 lbs, with tare function and multiple unit options.",
   price: 24.99,
@@ -561,7 +563,7 @@ const productTwentyThree = {
 
 const productTwentyFour = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Facial Cleansing Brush",
   description: "Waterproof electric facial cleansing brush with multiple speed settings.",
   price: 39.99,
@@ -584,7 +586,7 @@ const productTwentyFour = {
 
 const productTwentyFive = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Adjustable Dumbbell Set",
   description: "Space-saving adjustable dumbbells, 5-52.5 lbs each, perfect for home gyms.",
   price: 299.99,
@@ -607,7 +609,7 @@ const productTwentyFive = {
 
 const productTwentySix = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Ergonomic Office Chair",
   description: "Adjustable height and lumbar support, breathable mesh back for comfort.",
   price: 179.99,
@@ -630,7 +632,7 @@ const productTwentySix = {
 
 const productTwentySeven = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Smart WiFi Light Bulb",
   description: "Color-changing LED bulb, voice control compatible, app-controlled scheduling.",
   price: 29.99,
@@ -653,7 +655,7 @@ const productTwentySeven = {
 
 const productTwentyEight = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopThreeId,
   name: "Leather Wallet for Men",
   description: "Genuine leather bifold wallet with RFID blocking technology.",
   price: 49.99,
@@ -676,7 +678,7 @@ const productTwentyEight = {
 
 const productTwentyNine = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopThreeId,
   name: "Electric Coffee Grinder",
   description: "Stainless steel blade grinder with multiple grind settings for perfect coffee.",
   price: 34.99,
@@ -722,7 +724,7 @@ const productThirty = {
 
 const productThirtyOne = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Portable Camping Stove",
   description: "Compact propane camping stove with two burners, perfect for outdoor cooking.",
   price: 69.99,
@@ -768,7 +770,7 @@ const productThirtyTwo = {
 
 const productThirtyThree = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Wooden Chess Set",
   description: "Handcrafted wooden chess set with felt-bottom pieces and folding board.",
   price: 79.99,
@@ -814,7 +816,7 @@ const productThirtyFour = {
 
 const productThirtyFive = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Digital Drawing Tablet",
   description: "10-inch graphic tablet with 8192 pressure levels and wireless stylus.",
   price: 129.99,
@@ -860,7 +862,7 @@ const productThirtySix = {
 
 const productThirtySeven = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Leather Messenger Bag",
   description: "Genuine leather bag with padded laptop compartment and multiple pockets.",
   price: 119.99,
@@ -906,7 +908,7 @@ const productThirtyEight = {
 
 const productThirtyNine = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Smart Door Lock",
   description: "Keyless entry with fingerprint, code, and smartphone app access.",
   price: 199.99,
@@ -952,7 +954,7 @@ const productForty = {
 
 const productFortyOne = {
   id: uuidv4(),
-  shopId: shopOneId,
+  shopId: shopTwoId,
   name: "Wireless Earbuds",
   description: "True wireless earbuds with noise cancellation and 24-hour battery life.",
   price: 129.99,
@@ -975,7 +977,7 @@ const productFortyOne = {
 
 const productFortyTwo = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Yoga Wheel",
   description: "Durable yoga wheel for stretching and improving flexibility, supports up to 500 lbs.",
   price: 39.99,
@@ -1021,7 +1023,7 @@ const productFortyThree = {
 
 const productFortyFour = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Electric Wine Opener",
   description: "Rechargeable wine bottle opener with foil cutter and LED charging base.",
   price: 29.99,
@@ -1067,7 +1069,7 @@ const productFortyFive = {
 
 const productFortySix = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Portable Car Jump Starter",
   description: "1000A peak current, built-in flashlight, and USB charging ports for emergencies.",
   price: 79.99,
@@ -1113,7 +1115,7 @@ const productFortySeven = {
 
 const productFortyEight = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Collapsible Silicone Water Bottle",
   description: "BPA-free, leak-proof, and easy to clean, perfect for travel and outdoor activities.",
   price: 19.99,
@@ -1159,7 +1161,7 @@ const productFortyNine = {
 
 const productFifty = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Sunrise Alarm Clock",
   description: "Wake-up light with natural sunrise simulation, multiple sound options, and FM radio.",
   price: 45.99,
@@ -1206,7 +1208,7 @@ const productFiftyOne = {
 
 const productFiftyTwo = {
   id: uuidv4(),
-  shopId: shopTwoId,
+  shopId: shopOneId,
   name: "Fashion T-Cross Paints",
   description: "Fashion Solid Color Work Casual Multiple Pockets Men's Cargo Pants Classic Waist Drawcord Pure Cotton Youth Tide Male Trousers",
   price: 7.99,

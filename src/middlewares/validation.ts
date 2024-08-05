@@ -26,6 +26,7 @@ const currentDate = new Date();
 import cartRepositories from "../modules/cart/repositories/cartRepositories";
 import db from "../databases/models";
 import userRepositories from "../modules/user/repository/userRepositories";
+import { generateOtpEmailTemplate } from "../services/emailTemplate";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
@@ -194,8 +195,7 @@ const verifyUserCredentials = async (
       await sendEmail(
         user.email,
         "E-Commerce Ninja Login",
-        `Dear ${user.lastName || user.email
-        }\n\nUse This Code To Confirm Your Account: ${otp}`
+        generateOtpEmailTemplate(user,otp)
       );
 
       const isTokenExist = await authRepositories.findTokenByDeviceIdAndUserId(

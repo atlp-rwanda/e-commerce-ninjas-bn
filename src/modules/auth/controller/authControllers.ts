@@ -7,6 +7,7 @@ import { usersAttributes } from "../../../databases/models/users";
 import authRepositories from "../repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
 import { eventEmitter } from "../../../helpers/notifications";
+import { getEmailVerificationTemplate, getResendVerificationTemplate, passwordResetEmail } from "../../../services/emailTemplate";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -24,7 +25,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
     await sendEmail(
       register.email,
       "Verification Email",
-      `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${token}`
+      getEmailVerificationTemplate(register,token)
     );
     res.status(httpStatus.CREATED).json({
       status: httpStatus.CREATED,
@@ -45,7 +46,7 @@ const sendVerifyEmail = async (req: any, res: Response) => {
     await sendEmail(
       req.user.email,
       "Verification Email",
-      `${process.env.SERVER_URL_PRO}/api/auth/verify-email/${req.session.token}`
+      getResendVerificationTemplate(req.user, req.session.token)
     );
     res.status(httpStatus.OK).json({
       status: httpStatus.OK,
@@ -123,7 +124,7 @@ const forgetPassword = async (req: any, res: Response): Promise<void> => {
       otp: null
     };
     await authRepositories.createSession(session);
-    await sendEmail(req.user.email, "Reset password", `${process.env.SERVER_URL_PRO}/api/auth/reset-password/${token}`);
+    await sendEmail(req.user.email, "Reset password", passwordResetEmail(req.user, token));
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Check email for reset password." });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
