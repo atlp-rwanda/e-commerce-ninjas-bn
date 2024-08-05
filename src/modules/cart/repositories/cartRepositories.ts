@@ -7,6 +7,23 @@ import CartProduct from "../../../databases/models/cartProducts";
 import Products from "../../../databases/models/products";
 import { stripe } from "../../../services/stripe.service";
 const getCartsByUserId = async (userId: string) => {
+  return await db.Carts.findOne({
+    where: { userId, status: "pending" },
+    include: [
+      {
+        model: db.CartProducts,
+        as: "cartProducts",
+        include: [
+          {
+            model: db.Products,
+            as: "products"
+          },
+        ],
+      }
+    ]
+  });
+};
+const getCartsByUserId1 = async (userId: string) => {
   return await db.Carts.findAll({ where: { userId, status: "pending" } });
 };
 
@@ -32,7 +49,7 @@ const getCartProductsByCartId = async (cartId: string) => {
       {
         model: db.Products,
         as: "products",
-        attributes: ["id", "name", "price", "discount", "images", "shopId"],
+        attributes: ["id", "name", "price", "discount", "images", "shopId", "description"],
       },
     ],
   });
@@ -98,9 +115,9 @@ const findCartProductsByCartId = async (value: any) => {
   return result;
 };
 
-const getCartByUserIdAndCartId = async (userId: string, cartId: string, status: string = "pending") => {
+const getCartByUserIdAndCartId = async (userId: string, cartId: string) => {
   return await db.Carts.findOne({
-    where: { id: cartId, userId, status },
+    where: { id: cartId, userId, status: "pending" },
     include: [
       {
         model: db.CartProducts,
@@ -154,6 +171,44 @@ const getOrderByOrderIdAndUserId = async (orderId: string, userId: string) => {
     ]
   })
 }
+
+const getOrdersByCartId = async (userId) => {
+  return await db.Orders.findAll({
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ],
+    order: [
+      ["createdAt", "DESC"]
+    ]
+  });
+};
+const getOrderByCartId = async (userId) => {
+  return await db.Orders.findOne({
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ]
+  });
+};
+const getOrderByCartId2 = async (userId,orderId) => {
+  return await db.Orders.findOne({
+    where: {id: orderId },
+    include: [
+      {
+        model: db.Carts,
+        as: "carts",
+        where: { userId: userId }
+      }
+    ]
+  });
+};
 
 const getOrderById = async (orderId: string) => {
   return await db.Orders.findOne({ where: { id: orderId } })
@@ -209,8 +264,17 @@ const getStripeSessionByAttribute = async (primaryKey: string, primaryValue: num
 const createStripeSession = async (body: Stripe.Checkout.SessionCreateParams): Promise<Stripe.Checkout.Session> => {
   return await stripe.checkout.sessions.create(body);
 };
+const updateCartStatus = async (cartId: string, status: string) => {
+
+  return await db.Carts.update({ status: status },
+    { where: { id: cartId } })
+}
 
 
+
+const userSaveOrder = async (body) => {
+  return await db.Orders.create(body);
+}
 export default {
   getCartsByUserId,
   getCartProductsByCartId,
@@ -225,6 +289,7 @@ export default {
   deleteAllCartProducts,
   findCartByAttributes,
   getCartsByProductId,
+  getCartsByUserId1,
   findCartProductsByCartId,
   getCartByUserIdAndCartId,
   findCartProductByCartId,
@@ -238,5 +303,10 @@ export default {
   createStripeProduct, getStripeProductByAttribute,
   createStripeCustomer, getStripeCustomerByAttribute,
   createStripeSession, getStripeSessionByAttribute,
-  getOrdersHistory
+  getOrdersHistory,
+  updateCartStatus,
+  userSaveOrder,
+  getOrdersByCartId,
+  getOrderByCartId,
+  getOrderByCartId2
 };

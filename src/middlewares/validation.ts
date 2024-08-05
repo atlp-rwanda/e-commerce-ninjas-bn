@@ -29,24 +29,24 @@ import userRepositories from "../modules/user/repository/userRepositories";
 
 const validation =
   (schema: Joi.ObjectSchema | Joi.ArraySchema) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = schema.validate(req.body, { abortEarly: false });
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { error } = schema.validate(req.body, { abortEarly: false });
 
-      if (error) {
-        throw new Error(
-          error.details
-            .map((detail) => detail.message.replace(/"/g, ""))
-            .join(", ")
-        );
+        if (error) {
+          throw new Error(
+            error.details
+              .map((detail) => detail.message.replace(/"/g, ""))
+              .join(", ")
+          );
+        }
+        return next();
+      } catch (error) {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ status: httpStatus.BAD_REQUEST, message: error.message });
       }
-      return next();
-    } catch (error) {
-      res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ status: httpStatus.BAD_REQUEST, message: error.message });
-    }
-  };
+    };
 
 const isUserExist = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -103,13 +103,13 @@ const isUsersExist = async (
     if (userCount === 0) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ status:httpStatus.NOT_FOUND, message: "No users found in the database." });
+        .json({ status: httpStatus.NOT_FOUND, message: "No users found in the database." });
     }
     next();
   } catch (err) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internet Server error." });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: "Internet Server error." });
   }
 };
 
@@ -134,7 +134,7 @@ const isAccountVerified = async (
     if (!user) {
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ status:httpStatus.NOT_FOUND, message: "Account not found." });
+        .json({ status: httpStatus.NOT_FOUND, message: "Account not found." });
     }
 
     if (user.isVerified) {
@@ -150,7 +150,7 @@ const isAccountVerified = async (
     if (!session) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({status:httpStatus.BAD_REQUEST, message: "Invalid token." });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Invalid token." });
     }
 
     req.session = session;
@@ -177,7 +177,7 @@ const verifyUserCredentials = async (
     if (!user) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({status:httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
     if (user.is2FAEnabled) {
       const { otp, expirationTime } = generateOTP();
@@ -194,8 +194,7 @@ const verifyUserCredentials = async (
       await sendEmail(
         user.email,
         "E-Commerce Ninja Login",
-        `Dear ${
-          user.lastName || user.email
+        `Dear ${user.lastName || user.email
         }\n\nUse This Code To Confirm Your Account: ${otp}`
       );
 
@@ -206,14 +205,15 @@ const verifyUserCredentials = async (
       if (isTokenExist) {
         return res.status(httpStatus.OK).json({
           message: "Check your Email for OTP Confirmation",
-          data: { 
-            UserId:  user.id,
-            token: isTokenExist }
+          data: {
+            UserId: user.id,
+            token: isTokenExist
+          }
         });
       }
 
       return res.status(httpStatus.OK).json({
-        status:httpStatus.OK,
+        status: httpStatus.OK,
         message: "Check your Email for OTP Confirmation",
         data: { userId: user.id },
       });
@@ -225,7 +225,7 @@ const verifyUserCredentials = async (
     if (!passwordMatches) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({status:httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
+        .json({ status: httpStatus.BAD_REQUEST, message: "Invalid Email or Password" });
     }
 
     req.user = user;
@@ -233,7 +233,7 @@ const verifyUserCredentials = async (
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({status:httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
+      .json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -519,13 +519,29 @@ const isGoogleEnabled = async (req: any, res: Response, next: NextFunction) => {
 
 const isCartExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
-    const cart = await cartRepositories.getCartsByUserId (req.user.id);
+    const cart = await cartRepositories.getCartsByUserId(req.user.id);
     if (!cart) {
-    return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+    }
+    req.carts = cart;
+    return next();
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
   }
-  req.carts = cart;
-  return next();
-    
+};
+const isCartExist1 = async (req: ExtendRequest, res: Response, next: NextFunction) => {
+  try {
+    const cart = await cartRepositories.getCartsByUserId1(req.user.id);
+    if (!cart) {
+      return res.status(httpStatus.NOT_FOUND).json({ status: httpStatus.NOT_FOUND, message: "No cart found. Please create a cart first." });
+    }
+    req.carts = cart;
+    return next();
+
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -704,38 +720,38 @@ const isWishListExist = async (
 ) => {
   try {
     const wishList = await productRepositories.getWishListByUserId(req.user.id);
-  if (!wishList) {
-        const newWishList = await productRepositories.createWishList({userId: req.user.id});
-        req.wishList = newWishList.id;
+    if (!wishList) {
+      const newWishList = await productRepositories.createWishList({ userId: req.user.id });
+      req.wishList = newWishList.id;
     }
-      else{
-      req.wishList = wishList.id 
+    else {
+      req.wishList = wishList.id
     }
-    next();    
+    next();
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message, 
-     });
-   }
-};
-
-const isWishListProductExist = async (req:ExtendRequest , res:Response, next:NextFunction) => {
-   try{
-       const wishListProduct = await productRepositories.findProductfromWishList(req.params.id,req.wishList);
-       if(wishListProduct) {
-        return res.status(httpStatus.OK).json({
-          message: "Product is added to wishlist successfully.",
-          data: { wishListProduct },
-        });       
-       }
-       next()
-   }catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: error.message,
     });
-}
+  }
+};
+
+const isWishListProductExist = async (req: ExtendRequest, res: Response, next: NextFunction) => {
+  try {
+    const wishListProduct = await productRepositories.findProductfromWishList(req.params.id, req.wishList);
+    if (wishListProduct) {
+      return res.status(httpStatus.OK).json({
+        message: "Product is added to wishlist successfully.",
+        data: { wishListProduct },
+      });
+    }
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
 }
 
 
@@ -748,14 +764,14 @@ const isUserWishlistExist = async (
     const wishList = await productRepositories.findWishListByUserId(
       req.user.id
     );
-    if (!wishList ) {
+    if (!wishList) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: httpStatus.NOT_FOUND,
         message: "No wishlist Found",
       });
     }
-   req.wishList = wishList;
-   next();
+    req.wishList = wishList;
+    next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: httpStatus.INTERNAL_SERVER_ERROR,
@@ -763,7 +779,7 @@ const isUserWishlistExist = async (
     });
   }
 };
-const isProductExistIntoWishList= async (
+const isProductExistIntoWishList = async (
   req: ExtendRequest,
   res: Response,
   next: NextFunction
@@ -808,20 +824,20 @@ const isNotificationsExist = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunction) => {
+const isProductOrdered = async (req: ExtendRequest, res: Response, next: NextFunction) => {
   try {
     const cart = await cartRepositories.getCartsByProductId(req.params.id, req.user.id);
     if (!cart) {
       return res
-       .status(httpStatus.NOT_FOUND)
-       .json({
+        .status(httpStatus.NOT_FOUND)
+        .json({
           status: httpStatus.NOT_FOUND,
           message: "Product is not ordered",
         });
     }
 
-    if(cart.status !== "completed") {
-      return res.status(httpStatus.BAD_REQUEST).json({ 
+    if (cart.status !== "completed") {
+      return res.status(httpStatus.BAD_REQUEST).json({
         status: httpStatus.BAD_REQUEST,
         message: "Order is not Completed"
       })
@@ -837,7 +853,7 @@ const isProductOrdered = async (req: ExtendRequest,res: Response,next: NextFunct
 
 const isUserProfileComplete = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const user = await userRepositories.findUserById(userId);
 
     const requiredFields = ["firstName", "lastName", "email", "phone", "gender", "birthDate", "language", "currency"];
@@ -878,85 +894,131 @@ const isSellerRequestExist = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-const isOrderExist = async (req: Request, res:Response, next:NextFunction)=>{
-  try{
+const isOrderExist = async (req: Request, res: Response, next: NextFunction) => {
+  try {
     let order: any;
     if (req.user.role === "buyer") {
-    if(req.params.id){
-      order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
-      if(!order){
-        return res.status(httpStatus.NOT_FOUND).json({
-          status: httpStatus.NOT_FOUND,
-          error: "order not found"
-        })
-      }
-    }else{
+      if (req.params.id) {
+        order = await cartRepositories.getOrderByOrderIdAndUserId(req.params.id, req.user.id)
+        if (!order) {
+          return res.status(httpStatus.NOT_FOUND).json({
+            status: httpStatus.NOT_FOUND,
+            error: "order not found"
+          })
+        }
+      } else {
         order = await cartRepositories.getOrdersByUserId(req.user.id)
-        if(!order.orders || order.orders.length === 0){
+        if (!order.orders || order.orders.length === 0) {
           return res.status(httpStatus.NOT_FOUND).json({
             status: httpStatus.NOT_FOUND,
             error: "orders not found"
           })
         }
       }
-      
+
     }
-      if(req.user.role === "admin"){
-        order = await cartRepositories.getOrderById(req.params.id)
-        if (!order) {
-          return res.status(httpStatus.NOT_FOUND).json({
-            status: httpStatus.NOT_FOUND,
-            error: "order Not Found",
-          });
-        }
+    if (req.user.role === "admin") {
+      order = await cartRepositories.getOrderById(req.params.id)
+      if (!order) {
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "order Not Found",
+        });
       }
-      (req as any).order = order
-      return next();
     }
-    catch(error){
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: httpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message
-      })
-    }
+    (req as any).order = order
+    return next();
+  }
+  catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: error.message
+    })
+  }
 }
 
+const isOrdersExist = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrdersByCartId(req.user.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.orders = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+const isOrderExists = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrderByCartId(req.user.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.order = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
+const isOrderExists2 = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const order = await cartRepositories.getOrderByCartId2(req.user.id, req.params.id);
+    if (!order) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "No orders found",
+      });
+    }
+    req.order = order;
+    next()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
+  }
+}
 const isOrderEmpty = async (req: Request, res: Response, next: NextFunction) => {
   const orders = await cartRepositories.getOrdersHistory();
-  if(!orders){
+  if (!orders) {
     return res.status(httpStatus.NOT_FOUND).json({
       status: httpStatus.NOT_FOUND,
       error: "order Not Found"
     })
   }
   (req as any).orders = orders;
-    next();
+  next();
 }
+
 
 const isShopEmpty = async (req: Request, res: Response, next: NextFunction) => {
   const shops = await userRepositories.getAllShops();
-  if(!shops){
+  if (!shops) {
     return res.status(httpStatus.NOT_FOUND).json({
       status: httpStatus.NOT_FOUND,
       error: "Shops Not Found"
     })
   }
   (req as any).shops = shops;
-    next();
+  next();
 }
 
 const isOroderExistByShopId = async (req: Request, res: Response, next: NextFunction) => {
   const shop = await productRepositories.findShopByUserId(req.user.id);
   const orders = await productRepositories.sellerGetOrdersHistory(shop.id);
- 
-  if(!orders){
+
+  if (!orders) {
     return res.status(httpStatus.NOT_FOUND).json({
       status: httpStatus.NOT_FOUND,
       error: "Order Not Found"
     })
   }
   (req as any).ordersHistory = orders;
-    next();
+  next();
 }
 
 export {
@@ -981,6 +1043,7 @@ export {
   isCartIdExist,
   isProductIdExist,
   isCartExist,
+  isCartExist1,
   isCartProductExist,
   isProductExistById,
   isWishListExist,
@@ -994,5 +1057,8 @@ export {
   isOrderExist,
   isOrderEmpty,
   isShopEmpty,
-  isOroderExistByShopId
+  isOroderExistByShopId,
+  isOrdersExist,
+  isOrderExists,
+  isOrderExists2
 };    
