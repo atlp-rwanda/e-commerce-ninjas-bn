@@ -141,16 +141,17 @@ const resetPassword = async (req: any, res: Response): Promise<void> => {
 };
 
 const updateUser2FA = async (req: any, res: Response) => {
+  const { is2FAEnabled } = req.body;
   try {
     const user = await authRepositories.updateUserByAttributes(
       "is2FAEnabled",
-      true,
+      !!is2FAEnabled,
       "id",
       req.user.id
     );
     res.status(httpStatus.OK).json({
       status: httpStatus.OK,
-      message: "2FA enabled successfully.",
+      message: `2FA ${is2FAEnabled ? "Enabled" : "Disabled"} successfully.`,
       data: { user: user }
     });
   } catch (error) {
