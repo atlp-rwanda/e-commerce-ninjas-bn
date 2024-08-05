@@ -7,7 +7,7 @@ export const userChangeRole = async (user: usersAttributes) => {
   return (
     `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
     <p>Dear ${username},</p>
-    <p>We are pleased to inform you that your ${user.role} within our system has been updated to <span style="color: green;">${user.role}</span>.</p>
+    <p>We are pleased to inform you that your role within our system has been updated to <span style="color: green;">${user.role}</span>.</p>
     <p>With this role, you will now have access to additional features and responsibilities. If you have any questions or need further assistance,</p>
     <p>please do not hesitate to contact us.</p>
     <p>Thank you for being a valued member of our community.</p>
@@ -35,7 +35,7 @@ export const userChangeStatus = async (user: usersAttributes) => {
     <p>We are pleased to inform you that your account has been <strong style="color: green;">re-enabled / re-activated</strong>. You can now access all the features and services available to you.</p>
     <p>If you have any questions or need further assistance, please contact our support team at this email.</p>
     <p>Thank you for being a valued member of our community.</p>
-    <a href="${process.env.SERVER_URL_PRO}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Go to Website</a>
+    <a href="${process.env.SERVER_URL_PRO}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #ffffff; background-color: #ff6d18; text-decoration: none; border-radius: 5px;">Go to Website</a>
     <p>Best regards,</p>
     <p><strong>e-commerce ninjas Team</strong></p>
   </div>

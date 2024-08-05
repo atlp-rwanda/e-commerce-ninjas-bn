@@ -1,5 +1,5 @@
 import { QueryInterface } from "sequelize";
-import { shopOneId, shopTwoId, userFourId, userSevenId } from "../../types/uuid";
+import { shopFourId, shopOneId, shopThreeId, shopTwoId, userFourId, userSevenId, userSixId } from "../../types/uuid";
 
 const shopOne = {
     id: shopOneId,
@@ -19,8 +19,25 @@ const shopTwo = {
     updatedAt: new Date()
 }
 
+const shopThree = {
+    id: shopThreeId,
+    name: "Shoes Shop 509",
+    userId: userFourId,
+    description: "Selling",
+    createdAt: new Date(),
+    updatedAt: new Date()
+}
+const shopFour = {
+    id: shopFourId,
+    name: "electronic Shop 509",
+    userId: userSixId,
+    description: "Selling",
+    createdAt: new Date(),
+    updatedAt: new Date()
+}
+
 export const up = async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkInsert("shops", [shopOne, shopTwo]);
+    await queryInterface.bulkInsert("shops", [shopOne, shopTwo,shopThree,shopFour]);
 };
 
 export const down = async (queryInterface: QueryInterface) => {

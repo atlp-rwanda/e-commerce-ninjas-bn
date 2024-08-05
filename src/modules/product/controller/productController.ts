@@ -425,6 +425,22 @@ const buyerReviewProduct = async (req: ExtendRequest, res: Response) => {
   }
 }
 
+const adminGetShops = async(req: ExtendRequest, res:Response)=>{
+  const shops = (req as any).shops
+  return res.status(httpStatus.OK).json({
+    message: "List Of shops",
+    data: { shops }
+ })
+}
+
+const sellerGetOrdersHistory = async(req: ExtendRequest, res:Response)=>{
+  const order = (req as any).ordersHistory;
+  return res.status(httpStatus.OK).json({
+    message: "Seller Order History",
+    data: { order }
+ })
+}
+
 export {
   sellerCreateProduct,
   sellerCreateShop,
@@ -442,5 +458,7 @@ export {
   buyerDeleteWishListProducts,
   buyerViewWishListProduct,
   buyerViewWishListProducts,
-  buyerDeleteWishListProduct
+  buyerDeleteWishListProduct,
+  adminGetShops,
+  sellerGetOrdersHistory
 };
