@@ -23,6 +23,7 @@ export interface ExtendRequest extends Request {
   user?: user;
   shop?: Shops;
   cart?:Cart;
+  orders?:any;
   wishList?:any;
   wishListId:string;
   pagination?: {

@@ -182,6 +182,10 @@ const getOrdersByUserId = async (userId: string) => {
     });
 };
 
+const getOrdersHistory = async () => {
+  return await db.Orders.findAll();
+};
+
 
 const getStripeProductByAttribute = async (primaryKey: string, primaryValue: number | string | boolean): Promise<Stripe.Product> => {
   const product = await stripe.products.search({ query: `${primaryKey}: '${primaryValue}'` });
@@ -234,4 +238,5 @@ export default {
   createStripeProduct, getStripeProductByAttribute,
   createStripeCustomer, getStripeCustomerByAttribute,
   createStripeSession, getStripeSessionByAttribute,
+  getOrdersHistory
 };

@@ -267,6 +267,8 @@ const changeUserAddress = async (req: any, res: Response) => {
   }
 };
 
+
+
 export default {
   updateUserStatus,
   updateUserRole,
@@ -280,5 +282,5 @@ export default {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   submitSellerRequest,
-  changeUserAddress,
+  changeUserAddress
 };

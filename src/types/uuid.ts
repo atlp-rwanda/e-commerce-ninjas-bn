@@ -40,6 +40,13 @@ export const productTwentyId = uuidv4();
 
 export const orderOneId = uuidv4();
 export const orderTwoId = uuidv4();
+export const orderThreeId = uuidv4();
+export const orderFourId = uuidv4();
+export const orderFiveId = uuidv4();
+export const orderSixId = uuidv4();
+export const orderSevenId = uuidv4();
+export const orderEightId = uuidv4();
+export const orderNineId = uuidv4();
 
 export const cartOneId = uuidv4();
 export const cartTwoId = uuidv4();

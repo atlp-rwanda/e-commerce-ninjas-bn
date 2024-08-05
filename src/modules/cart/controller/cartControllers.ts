@@ -338,6 +338,26 @@ const adminUpdateOrderStatus = async (req: ExtendRequest, res: Response) => {
 }
 
 
+const stripeCheckoutSession = async (req, res) => {
+  try {
+    let customer = await cartRepositories.getStripeCustomerByAttribute('email', req.body.sessionInfo.customer_email);
+    if (!customer) customer = await cartRepositories.createStripeCustomer({ email: req.body.sessionInfo.customer_email });
+    delete req.body.sessionInfo.customer_email;
+    req.body.sessionInfo.customer = customer.id;
+    let session = await cartRepositories.getStripeSessionByAttribute('customer', customer.id);
+    if (!session) session = await cartRepositories.createStripeSession(req.body.sessionInfo);
+    return res.status(httpStatus.OK).json({ message: "Success.", data: { session } });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, error: error.message })
+  }
+};
+const adminGetOrdersHistory = async(req: ExtendRequest, res:Response)=>{
+  const OrderHistory = (req as any).orders
+  return res.status(httpStatus.OK).json({
+    message: "Order History",
+    data: { OrderHistory }
+ })
+}
 
 export {
   buyerGetCart,
@@ -354,4 +374,6 @@ export {
   buyerGetOrders,
   buyerCheckout,
   adminUpdateOrderStatus,
+  stripeCheckoutSession,
+  adminGetOrdersHistory
 };
