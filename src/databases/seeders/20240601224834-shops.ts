@@ -1,5 +1,5 @@
 import { QueryInterface } from "sequelize";
-import { shopFourId, shopOneId, shopThreeId, shopTwoId, userFourId, userSevenId, userSixId } from "../../types/uuid";
+import { shopFourId, shopOneId, shopThreeId, shopTwoId, userFourId, userFourTeenId, userSevenId, userSixId } from "../../types/uuid";
 
 const shopOne = {
     id: shopOneId,
@@ -22,7 +22,7 @@ const shopTwo = {
 const shopThree = {
     id: shopThreeId,
     name: "Shoes Shop 509",
-    userId: userFourId,
+    userId: userFourTeenId,
     description: "Selling",
     createdAt: new Date(),
     updatedAt: new Date()

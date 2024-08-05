@@ -446,7 +446,7 @@ describe("internal server error", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller3@gmail.com", password: "Password@123" })
+      .send({ email: "seller15@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);

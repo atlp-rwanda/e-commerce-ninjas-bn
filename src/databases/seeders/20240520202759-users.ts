@@ -15,6 +15,8 @@ import {
   userElevenId,
   userTwelveId,
   userThirteenId,
+  userFourTeenId,
+  userFiveTeenId,
 } from "../../types/uuid";
 
 const userOne = {
@@ -286,6 +288,47 @@ const userThirteen = {
   isVerified: true,
   is2FAEnabled: false
 };
+const userFourteen = {
+  id: userFourTeenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
+  firstName: "F Seller14",
+  lastName: "L Seller14",
+  email: "seller14@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767899,
+  profilePicture: "https://res.cloudinary.com/djrmfg6k9/image/upload/v1720294521/cce1ffu7uw3j2vg9s2vl.jpg",
+  gender: "female",
+  birthDate: "2014-02-02",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false,
+};
+
+const userFiveTeen = {
+  id: userFiveTeenId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordUpdatedAt: new Date(),
+  firstName: "F Seller",
+  lastName: "L Seller",
+  email: "seller15@gmail.com",
+  password: hashPassword("Password@123"),
+  phone: 25089767099,
+  profilePicture: "https://res.cloudinary.com/djrmfg6k9/image/upload/v1720294521/cce1ffu7uw3j2vg9s2vl.jpg",
+  gender: "male",
+  birthDate: "2-2-2014",
+  language: "english",
+  currency: "USD",
+  role: "seller",
+  status: "enabled",
+  isVerified: true,
+  is2FAEnabled: false,
+};
 
 export const up = (queryInterface: QueryInterface) =>
   queryInterface.bulkInsert("users", [
@@ -301,7 +344,9 @@ export const up = (queryInterface: QueryInterface) =>
     userTen,
     userEleven,
     userTwelve,
-    userThirteen
+    userThirteen,
+    userFourteen,
+    userFiveTeen
   ]);
 
 export const down = async (queryInterface: QueryInterface) => {
