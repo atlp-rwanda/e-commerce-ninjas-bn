@@ -424,6 +424,13 @@ const userCreateOrder = (req, res) => {
 }
 
 
+const adminGetOrdersHistory = async(req: ExtendRequest, res:Response)=>{
+  const OrderHistory = (req as any).orders
+  return res.status(httpStatus.OK).json({
+    message: "Order History",
+    data: { OrderHistory }
+ })
+}
 
 export {
   buyerGetCart,
@@ -445,6 +452,6 @@ export {
   buyerUpdateCartStatus,
   userCreateOrder,
   buyerGetOrders2,
-  buyerGetOrderStatus2
-  
+  buyerGetOrderStatus2,
+  adminGetOrdersHistory
 };
