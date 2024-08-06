@@ -1007,18 +1007,29 @@ const isShopEmpty = async (req: Request, res: Response, next: NextFunction) => {
   next();
 }
 
-const isOroderExistByShopId = async (req: Request, res: Response, next: NextFunction) => {
-  const shop = await productRepositories.findShopByUserId(req.user.id);
-  const orders = await productRepositories.sellerGetOrdersHistory(shop.id);
-
-  if (!orders) {
-    return res.status(httpStatus.NOT_FOUND).json({
-      status: httpStatus.NOT_FOUND,
-      error: "Order Not Found"
-    })
+const isOrderExistByShopId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const shop = await productRepositories.findShopByUserId(req.user.id);
+    if(shop){
+      const orders = await productRepositories.sellerGetOrdersHistory(shop.id);
+      if (!orders) {
+        return res.status(httpStatus.NOT_FOUND).json({
+          status: httpStatus.NOT_FOUND,
+          error: "Order Not Found"
+        })
+      }
+      (req as any).ordersHistory = orders;
+      next();
+    }else{
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        error: "No shop found"
+      })
+    }
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ status: httpStatus.INTERNAL_SERVER_ERROR, message: error.message })
   }
-  (req as any).ordersHistory = orders;
-  next();
+
 }
 
 export {
@@ -1057,7 +1068,7 @@ export {
   isOrderExist,
   isOrderEmpty,
   isShopEmpty,
-  isOroderExistByShopId,
+  isOrderExistByShopId,
   isOrdersExist,
   isOrderExists,
   isOrderExists2
