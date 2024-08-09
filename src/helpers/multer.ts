@@ -4,7 +4,7 @@ import path from "path";
 import { Request } from "express";
 
 export const fileFilter = (req: Request, file: Express.Multer.File, cb) => {
-  const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.tiff'];
+  const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.tiff','.pdf'];
   const ext = path.extname(file.originalname).toLowerCase();
   
   if (!allowedExtensions.includes(ext)) {

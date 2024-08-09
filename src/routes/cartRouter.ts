@@ -80,5 +80,5 @@ router.post("/create-stripe-product", userAuthorization(["buyer"]), validation(p
 router.post("/checkout-stripe-session", userAuthorization(["buyer"]), validation(checkoutSessionSchema), stripeCheckoutSession);
 router.post("/user-create-order",userAuthorization(["buyer"]), cartControllers.userCreateOrder)
 router.put("/update-cart-status",userAuthorization(["buyer"]), cartControllers.buyerUpdateCartStatus)
-
+router.get("/admin-get-order-history",userAuthorization(["admin"]),isOrderEmpty,cartControllers.adminGetOrdersHistory)
 export default router;

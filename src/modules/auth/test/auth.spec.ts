@@ -26,7 +26,7 @@ import * as emailService from "../../../services/sendEmail";
 import { checkPasswordExpirations } from "../../../helpers/passwordExpiryNotifications";
 import { Op } from "sequelize";
 import dotenv from "dotenv";
-import SellerRequest from "../../../databases/models/sellerRequests";
+import SellerRequest from "../../../databases/models/sellerProfile";
 import userRepositories from "../../user/repository/userRepositories";
 
 dotenv.config();
@@ -1302,7 +1302,7 @@ describe("Seller Request Test Case", () => {
       throw new Error("Token is not set");
     }
     const error = new Error("Internal server error");
-    const createSellerRequestStub = sinon.stub(userRepositories, "createSellerRequest").throws(error);
+    const createSellerRequestStub = sinon.stub(userRepositories, "createSellerProfile").throws(error);
     
     router()
       .post("/api/user/user-submit-seller-request")

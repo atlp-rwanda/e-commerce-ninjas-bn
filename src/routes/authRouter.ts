@@ -17,15 +17,18 @@ import {
   credentialSchema,
   otpSchema,
   is2FAenabledSchema,
-  resetPasswordSchema 
+  resetPasswordSchema,
+  sellerRegistrationSchema
 } from "../modules/auth/validation/authValidations";
 import { userAuthorization } from "../middlewares/authorization";
 import googleAuth from "../services/googleAuth";
 import { checkPasswordExpiration } from "../middlewares/passwordExpiryCheck";
+import upload from "../helpers/multer";
 
 const router: Router = Router();
 
-router.post("/register",validation(credentialSchema),isUserExist,authControllers.registerUser
+router.post("/register",validation(credentialSchema),isUserExist,authControllers.registerUser);
+router.post("/register-seller",upload.single("file"),validation(sellerRegistrationSchema),isUserExist,authControllers.registerSeller
 );
 router.get(
   "/verify-email/:token",

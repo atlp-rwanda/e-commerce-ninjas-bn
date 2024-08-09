@@ -19,7 +19,6 @@ import {
   isWishListProductExist,
   isShopEmpty,
   isOrderExistByShopId
-  
 } from "../middlewares/validation";
 import {
   shopSchema,

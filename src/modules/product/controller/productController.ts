@@ -4,7 +4,7 @@
 import { Response } from "express";
 import httpStatus from "http-status";
 import productRepositories from "../repositories/productRepositories";
-import uploadImages from "../../../helpers/uploadImage";
+import {uploadImages} from "../../../helpers/uploadImage";
 import { ExtendRequest, IProductSold } from "../../../types";
 import Products from "../../../databases/models/products";
 import { eventEmitter } from "../../../helpers/notifications";

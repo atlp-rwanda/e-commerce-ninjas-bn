@@ -43,22 +43,34 @@ export const userChangeStatus = async (user: usersAttributes) => {
   )
 }
 
-export const welcomeEmail = async (user: usersAttributes) => {
+export const welcomeEmail = async (user: usersAttributes, isSeller: boolean = false) => {
   const username = user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName}`
     : user.email.split("@")[0];
-  return (`
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <p>👋 Dear ${username},</p>
+
+  const buyerMessage = `
     <p>Welcome to <strong>E-commerce ninjas</strong>! Your account has been successfully created, and we are thrilled to have you on board. 🎉</p>
     <p>Explore our features and enjoy your experience. If you have any questions or need assistance, please don't hesitate to reach out to us at this email.</p>
     <p>Happy shopping! 🛍️</p>
-    <p>Best regards,</p>
-    <p><strong>E-commerce ninjas Team</strong></p>
-    <a href="${process.env.SERVER_URL_PRO}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #ffffff; background-color: #ff6d18; text-decoration: none; border-radius: 5px;">Visit Our Website</a>
-  </div>
-        `);
+  `;
+
+  const sellerMessage = `
+    <p>Welcome to <strong>E-commerce ninjas</strong>! Your account has been successfully created, and we are thrilled to have you on board as a seller. 🎉</p>
+    <p>Please note that your account is currently under review. You will be notified shortly once your request is approved or rejected.</p>
+    <p>Thank you for choosing our platform to grow your business! 🚀</p>
+  `;
+
+  return (`
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <p>👋 Dear ${username},</p>
+      ${isSeller ? sellerMessage : buyerMessage}
+      <p>Best regards,</p>
+      <p><strong>E-commerce ninjas Team</strong></p>
+      <a href="${process.env.SERVER_URL_PRO}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #ffffff; background-color: #ff6d18; text-decoration: none; border-radius: 5px;">Visit Our Website</a>
+    </div>
+  `);
 }
+
 
 export const passwordResetEmail =  (user: usersAttributes, token) => {
   const username = user.firstName && user.lastName
@@ -138,4 +150,26 @@ export const generateOtpEmailTemplate = (user:usersAttributes, otp) =>{
       <p><strong>E-commerce Ninjas Team</strong></p>
     </div>
   `;
+}
+
+export const sellerProfileStatusEmail = async (user: usersAttributes, status: string) => {
+  const username = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.email.split("@")[0];
+  const statusColor = status === "Accepted" ? "green" : "red";
+  const statusMessage = status === "Accepted"
+    ? "We are pleased to inform you that your request to become a seller has been accepted. You can now start selling your products on our platform."
+    : "We regret to inform you that your request to become a seller has been rejected. Please feel free to contact us for further clarification or to reapply in the future.";
+  
+  return (
+    `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <p>Dear ${username},</p>
+      <p>Your request to become a seller on our platform has been <span style="color: ${statusColor};">${status}</span>.</p>
+      <p>${statusMessage}</p>
+      <p>If you have any questions or need further assistance, please do not hesitate to contact us.</p>
+      <p>Thank you for your interest in becoming a seller on our platform.</p>
+      <p>Best regards,</p>
+      <p><strong>E-commerce Ninjas Team</strong></p>
+    </div>`
+  );
 }

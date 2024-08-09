@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable  */
 import { Request, Response } from "express";
-import userRepositories from "../repository/authRepositories";
 import { generateToken } from "../../../helpers";
 import httpStatus from "http-status";
 import { usersAttributes } from "../../../databases/models/users";
@@ -8,6 +7,8 @@ import authRepositories from "../repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
 import { eventEmitter } from "../../../helpers/notifications";
 import { getEmailVerificationTemplate, getResendVerificationTemplate, passwordResetEmail } from "../../../services/emailTemplate";
+import uploadImages from "../../../helpers/uploadImage";
+import userRepositories from "../../user/repository/userRepositories";
 
 const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -25,13 +26,76 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
     await sendEmail(
       register.email,
       "Verification Email",
-      getEmailVerificationTemplate(register,token)
+      getEmailVerificationTemplate(register, token)
     );
     res.status(httpStatus.CREATED).json({
       status: httpStatus.CREATED,
       message:
         "Account created successfully. Please check email to verify account.",
       data: { user: register }
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+};
+
+const registerSeller = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { firstName, lastName, email, password, phone, businessName, businessDescription, Tin, mobileNumber, mobilePayment, bankPayment, bankAccount, bankName,terms } = req.body;
+    if (req.file) {
+      const result = await uploadImages(req.file);
+      console.log(result)
+      req.body.rdbDocument = result.secure_url;
+    }
+
+    const userInfo = {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      role: "seller",
+    }
+    console.log(userInfo)
+
+    const sellerData = {
+      businessName,
+      businessDescription,
+      Tin,
+      mobileNumber,
+      mobilePayment,
+      bankPayment,
+      bankAccount,
+      bankName,
+      terms,
+      rdbDocument: req.body.rdbDocument
+    }
+    const newUser = await authRepositories.createUser(userInfo);
+    await userRepositories.createSellerProfile({
+      userId: newUser.id,
+      requestStatus: "Pending",
+      sellerData
+    })
+    const token = generateToken(newUser.id);
+    await authRepositories.createSession({
+      userId: newUser.id,
+      device: req.headers["user-device"],
+      token: token,
+      otp: null
+    });
+
+    await sendEmail(
+      newUser.email,
+      "Verification Email",
+      getEmailVerificationTemplate(newUser, token)
+    );
+
+    res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
+      message: "Seller account created successfully. Please check your email to verify your account.",
     });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -85,7 +149,7 @@ const loginUser = async (req: any, res: Response) => {
       token: token,
       otp: null
     };
-    await userRepositories.createSession(session);
+    await authRepositories.createSession(session);
     res
       .status(httpStatus.OK)
       .json({ message: "Logged in successfully", data: { token } });
@@ -134,8 +198,8 @@ const forgetPassword = async (req: any, res: Response): Promise<void> => {
 const resetPassword = async (req: any, res: Response): Promise<void> => {
   try {
     await authRepositories.updateUserByAttributes("password", req.user.password, "id", req.user.id);
-      eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });  
-      res.status(httpStatus.OK).json({status: httpStatus.OK, message: "Password reset successfully." });
+    eventEmitter.emit("passwordChanged", { userId: req.user.id, message: "Password changed successfully" });
+    res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Password reset successfully." });
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
@@ -170,5 +234,6 @@ export default {
   forgetPassword,
   resetPassword,
   logoutUser,
-  updateUser2FA
+  updateUser2FA,
+  registerSeller
 };
