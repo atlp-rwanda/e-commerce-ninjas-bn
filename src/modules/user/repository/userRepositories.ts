@@ -93,6 +93,19 @@ const getAllShops = async () => {
   return await db.Shops.findAll();
 };
 
+const findSettingByKey = async (key: string) => {
+  return await db.Settings.findOne({ where: { key } });
+};
+
+const createSetting = async (key: string, value: string) => {
+  return await db.Settings.create({ key, value });
+};
+
+const updateSettingValue = async (setting: any, value: string) => {
+  setting.value = value;
+  return await setting.save();
+};
+
 export default { 
   getAllUsers, 
   updateUserProfile, 
@@ -109,5 +122,8 @@ export default {
   updateUserAddress,
   addUserAddress,
   findAddressByUserId,
-  getAllShops
+  getAllShops,
+  findSettingByKey,
+  createSetting,
+  updateSettingValue
 };

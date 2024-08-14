@@ -267,7 +267,34 @@ const changeUserAddress = async (req: any, res: Response) => {
   }
 };
 
+const updatePasswordExpirationSetting = async (req: Request, res: Response) => {
+  try {    
+      const { minutes } = req.body;   
+      let setting = await userRepositories.findSettingByKey("PASSWORD_EXPIRATION_MINUTES");  
+    if (!setting) {
+      setting = await userRepositories.createSetting("PASSWORD_EXPIRATION_MINUTES", minutes);
+    } else {
+      setting = await userRepositories.updateSettingValue(setting, minutes);
+    }
+    res.status(httpStatus.OK).json({ message: "Password expiration setting updated successfully." });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};
 
+
+const getPasswordExpiration = async (req: Request, res: Response) => {
+  try {
+    const setting = await userRepositories.findSettingByKey("PASSWORD_EXPIRATION_MINUTES");
+    if (setting) {
+      res.status(200).json({ minutes: setting.value });
+    } else {
+      res.status(404).json({ message: "Password expiration setting not found." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch password expiration time." });
+  }
+};
 
 export default {
   updateUserStatus,
@@ -282,5 +309,7 @@ export default {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   submitSellerRequest,
-  changeUserAddress
+  changeUserAddress,
+  updatePasswordExpirationSetting,
+  getPasswordExpiration
 };

@@ -99,3 +99,12 @@ export const changeAddressSchema = Joi.object({
   sector: Joi.string().required(),
   street: Joi.string().required()
 });
+
+export const passwordExpirationTimeSchema = Joi.object({
+  minutes: Joi.number().integer().min(1).required().messages({
+    "number.base": "Minutes should be a number.",
+    "number.integer": "Minutes should be an integer.",
+    "number.min": "Minutes should be at least 1.",
+    "any.required": "Minutes is required."
+  })
+});

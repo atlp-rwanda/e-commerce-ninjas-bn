@@ -12,6 +12,7 @@ import ProductReviews from "./productReviews";
 import wishListProducts from "./wishListProducts";
 import SellerRequest from "./sellerRequests";
 import Addresses from "./addresses";
+import Settings from "./settings";
 
 const db = {
   CartProducts,
@@ -27,12 +28,12 @@ const db = {
   ProductReviews,
   wishListProducts,
   SellerRequest,
-  Addresses
+  Addresses,
+  Settings
 };
 
 Object.values(db).forEach(model => {
   if (model.associate) {
-    // @ts-expect-error: Model association method expects a different type signature
     model.associate(db);
   }
 });
