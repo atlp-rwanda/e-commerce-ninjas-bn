@@ -140,6 +140,8 @@ const verifyEmail = async (req: any, res: Response) => {
   }
 }
 
+
+
 const loginUser = async (req: any, res: Response) => {
   try {
     const token = generateToken(req.user.id);
@@ -218,6 +220,10 @@ const updateUser2FA = async (req: any, res: Response) => {
       status: httpStatus.OK,
       message: `2FA ${is2FAEnabled ? "Enabled" : "Disabled"} successfully.`,
       data: { user: user }
+    });
+    eventEmitter.emit("user2FAUpdated", {
+      user,
+      message: `Two-Factor Authentication has been ${is2FAEnabled ? "enabled" : "disabled"} for your account.`
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

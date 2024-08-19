@@ -10,7 +10,7 @@ import { IProductsWithShop, IOrderWithCart } from "../types/index";
 import { io } from "../index";
 import Orders from "../databases/models/orders";
 import Carts from "../databases/models/carts";
-import { userChangeRole, userChangeStatus, welcomeEmail } from "../services/emailTemplate";
+import { generate2FAEmailTemplate, userChangeRole, userChangeStatus, welcomeEmail } from "../services/emailTemplate";
 
 export const eventEmitter = new EventEmitter();
 
@@ -138,4 +138,13 @@ cron.schedule("0 0 * * *", async () => {
       eventEmitter.emit("productExpired", product);
     }
   }
+});
+
+eventEmitter.on("user2FAUpdated", async ({ user, message }) => {
+  await emitNotification(user.id, message, "user2FAUpdated");
+  await sendEmail(
+    user.email,
+    "Two-Factor Authentication Update",
+    generate2FAEmailTemplate(user, message)
+  );
 });

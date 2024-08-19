@@ -2,13 +2,13 @@
 import { Request, Response, NextFunction } from "express";
 import httpStatus from "http-status";
 import Users, { usersAttributes } from "../databases/models/users";
+import Settings from "../databases/models/settings";
 import { sendEmail } from "../services/sendEmail";
 interface ExtendedRequest extends Request {
   user: usersAttributes;
 }
 
-const PASSWORD_EXPIRATION_MINUTES = Number(process.env.PASSWORD_EXPIRATION_MINUTES) || 90;
-const PASSWORD_RESET_URL = `${process.env.SERVER_URL_PRO}/reset-password`;
+const PASSWORD_RESET_URL = `${process.env.SERVER_URL_PRO}/api/auth/forget-password`;
 
 const addMinutes = (date: Date, minutes: number): Date => {
   const result = new Date(date);
@@ -19,7 +19,15 @@ const addMinutes = (date: Date, minutes: number): Date => {
 const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next: NextFunction) => {
   try {
     const user = await Users.findByPk(req.user.id);
+
+    if (user.role !== "buyer" && user.role !== "seller") {
+      return next();
+    }
+
     const now = new Date();
+    const setting = await Settings.findOne({ where: { key: "PASSWORD_EXPIRATION_MINUTES" } });
+    const PASSWORD_EXPIRATION_MINUTES = setting ? Number(setting.value) : 90;
+
     const passwordExpirationDate = addMinutes(user.passwordUpdatedAt, PASSWORD_EXPIRATION_MINUTES);
     const minutesRemaining = Math.floor((passwordExpirationDate.getTime() - now.getTime()) / (1000 * 60));
 
@@ -35,6 +43,7 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
         message: "Password expired, please check your email to reset your password."
       });
     }
+
     next();
   } catch (error) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -43,6 +52,5 @@ const checkPasswordExpiration = async (req: ExtendedRequest, res: Response, next
     });
   }
 };
-
 
 export { checkPasswordExpiration };

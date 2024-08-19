@@ -173,3 +173,18 @@ export const sellerProfileStatusEmail = async (user: usersAttributes, status: st
     </div>`
   );
 }
+
+export const generate2FAEmailTemplate = (user:usersAttributes, message) =>{
+  const username = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.email.split("@")[0];
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <p>👋 Dear ${username},</p>
+      <p style="font-size: 13px; font-weight: bold;">${message}</p>
+      <p>If this was not you, please contact our support team immediately.</p>
+      <p>Best regards,</p>
+      <p><strong>E-commerce Ninjas Team</strong></p>
+    </div>
+  `;
+}

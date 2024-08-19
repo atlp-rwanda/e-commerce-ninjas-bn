@@ -1004,7 +1004,42 @@ const isUserProfileComplete = async (
     });
   }
 };
+const isTermsTypeExist = async (req: Request, res: Response,next: NextFunction) =>{
+  try {
+    const {type} = req.body;
+    const termsAndConditions = await userRepositories.findTermByType(type);
+    if(termsAndConditions){
+      return res.status(httpStatus.CONFLICT).json({
+        status: httpStatus.CONFLICT,
+        message: "Terms and Conditions with this type already exists, Please Update Terms and Conditions",
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 
+const isTermsAndConditionsExist = async(req: Request, res: Response, next: NextFunction)=>{
+  try {
+    const termsAndConditions = await userRepositories.getTermsAndConditionById(req.params.id);
+    if (!termsAndConditions) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "Terms and Conditions not found",
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 const isSellerRequestExist = async (
   req: Request,
   res: Response,
@@ -1055,7 +1090,6 @@ const isSellerRequestExist = async (
           message: "Invalid role or request",
         });
     }
-    console.log(user)
     req.user = user
     next();
   } catch (error) {
@@ -1300,4 +1334,6 @@ export {
   isOrderExists,
   isOrderExists2,
   isRequestAcceptedOrRejected,
+  isTermsAndConditionsExist,
+  isTermsTypeExist
 };
