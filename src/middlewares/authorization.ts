@@ -8,6 +8,7 @@ import { decodeToken } from "../helpers";
 import Session from "../databases/models/sessions";
 import { Socket } from "socket.io"
 import { ExtendedError } from "socket.io/dist/namespace"
+import cookie from "cookie";
 
 
 interface ExtendedRequest extends Request {
@@ -18,7 +19,7 @@ interface ExtendedRequest extends Request {
 export const userAuthorization = function (roles: string[]) {
   return async (req: ExtendedRequest, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers["authorization"]?.split(" ")[1];
+      const token = req.cookies.token;
 
       if (!token) {
         return res
@@ -70,7 +71,19 @@ export const userAuthorization = function (roles: string[]) {
 
 export const socketAuthMiddleware = async (socket: Socket, next: NextFunction) => {
   try {
-    const token = socket.handshake.auth.token;
+    // Extract the cookie from the socket handshake headers
+    const cookies = socket.handshake.headers.cookie;
+
+    if (!cookies) {
+      const err = new Error("Authentication error") as ExtendedError;
+      err.data = { message: "No cookies found" };
+      return next(err);
+    }
+
+    // Parse the cookies and extract the token
+    const parsedCookies = cookie.parse(cookies);
+    const token = parsedCookies.token; // Adjust 'token' to match the cookie name where the token is stored
+
     if (!token) {
       const err = new Error("Authentication error") as ExtendedError;
       err.data = { message: "No token provided" };
@@ -107,7 +120,7 @@ export const socketAuthMiddleware = async (socket: Socket, next: NextFunction) =
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      role:user.role,
+      role: user.role,
       profilePicture: user.profilePicture,
     };
 

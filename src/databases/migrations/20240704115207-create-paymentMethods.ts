@@ -27,7 +27,7 @@ export default {
         defaultValue: false
       },
       bankAccount: {
-        type: DataTypes.STRING(16),
+        type: DataTypes.STRING(128),
         allowNull: true 
       },
       bankName: {

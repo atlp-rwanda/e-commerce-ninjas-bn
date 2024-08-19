@@ -47,7 +47,7 @@ const registerSeller = async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, email, password, phone, businessName, businessDescription, Tin, mobileNumber, mobilePayment, bankPayment, bankAccount, bankName,terms } = req.body;
     if (req.file) {
       const result = await uploadImages(req.file);
-      console.log(result)
+
       req.body.rdbDocument = result.secure_url;
     }
 
@@ -59,7 +59,6 @@ const registerSeller = async (req: Request, res: Response): Promise<void> => {
       phone,
       role: "seller",
     }
-    console.log(userInfo)
 
     const sellerData = {
       businessName,
@@ -140,6 +139,8 @@ const verifyEmail = async (req: any, res: Response) => {
   }
 }
 
+
+
 const loginUser = async (req: any, res: Response) => {
   try {
     const token = generateToken(req.user.id);
@@ -150,6 +151,12 @@ const loginUser = async (req: any, res: Response) => {
       otp: null
     };
     await authRepositories.createSession(session);
+    res.cookie('token', token, {
+      httpOnly: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: 3600000
+    });
     res
       .status(httpStatus.OK)
       .json({ message: "Logged in successfully", data: { token } });
@@ -168,6 +175,12 @@ const logoutUser = async (req: any, res: Response) => {
       "token",
       req.session.token
     );
+    res.cookie('token', "", {
+      httpOnly: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      expires: new Date(0)
+    });
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res
@@ -218,6 +231,10 @@ const updateUser2FA = async (req: any, res: Response) => {
       status: httpStatus.OK,
       message: `2FA ${is2FAEnabled ? "Enabled" : "Disabled"} successfully.`,
       data: { user: user }
+    });
+    eventEmitter.emit("user2FAUpdated", {
+      user,
+      message: `Two-Factor Authentication has been ${is2FAEnabled ? "enabled" : "disabled"} for your account.`
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

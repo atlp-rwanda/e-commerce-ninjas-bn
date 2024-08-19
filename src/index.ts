@@ -1,4 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import compression from "compression";
@@ -42,7 +43,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(morgan(process.env.NODE_EN));
 app.use(compression());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+  origin:allowedOrigins,
+  credentials:true
+}));
 
 app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(Document));
 app.use("/api", router);

@@ -12,6 +12,7 @@ import ProductReviews from "./productReviews";
 import wishListProducts from "./wishListProducts";
 import SellerProfile from "./sellerProfile";
 import Addresses from "./addresses";
+import Settings from "./settings";
 import PaymentMethods from "./paymentMethods";
 import TermsAndConditions from "./termsAndCodition";
 
@@ -30,13 +31,13 @@ const db = {
   wishListProducts,
   SellerProfile,
   Addresses,
+  Settings,
   PaymentMethods,
   TermsAndConditions
 };
 
 Object.values(db).forEach(model => {
   if (model.associate) {
-    // @ts-expect-error: Model association method expects a different type signature
     model.associate(db);
   }
 });

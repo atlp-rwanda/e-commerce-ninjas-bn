@@ -48,6 +48,21 @@ const adminGetUser = async (req: Request, res: Response) => {
   }
 };
 
+const adminDeleteUser = async (req: Request, res: Response) => {
+  try {
+    await userRepositories.deleteUser(req.params.id);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
 const updateUserRole = async (req: Request, res: Response) => {
   try {
     const user = await authRepositories.updateUserByAttributes(
@@ -220,7 +235,6 @@ const submitSellerRequest = async (req: any, res: Response) => {
     const userId = req.user.id;
     if(req.file){
       const result= await uploadImages(req.file);
-      console.log(result)
       req.body.rdbDocument = result.secure_url;
     }
     const sellerData : any = {
@@ -233,17 +247,17 @@ const submitSellerRequest = async (req: any, res: Response) => {
       sellerData
     });
 
-    // await sendEmail(
-    //   process.env.ADMIN_EMAIL,
-    //   "New Seller Request",
-    //   `A new seller request has been submitted by user ID: ${userId}.`
-    // );
+    await sendEmail(
+      process.env.ADMIN_EMAIL,
+      "New Seller Request",
+      `A new seller request has been submitted by user ID: ${userId}.`
+    );
 
-    // await sendEmail(
-    //   req.user.email,
-    //   "Seller Request Submitted",
-    //   "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
-    // );
+    await sendEmail(
+      req.user.email,
+      "Seller Request Submitted",
+      "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
+    );
 
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
@@ -350,9 +364,81 @@ const adminDeleteSellerRequest =async (req:Request , res:Response) =>{
 }
 
 const adminSetTermsAndCondition = async (req: Request, res: Response) =>{
-  const termsAndCondition = await userRepositories.createTermsAndCondition(req.body.content,req.body.type)
+  try {
+    const termsAndCondition = await userRepositories.createTermsAndCondition(req.body.content,req.body.type)
+    return res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
+      message: "Terms and condition created successfully",
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    })
+  }
 }
 
+const adminGetTermsAndCondition = async (req: Request, res: Response) =>{
+  try {
+    const termsAndCondition = await userRepositories.getTermsAndCondition()
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminDeleteTermsAndCondition = async (req: Request, res: Response) =>{
+  try {
+    await userRepositories.deleteTermsAndCondition(req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Terms and condition deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminGetSingleTermsAndCondition = async (req: Request, res: Response)=>{
+  try {
+    const termsAndCondition = await userRepositories.getTermsAndConditionById(req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+const adminUpdateTermsAndCondition = async(req: Request, res: Response) =>{
+  try {
+    const {content,type} = req.body
+    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition({content,type},req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Terms and condition updated successfully",
+      data: { termsAndCondition: updatedTermsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 const changeUserAddress = async (req: any, res: Response) => {
   try {
     const isAddressFound = await userRepositories.findAddressByUserId(req.user.id)
@@ -376,7 +462,34 @@ const changeUserAddress = async (req: any, res: Response) => {
   }
 };
 
+const updatePasswordExpirationSetting = async (req: Request, res: Response) => {
+  try {    
+      const { minutes } = req.body;   
+      let setting = await userRepositories.findSettingByKey("PASSWORD_EXPIRATION_MINUTES");  
+    if (!setting) {
+      setting = await userRepositories.createSetting("PASSWORD_EXPIRATION_MINUTES", minutes);
+    } else {
+      setting = await userRepositories.updateSettingValue(setting, minutes);
+    }
+    res.status(httpStatus.OK).json({ message: "Password expiration setting updated successfully." });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};
 
+
+const getPasswordExpiration = async (req: Request, res: Response) => {
+  try {
+    const setting = await userRepositories.findSettingByKey("PASSWORD_EXPIRATION_MINUTES");
+    if (setting) {
+      res.status(200).json({ minutes: setting.value });
+    } else {
+      res.status(404).json({ message: "Password expiration setting not found." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch password expiration time." });
+  }
+};
 
 export default {
   updateUserStatus,
@@ -392,8 +505,16 @@ export default {
   markAllNotificationsAsRead,
   submitSellerRequest,
   changeUserAddress,
+  updatePasswordExpirationSetting,
+  getPasswordExpiration,
   adminGetAllSellerRequested,
   adminGetRequestDetails,
   adminAcceptOrDenyRequest,
-  adminDeleteSellerRequest
+  adminDeleteSellerRequest,
+  adminSetTermsAndCondition,
+  adminGetTermsAndCondition,
+  adminGetSingleTermsAndCondition,
+  adminDeleteTermsAndCondition,
+  adminUpdateTermsAndCondition,
+  adminDeleteUser,
 };

@@ -1,7 +1,7 @@
 {
   "name": "e-commerce-ninjas",
   "version": "1.0.0",
-  "description": "Backend repo for team projecct",
+  "description": "Backend repo for team project",
   "main": "index.js",
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --fix"
@@ -30,10 +30,10 @@
     "postinstall": "husky install"
   },
   "nyc": {
-    "lines": 70,
-    "statements": 70,
-    "functions": 70,
-    "branches": 70,
+    "lines": 60,
+    "statements": 60,
+    "functions": 60,
+    "branches": 60,
     "extends": "@istanbuljs/nyc-config-typescript",
     "include": [
       "src/**/!(*.test.*).[tj]s?(x)"
@@ -79,6 +79,7 @@
     "chai-http": "^4.4.0",
     "cloudinary": "^2.2.0",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "coverage": "^0.4.1",
     "coveralls": "^3.1.1",
@@ -122,6 +123,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",

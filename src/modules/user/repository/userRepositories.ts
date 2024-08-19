@@ -176,14 +176,26 @@ const createTermsAndCondition = async (content: string, type: string) => {
 }
 
 const getTermsAndCondition = async () => {
-  return await db.TermsAndConditions.findOne();
+  return await db.TermsAndConditions.findAll();
 };
 
-const UpdateTermsAndCondition = async (content: string, id: string) => {
-  await db.TermsAndConditions.update({ content }, { where: { id }, returning: true });
-  const updateTermsAndCondition = await db.TermsAndConditions.findOne();
+const UpdateTermsAndCondition = async (data: any, id: string) => {
+  await db.TermsAndConditions.update({ ...data }, { where: { id }, returning: true });
+  const updateTermsAndCondition = await db.TermsAndConditions.findOne({ where: { id} });
   return updateTermsAndCondition;
 }
+
+const deleteTermsAndCondition = async (id: string) => {
+  await db.TermsAndConditions.destroy({ where: { id } });
+};
+
+const getTermsAndConditionById = async (id: string) => {
+  return await db.TermsAndConditions.findOne({ where: { id } });
+};
+
+const findTermByType = async (type: string) => {
+  return await db.TermsAndConditions.findOne({ where: { type } });
+};
 
 const updateUserAddress = async (address: any, userId: string) => {
   await db.Addresses.update({ ...address }, { where: { userId }, returning: true });
@@ -203,6 +215,23 @@ const getAllShops = async () => {
   return await db.Shops.findAll();
 };
 
+const findSettingByKey = async (key: string) => {
+  return await db.Settings.findOne({ where: { key } });
+};
+
+const createSetting = async (key: string, value: string) => {
+  return await db.Settings.create({ key, value });
+};
+
+const updateSettingValue = async (setting: any, value: string) => {
+  setting.value = value;
+  return await setting.save();
+};
+
+const deleteUser = async (id:string) => {
+  return await db.Users.destroy({ where: { id } });
+}
+
 export default {
   getAllUsers,
   updateUserProfile,
@@ -220,11 +249,18 @@ export default {
   addUserAddress,
   findAddressByUserId,
   getAllShops,
+  findSettingByKey,
+  createSetting,
+  updateSettingValue,
   getAllSellerProfile,
   updateSellerProfile,
   createTermsAndCondition,
   getTermsAndCondition,
   UpdateTermsAndCondition,
   deleteSellerProfile,
-  updateSellerProfileAndUserStatus
+  updateSellerProfileAndUserStatus,
+  deleteTermsAndCondition,
+  getTermsAndConditionById,
+  findTermByType,
+  deleteUser
 };

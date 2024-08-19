@@ -1004,7 +1004,42 @@ const isUserProfileComplete = async (
     });
   }
 };
+const isTermsTypeExist = async (req: Request, res: Response,next: NextFunction) =>{
+  try {
+    const {type} = req.body;
+    const termsAndConditions = await userRepositories.findTermByType(type);
+    if(termsAndConditions){
+      return res.status(httpStatus.CONFLICT).json({
+        status: httpStatus.CONFLICT,
+        message: "Terms and Conditions with this type already exists, Please Update Terms and Conditions",
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 
+const isTermsAndConditionsExist = async(req: Request, res: Response, next: NextFunction)=>{
+  try {
+    const termsAndConditions = await userRepositories.getTermsAndConditionById(req.params.id);
+    if (!termsAndConditions) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: httpStatus.NOT_FOUND,
+        message: "Terms and Conditions not found",
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 const isSellerRequestExist = async (
   req: Request,
   res: Response,
@@ -1014,33 +1049,37 @@ const isSellerRequestExist = async (
     const role = req.user.role;
     let existingRequest = null;
     let user = null;
-    if(req.params.userId){
-      user = await userRepositories.findUserById(req.params.userId)
-    }
 
     switch (role) {
       case "admin":
         const requestCount = await db.SellerProfile.count();
+
         if (requestCount === 0) {
           return res.status(httpStatus.NOT_FOUND).json({
             status: httpStatus.NOT_FOUND,
             message: "No seller requests found",
           });
         }
-        if(req.params.userId){
-        existingRequest = await userRepositories.findSellerRequestByUserId(req.params.userId);
-        if (!existingRequest) {
-          return res.status(httpStatus.NOT_FOUND).json({
-            status: httpStatus.NOT_FOUND,
-            message: "No seller requests found for the provided user ID",
-          });
+
+        if (req.params.userId) {
+          existingRequest = await userRepositories.findSellerRequestByUserId(req.params.userId);
+          user = await userRepositories.findUserById(req.params.userId);
+
+          if (!existingRequest) {
+            return res.status(httpStatus.NOT_FOUND).json({
+              status: httpStatus.NOT_FOUND,
+              message: "No seller requests found for the provided user ID",
+            });
+          }
+
+          req.user = user;
         }
-      }
         break;
 
       case "buyer":
         const userId = req.user.id || req.params.userId;
         existingRequest = await userRepositories.findSellerRequestByUserId(userId);
+
         if (existingRequest) {
           return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
@@ -1055,8 +1094,7 @@ const isSellerRequestExist = async (
           message: "Invalid role or request",
         });
     }
-    console.log(user)
-    req.user = user
+
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -1065,6 +1103,7 @@ const isSellerRequestExist = async (
     });
   }
 };
+
 
 const isRequestAcceptedOrRejected = (req: any, res: Response, next: NextFunction) => {
   try {
@@ -1300,4 +1339,6 @@ export {
   isOrderExists,
   isOrderExists2,
   isRequestAcceptedOrRejected,
+  isTermsAndConditionsExist,
+  isTermsTypeExist
 };

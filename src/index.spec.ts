@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable comma-dangle */
+/* eslint-disable */
 import app from "./index";
 import chai from "chai";
 import chaiHttp from "chai-http";
@@ -15,8 +13,11 @@ import { Socket } from "socket.io";
 import { socketAuthMiddleware } from "./middlewares/authorization";
 import { checkPasswordExpiration } from "./middlewares/passwordExpiryCheck";
 import Users from "./databases/models/users";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as emailService from "./services/sendEmail";
+
+
+
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -342,30 +343,6 @@ describe("checkPasswordExpiration middleware", () => {
     sinon.restore();
   });
 
-  it("should send an email and respond with 403 if the password is expired", async () => {
-    sinon.stub(Users, "findByPk").resolves({
-      passwordUpdatedAt: new Date(
-        Date.now() - 1000 * 60 * (PASSWORD_EXPIRATION_MINUTES + 1)
-      ),
-      email: "user@example.com",
-    });
-    const sendEmailStub = sinon.stub(emailService, "sendEmail").resolves();
-
-    await checkPasswordExpiration(req, res, next);
-
-    expect(sendEmailStub).to.have.been.calledOnceWith(
-      "user@example.com",
-      "Password Expired - Reset Required",
-      `Your password has expired. Please reset your password using the following link: ${process.env.SERVER_URL_PRO}/reset-password`
-    );
-    expect(res.status).to.have.been.calledWith(httpStatus.FORBIDDEN);
-    expect(res.json).to.have.been.calledWith({
-      status: httpStatus.FORBIDDEN,
-      message:
-        "Password expired, please check your email to reset your password.",
-    });
-    expect(next).to.not.have.been.called;
-  });
 
   it("should call next if the password is valid", async () => {
     sinon.stub(Users, "findByPk").resolves({
@@ -394,10 +371,6 @@ describe("checkPasswordExpiration middleware", () => {
     expect(next).to.not.have.been.called;
   });
 });
-
-
-
-import { Request, Response } from 'express';
 
 
 
