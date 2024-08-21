@@ -20,6 +20,22 @@ export const shopOneId = uuidv4();
 export const shopTwoId = uuidv4();
 export const shopThreeId = uuidv4();
 export const shopFourId = uuidv4();
+export const shopFiveId = uuidv4();
+export const shopSixId = uuidv4();
+
+export const paymentOneId = uuidv4();
+export const paymentTwoId = uuidv4();
+export const paymentThreeId = uuidv4();
+export const paymentFourId = uuidv4();
+export const paymentFiveId = uuidv4();
+export const paymentSixId = uuidv4();
+
+export const sellerProfileOneId = uuidv4();
+export const sellerProfileTwoId = uuidv4();
+export const sellerProfileThreeId = uuidv4();
+export const sellerProfileFourId = uuidv4();
+export const sellerProfileFiveId = uuidv4();
+export const sellerProfileSixId = uuidv4();
 
 export const productOneId = uuidv4();
 export const productTwoId = uuidv4();

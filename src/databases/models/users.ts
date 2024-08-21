@@ -8,8 +8,8 @@ import { hashPassword } from "../../helpers";
 import Sessions from "./sessions";
 import Shops from "./shops";
 import Notifications from "./notifications";
-import SellerRequest from "./sellerRequests";
 import Addresses from "./addresses";
+import SellerProfile from "./sellerProfile";
 export interface usersAttributes {
   id: string;
   firstName?: string;
@@ -55,11 +55,11 @@ class Users extends Model<usersAttributes, UsersCreationAttributes> implements u
   declare passwordUpdatedAt?: Date; 
 
   static associate() {
-    Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions" });
-    Users.hasOne(Addresses, { foreignKey: "userId", as: "addresses" });
-    Users.hasOne(Shops, { foreignKey: "userId", as: "shops" });
-    Users.hasMany(Notifications, { foreignKey: "userId", as: "notifications" });
-    Users.hasMany(SellerRequest, { foreignKey: "userId", as: "sellerRequests" });
+    Users.hasOne(Sessions, { foreignKey: "userId", as: "sessions",onDelete: "CASCADE" });
+    Users.hasOne(Addresses, { foreignKey: "userId", as: "addresses",onDelete: "CASCADE" });
+    Users.hasOne(Shops, { foreignKey: "userId", as: "shops",onDelete: "CASCADE" });
+    Users.hasMany(Notifications, { foreignKey: "userId", as: "notifications",onDelete: "CASCADE" });
+    Users.hasOne(SellerProfile, { foreignKey: "userId", as: "sellerProfile",onDelete: "CASCADE" });
   }
 }
 
@@ -118,6 +118,7 @@ Users.init(
     role: {
       type: DataTypes.STRING(128),
       allowNull: true,
+      defaultValue:"buyer"
     },
     isVerified: {
       type: DataTypes.BOOLEAN,

@@ -27,6 +27,18 @@ export const roleSchema = Joi.object({
       "any.only": "Only admin, buyer and seller are allowed."
   })
 });
+export const termsSchema = Joi.object({
+  content : Joi.string().required().messages({
+    "string.base" : "the content should be a string",
+    "string.empty" : "the content should not be empty"
+  }),
+  type : Joi.string().valid("seller", "buyer").required().messages({
+    "any.required": "The 'type' parameter is required.",
+    "string.base": "The 'type' parameter must be a string.",
+    "any.only": "Only buyer and seller are allowed.",
+    "string.empty" : "The 'type' parameter cannot be empty"
+  })
+})
 export const userSchema = Joi.object<User>({
   firstName: Joi.string().messages({
       "string.base": "firstName should be a type of text",

@@ -34,7 +34,7 @@ const getAllPastChats = async () => {
       {
         model: db.Users,
         as: "user",
-        attributes: ["id", "firstName", "lastName", "email", "role","profilePicture"]
+        attributes: ["id", "firstName", "lastName", "email", "role", "profilePicture"]
       }
     ]
   });
@@ -54,25 +54,147 @@ const findNotificationById = async (userId: string, id: string) => {
 }
 
 const markNotificationAsRead = async (key: string, value: any) => {
-  await db.Notifications.update({ isRead: true },{ where: { [key]: value } });
+  await db.Notifications.update({ isRead: true }, { where: { [key]: value } });
   return await db.Notifications.findOne({ where: { [key]: value } })
 };
 
 const markAllNotificationsAsRead = async (userId: string) => {
-  await db.Notifications.update({ isRead: true },{ where: { userId, isRead: false } });
-  return await db.Notifications.findAll({where: { userId } })
+  await db.Notifications.update({ isRead: true }, { where: { userId, isRead: false } });
+  return await db.Notifications.findAll({ where: { userId } })
 };
 
 const findUserById = async (id: string) => {
   return await db.Users.findOne({ where: { id } });
 };
 
-const createSellerRequest = async (request: { userId: string; requestStatus: string }) => {
-  return await db.SellerRequest.create(request);
+const createSellerProfile = async (request: { userId: string; requestStatus: string, sellerData: any }) => {
+  try {
+    const shop = await db.Shops.create({
+      userId: request.userId,
+      name: request.sellerData.businessName,
+      description: request.sellerData.businessDescription
+    })
+
+    const newPaymentMethods = await db.PaymentMethods.create({
+      userId: request.userId,
+      bankPayment: request.sellerData.bankPayment,
+      mobilePayment: request.sellerData.mobilePayment,
+      bankAccount: request.sellerData.bankAccount,
+      bankName: request.sellerData.bankName,
+      mobileNumber: request.sellerData.mobileNumber
+    })
+
+    const newSellerRequest = await db.SellerProfile.create({
+      userId: request.userId,
+      shopsId: shop.id,
+      paymentMethodId: newPaymentMethods.id,
+      requestStatus: request.requestStatus,
+      businessName: request.sellerData.businessName,
+      tin: request.sellerData.Tin,
+      rdbDocument: request.sellerData.rdbDocument,
+      terms: request.sellerData.terms
+    });
+
+    return { sellerRequest: newSellerRequest, paymentMethods: newPaymentMethods };
+  } catch (error) {
+    console.error(error);
+  }
+
 };
+const getAllSellerProfile = async () => {
+  return await db.SellerProfile.findAll({
+    include: [
+      {
+        model: db.Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email", "role", "profilePicture", "phone", "gender", "birthDate", "language"]
+      },
+      {
+        model: db.Shops,
+        as: "shop",
+        attributes: ["id", "name", "description"]
+      },
+      {
+        model: db.PaymentMethods,
+        as: "paymentMethods",
+        attributes: ["id", "bankPayment", "mobilePayment", "bankAccount", "mobileNumber"]
+      }
+    ]
+  });
+}
 
 const findSellerRequestByUserId = async (userId: string) => {
-  return await db.SellerRequest.findOne({ where: { userId } });
+  return await db.SellerProfile.findOne({
+    where: { userId },
+    include: [
+      {
+        model: db.Users,
+        as: "user",
+        attributes: ["id", "firstName", "lastName", "email", "role", "profilePicture", "phone", "gender", "birthDate", "language"]
+      },
+      {
+        model: db.Shops,
+        as: "shop",
+        attributes: ["id", "name", "description"]
+      },
+      {
+        model: db.PaymentMethods,
+        as: "paymentMethods",
+        attributes: ["id", "bankPayment", "mobilePayment", "bankAccount", "mobileNumber"]
+      }
+    ]
+  });
+};
+
+const updateSellerProfile = async (request: any, id: string) => {
+  try {
+    await db.SellerProfile.update(request, { where: { userId: id }, returning: true });
+    const updateRequest = await findSellerRequestByUserId(id);
+    return updateRequest;
+  } catch (error) {
+    console.error("Error updating seller request:", error);
+    throw error;
+  }
+}
+const updateSellerProfileAndUserStatus = async(request: any,id: string)=>{
+  try {
+    await db.SellerProfile.update(request, { where: { userId: id }, returning: true });
+    await db.Users.update({role:"seller"}, { where: { id},returning:true});
+    const updateRequest = await findSellerRequestByUserId(id);
+    return updateRequest;
+  } catch (error) {
+    console.error("Error updating seller request:", error);
+    throw error;
+  }
+}
+const deleteSellerProfile = async (id: string) => {
+  await db.SellerProfile.destroy({ where: { id } });
+}
+
+const createTermsAndCondition = async (content: string, type: string) => {
+  return await db.TermsAndConditions.create({ content, type });
+}
+
+const getTermsAndCondition = async () => {
+  return await db.TermsAndConditions.findAll();
+};
+
+const UpdateTermsAndCondition = async (data: any, id: string) => {
+  await db.TermsAndConditions.update({ ...data }, { where: { id }, returning: true });
+  const updateTermsAndCondition = await db.TermsAndConditions.findOne({ where: { id} });
+  return updateTermsAndCondition;
+}
+
+const deleteTermsAndCondition = async (id: string) => {
+  await db.TermsAndConditions.destroy({ where: { id } });
+};
+
+const getTermsAndConditionById = async (id: string) => {
+  return await db.TermsAndConditions.findOne({ where: { id } });
+};
+
+const findTermByType = async (type: string) => {
+  return await db.TermsAndConditions.findOne({ where: { type } });
 };
 
 const updateUserAddress = async (address: any, userId: string) => {
@@ -106,10 +228,10 @@ const updateSettingValue = async (setting: any, value: string) => {
   return await setting.save();
 };
 
-export default { 
-  getAllUsers, 
-  updateUserProfile, 
-  postChatMessage, 
+export default {
+  getAllUsers,
+  updateUserProfile,
+  postChatMessage,
   getAllPastChats,
   addNotification,
   findNotificationsByuserId,
@@ -117,7 +239,7 @@ export default {
   markAllNotificationsAsRead,
   markNotificationAsRead,
   findUserById,
-  createSellerRequest,
+  createSellerProfile,
   findSellerRequestByUserId,
   updateUserAddress,
   addUserAddress,
@@ -125,5 +247,15 @@ export default {
   getAllShops,
   findSettingByKey,
   createSetting,
-  updateSettingValue
+  updateSettingValue,
+  getAllSellerProfile,
+  updateSellerProfile,
+  createTermsAndCondition,
+  getTermsAndCondition,
+  UpdateTermsAndCondition,
+  deleteSellerProfile,
+  updateSellerProfileAndUserStatus,
+  deleteTermsAndCondition,
+  getTermsAndConditionById,
+  findTermByType
 };

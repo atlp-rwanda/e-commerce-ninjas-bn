@@ -3,8 +3,9 @@
 import { Op } from "sequelize";
 import db from "../../../databases/models";
 
-const createUser = async (body: any) => { 
-  return await db.Users.create({ ...body, role:"buyer" });
+const createUser = async (body: any) => {
+  console.log("body" + JSON.stringify(body))
+  return await db.Users.create(body);
 };
 
 const findUserByAttributes = async (key: string, value: any) => {

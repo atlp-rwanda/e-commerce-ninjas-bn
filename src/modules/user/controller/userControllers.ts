@@ -1,13 +1,17 @@
+/* eslint-disable quotes */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import uploadImages from "../../../helpers/uploadImage";
+import { uploadImages} from "../../../helpers/uploadImage";
 import userRepositories from "../repository/userRepositories";
 import authRepositories from "../../auth/repository/authRepositories";
 import { sendEmail } from "../../../services/sendEmail";
 import { eventEmitter } from "../../../helpers/notifications";
+import fs from 'fs';
+import { sellerProfileStatusEmail } from "../../../services/emailTemplate";
 
 const adminGetUsers = async (req: Request, res: Response) => {
   try {
@@ -211,25 +215,35 @@ const markAllNotificationsAsRead = async (req: Request, res: Response) => {
   }
 };
 
-const submitSellerRequest = async (req: Request, res: Response) => {
+const submitSellerRequest = async (req: any, res: Response) => {
   try {
     const userId = req.user.id;
-    const sellerRequest = await userRepositories.createSellerRequest({
+    if(req.file){
+      const result= await uploadImages(req.file);
+      console.log(result)
+      req.body.rdbDocument = result.secure_url;
+    }
+    const sellerData : any = {
+        ...req.body,
+        rdbDocument: req.body.rdbDocument,
+  }
+    const sellerRequest = await userRepositories.createSellerProfile({
       userId,
       requestStatus: "Pending",
+      sellerData
     });
 
-    await sendEmail(
-      process.env.ADMIN_EMAIL,
-      "New Seller Request",
-      `A new seller request has been submitted by user ID: ${userId}.`
-    );
+    // await sendEmail(
+    //   process.env.ADMIN_EMAIL,
+    //   "New Seller Request",
+    //   `A new seller request has been submitted by user ID: ${userId}.`
+    // );
 
-    await sendEmail(
-      req.user.email,
-      "Seller Request Submitted",
-      "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
-    );
+    // await sendEmail(
+    //   req.user.email,
+    //   "Seller Request Submitted",
+    //   "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
+    // );
 
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
@@ -244,6 +258,173 @@ const submitSellerRequest = async (req: Request, res: Response) => {
   }
 };
 
+const adminGetAllSellerRequested = async (req: Request, res:Response) => {
+  try {
+    const sellerProfiles = await userRepositories.getAllSellerProfile();
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { sellerProfiles },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminGetRequestDetails = async (req: Request, res:Response) => {
+  try {
+    const sellerRequest = await userRepositories.findSellerRequestByUserId(req.params.userId);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message:"Seller request details successfully",
+      data: { sellerRequest },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
+  }
+}
+
+const adminAcceptOrDenyRequest = async (req: any, res: Response) => {
+  try {
+    let updatedSellerRequest = null;
+
+    switch (req.requestStatus) {
+      case "Accepted":
+        updatedSellerRequest = await userRepositories.updateSellerProfileAndUserStatus(
+          { requestStatus:req.requestStatus },
+          req.params.userId,
+        );
+        break;
+
+      case "Rejected":
+        updatedSellerRequest = await userRepositories.updateSellerProfile(
+          { requestStatus:req.requestStatus },
+          req.params.userId,
+        );
+        break;
+
+      default:
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: httpStatus.BAD_REQUEST,
+          message: "Invalid request status",
+        });
+    }
+    await sendEmail(
+      req.user.email,
+      `Seller Request ${req.requestStatus}`,
+      await sellerProfileStatusEmail(req.user, req.requestStatus)
+    );
+
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: `Seller request ${req.requestStatus} successfully`,
+      data: { sellerRequest: updatedSellerRequest },
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
+const adminDeleteSellerRequest =async (req:Request , res:Response) =>{
+  try {
+    await userRepositories.deleteSellerProfile(req.params.id);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Seller request deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminSetTermsAndCondition = async (req: Request, res: Response) =>{
+  try {
+    const termsAndCondition = await userRepositories.createTermsAndCondition(req.body.content,req.body.type)
+    return res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
+      message: "Terms and condition created successfully",
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    })
+  }
+}
+
+const adminGetTermsAndCondition = async (req: Request, res: Response) =>{
+  try {
+    const termsAndCondition = await userRepositories.getTermsAndCondition()
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminDeleteTermsAndCondition = async (req: Request, res: Response) =>{
+  try {
+    await userRepositories.deleteTermsAndCondition(req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Terms and condition deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
+const adminGetSingleTermsAndCondition = async (req: Request, res: Response)=>{
+  try {
+    const termsAndCondition = await userRepositories.getTermsAndConditionById(req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+const adminUpdateTermsAndCondition = async(req: Request, res: Response) =>{
+  try {
+    const {content,type} = req.body
+    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition({content,type},req.params.id)
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Terms and condition updated successfully",
+      data: { termsAndCondition: updatedTermsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
 const changeUserAddress = async (req: any, res: Response) => {
   try {
     const isAddressFound = await userRepositories.findAddressByUserId(req.user.id)
@@ -311,5 +492,14 @@ export default {
   submitSellerRequest,
   changeUserAddress,
   updatePasswordExpirationSetting,
-  getPasswordExpiration
+  getPasswordExpiration,
+  adminGetAllSellerRequested,
+  adminGetRequestDetails,
+  adminAcceptOrDenyRequest,
+  adminDeleteSellerRequest,
+  adminSetTermsAndCondition,
+  adminGetTermsAndCondition,
+  adminGetSingleTermsAndCondition,
+  adminDeleteTermsAndCondition,
+  adminUpdateTermsAndCondition,
 };

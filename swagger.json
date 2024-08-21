@@ -3551,7 +3551,7 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "sellerRequest": {
+                        "SellerProfile": {
                           "type": "object",
                           "properties": {
                             "id": {

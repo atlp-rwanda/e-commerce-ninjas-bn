@@ -6,17 +6,20 @@ import sequelizeConnection from "../config/db.config";
 import { IShops } from "../../types";
 import Users from "./users";
 import Products from "./products";
+import SellerProfile from "./sellerProfile";
 
 class Shops extends Model<IShops> {
     declare id: string;
     declare userId: string;
     declare name: string;
     declare description?: string;
+    businessName: string;
 
     static associate() {
-        Shops.belongsTo(Users, { foreignKey: "userId", as: "users" });
+        Shops.belongsTo(Users, { foreignKey: "userId", as: "user" });
+        Shops.hasOne(SellerProfile, { foreignKey: "shopsId", as: "sellerProfile" });
         Shops.hasMany(Products, { foreignKey: "shopId", as: "products" });
-    }
+      }      
 }
 
 Shops.init(
@@ -38,7 +41,12 @@ Shops.init(
         },
         name: {
             allowNull: false,
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            references:{
+                model: "sellerProfile",
+                key: "businessName"
+            },
+            onDelete:"CASCADE"
         },
         description: {
             type: DataTypes.STRING,
@@ -48,7 +56,7 @@ Shops.init(
     {
         sequelize: sequelizeConnection,
         tableName: "shops",
-        modelName: "Shops"
+        modelName: "Shops",
     }
 );
 

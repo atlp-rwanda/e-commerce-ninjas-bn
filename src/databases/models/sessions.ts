@@ -27,7 +27,7 @@ class Sessions extends Model<SessionAttributes> implements SessionAttributes {
     declare updatedAt: Date;
 
     static associate() {
-        Sessions.belongsTo(Users, { foreignKey: "userId", as: "users" });
+        Sessions.belongsTo(Users, { foreignKey: "userId", as: "users" ,onDelete: "CASCADE"});
     }
 }
 

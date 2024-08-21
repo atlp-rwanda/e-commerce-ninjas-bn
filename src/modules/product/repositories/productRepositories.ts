@@ -1,6 +1,6 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import db from "../../../databases/models";
 import Products from "../../../databases/models/products";
 const createProduct = async (body: any) => {

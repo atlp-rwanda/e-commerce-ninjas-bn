@@ -11,7 +11,10 @@ cloudinary.config({
 export const uploadImages = async (
   fileToUpload: Express.Multer.File
 ): Promise<{ public_id: string; secure_url: string }> => {
-  const result = await cloudinary.uploader.upload(fileToUpload.path);
+  const result = await cloudinary.uploader.upload(fileToUpload.path,{
+    resource_type: "auto",
+    flags: "attachment:false",
+  });
   return {
     public_id: result.public_id,
     secure_url: result.secure_url,

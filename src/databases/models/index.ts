@@ -10,9 +10,11 @@ import wishLists from "./wishLists";
 import Notifications from "./notifications";
 import ProductReviews from "./productReviews";
 import wishListProducts from "./wishListProducts";
-import SellerRequest from "./sellerRequests";
+import SellerProfile from "./sellerProfile";
 import Addresses from "./addresses";
 import Settings from "./settings";
+import PaymentMethods from "./paymentMethods";
+import TermsAndConditions from "./termsAndCodition";
 
 const db = {
   CartProducts,
@@ -27,9 +29,11 @@ const db = {
   Notifications,
   ProductReviews,
   wishListProducts,
-  SellerRequest,
+  SellerProfile,
   Addresses,
-  Settings
+  Settings,
+  PaymentMethods,
+  TermsAndConditions
 };
 
 Object.values(db).forEach(model => {
