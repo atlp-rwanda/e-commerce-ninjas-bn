@@ -250,6 +250,10 @@ const sellerGetOrdersHistory = async (shopId: string) => {
   return db.Orders.findAll({ where: { shopId } });
 };
 
+const getProductsByShopId = async (shopId: string) => {
+  return await db.Products.findAll({ where: { shopId } });
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -280,7 +284,8 @@ export default {
   removeWishList,
   userCreateReview,
   findSingleProductById,
-  sellerGetOrdersHistory
+  sellerGetOrdersHistory,
+  getProductsByShopId
 };
   
 

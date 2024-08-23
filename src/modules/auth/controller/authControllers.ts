@@ -151,12 +151,6 @@ const loginUser = async (req: any, res: Response) => {
       otp: null
     };
     await authRepositories.createSession(session);
-    res.cookie('token', token, {
-      httpOnly: process.env.NODE_ENV === 'production' ? true : false,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: 3600000
-    });
     res
       .status(httpStatus.OK)
       .json({ message: "Logged in successfully", data: { token } });
@@ -175,12 +169,6 @@ const logoutUser = async (req: any, res: Response) => {
       "token",
       req.session.token
     );
-    res.cookie('token', "", {
-      httpOnly: process.env.NODE_ENV === 'production' ? true : false,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      expires: new Date(0)
-    });
     res.status(httpStatus.OK).json({ status: httpStatus.OK, message: "Successfully logged out" });
   } catch (err) {
     return res

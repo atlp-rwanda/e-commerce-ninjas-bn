@@ -125,4 +125,9 @@ router.post(
   productController.buyerReviewProduct )
   router.get("/admin-get-shops",userAuthorization(["admin"]),isShopEmpty,productController.adminGetShops);
   router.get("/seller-get-orderHistory",userAuthorization(["seller"]),isOrderExistByShopId,productController.sellerGetOrdersHistory);
+  router.get("/get-all-shops",isShopEmpty,productController.adminGetShops);
+  router.get(
+    "/get-products-by-shop/:id",
+    productController.getProductsByShopId
+  );
 export default router;

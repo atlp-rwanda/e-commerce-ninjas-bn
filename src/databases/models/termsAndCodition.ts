@@ -9,11 +9,13 @@ export interface ITermsAndConditions {
     id: string;
     content:string;
     type: string;
+    pdfUrl: string;
 }
 class TermsAndConditions extends Model<ITermsAndConditions> implements ITermsAndConditions {
     declare id: string;
     declare content: string;
     declare type: string;     
+    declare pdfUrl: string;
 
     static associate() {
 
@@ -29,12 +31,20 @@ TermsAndConditions.init(
             defaultValue: DataTypes.UUIDV4
         },
         content: {
-            allowNull: false,
-            type: DataTypes.STRING,
+            allowNull: true,
+            type: DataTypes.TEXT,
         },
         type: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
+        },
+        pdfUrl:{
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: true,
+            validate:{
+                isUrl: true
+            }
         }
     },
     {

@@ -175,6 +175,9 @@ const createTermsAndCondition = async (content: string, type: string) => {
   return await db.TermsAndConditions.create({ content, type });
 }
 
+const createTermsAndConditionWithUrl = async(url: string,type:string) => {
+  return await db.TermsAndConditions.create({ pdfUrl: url, type });
+}
 const getTermsAndCondition = async () => {
   return await db.TermsAndConditions.findAll();
 };
@@ -262,5 +265,6 @@ export default {
   deleteTermsAndCondition,
   getTermsAndConditionById,
   findTermByType,
-  deleteUser
+  deleteUser,
+  createTermsAndConditionWithUrl
 };

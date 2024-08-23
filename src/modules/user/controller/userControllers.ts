@@ -379,6 +379,26 @@ const adminSetTermsAndCondition = async (req: Request, res: Response) =>{
   }
 }
 
+const adminSetTermsAndConditionWithPdf =  async (req: Request, res: Response) =>{
+  try {
+    if(req.file){
+      const result= await uploadImages(req.file);
+      req.body.content = result.secure_url;
+    }
+    const termsAndCondition = await userRepositories.createTermsAndConditionWithUrl(req.body.content,req.body.type)
+    return res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
+      message: "Terms and condition created successfully",
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    })
+  }
+}
+
 const adminGetTermsAndCondition = async (req: Request, res: Response) =>{
   try {
     const termsAndCondition = await userRepositories.getTermsAndCondition()
@@ -425,8 +445,11 @@ const adminGetSingleTermsAndCondition = async (req: Request, res: Response)=>{
 }
 const adminUpdateTermsAndCondition = async(req: Request, res: Response) =>{
   try {
-    const {content,type} = req.body
-    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition({content,type},req.params.id)
+    if(req.file){
+      const result= await uploadImages(req.file);
+      req.body.pdfUrl = result.secure_url;
+    }
+    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition(req.body,req.params.id)
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       message: "Terms and condition updated successfully",
@@ -517,4 +540,5 @@ export default {
   adminDeleteTermsAndCondition,
   adminUpdateTermsAndCondition,
   adminDeleteUser,
+  adminSetTermsAndConditionWithPdf,
 };

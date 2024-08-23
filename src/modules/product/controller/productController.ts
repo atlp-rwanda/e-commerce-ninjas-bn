@@ -441,6 +441,31 @@ const sellerGetOrdersHistory = async(req: ExtendRequest, res:Response)=>{
  })
 }
 
+const getProductsByShopId = async (req: ExtendRequest, res: Response) => {
+  try {
+    const products = await productRepositories.getProductsByShopId(req.params.id);
+    
+    if (products.length === 0) {
+      return res.status(httpStatus.OK).json({
+        status: httpStatus.OK,
+        message: "No products found for this shop",
+        data: { products: [] },
+      });
+    }
+
+    res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "Products fetched successfully",
+      data: { products },
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+};
+
 export {
   sellerCreateProduct,
   sellerCreateShop,
@@ -460,5 +485,6 @@ export {
   buyerViewWishListProducts,
   buyerDeleteWishListProduct,
   adminGetShops,
-  sellerGetOrdersHistory
+  sellerGetOrdersHistory,
+  getProductsByShopId
 };

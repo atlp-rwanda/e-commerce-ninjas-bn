@@ -20,7 +20,7 @@ const app: Express = express();
 const PORT = process.env.PORT; 
 const server = createServer(app);
 
-const allowedOrigins = ["http://localhost:5000" , "https://e-commerce-ninja-fn-staging.netlify.app"]; 
+const allowedOrigins = ["http://localhost:5000" , "https://e-commerce-ninjas.netlify.app"]; 
 
 export const io = new Server(server, {
   cors: {
