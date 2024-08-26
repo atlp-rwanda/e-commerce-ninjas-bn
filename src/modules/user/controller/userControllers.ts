@@ -48,6 +48,21 @@ const adminGetUser = async (req: Request, res: Response) => {
   }
 };
 
+const adminDeleteUser = async (req: Request, res: Response) => {
+  try {
+    await userRepositories.deleteUser(req.params.id);
+    return res.status(httpStatus.OK).json({
+      status: httpStatus.OK,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    });
+  }
+}
+
 const updateUserRole = async (req: Request, res: Response) => {
   try {
     const user = await authRepositories.updateUserByAttributes(
@@ -220,7 +235,6 @@ const submitSellerRequest = async (req: any, res: Response) => {
     const userId = req.user.id;
     if(req.file){
       const result= await uploadImages(req.file);
-      console.log(result)
       req.body.rdbDocument = result.secure_url;
     }
     const sellerData : any = {
@@ -233,17 +247,17 @@ const submitSellerRequest = async (req: any, res: Response) => {
       sellerData
     });
 
-    // await sendEmail(
-    //   process.env.ADMIN_EMAIL,
-    //   "New Seller Request",
-    //   `A new seller request has been submitted by user ID: ${userId}.`
-    // );
+    await sendEmail(
+      process.env.ADMIN_EMAIL,
+      "New Seller Request",
+      `A new seller request has been submitted by user ID: ${userId}.`
+    );
 
-    // await sendEmail(
-    //   req.user.email,
-    //   "Seller Request Submitted",
-    //   "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
-    // );
+    await sendEmail(
+      req.user.email,
+      "Seller Request Submitted",
+      "Your request to become a seller has been submitted successfully. We will notify you once it is reviewed."
+    );
 
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
@@ -365,6 +379,26 @@ const adminSetTermsAndCondition = async (req: Request, res: Response) =>{
   }
 }
 
+const adminSetTermsAndConditionWithPdf =  async (req: Request, res: Response) =>{
+  try {
+    if(req.file){
+      const result= await uploadImages(req.file);
+      req.body.content = result.secure_url;
+    }
+    const termsAndCondition = await userRepositories.createTermsAndConditionWithUrl(req.body.content,req.body.type)
+    return res.status(httpStatus.CREATED).json({
+      status: httpStatus.CREATED,
+      message: "Terms and condition created successfully",
+      data: { termsAndCondition },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    })
+  }
+}
+
 const adminGetTermsAndCondition = async (req: Request, res: Response) =>{
   try {
     const termsAndCondition = await userRepositories.getTermsAndCondition()
@@ -411,8 +445,11 @@ const adminGetSingleTermsAndCondition = async (req: Request, res: Response)=>{
 }
 const adminUpdateTermsAndCondition = async(req: Request, res: Response) =>{
   try {
-    const {content,type} = req.body
-    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition({content,type},req.params.id)
+    if(req.file){
+      const result= await uploadImages(req.file);
+      req.body.pdfUrl = result.secure_url;
+    }
+    const updatedTermsAndCondition = await userRepositories.UpdateTermsAndCondition(req.body,req.params.id)
     return res.status(httpStatus.OK).json({
       status: httpStatus.OK,
       message: "Terms and condition updated successfully",
@@ -502,4 +539,6 @@ export default {
   adminGetSingleTermsAndCondition,
   adminDeleteTermsAndCondition,
   adminUpdateTermsAndCondition,
+  adminDeleteUser,
+  adminSetTermsAndConditionWithPdf,
 };

@@ -47,7 +47,7 @@ const registerSeller = async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, email, password, phone, businessName, businessDescription, Tin, mobileNumber, mobilePayment, bankPayment, bankAccount, bankName,terms } = req.body;
     if (req.file) {
       const result = await uploadImages(req.file);
-      console.log(result)
+
       req.body.rdbDocument = result.secure_url;
     }
 
@@ -59,7 +59,6 @@ const registerSeller = async (req: Request, res: Response): Promise<void> => {
       phone,
       role: "seller",
     }
-    console.log(userInfo)
 
     const sellerData = {
       businessName,

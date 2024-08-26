@@ -1049,33 +1049,37 @@ const isSellerRequestExist = async (
     const role = req.user.role;
     let existingRequest = null;
     let user = null;
-    if(req.params.userId){
-      user = await userRepositories.findUserById(req.params.userId)
-    }
 
     switch (role) {
       case "admin":
         const requestCount = await db.SellerProfile.count();
+
         if (requestCount === 0) {
           return res.status(httpStatus.NOT_FOUND).json({
             status: httpStatus.NOT_FOUND,
             message: "No seller requests found",
           });
         }
-        if(req.params.userId){
-        existingRequest = await userRepositories.findSellerRequestByUserId(req.params.userId);
-        if (!existingRequest) {
-          return res.status(httpStatus.NOT_FOUND).json({
-            status: httpStatus.NOT_FOUND,
-            message: "No seller requests found for the provided user ID",
-          });
+
+        if (req.params.userId) {
+          existingRequest = await userRepositories.findSellerRequestByUserId(req.params.userId);
+          user = await userRepositories.findUserById(req.params.userId);
+
+          if (!existingRequest) {
+            return res.status(httpStatus.NOT_FOUND).json({
+              status: httpStatus.NOT_FOUND,
+              message: "No seller requests found for the provided user ID",
+            });
+          }
+
+          req.user = user;
         }
-      }
         break;
 
       case "buyer":
         const userId = req.user.id || req.params.userId;
         existingRequest = await userRepositories.findSellerRequestByUserId(userId);
+
         if (existingRequest) {
           return res.status(httpStatus.BAD_REQUEST).json({
             status: httpStatus.BAD_REQUEST,
@@ -1090,7 +1094,7 @@ const isSellerRequestExist = async (
           message: "Invalid role or request",
         });
     }
-    req.user = user
+
     next();
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -1099,6 +1103,7 @@ const isSellerRequestExist = async (
     });
   }
 };
+
 
 const isRequestAcceptedOrRejected = (req: any, res: Response, next: NextFunction) => {
   try {

@@ -22,66 +22,71 @@ export const statusSchema = Joi.object({
 
 export const roleSchema = Joi.object({
   role: Joi.string().valid("admin", "buyer", "seller").required().messages({
-      "any.required": "The 'role' parameter is required.",
-      "string.base": "The 'role' parameter must be a string.",
-      "any.only": "Only admin, buyer and seller are allowed."
+    "any.required": "The 'role' parameter is required.",
+    "string.base": "The 'role' parameter must be a string.",
+    "any.only": "Only admin, buyer and seller are allowed."
   })
 });
 export const termsSchema = Joi.object({
-  content : Joi.string().required().messages({
-    "string.base" : "the content should be a string",
-    "string.empty" : "the content should not be empty"
+  content: Joi.string().optional().messages({
+    "string.base": "the content should be a string",
+    "string.empty": "the content should not be empty"
   }),
-  type : Joi.string().valid("seller", "buyer").required().messages({
+  type: Joi.string().valid("seller", "buyer").required().messages({
     "any.required": "The 'type' parameter is required.",
     "string.base": "The 'type' parameter must be a string.",
     "any.only": "Only buyer and seller are allowed.",
-    "string.empty" : "The 'type' parameter cannot be empty"
+    "string.empty": "The 'type' parameter cannot be empty"
+  }),
+  pdf: Joi.string().uri().optional().messages({
+    "string.base": "pdf should be a type of text",
+    "string.uri": "pdf must be a valid URI"
   })
+
 })
 export const userSchema = Joi.object<User>({
   firstName: Joi.string().messages({
-      "string.base": "firstName should be a type of text",
-      "string.empty": "firstName cannot be an empty field",
-      "any.required": "firstName is required"
+    "string.base": "firstName should be a type of text",
+    "string.empty": "firstName cannot be an empty field",
+    "any.required": "firstName is required"
   }),
   lastName: Joi.string().messages({
-      "string.base": "lastName should be a type of text",
-      "string.empty": "lastName cannot be an empty field",
-      "any.required": "lastName is required"
+    "string.base": "lastName should be a type of text",
+    "string.empty": "lastName cannot be an empty field",
+    "any.required": "lastName is required"
   }),
   phone: Joi.number().messages({
-      "number.base": "phone number should be a type of number",
-      "any.required": "phone number is required"
+    "number.base": "phone number should be a type of number",
+    "any.required": "phone number is required"
   }),
   profilePicture: Joi.string().uri().optional().messages({
-      "string.base": "profilePicture should be a type of text",
-      "string.uri": "profilePicture must be a valid URI"
+    "string.base": "profilePicture should be a type of text",
+    "string.uri": "profilePicture must be a valid URI"
   }),
   gender: Joi.string().valid("male", "female", "other").messages({
-      "string.base": "gender should be a type of text",
-      "any.only": "gender must be one of [male, female, other]",
-      "any.required": "gender is required"
+    "string.base": "gender should be a type of text",
+    "any.only": "gender must be one of [male, female, other]",
+    "any.required": "gender is required"
   }),
   birthDate: Joi.date().iso().messages({
-      "date.base": "birthDate should be a valid date",
-      "date.iso": "birthDate must be in ISO format",
-      "any.required": "birthDate is required"
+    "date.base": "birthDate should be a valid date",
+    "date.iso": "birthDate must be in ISO format",
+    "any.required": "birthDate is required"
   }),
   language: Joi.string().messages({
-      "string.base": "language should be a type of text",
-      "string.empty": "language cannot be an empty field",
-      "any.required": "language is required"
+    "string.base": "language should be a type of text",
+    "string.empty": "language cannot be an empty field",
+    "any.required": "language is required"
   }),
   currency: Joi.string().messages({
-      "string.base": "currency should be a type of text",
-      "string.empty": "currency cannot be an empty field",
-      "any.required": "currency is required"
+    "string.base": "currency should be a type of text",
+    "string.empty": "currency cannot be an empty field",
+    "any.required": "currency is required"
   }),
   role: Joi.string().valid("buyer", "seller", "admin").messages({
-      "string.base": "role should be a type of text",
-      "any.only": "role must be one of [buyer, seller, admin]",
-      "any.required": "role is required"
+    "string.base": "role should be a type of text",
+    "any.only": "role must be one of [buyer, seller, admin]",
+    "any.required": "role is required"
   })
 });
 
@@ -98,7 +103,7 @@ export const changePasswordSchema = Joi.object({
     "string.min": "New password should have a minimum length of 8",
     "string.pattern.base": "New password must contain both letters and numbers",
     "any.required": "New password is required"
-}),
+  }),
   confirmPassword: Joi.string().valid(Joi.ref("newPassword")).required().messages({
     "any.only": "Confirm password must match new password",
     "any.required": "Confirm password is required"

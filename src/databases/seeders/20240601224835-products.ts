@@ -51,7 +51,7 @@ const productTwo = {
   description: "A women's bag is a fashionable and functional accessory designed to carry personal belongings. Available in various styles, sizes, and materials, women's bags cater to diverse needs and preferences. From elegant clutches and chic handbags to spacious totes and practical backpacks, each type serves a unique purpose. High-quality women's bags offer a blend of style, durability, and convenience, making them essential for everyday use, special occasions, and professional settings.",
   price: 19.99,
   discount: "13%",
-  category: "Handbags:",
+  category: "Handbags",
   expiryDate: new Date("2050-12-31"),
   expired: false,
   bonus: "Bonus 1",

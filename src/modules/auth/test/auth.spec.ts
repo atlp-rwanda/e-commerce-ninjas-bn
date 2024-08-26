@@ -882,11 +882,10 @@ describe("updateUser2FA", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "seller4@gmail.com",
+        email: "ijbapte@gmail.com",
         password: "Password@123"
       })
       .end((error, response) => {
-        console.log(response)
         token = response.body.data.token;
         done(error);
       });
@@ -1029,7 +1028,7 @@ describe("verifyUserCredentials Middleware", () => {
     router()
       .post("/api/auth/login")
       .send({
-        email: "seller4@gmail.com",
+        email: "ijbapte@gmail.com",
         password: "Password@123"
       })
       .end((error, response) => {

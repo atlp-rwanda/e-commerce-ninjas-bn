@@ -50,8 +50,9 @@ describe("Product and Shops API Tests", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "dj@gmail.com", password: "Password@123" })
+      .send({ email: "jadowacu@gmail.com", password: "Password@123" })
       .end((err, res) => {
+        console.log(res);
         token = res.body.data.token;
         done(err);
       });
@@ -399,7 +400,7 @@ describe("Seller test cases", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller@gmail.com", password: "Password@123" })
+      .send({ email: "aimegetz@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);
@@ -465,7 +466,6 @@ describe("Seller test cases", () => {
 //   //       description: "A new Shops description",
 //   //     })
 //   //     .end((err, res) => {
-//   //       console.log(res)
 //   //       expect(res).to.have.status(httpStatus.INTERNAL_SERVER_ERROR);
 //   //       expect(res.body).to.have.property("message");
 //   //       done(err);
@@ -601,7 +601,7 @@ describe("Product Controller", () => {
   before((done) => {
     router()
       .post("/api/auth/login")
-      .send({ email: "seller3@gmail.com", password: "Password@123" })
+      .send({ email: "ndahimana154@gmail.com", password: "Password@123" })
       .end((err, res) => {
         token = res.body.data.token;
         done(err);

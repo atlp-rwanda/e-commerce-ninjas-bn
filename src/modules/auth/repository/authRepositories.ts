@@ -4,7 +4,6 @@ import { Op } from "sequelize";
 import db from "../../../databases/models";
 
 const createUser = async (body: any) => {
-  console.log("body" + JSON.stringify(body))
   return await db.Users.create(body);
 };
 

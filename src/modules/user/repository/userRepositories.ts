@@ -175,6 +175,9 @@ const createTermsAndCondition = async (content: string, type: string) => {
   return await db.TermsAndConditions.create({ content, type });
 }
 
+const createTermsAndConditionWithUrl = async(url: string,type:string) => {
+  return await db.TermsAndConditions.create({ pdfUrl: url, type });
+}
 const getTermsAndCondition = async () => {
   return await db.TermsAndConditions.findAll();
 };
@@ -228,6 +231,10 @@ const updateSettingValue = async (setting: any, value: string) => {
   return await setting.save();
 };
 
+const deleteUser = async (id:string) => {
+  return await db.Users.destroy({ where: { id } });
+}
+
 export default {
   getAllUsers,
   updateUserProfile,
@@ -257,5 +264,7 @@ export default {
   updateSellerProfileAndUserStatus,
   deleteTermsAndCondition,
   getTermsAndConditionById,
-  findTermByType
+  findTermByType,
+  deleteUser,
+  createTermsAndConditionWithUrl
 };
